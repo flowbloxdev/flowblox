@@ -242,7 +242,7 @@ You can help by:
 - Improving testing, documentation, portability, and developer tooling.
 - Opening pull requests for fixes and new features.
 
-Start with [GitHub Issues](https://github.com/mscheitza/flowblox/issues) and the [contribution guide](CONTRIBUTING.md). For bugs and features, agree on an issue before implementation, then submit a focused PR from a `bugfix/<issue-number>-<description>` or `feature/<issue-number>-<description>` branch. Anyone can propose a PR from a fork; maintainers review and merge changes into `main`. New contributors are welcome; small, focused improvements are valuable.
+Start with [GitHub Issues](https://github.com/flowbloxdev/flowblox/issues) and the [contribution guide](CONTRIBUTING.md). For bugs and features, agree on an issue before implementation, then submit a focused PR from a `bugfix/<issue-number>-<description>` or `feature/<issue-number>-<description>` branch. Anyone can propose a PR from a fork; maintainers review and merge changes into `main`. New contributors are welcome; small, focused improvements are valuable.
 
 Releases are tagged from tested commits on `main` (for example, `v1.2.3`). FlowBlox maintains one current release line without separate permanent release or hotfix branches.
 
