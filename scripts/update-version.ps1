@@ -26,10 +26,11 @@ if ((Split-Path -Leaf $rootPath) -ieq "scripts") {
 
 # ---- Configuration ----
 $Projects = @(
-  "FlowBlox\FlowBlox.csproj",
+  "FlowBlox.Avalonia\FlowBlox.Avalonia.csproj",
   "FlowBlox.CLI\FlowBlox.CLI.csproj",
   "FlowBlox.Core\FlowBlox.Core.csproj",
   "FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj",
+  "FlowBlox.WorkerService\FlowBlox.WorkerService.csproj",
   "FlowBlox.UICore\FlowBlox.UICore.csproj",
   "FlowBlox.SequenceDetection\FlowBlox.SequenceDetection.csproj"
 )

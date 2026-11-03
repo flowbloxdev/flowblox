@@ -179,7 +179,7 @@
     <PreBuildEvent>start C:\Users\msche\source\repos\WebFlowIDE\FlowBlox\get_data_directory.bat $(Configuration)</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>start C:\Users\msche\source\repos\WebFlowIDE\FlowBlox\postbuild.bat</PostBuildEvent>
+    <PostBuildEvent>call &quot;$(MSBuildProjectDirectory)\..\FlowBlox.Build\postbuild.bat&quot; &quot;$(TargetDir)&quot;</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>

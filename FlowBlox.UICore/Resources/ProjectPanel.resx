@@ -141,4 +141,19 @@
   <data name="Tooltip_IterationProgress" xml:space="preserve">
     <value>Current dataset: {0} of {1} total datasets. A check mark indicates that all iterations are complete.</value>
   </data>
+  <data name="Legend_Invoke_Tooltip" xml:space="preserve">
+    <value>The next flow block is invoked once for each dataset provided by the connected result flow block. For flow blocks that do not provide result datasets, it is invoked once.</value>
+  </data>
+  <data name="Legend_IterationContext_Tooltip" xml:space="preserve">
+    <value>The flow block runs after each dataset of the connected iteration-context flow block has been processed.</value>
+  </data>
+  <data name="Legend_RecursiveCall_Tooltip" xml:space="preserve">
+    <value>Recursive flow blocks invoke the connected, previously executed target flow block again. The target must lie on the recursive flow block&apos;s incoming execution path.</value>
+  </data>
+  <data name="Legend_IterationContext_QuickStart" xml:space="preserve">
+    <value>Quick Start</value>
+  </data>
+  <data name="Legend_IterationContext_QuickStart_Tooltip" xml:space="preserve">
+    <value>Learn how iteration context works through a practical example.</value>
+  </data>
 </root>

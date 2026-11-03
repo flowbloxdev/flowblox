@@ -6,9 +6,9 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Sequence Detection</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>At least two test cases are required</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>At least two test cases are required.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>At least **two test cases** are required.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Define the expected result</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Each test case requires the number of records and a search value</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Each test case requires the **number of records** and a **search value**</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Generate the Sequence Pattern</value></data>
-  <data name="Step3_Description" xml:space="preserve"><value>The sequence pattern is generated from the two test cases and reliably finds the search value</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>The **sequence pattern** is generated from the **two test cases** and reliably finds the **search value**</value></data>
 </root>

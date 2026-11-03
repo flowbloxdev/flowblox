@@ -6,11 +6,11 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Extraktive ONNX-Fragebeantwortung einrichten</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Python installieren</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Python wird zum Herunterladen und Exportieren des Beispielmodells benötigt. Lade hier die aktuelle Version herunter und aktiviere bei der Installation „Add Python to PATH“:
-{0}</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Python wird zum Herunterladen und Exportieren des Beispielmodells benötigt. Lade hier die aktuelle Version herunter und aktiviere bei der Installation „**Add Python to PATH**“:
+[Python herunterladen]({0})</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Mehrsprachiges mDeBERTa-v3-QA-Modell exportieren</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Öffne die mitgelieferte Seite und führe das veröffentlichte Python-Skript aus oder lade es herunter. Standardmäßig verwendet es das mehrsprachige mDeBERTa-v3-Modell. Mit --model-id wählst du ein anderes Modell, mit --model-root-directory einen benutzerspezifischen Stammordner und mit --output-directory einen exakten Modellordner:
-{0}</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Öffne die mitgelieferte Seite und führe das veröffentlichte Python-Skript aus oder lade es herunter. Standardmäßig verwendet es das mehrsprachige mDeBERTa-v3-Modell. Mit `--model-id` wählst du ein anderes Modell, mit `--model-root-directory` einen benutzerspezifischen Stammordner und mit `--output-directory` einen exakten Modellordner:
+[mDeBERTa-v3-Exportskript]({0})</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Fertigen Modellordner auswählen</value></data>
-  <data name="Step3_Description" xml:space="preserve"><value>ModelFolder verweist auf die QA-Modellstammordner-Option und den Unterordner des Standardmodells. Der Ordner muss model.onnx, config.json, tokenizer_config.json und die exportierten Tokenizer-Dateien enthalten. Aktiviere AllowNoAnswer bei Bedarf und stimme den Schwellwert mit repräsentativen Daten ab.</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>`ModelFolder` verweist auf die QA-Modellstammordner-Option und den Unterordner des Standardmodells. Der Ordner muss `model.onnx`, `config.json`, `tokenizer_config.json` und die exportierten Tokenizer-Dateien enthalten. Aktiviere `AllowNoAnswer` bei Bedarf und stimme den Schwellwert mit repräsentativen Daten ab.</value></data>
 </root>

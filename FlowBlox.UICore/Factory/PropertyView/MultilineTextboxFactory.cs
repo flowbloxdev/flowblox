@@ -42,6 +42,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             };
             if (canEdit)
                 textBox.TextChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
+            textBox.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.TextEditorStyle");
             ParentScrollViewerMouseWheelForwarder.Register(textBox);
             textBox.SetBinding(TextBox.TextProperty, binding);
 

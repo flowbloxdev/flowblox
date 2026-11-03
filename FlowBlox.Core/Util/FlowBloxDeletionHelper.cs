@@ -9,9 +9,11 @@ using FlowBlox.Core.Models.Deletion;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Provider.Registry;
 using FlowBlox.Core.Util.DeepCopier;
+using FlowBlox.Core.Util.Deletion;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.Core.Validations;
 using System.Text.RegularExpressions;
+using FlowBlox.Enums;
 
 namespace FlowBlox.Core.Util
 {
@@ -51,38 +53,40 @@ namespace FlowBlox.Core.Util
                 .Where(x => !deletionScope.Contains(x))
                 .ToList();
 
-            FlowBloxObjectGraphVisitor.VisitPropertiesRecursive(roots, (root, owner, property, value) =>
+            DeletionDependencyGraphVisitor.VisitPropertiesRecursive(roots, context =>
             {
-                if (deletionScope.Contains(owner))
+                if (deletionScope.Contains(context.Owner))
                     return;
 
-                if (deletionScope.Contains(value))
+                if (deletionScope.Contains(context.Value))
                 {
                     if (!IsPropertyContextTargetReference(
-                            root, owner, value, directTargets, dependencyContexts))
+                            context.Root, context.Owner, context.Value, directTargets, dependencyContexts))
                     {
                         dependencies.Add(CreateDependency(
-                            owner, property, value, DeletionImpact.DirectReferenceRemoved, editTarget: root));
+                            context.Owner, context.Property, context.Value, DeletionImpact.DirectReferenceRemoved,
+                            editTarget: context.Root, componentProperty: context.ComponentProperty));
                     }
                     return;
                 }
 
-                if (value is IList collection)
+                if (context.Value is IList collection)
                 {
                     for (var i = 0; i < collection.Count; i++)
                     {
                         var item = collection[i];
                         if (item != null && deletionScope.Contains(item) &&
                             !IsPropertyContextTargetReference(
-                                root, owner, item, directTargets, dependencyContexts))
+                                context.Root, context.Owner, item, directTargets, dependencyContexts))
                         {
-                            dependencies.Add(CreateDependency(owner, property, item, DeletionImpact.CollectionEntryRemoved, i, root));
+                            dependencies.Add(CreateDependency(context.Owner, context.Property, item, DeletionImpact.CollectionEntryRemoved,
+                                i, context.Root, context.ComponentProperty));
                         }
                     }
                 }
 
-                if (value is string text && deletedFieldNames.Count > 0 &&
-                    property.GetCustomAttribute<FlowBloxUIAttribute>()?.UiOptions
+                if (context.Value is string text && deletedFieldNames.Count > 0 &&
+                    context.Property.GetCustomAttribute<FlowBloxUIAttribute>()?.UiOptions
                         .HasFlag(UIOptions.EnableFieldSelection) == true)
                 {
                     foreach (Match match in Regex.Matches(text, BaseFlowBlock.Regex_FullyQualifiedFieldNames))
@@ -95,8 +99,8 @@ namespace FlowBlox.Core.Util
                             .First(x => string.Equals(x.FullyQualifiedName, match.Value, StringComparison.Ordinal));
 
                         dependencies.Add(CreateDependency(
-                            owner, property, referencedField, DeletionImpact.FieldReferenceInvalidated,
-                            editTarget: root));
+                            context.Owner, context.Property, referencedField, DeletionImpact.FieldReferenceInvalidated,
+                            editTarget: context.Root, componentProperty: context.ComponentProperty));
                     }
                 }
             });
@@ -110,7 +114,8 @@ namespace FlowBlox.Core.Util
 
             dependencies = dependencies
                 .GroupBy(x => new DependencyKey(
-                    x.ReferencingObject, x.Property, x.ReferencedObject, x.Impact, x.CollectionIndex),
+                    x.ReferencingObject, x.Property, x.ReferencedObject, x.Impact, x.CollectionIndex,
+                    x.EditTarget, x.ComponentProperty),
                     DependencyKeyComparer.Instance)
                 .Select(x => x.First())
                 .ToList();
@@ -146,7 +151,12 @@ namespace FlowBlox.Core.Util
                          .Where(x => x.AutomaticallyRemoved && !IsGraphConnection(x))
                          .GroupBy(x => x.EditTarget ?? x.ReferencingObject, ReferenceEqualityComparer.Instance))
             {
-                var changes = group.ToList();
+                var changes = group
+                    .GroupBy(x => new DependencyKey(
+                        x.ReferencingObject, x.Property, x.ReferencedObject, x.Impact, x.CollectionIndex,
+                        null, null), DependencyKeyComparer.Instance)
+                    .Select(x => x.First())
+                    .ToList();
                 var action = new FlowBloxEditAction { Target = group.Key };
                 action.CaptureRestoreState();
                 action.CaptureRepetitionState((_, copier) => ApplyChanges(copier, changes));
@@ -181,7 +191,8 @@ namespace FlowBlox.Core.Util
 
             foreach (var propertyChanges in changes
                          .Where(x => x.Impact == DeletionImpact.CollectionEntryRemoved)
-                         .GroupBy(x => x.Property))
+                         .GroupBy(x => x.ReferencingObject, ReferenceEqualityComparer.Instance)
+                         .SelectMany(ownerChanges => ownerChanges.GroupBy(x => x.Property)))
             {
                 var ownerCopy = copier.ResolveCopy(propertyChanges.First().ReferencingObject);
                 if (propertyChanges.Key.GetValue(ownerCopy) is not IList collection)
@@ -316,24 +327,22 @@ namespace FlowBlox.Core.Util
             object referencedObject,
             DeletionImpact impact,
             int collectionIndex = -1,
-            object editTarget = null)
+            object editTarget = null,
+            PropertyInfo componentProperty = null)
         {
-            var reviewStatus = impact switch
-            {
-                DeletionImpact.CollectionEntryRemoved => DeletionReviewStatus.Information,
-                DeletionImpact.FieldReferenceInvalidated => DeletionReviewStatus.ManualActionRequired,
-                _ => ReactiveObjectRequiredStateChecker.IsRequired(owner, property)
-                    ? DeletionReviewStatus.ManualActionRequired
-                    : DeletionReviewStatus.ReviewRecommended
-            };
+            editTarget ??= owner;
+            var reviewStatus = editTarget is FlowBloxComponent component
+                ? component.GetDeletionReviewStatus(owner, property, impact, componentProperty)
+                : FlowBloxComponent.GetDefaultDeletionReviewStatus(owner, property, impact);
             return new DeletionDependency
             {
                 ReferencingObject = owner,
                 Property = property,
+                ComponentProperty = componentProperty,
                 ReferencedObject = referencedObject,
                 Impact = impact,
                 ReviewStatus = reviewStatus,
-                EditTarget = editTarget ?? owner,
+                EditTarget = editTarget,
                 CollectionIndex = collectionIndex
             };
         }
@@ -343,7 +352,9 @@ namespace FlowBlox.Core.Util
             PropertyInfo Property,
             object ReferencedObject,
             DeletionImpact Impact,
-            int CollectionIndex);
+            int CollectionIndex,
+            object EditTarget,
+            PropertyInfo ComponentProperty);
 
         private sealed class DependencyKeyComparer : IEqualityComparer<DependencyKey>
         {
@@ -354,14 +365,18 @@ namespace FlowBlox.Core.Util
                 Equals(x.Property, y.Property) &&
                 ReferenceEquals(x.ReferencedObject, y.ReferencedObject) &&
                 x.Impact == y.Impact &&
-                x.CollectionIndex == y.CollectionIndex;
+                x.CollectionIndex == y.CollectionIndex &&
+                ReferenceEquals(x.EditTarget, y.EditTarget) &&
+                x.ComponentProperty == y.ComponentProperty;
 
             public int GetHashCode(DependencyKey obj) => HashCode.Combine(
                 System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj.Owner),
                 obj.Property,
                 System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj.ReferencedObject),
                 obj.Impact,
-                obj.CollectionIndex);
+                obj.CollectionIndex,
+                obj.EditTarget == null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj.EditTarget),
+                obj.ComponentProperty);
         }
 
         private static void DeleteInstanceRecursive(

@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow  
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.InsightWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"

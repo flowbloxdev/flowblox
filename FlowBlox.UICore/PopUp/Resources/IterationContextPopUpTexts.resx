@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>Iteration context: a practical example</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>Practical example: combining book details</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>The **iteration context** answers two questions: **When** are datasets from multiple inputs processed together – and **how** are their values combined (input behavior)?
+
+For example, a flow block retrieves the detail pages of several books. Each page is one dataset. Connected selectors extract the title, description, and author from the current page before processing continues with the next book.</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>One iteration, one output row</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Connect the three selectors to **Table Writer**. FlowBlox automatically uses their **nearest common upstream flow block**, the detail pages, as the **iteration context**.
+
+**Iteration 1:** Page 1 → extract title, description, and author&#32;&#32;
+**Iteration 1 completed:** Run Table Writer.&#32;&#32;
+**Iteration 2:** Page 2 → extract title, description, and author …
+
+With multiple inputs, **First** is the default: one value from each selector becomes one complete book row.</value></data>
+  <data name="Step3_Headline" xml:space="preserve"><value>First or Last: select the relevant match</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>A selector may find several values for the same book. Choose **First** when the complete value is the first match, or **Last** when it is the last match. Configure this separately for each input on the target flow block under Input, not on the iteration-context flow block.</value></data>
+  <data name="Step4_Headline" xml:space="preserve"><value>RowWise: combine matching list entries</value></data>
+  <data name="Step4_Description" xml:space="preserve"><value>If selectors return lists of titles, descriptions, and authors for several books within one iteration, use **RowWise** on all target inputs. Entries at the same position form one output row. The lists must have equal lengths and matching order. **First** would keep only the first book.</value></data>
+  <data name="Step5_Headline" xml:space="preserve"><value>Cross: repeat fixed values for every book</value></data>
+  <data name="Step5_Description" xml:space="preserve"><value>Input behaviors can be mixed: use **First** for the author and category, and **Cross** for the book titles. This creates one row per title with the same author and category. Multiple **Cross** inputs produce all possible combinations. Additional Valid variants consider only valid values. All settings belong to the target flow block.</value></data>
+</root>

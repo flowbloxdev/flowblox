@@ -6,11 +6,11 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Set up web browser automation</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>A browser and WebDriver are required</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>First install a supported web browser. To automate it, you also need at least one matching WebDriver.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>**First** install a supported web browser. To automate it, you also need at least one matching **WebDriver**.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Chrome is preconfigured</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Browser: Google Chrome is configured by default. Install it here:
-https://www.google.com/chrome
+  <data name="Step2_Description" xml:space="preserve"><value>Browser: **Google Chrome** is configured by default. Install it here:
+[**Google Chrome**](https://www.google.com/chrome)
 
-WebDriver: ChromeDriver is also preconfigured. Download the version matching your browser here:
-https://developer.chrome.com/docs/chromedriver/downloads</value></data>
+**WebDriver**: **ChromeDriver** is also preconfigured. Download the version matching your browser here:
+[**ChromeDriver**](https://developer.chrome.com/docs/chromedriver/downloads)</value></data>
 </root>

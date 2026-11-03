@@ -12,4 +12,5 @@
   <data name="Tooltip_OpenCommunicationProtocolDirectory" xml:space="preserve"><value>Kommunikationsprotokoll-Verzeichnis oeffnen</value></data>
   <data name="Tooltip_OpenDebugTools" xml:space="preserve"><value>AI-Assistant Debugging Tools</value></data>
   <data name="Tooltip_Configure" xml:space="preserve"><value>KI-Assistent konfigurieren</value></data>
+  <data name="Tooltip_QuickStart" xml:space="preserve"><value>KI-Assistent: Funktionsweise, Einrichtung und Modellempfehlungen</value></data>
 </root>

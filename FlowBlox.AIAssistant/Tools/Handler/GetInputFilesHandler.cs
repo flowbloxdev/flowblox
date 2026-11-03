@@ -1,3 +1,5 @@
+using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Models.Project;
 using Newtonsoft.Json.Linq;
@@ -27,7 +29,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             var result = new JObject
             {
                 ["projectInputDirectory"] = project.ProjectInputDirectory ?? string.Empty,
-                ["placeholderHint"] = "$Project::InputDirectory",
+                ["placeholderHint"] = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Project, "InputDirectory"),
                 ["commandPlaceholderHint"] = "$InputFile::Path",
                 ["count"] = items.Count,
                 ["inputFiles"] = items

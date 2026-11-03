@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose an improvement and discuss its scope before implementation.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the use case first. Before starting substantial implementation, agree on the scope with a maintainer in this issue.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to achieve, and what is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior and scope
+      description: Describe the intended result and the FlowBlox areas it would affect.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Contribution interest
+      description: Would you like to implement or help test this feature?

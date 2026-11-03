@@ -18,6 +18,10 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (inputParameters == null)
                 return result;
 
+            var snapshot = inputParameters.Annotation<ResolvedInputParameters>();
+            if (snapshot != null)
+                return new Dictionary<string, string>(snapshot.Values, StringComparer.OrdinalIgnoreCase);
+
             var availableFields = project.UserFields
                 .Where(x => x.UserFieldType == UserFieldTypes.Input)
                 .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
@@ -38,6 +42,8 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
             return result;
         }
+
+        internal sealed record ResolvedInputParameters(Dictionary<string, string> Values);
 
         public static void WriteJson(string path, object value) =>
             File.WriteAllText(path, JsonSerializer.Serialize(value, new JsonSerializerOptions { WriteIndented = true }));

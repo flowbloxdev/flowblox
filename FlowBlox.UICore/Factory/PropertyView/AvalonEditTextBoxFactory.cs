@@ -45,12 +45,9 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 VerticalScrollBarVisibility = textAttr.MultiLine
                     ? ScrollBarVisibility.Disabled
                     : ScrollBarVisibility.Auto,
-                Height = textAttr.MultiLine ? double.NaN : 24,
-                Padding = new Thickness(2),
-                BorderThickness = new Thickness(1),
-                FontFamily = new FontFamily("JetBrains Mono"), 
-                FontSize = 12
+                Height = textAttr.MultiLine ? double.NaN : 24
             };
+            editor.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.CodeEditorStyle");
 
             if (textAttr.MultiLine)
             {

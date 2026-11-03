@@ -290,6 +290,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Always allow ähnelt.
+        /// </summary>
+        public static string Message_ExternalProjectExecution_AlwaysAllow
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ExternalProjectExecution_AlwaysAllow", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Allows future AI Assistant executions of this project without prompting. To reset this approval, remove the project entry in Options &gt; AI.ApprovedAuxiliaryProjects. ähnelt.
+        /// </summary>
+        public static string Message_ExternalProjectExecution_ApprovalPersistence
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ExternalProjectExecution_ApprovalPersistence", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Cancel ähnelt.
         /// </summary>
         public static string Message_ExternalProjectExecution_Cancel
@@ -323,7 +345,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Execute ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Allow once ähnelt.
         /// </summary>
         public static string Message_ExternalProjectExecution_Execute
         {
@@ -333,6 +355,39 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Input parameters ähnelt.
+        /// </summary>
+        public static string Message_ExternalProjectExecution_InputParameters
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ExternalProjectExecution_InputParameters", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
+        /// </summary>
+        public static string Message_ExternalProjectExecution_ParameterName
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ExternalProjectExecution_ParameterName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Value ähnelt.
+        /// </summary>
+        public static string Message_ExternalProjectExecution_ParameterValue
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ExternalProjectExecution_ParameterValue", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project file: {0} ähnelt.
         /// </summary>
@@ -366,6 +421,28 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die View complete value (read-only) ähnelt.
+        /// </summary>
+        public static string Message_ExternalProjectExecution_ViewParameterContent
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ExternalProjectExecution_ViewParameterContent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Set up the AI Assistant ähnelt.
+        /// </summary>
+        public static string Message_ProviderConfiguration_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("Message_ProviderConfiguration_Title", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Paused after completing the current round. ähnelt.
         /// </summary>
@@ -521,7 +598,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Please configure your AI provider first. API key required. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die No AI provider with a usable API key is configured. Open Configuration using the gear icon, add an AI provider or edit the existing one, enter its API key, and save. Then send your request again. ähnelt.
         /// </summary>
         public static string Warning_MissingProvider
         {

@@ -18,7 +18,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
             "Runs the current project or an explicitly supplied project file in RunnerHost debug mode and returns runtime protocol output. " +
-            "For an explicitly supplied external project or an active auxiliary project, provide a reason and call directly; FlowBlox requests user confirmation automatically. The main project requires neither. " +
+            "For an explicitly supplied external project or an active auxiliary project, provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedAuxiliaryProjects option. The main project requires neither. " +
             "FieldValueChanges and GeneratedResults must be read via GetLastDebugArtefact. " +
             "If a target is set, runtime always stops at target: default is stopping before target execution. Set includeTargetExecution=true to execute target once and then stop.",
             new JObject

@@ -1,4 +1,4 @@
-<UserControl x:Class="FlowBlox.UICore.Views.ProjectPanelWpfControl"
+﻿<UserControl x:Class="FlowBlox.UICore.Views.ProjectPanelWpfControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -19,6 +19,16 @@
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter"/>
             <projectPanelConverters:FlowBlockRowIconKindConverter x:Key="FlowBlockRowIconKindConverter"/>
             <projectPanelConverters:FlowBlockRowIconBrushConverter x:Key="FlowBlockRowIconBrushConverter"/>
+
+            <Style x:Key="ProjectPanel.LegendItem" TargetType="{x:Type StackPanel}">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Cursor" Value="Help" />
+                <Setter Property="ToolTipService.InitialShowDelay" Value="250" />
+                <Setter Property="ToolTipService.ShowDuration" Value="15000" />
+            </Style>
+
+
 
             <DrawingBrush x:Key="ProjectGridBrush"
                       TileMode="Tile"
@@ -65,6 +75,48 @@
                 <Setter Property="Padding" Value="8,3"/>
                 <Setter Property="Margin" Value="2,0"/>
                 <Setter Property="MinHeight" Value="24"/>
+            </Style>
+
+            <Style x:Key="ProjectPanel.LegendButton" TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="#F2F2F2" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="5,2" />
+                <Setter Property="MinHeight" Value="24" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="ToolTipService.InitialShowDelay" Value="250" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}"
+                                    CornerRadius="2">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  RecognizesAccessKey="True" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#3F5263" />
+                    </Trigger>
+                    <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter Property="BorderBrush" Value="#8096A8" />
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Background" Value="#334454" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.45" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <Style x:Key="ProjectPanel.ToolbarToggleButton" TargetType="{x:Type ToggleButton}">
@@ -756,12 +808,42 @@
 
         <DockPanel Grid.Row="3" Background="#454545" LastChildFill="False">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" Margin="0,0,8,0">
-                <TextBlock Text="→" Foreground="#FFF0F5" Margin="12,4,4,0"/>
-                <TextBlock Text="{x:Static resources:ProjectPanel.Legend_Invoke}" Foreground="#FFFFFF" FontSize="12" Margin="0,5,0,0"/>
-                <TextBlock Text="→" Foreground="#9370DB" Margin="16,4,4,0"/>
-                <TextBlock Text="{x:Static resources:ProjectPanel.Legend_IterationContext}" Foreground="#FFFFFF" FontSize="12" Margin="0,5,0,0"/>
-                <TextBlock Text="→" Foreground="#DAA520" Margin="16,4,4,0"/>
-                <TextBlock Text="{x:Static resources:ProjectPanel.Legend_RecursiveCall}" Foreground="#FFFFFF" FontSize="12" Margin="0,5,0,0"/>
+                <StackPanel Style="{StaticResource ProjectPanel.LegendItem}">
+                    <StackPanel.ToolTip>
+                        <ToolTip Style="{StaticResource FlowBlox.ToolTipStyle}"
+                                 Content="{x:Static resources:ProjectPanel.Legend_Invoke_Tooltip}" />
+                    </StackPanel.ToolTip>
+                    <TextBlock Text="→" Foreground="#FFF0F5" Margin="12,4,4,0"/>
+                    <TextBlock Text="{x:Static resources:ProjectPanel.Legend_Invoke}" Foreground="#FFFFFF" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
+                <StackPanel Style="{StaticResource ProjectPanel.LegendItem}">
+                    <StackPanel.ToolTip>
+                        <ToolTip Style="{StaticResource FlowBlox.ToolTipStyle}"
+                                 Content="{x:Static resources:ProjectPanel.Legend_IterationContext_Tooltip}" />
+                    </StackPanel.ToolTip>
+                    <TextBlock Text="→" Foreground="#9370DB" Margin="16,4,4,0"/>
+                    <TextBlock Text="{x:Static resources:ProjectPanel.Legend_IterationContext}" Foreground="#FFFFFF" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
+                <Button Style="{StaticResource ProjectPanel.LegendButton}"
+                        Margin="6,1,0,0"
+                        Click="IterationContextQuickStartButton_Click"
+                        AutomationProperties.Name="{x:Static resources:ProjectPanel.Legend_IterationContext_QuickStart_Tooltip}">
+                    <Button.ToolTip>
+                        <ToolTip Style="{StaticResource FlowBlox.ToolTipStyle}"
+                                 Content="{x:Static resources:ProjectPanel.Legend_IterationContext_QuickStart_Tooltip}" />
+                    </Button.ToolTip>
+                    <iconPacks:PackIconMaterial Kind="HelpCircleOutline"
+                                                Width="14" Height="14"
+                                                VerticalAlignment="Center" />
+                </Button>
+                <StackPanel Style="{StaticResource ProjectPanel.LegendItem}">
+                    <StackPanel.ToolTip>
+                        <ToolTip Style="{StaticResource FlowBlox.ToolTipStyle}"
+                                 Content="{x:Static resources:ProjectPanel.Legend_RecursiveCall_Tooltip}" />
+                    </StackPanel.ToolTip>
+                    <TextBlock Text="→" Foreground="#DAA520" Margin="16,4,4,0"/>
+                    <TextBlock Text="{x:Static resources:ProjectPanel.Legend_RecursiveCall}" Foreground="#FFFFFF" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
             </StackPanel>
         </DockPanel>
     </Grid>

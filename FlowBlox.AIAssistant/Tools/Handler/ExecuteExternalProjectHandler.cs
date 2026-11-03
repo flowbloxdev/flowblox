@@ -15,7 +15,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Executes a saved auxiliary or external project and returns its ProjectOutputFlowBlock values. Provide a reason and call directly; FlowBlox requests user confirmation automatically. Use InspectOutputFieldValue for truncated output values.",
+            "Executes a saved auxiliary or external project and returns its ProjectOutputFlowBlock values. Provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedAuxiliaryProjects option. Use InspectOutputFieldValue for truncated output values.",
             new JObject
             {
                 ["projectFile"] = "string (saved .fbprj path, for example projectFile from GetAuxiliaryProjects)",

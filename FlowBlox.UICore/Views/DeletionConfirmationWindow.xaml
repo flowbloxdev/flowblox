@@ -1,4 +1,4 @@
-<mah:MetroWindow x:Class="FlowBlox.UICore.Views.DeletionConfirmationWindow"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}" x:Class="FlowBlox.UICore.Views.DeletionConfirmationWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -20,35 +20,28 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border Background="#FFF8E1"
-                BorderBrush="#FFE0B2"
-                BorderThickness="1"
-                CornerRadius="4"
-                Padding="16"
-                Margin="20,20,20,14">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <icons:PackIconMaterial Kind="AlertCircleOutline"
-                                        Width="34"
-                                        Height="34"
-                                        Margin="0,1,14,0"
-                                        VerticalAlignment="Top"
-                                        Foreground="#FFD97706" />
-                <StackPanel Grid.Column="1">
-                    <TextBlock Text="{Binding HeaderTitle}"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="#FF6D5A21"
-                               Margin="0,0,0,5" />
-                    <TextBlock Text="{Binding Description}"
-                               Foreground="#FF6D5A21"
-                               TextWrapping="Wrap" />
-                </StackPanel>
-            </Grid>
-        </Border>
+        <StackPanel Margin="20,20,20,14">
+            <Border Style="{DynamicResource FlowBlox.DialogHeader}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <icons:PackIconMaterial Kind="AlertCircleOutline"
+                                            Width="34"
+                                            Height="34"
+                                            Margin="0,1,14,0"
+                                            VerticalAlignment="Top"
+                                            Foreground="#FFD97706" />
+                    <TextBlock Grid.Column="1" Text="{Binding HeaderTitle}"
+                               Style="{DynamicResource FlowBlox.DialogHeaderTitle}" />
+                </Grid>
+            </Border>
+            <Border Style="{DynamicResource FlowBlox.DialogDescription}">
+                <TextBlock Text="{Binding Description}"
+                           Style="{DynamicResource FlowBlox.DialogDescriptionText}" />
+            </Border>
+        </StackPanel>
 
         <Grid Grid.Row="1" Margin="20,0,20,16">
             <Grid.ColumnDefinitions>
@@ -113,7 +106,13 @@
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{Binding ObjectType}" FontSize="10.5" FontWeight="SemiBold" Foreground="{Binding Accent}" TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding ObjectName}" Margin="0,1,0,0" FontSize="13" FontWeight="SemiBold" Foreground="#FF263238" TextWrapping="Wrap" />
-                                        <TextBlock Text="{Binding Summary}" Margin="0,6,0,0" Foreground="#FF37474F" TextWrapping="Wrap" />
+                                        <ItemsControl ItemsSource="{Binding Summary}" Margin="0,6,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}" Foreground="#FF37474F" TextWrapping="Wrap" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                                     </StackPanel>
                                 </Grid>
                             </Border>

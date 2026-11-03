@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+    <StartupObject>FlowBlox.Avalonia.IntegrationTests.Program</StartupObject>
+    <ApplicationManifest>..\FlowBlox.Avalonia\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FlowBlox.Avalonia\FlowBlox.Avalonia.csproj" />
+  </ItemGroup>
+  <Import Project="..\FlowBlox.Build\FlowBlox.Build.targets" />
+  <Target Name="RemoveUnusedDockJsonGenerator" BeforeTargets="CoreCompile">
+    <!-- These checks use Dock's Newtonsoft serializer; the app already contains
+         the generated System.Text.Json types exposed by the transitive package. -->
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.Filename)' == 'Dock.Serializer.SystemTextJson.Generators'" />
+    </ItemGroup>
+  </Target>
+</Project>

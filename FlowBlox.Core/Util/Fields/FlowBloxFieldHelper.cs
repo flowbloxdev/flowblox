@@ -1,3 +1,4 @@
+using FlowBlox.Core.Provider.Placeholders;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -82,7 +83,7 @@ namespace FlowBlox.Core.Util.Fields
                     if (!propertyValuesByKey.TryGetValue(alias.Value, out var resolvedValue))
                         continue;
 
-                    var aliasPlaceholder = $"$Project::{alias.Key}";
+                    var aliasPlaceholder = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Project, alias.Key);
                     if (value.Contains(aliasPlaceholder))
                         value = value.Replace(aliasPlaceholder, resolvedValue ?? string.Empty);
                 }
@@ -92,7 +93,7 @@ namespace FlowBlox.Core.Util.Fields
             var optionsInstance = FlowBloxOptions.GetOptionInstance();
             foreach (var optionElement in optionsInstance.GetOptions().Where(x => x.IsPlaceholderEnabled))
             {
-                string optionPlaceholder = $"$Options::{optionElement.Name}";
+                string optionPlaceholder = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Options, optionElement.Name);
                 if (value.Contains(optionPlaceholder))
                     value = value.Replace(optionPlaceholder, optionElement.Value?.ToString() ?? "");
             };
@@ -115,9 +116,16 @@ namespace FlowBlox.Core.Util.Fields
             }
         }
 
-        public static string ReplaceFieldsInSQL(string sqlStatement, DbTypes dbType, out Dictionary<string, object> parameters)
+        public static string ReplaceFieldsInSQL(
+            string sqlStatement,
+            DbTypes dbType,
+            out Dictionary<string, object> parameters,
+            bool useFieldValuesAsParameters = true)
         {
             parameters = new Dictionary<string, object>();
+            if (!useFieldValuesAsParameters)
+                return ReplaceFieldsInString(sqlStatement);
+
             int index = 0;
             foreach (FieldElement fieldElement in FlowBloxRegistryProvider.GetRegistry().GetFieldElements())
             {
@@ -180,6 +188,14 @@ namespace FlowBlox.Core.Util.Fields
 
             if (underlyingTargetType.IsInstanceOfType(fieldValue))
                 return fieldValue;
+
+            if (underlyingTargetType.IsEnum)
+            {
+                if (Enum.TryParse(underlyingTargetType, Convert.ToString(fieldValue, CultureInfo.InvariantCulture), true, out var parsedEnum))
+                    return parsedEnum;
+
+                return targetIsNullable ? null : Activator.CreateInstance(underlyingTargetType);
+            }
 
             if (underlyingTargetType == typeof(bool))
             {
@@ -244,7 +260,8 @@ namespace FlowBlox.Core.Util.Fields
                 throw new ArgumentNullException(nameof(propertyInfo));
 
             var directValue = propertyInfo.GetValue(target);
-            if (!IsSupportedSimplePropertyType(propertyInfo.PropertyType))
+            if (!IsSupportedSimplePropertyType(propertyInfo.PropertyType) &&
+                !EnumHelper.IsEnumType(propertyInfo))
                 return directValue;
 
             var selectedFieldProperty = target.GetType().GetProperty(
@@ -261,5 +278,6 @@ namespace FlowBlox.Core.Util.Fields
             var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
             return SupportedSimplePropertyTypes.Contains(underlyingType);
         }
+
     }
 }

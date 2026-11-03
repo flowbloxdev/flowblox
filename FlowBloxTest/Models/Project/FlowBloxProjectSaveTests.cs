@@ -11,7 +11,7 @@ namespace FlowBloxTest.Models.Project
     public sealed class FlowBloxProjectSaveTests
     {
         [TestMethod]
-        public void Save_PreservesShortDescription()
+        public void Save_PreservesAssistantMetadataInNestedStructure()
         {
             var directory = Path.Combine(Path.GetTempPath(), "FlowBloxTest", Guid.NewGuid().ToString("N"));
             var file = Path.Combine(directory, "project.fbprj");
@@ -21,14 +21,20 @@ namespace FlowBloxTest.Models.Project
                 var project = new FlowBloxProject
                 {
                     ProjectName = "Project with summary",
-                    ShortDescription = "Compact capability summary."
+                    AssistantMetadata = new AssistantMetadata
+                    {
+                        ShortDescription = "Compact capability summary."
+                    }
                 };
 
                 project.Save(file);
 
-                Assert.AreEqual(
-                    project.ShortDescription,
-                    JObject.Parse(File.ReadAllText(file)).Value<string>(nameof(FlowBloxProject.ShortDescription)));
+                var json = JObject.Parse(File.ReadAllText(file));
+                var metadata = json[nameof(FlowBloxProject.AssistantMetadata)]!;
+                Assert.AreEqual(project.AssistantMetadata.ShortDescription, metadata.Value<string>(nameof(AssistantMetadata.ShortDescription)));
+                Assert.IsNull(json["ShortDescription"]);
+                var reloaded = FlowBloxProject.FromFile(file);
+                Assert.AreEqual(project.AssistantMetadata.ShortDescription, reloaded.AssistantMetadata.ShortDescription);
             }
             finally
             {

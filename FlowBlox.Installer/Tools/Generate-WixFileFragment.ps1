@@ -31,6 +31,10 @@ if (-not (Test-Path $resolvedSourceDir)) {
     throw "Source directory not found: $SourceDir"
 }
 
+if (-not (Test-Path -LiteralPath (Join-Path $resolvedSourceDir 'FlowBlox.exe') -PathType Leaf)) {
+    throw "Avalonia application executable not found in '$resolvedSourceDir'. Publish FlowBlox.Avalonia before building the installer."
+}
+
 $files = Get-ChildItem -Path $resolvedSourceDir -Recurse -File | Sort-Object FullName
 if ($files.Count -eq 0) {
     throw "No files found in source directory '$resolvedSourceDir'."

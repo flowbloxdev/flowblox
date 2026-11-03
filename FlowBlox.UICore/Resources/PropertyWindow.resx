@@ -144,4 +144,5 @@
 	<data name="TransactionMonitor" xml:space="preserve">
 		<value>Transaction monitor</value>
 	</data>
+  <data name="AdditionalInformation" xml:space="preserve"><value>Additional information</value></data>
 </root>

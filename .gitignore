@@ -11,6 +11,7 @@ Debug/
 AppPackages/
 artifacts/installer/publish/
 artifacts/installer/msi/
+artifacts/installer/staging/
 FlowBlox.Installer/Generated/
 FlowBloxResources/data/README.txt
 FlowBloxResources/data/onnxruntimes/

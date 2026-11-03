@@ -14,7 +14,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
         public static AuxiliaryProjectMetadata Read(FlowBloxProject project, string projectFile) =>
             new(
                 project.ProjectName?.Trim() ?? Path.GetFileNameWithoutExtension(projectFile),
-                project.ShortDescription?.Trim() ?? string.Empty,
+                project.AssistantMetadata?.ShortDescription?.Trim() ?? string.Empty,
                 project.ProjectDescription?.Trim() ?? string.Empty,
                 project.UserFields
                     .Where(x => x.UserFieldType == UserFieldTypes.Input)
@@ -31,7 +31,15 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
                     .ToList(),
-                Path.GetFullPath(projectFile));
+                Path.GetFullPath(projectFile),
+                project.UserFields
+                    .Where(x => x.UserFieldType == UserFieldTypes.Input && !string.IsNullOrWhiteSpace(x.Name))
+                    .Where(x => x.ListOfValues?.Count > 0)
+                    .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(
+                        x => x.Key,
+                        x => (IReadOnlyList<string>)x.First().ListOfValues.Select(value => value.Value).ToList(),
+                        StringComparer.OrdinalIgnoreCase));
     }
 
     internal sealed record AuxiliaryProjectMetadata(
@@ -40,5 +48,6 @@ namespace FlowBlox.AIAssistant.Tools.Util
         string Description,
         IReadOnlyList<string> InputFields,
         IReadOnlyList<string> OutputFields,
-        string ProjectFile);
+        string ProjectFile,
+        IReadOnlyDictionary<string, IReadOnlyList<string>> InputFieldListOfValues);
 }

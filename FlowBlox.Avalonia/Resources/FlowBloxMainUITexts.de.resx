@@ -1,0 +1,838 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About_groupBoxProductInformation_Text" xml:space="preserve">
+		<value>Produktinformationen</value>
+	</data>
+  <data name="About_Text" xml:space="preserve">
+		<value>Informationen über FlowBlox</value>
+	</data>
+  <data name="AppWindow_CloseProjectConfirm_Message" xml:space="preserve">
+		<value>Wollen Sie das Projekt "{0}" wirklich schließen?</value>
+	</data>
+  <data name="AppWindow_CloseProjectConfirm_Title" xml:space="preserve">
+		<value>Projekt schließen?</value>
+	</data>
+  <data name="AppWindow_ErrorReport_Message" xml:space="preserve">
+		<value>Bitte melden Sie diesen Fehler an https://www.flowblox.net/.</value>
+	</data>
+  <data name="AppWindow_ErrorReport_Title" xml:space="preserve">
+		<value>FlowBlox Fehlerbericht</value>
+	</data>
+  <data name="AppWindow_GitHub_Text" xml:space="preserve">
+		<value>GitHub-Repository öffnen</value>
+	</data>
+  <data name="AppWindow_GridExportFailed_Message" xml:space="preserve">
+		<value>Konnte das aktuelle FlowBlox.Grid nicht als Bitmap (*.bmp) exportieren. Bitte überprüfen Sie die Logfiles, um weitere Informationen zu erhalten.</value>
+	</data>
+  <data name="AppWindow_GridExportFailed_Title" xml:space="preserve">
+		<value>FlowBlox.Grid: Problem beim Exportieren</value>
+	</data>
+  <data name="AppWindow_itmAbout_Text" xml:space="preserve">
+		<value>I&amp;nfo über FlowBlox</value>
+	</data>
+  <data name="AppWindow_itmCheckForNewVersion_Text" xml:space="preserve">
+		<value>Nach aktualisierter Version suchen...</value>
+	</data>
+  <data name="AppWindow_itmCloseProject_Text" xml:space="preserve">
+		<value>Projekt sch&amp;ließen</value>
+	</data>
+  <data name="AppWindow_itmCopy_Text" xml:space="preserve">
+		<value>&amp;Kopieren</value>
+	</data>
+  <data name="AppWindow_itmCreateProject_Text" xml:space="preserve">
+		<value>Neues Projekt &amp;erstellen</value>
+	</data>
+  <data name="AppWindow_itmDeleteElement_Text" xml:space="preserve">
+		<value>Element &amp;entfernen</value>
+	</data>
+  <data name="AppWindow_itmDockablePanels_Text" xml:space="preserve">
+		<value>&amp;Andockbare Dialoge</value>
+	</data>
+  <data name="AppWindow_itmEditProject_Text" xml:space="preserve">
+		<value>Eigenschaften &amp;bearbeiten</value>
+	</data>
+  <data name="AppWindow_itmLicense_Text" xml:space="preserve">
+		<value>&amp;Lizenz</value>
+	</data>
+  <data name="AppWindow_itmLogin_Text" xml:space="preserve">
+		<value>Anmelden</value>
+	</data>
+  <data name="AppWindow_itmLogout_Text" xml:space="preserve">
+		<value>Abmelden</value>
+	</data>
+  <data name="AppWindow_itmMonitor_Text" xml:space="preserve">
+		<value>Überwachung</value>
+	</data>
+  <data name="AppWindow_itmOpenApplicationLogDirectory_Text" xml:space="preserve">
+		<value>Anwendung-Logfile(s) anzeigen</value>
+	</data>
+  <data name="AppWindow_itmOpenOutputDir_Text" xml:space="preserve">
+		<value>Ausgabeverzeichnis ö&amp;ffnen</value>
+	</data>
+  <data name="AppWindow_itmOpenProjectDir_Text" xml:space="preserve">
+		<value>Projektverzeichnis öff&amp;nen</value>
+	</data>
+  <data name="AppWindow_itmOpenProjectInputDir_Text" xml:space="preserve">
+		<value>Projekt-Eingabeverzeichnis öffnen</value>
+	</data>
+  <data name="AppWindow_itmOpenProjectOutputDir_Text" xml:space="preserve">
+		<value>Projekt-Ausgabeverzeichnis öffnen</value>
+	</data>
+  <data name="AppWindow_itmOpenOnnxQaModelRootDirectory_Text" xml:space="preserve">
+		<value>&amp;QA-Modellstammverzeichnis öffnen</value>
+	</data>
+  <data name="AppWindow_itmOpenOnnxGenAiModelRootDirectory_Text" xml:space="preserve">
+		<value>&amp;GenAI-Modellstammverzeichnis öffnen</value>
+	</data>
+  <data name="AppWindow_itmOpenProject_Text" xml:space="preserve">
+		<value>Projekt ö&amp;ffnen</value>
+	</data>
+  <data name="AppWindow_itmOpenRuntimeLogDirectory_Text" xml:space="preserve">
+		<value>Laufzeit-Logfile(s) anzeigen</value>
+	</data>
+  <data name="AppWindow_itmOptions_Text" xml:space="preserve">
+		<value>&amp;Optionen...</value>
+	</data>
+  <data name="AppWindow_itmPaste_Text" xml:space="preserve">
+		<value>&amp;Einfügen</value>
+	</data>
+  <data name="AppWindow_itmQuitApplication_Text" xml:space="preserve">
+		<value>Beenden</value>
+	</data>
+  <data name="AppWindow_itmRedo_Text" xml:space="preserve">
+		<value>&amp;Wiederholen</value>
+	</data>
+  <data name="AppWindow_itmRegister_Text" xml:space="preserve">
+		<value>Registrieren</value>
+	</data>
+  <data name="AppWindow_itmReportProblem_Text" xml:space="preserve">
+		<value>&amp;Problem melden</value>
+	</data>
+  <data name="AppWindow_itmSaveAs_Text" xml:space="preserve">
+		<value>Projekt &amp;speichern unter</value>
+	</data>
+  <data name="AppWindow_itmSaveProject_Text" xml:space="preserve">
+		<value>Projekt &amp;speichern</value>
+	</data>
+  <data name="AppWindow_itmToolbox_Text" xml:space="preserve">
+		<value>&amp;Toolbox</value>
+	</data>
+  <data name="AppWindow_itmUndo_Text" xml:space="preserve">
+		<value>&amp;Rückgängig</value>
+	</data>
+  <data name="AppWindow_itmUserFields_Text" xml:space="preserve">
+		<value>&amp;Benutzerdefinierte Felder</value>
+	</data>
+  <data name="AppWindow_mnItmAccount_Text" xml:space="preserve">
+		<value>Account</value>
+	</data>
+  <data name="AppWindow_mnItmEdit_Text" xml:space="preserve">
+		<value>&amp;Bearbeiten</value>
+	</data>
+  <data name="AppWindow_mnItmHelp_Text" xml:space="preserve">
+		<value>&amp;Hilfe</value>
+	</data>
+  <data name="AppWindow_mnItmMisc_Text" xml:space="preserve">
+		<value>&amp;Extras</value>
+	</data>
+  <data name="AppWindow_mnItmProject_Text" xml:space="preserve">
+		<value>&amp;Projekt</value>
+	</data>
+  <data name="AppWindow_mnItmWindows_Text" xml:space="preserve">
+		<value>&amp;Ansicht</value>
+	</data>
+  <data name="AppWindow_mnItmDirectories_Text" xml:space="preserve">
+		<value>&amp;Verzeichnisse</value>
+	</data>
+  <data name="AppWindow_mnItmOnnxModelRootDirectories_Text" xml:space="preserve">
+		<value>ONNX-Modell&amp;stammverzeichnisse</value>
+	</data>
+  <data name="AppWindow_NewProjectConfirm_Message" xml:space="preserve">
+		<value>Wollen Sie das Projekt "{0}" wirklich schließen und ein neues Projekt erstellen?</value>
+	</data>
+  <data name="AppWindow_NewProjectConfirm_Title" xml:space="preserve">
+		<value>Neues Projekt erstellen?</value>
+	</data>
+  <data name="AppWindow_OpenProjectConfirm_Message" xml:space="preserve">
+		<value>Wollen Sie das Projekt "{0}" wirklich schließen und ein anderes Projekt laden?</value>
+	</data>
+  <data name="AppWindow_OpenProjectConfirm_Title" xml:space="preserve">
+		<value>Neues Projekt laden?</value>
+	</data>
+  <data name="AppWindow_OpenUrlFailed_Message" xml:space="preserve">
+		<value>Die Seite konnte nicht geöffnet werden: {0}</value>
+	</data>
+  <data name="AppWindow_OpenUrlFailed_Title" xml:space="preserve">
+		<value>Seite konnte nicht geöffnet werden</value>
+	</data>
+  <data name="AppWindow_ProjectLoadFailed_Message" xml:space="preserve">
+		<value>Das Projekt konnte nicht vollständig geladen werden. Beim Schließen dieses Fensters wird automatisch ein Fehlerbericht generiert. Bitte prüfen Sie zusätzlich die Logdateien, um weitere Details zu den Ursachen des Problems zu erhalten.</value>
+	</data>
+  <data name="AppWindow_ProjectLoadFailed_Title" xml:space="preserve">
+		<value>Projekt nicht vollständig geladen</value>
+	</data>
+  <data name="AppWindow_ProjectNotice_Title" xml:space="preserve">
+		<value>Hinweis beim Öffnen</value>
+	</data>
+  <data name="AppWindow_RuntimeActiveClose_Message" xml:space="preserve">
+		<value>Bitte halten Sie erst die aktuelle Ausführung an, bevor Sie FlowBlox schließen.</value>
+	</data>
+  <data name="AppWindow_RuntimeActiveClose_Title" xml:space="preserve">
+		<value>Achtung: Laufzeit aktiv</value>
+	</data>
+  <data name="AppWindow_SaveBeforeExit_Message" xml:space="preserve">
+		<value>Wollen Sie die Änderungen an dem Projekt "{0}" speichern, bevor Sie FlowBlox verlassen?</value>
+	</data>
+  <data name="AppWindow_SaveBeforeExit_Title" xml:space="preserve">
+		<value>Projekt speichern?</value>
+	</data>
+  <data name="AppWindow_SaveFailed_Message" xml:space="preserve">
+		<value>Der Speichervorgang konnte nicht erfolgreich abgeschlossen werden. Bitte überprüfen Sie die Logfiles um mehr Informationen zu erhalten.</value>
+	</data>
+  <data name="AppWindow_SaveFailed_Title" xml:space="preserve">
+		<value>Speichern fehlgeschlagen</value>
+	</data>
+  <data name="AppWindow_SaveReminder_Message" xml:space="preserve">
+		<value>(!) Stellen Sie sicher, dass Ihre Änderungen gespeichert wurden.</value>
+	</data>
+  <data name="AppWindow_Text" xml:space="preserve">
+		<value>FlowBlox</value>
+	</data>
+  <data name="AppWindow_UnloadProjectFailed_Message" xml:space="preserve">
+		<value>Das Projekt konnte nicht vollständig entladen werden. Die folgenden Assemblies oder Erweiterungen sind weiterhin im Speicher und verhindern ein sauberes Entladen:
+
+{0}
+
+Die Anwendung wird jetzt neu gestartet, um eine saubere Umgebung wiederherzustellen.</value>
+	</data>
+  <data name="AppWindow_UnloadProjectFailed_Title" xml:space="preserve">
+		<value>Projekt konnte nicht entladen werden</value>
+	</data>
+  <data name="AppWindow_UpdateCheck_Error_Message" xml:space="preserve">
+		<value>Fehler bei der Updateprüfung.</value>
+	</data>
+  <data name="AppWindow_UpdateCheck_Exception_Message" xml:space="preserve">
+		<value>Beim Prüfen auf Updates ist ein unerwarteter Fehler aufgetreten.</value>
+	</data>
+  <data name="AppWindow_UpdateCheck_NotPackaged_Message" xml:space="preserve">
+		<value>Die Versionsüberprüfung konnte nicht durchgeführt werden, da keine Installer-Updatequelle konfiguriert ist.</value>
+	</data>
+  <data name="AppWindow_UpdateCheck_NoUpdates_Message" xml:space="preserve">
+		<value>Kein Update verfügbar.</value>
+	</data>
+  <data name="AppWindow_UpdateCheck_UnknownSource_Message" xml:space="preserve">
+		<value>Die Updatequelle ist unbekannt. Öffne die Website zur manuellen Prüfung.</value>
+	</data>
+  <data name="AppWindow_UpdateInstall_Failed_Message" xml:space="preserve">
+		<value>Das Update konnte nicht installiert werden. Bitte versuche es später erneut oder lade die aktuelle Version von der Website.</value>
+	</data>
+  <data name="AppWindow_VisitOnline_Text" xml:space="preserve">
+		<value>FlowBlox-Website öffnen</value>
+	</data>
+  <data name="ComponentLibraryPanel_btManageExtensions_Text" xml:space="preserve">
+		<value>Erweiterungen verwalten</value>
+	</data>
+  <data name="ComponentLibraryView_Text" xml:space="preserve">
+		<value>Komponentenbibliothek</value>
+	</data>
+  <data name="CreateEntryWindow_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="CreateEntryWindow_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="CreateEntryWindow_Text" xml:space="preserve">
+		<value>Eintrag erstellen</value>
+	</data>
+  <data name="EditValueWindow_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="EditValueWindow_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="EditValueWindow_cbMaskRegex_Text" xml:space="preserve">
+		<value>Reguläre Ausdrücke automatisch maskieren</value>
+	</data>
+  <data name="EditValueWindow_lbDescription_Text" xml:space="preserve">
+		<value>Hier können Sie einen Wert erstellen oder bearbeiten.</value>
+	</data>
+  <data name="EditValueWindow_lbParameter_Text" xml:space="preserve">
+		<value>Parameter:</value>
+	</data>
+  <data name="EditValueWindow_lbValue_Text" xml:space="preserve">
+		<value>Wert:</value>
+	</data>
+  <data name="EditValueWindow_Text" xml:space="preserve">
+		<value>Wert {0}</value>
+	</data>
+  <data name="EditValueWindow_TextContinue" xml:space="preserve">
+		<value>&amp;Weiter</value>
+	</data>
+  <data name="EditValueWindow_TextCreateValue" xml:space="preserve">
+		<value>Wert erstellen</value>
+	</data>
+  <data name="EditValueWindow_TextEditValue" xml:space="preserve">
+		<value>Wert bearbeiten</value>
+	</data>
+  <data name="EditValueWindow_TextInvalid_Message" xml:space="preserve">
+		<value>Bitte geben Sie einen gültigen Wert ein.</value>
+	</data>
+  <data name="EditValueWindow_TextInvalid_Title" xml:space="preserve">
+		<value>Ungültige Eingabe</value>
+	</data>
+  <data name="FieldSelectionWindiw_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="FieldSelectionWindow_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="FieldSelectionWindow_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="FieldSelectionWindow_cbRequired_Text" xml:space="preserve">
+		<value>Erforderlich</value>
+	</data>
+  <data name="FieldSelectionWindow_lbDescription_Text" xml:space="preserve">
+		<value>Bitte wählen Sie ein vorhandenes Feldelement aus.</value>
+	</data>
+  <data name="FieldSelectionWindow_lbFieldDefinitions_Text" xml:space="preserve">
+		<value>Felddefinitionen</value>
+	</data>
+  <data name="FieldSelectionWindow_Text" xml:space="preserve">
+		<value>Feldauswahl: Wählen Sie ein Feldelement aus</value>
+	</data>
+  <data name="FieldView_checkBoxShowFlowBlock_Text" xml:space="preserve">
+		<value>Flow-Block anzeigen</value>
+	</data>
+  <data name="FieldView_itmCopy_Text" xml:space="preserve">
+		<value>Feldwert(e) &amp;kopieren</value>
+	</data>
+  <data name="FieldView_itmOpenFieldValue_Text" xml:space="preserve">
+		<value>Im Standardeditor ö&amp;ffnen</value>
+	</data>
+  <data name="FieldView_itmRefresh_Text" xml:space="preserve">
+		<value>&amp;Aktualisieren</value>
+	</data>
+  <data name="FieldView_Text" xml:space="preserve">
+		<value>Feldansicht</value>
+	</data>
+  <data name="FlowBlockMainView_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="FlowBlockMainView_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="FlowBlockUIElementRenderer_Field_Tooltip" xml:space="preserve">
+		<value>Ausgabefeld: {0} (Vollqualifizierter Feldname: {1})</value>
+	</data>
+  <data name="FlowBlockUIElementRenderer_RequiredFields_Tooltip" xml:space="preserve">
+		<value>Dieses Feld ist für die Ausführung erforderlich: {0}</value>
+	</data>
+  <data name="GridView_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="GridView_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="GridView_lbDescription_Text" xml:space="preserve">
+		<value>Legen Sie hier die Größe Ihres Rasters fest. Die Werte werden sofort auf das aktuelle Projekt-Raster übernommen.</value>
+	</data>
+  <data name="GridView_lbHeight_Text" xml:space="preserve">
+		<value>Höhe</value>
+	</data>
+  <data name="GridView_lbWidth_Text" xml:space="preserve">
+		<value>Breite</value>
+	</data>
+  <data name="GridView_Text" xml:space="preserve">
+		<value>Raster bearbeiten</value>
+	</data>
+  <data name="InsertTextOrField_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="InsertTextOrField_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="InsertTextOrField_btSelectField_Text" xml:space="preserve">
+		<value>Feld &amp;auswählen</value>
+	</data>
+  <data name="InsertTextOrField_lbInsertField_Text" xml:space="preserve">
+		<value>Einen Feldwert übergeben:</value>
+	</data>
+  <data name="InsertTextOrField_lbInsertText_Text" xml:space="preserve">
+		<value>Einen eigenen Wert eingeben:</value>
+	</data>
+  <data name="InsertTextOrField_lbParameterHeader_Text" xml:space="preserve">
+		<value>Ausgewählter Parameter</value>
+	</data>
+  <data name="InsertTextOrField_NoFieldSelected_Text" xml:space="preserve">
+		<value>Bitte wählen...</value>
+	</data>
+  <data name="InsertTextOrField_Text" xml:space="preserve">
+		<value>Wert eingeben oder Feld auswählen</value>
+	</data>
+  <data name="OptionsWindow_btAdd_Text" xml:space="preserve">
+		<value>&amp;Hinzufügen</value>
+	</data>
+  <data name="OptionsWindow_btDelete_Text" xml:space="preserve">
+		<value>&amp;Entfernen</value>
+	</data>
+  <data name="OptionsWindow_btRevert_Text" xml:space="preserve">
+		<value>&amp;Standardoptionen laden</value>
+	</data>
+  <data name="OptionView_btApply_Text" xml:space="preserve">
+		<value>&amp;Speichern</value>
+	</data>
+  <data name="OptionView_labelDescription_Text" xml:space="preserve">
+		<value>Beschreibung:</value>
+	</data>
+  <data name="OptionView_labelName_Text" xml:space="preserve">
+		<value>Name:</value>
+	</data>
+  <data name="OptionView_labelTitleHeader_Text" xml:space="preserve">
+		<value>Option bearbeiten</value>
+	</data>
+  <data name="OptionView_labelType_Text" xml:space="preserve">
+		<value>Typ:</value>
+	</data>
+  <data name="OptionView_labelValue_Text" xml:space="preserve">
+		<value>Wert:</value>
+	</data>
+  <data name="OptionWindow_btAdd_Text" xml:space="preserve">
+		<value>Hinzufügen</value>
+	</data>
+  <data name="OptionWindow_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="OptionWindow_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="OptionWindow_btDelete_Text" xml:space="preserve">
+		<value>Entfernen</value>
+	</data>
+  <data name="OptionWindow_btRevert_Text" xml:space="preserve">
+		<value>Optionen zurücksetzen</value>
+	</data>
+  <data name="OptionWindow_RevertOptions_Message" xml:space="preserve">
+		<value>Durch diesen Befehl werden bestehende Optionswerte wieder auf ihren Standard zurückgesetzt. Wollen Sie wirklich die Standardoptionen wiederherstellen?</value>
+	</data>
+  <data name="OptionWindow_RevertOptions_Title" xml:space="preserve">
+		<value>Optionen zurücksetzen</value>
+	</data>
+  <data name="OptionWindow_Text" xml:space="preserve">
+		<value>Optionen</value>
+	</data>
+  <data name="ProblemsView_Text" xml:space="preserve">
+		<value>Probleme</value>
+	</data>
+  <data name="ProjectPanel_btConnectionMode_Text" xml:space="preserve">
+		<value>Verbinden</value>
+	</data>
+  <data name="ProjectPanel_btExecute_Text" xml:space="preserve">
+		<value>&amp;Ausführen</value>
+	</data>
+  <data name="ProjectPanel_btGridSettings_Text" xml:space="preserve">
+		<value>Einstellungen</value>
+	</data>
+  <data name="ProjectPanel_btAutoAdjustFlowLayout_Text" xml:space="preserve">
+		<value>Automatisch ausrichten</value>
+	</data>
+  <data name="ProjectPanel_btPause_Text" xml:space="preserve">
+		<value>&amp;Pausieren</value>
+	</data>
+  <data name="ProjectPanel_btSelectionMode_Text" xml:space="preserve">
+		<value>Auswählen</value>
+	</data>
+  <data name="ProjectPanel_btStopExecution_Text" xml:space="preserve">
+		<value>&amp;Stoppen</value>
+	</data>
+  <data name="ProjectPanel_itmBreakPoint_Remove_Text" xml:space="preserve">
+		<value>Haltepunkt &amp;entfernen</value>
+	</data>
+  <data name="ProjectPanel_itmBreakPoint_Set_Text" xml:space="preserve">
+		<value>Haltepunkt &amp;setzen</value>
+	</data>
+  <data name="ProjectPanel_itmBreakPoint_Text" xml:space="preserve">
+		<value>Haltepunkt &amp;setzten</value>
+	</data>
+  <data name="ProjectPanel_itmDefineIndex_Text" xml:space="preserve">
+		<value>Ausführungsindex &amp;festlegen</value>
+	</data>
+  <data name="ProjectPanel_itmDeleteConnection_Text" xml:space="preserve">
+		<value>Verbindung e&amp;ntfernen</value>
+	</data>
+  <data name="ProjectPanel_itmDeleteElement_Text" xml:space="preserve">
+		<value>Flow-Block e&amp;ntfernen</value>
+	</data>
+  <data name="ProjectPanel_itmEditElement_Edit_Text" xml:space="preserve">
+		<value>Eigenschaften &amp;bearbeiten</value>
+	</data>
+  <data name="ProjectPanel_itmEditElement_Text" xml:space="preserve">
+		<value>Eigenschaften &amp;bearbeiten</value>
+	</data>
+  <data name="ProjectPanel_itmEditElement_View_Text" xml:space="preserve">
+		<value>Eigenschaften &amp;betrachten</value>
+	</data>
+  <data name="ProjectPanel_itmIndex_Text" xml:space="preserve">
+		<value>Ausführungs&amp;index verwalten</value>
+	</data>
+  <data name="ProjectPanel_itmInsightInput_Text" xml:space="preserve">
+		<value>Eingangsdatensätze einsehen</value>
+	</data>
+  <data name="ProjectPanel_itmInsightOutput_Text" xml:space="preserve">
+		<value>Ausgangsdatensätze einsehen</value>
+	</data>
+  <data name="ProjectPanel_itmManageNotifications_Text" xml:space="preserve">
+		<value>&amp;Meldungen verwalten</value>
+	</data>
+  <data name="ProjectPanel_itmRefresh_Text" xml:space="preserve">
+		<value>A&amp;ktualisieren</value>
+	</data>
+  <data name="ProjectPanel_itmRemoveIndex_Text" xml:space="preserve">
+		<value>Ausführungsindex &amp;entfernen</value>
+	</data>
+  <data name="FlowBlockUIElement_ExecutionIndex_Text" xml:space="preserve">
+		<value>Ausführungsindex: {0}</value>
+	</data>
+  <data name="ProjectPanel_Warning_NotExecutedElements_Text" xml:space="preserve">
+		<value>Es existieren Grid-Elemente, die niemals ausgeführt werden. Betroffene Elemente: {0}</value>
+	</data>
+  <data name="ProjectPanel_RuntimeStartFailed_Title" xml:space="preserve">
+		<value>Runtime-Ausführung fehlgeschlagen</value>
+	</data>
+  <data name="ProjectPanel_RuntimeStartFailed_Message" xml:space="preserve">
+		<value>Die Ausführung konnte nicht gestartet werden: {0}</value>
+	</data>
+  <data name="ProjectPanel_RuntimeAborted_Title" xml:space="preserve">
+		<value>Runtime abgebrochen</value>
+	</data>
+  <data name="ProjectPanel_RuntimeAborted_Message" xml:space="preserve">
+		<value>Die Runtime wurde aufgrund eines unerwarteten Fehlers abgebrochen.{1}Runtime-Ausnahme:{1}{0}</value>
+	</data>
+  <data name="ProjectPanel_Copy_NameFormat" xml:space="preserve">
+		<value>{0} (Kopie)</value>
+	</data>
+	<data name="ProjectPanel_Text" xml:space="preserve">
+		<value>Projekt</value>
+	</data>
+  <data name="ProjectPanel_MultiPasteNotSupported_Title" xml:space="preserve">
+		<value>Mehrfaches Einfügen nicht unterstützt</value>
+	</data>
+  <data name="ProjectPanel_MultiPasteNotSupported_Message" xml:space="preserve">
+		<value>Mehrfaches Einfügen wird in dieser Version nicht unterstützt. Es wird nur der erste ausgewählte Flow-Block kopiert.</value>
+	</data>
+  <data name="ProjectView_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="ProjectView_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="ProjectView_CreateProject_Text" xml:space="preserve">
+		<value>Projekt erstellen</value>
+	</data>
+  <data name="ProjectView_EditProject_Text" xml:space="preserve">
+		<value>Projekt bearbeiten</value>
+	</data>
+  <data name="ProjectView_lbCreator_Text" xml:space="preserve">
+		<value>Ersteller</value>
+	</data>
+  <data name="ProjectView_lbDescription_Text" xml:space="preserve">
+		<value>Hier können Sie ein neues Projekt erstellen oder die Projekteigenschaften bearbeiten.</value>
+	</data>
+  <data name="ProjectView_lbNoteOnOpening_Text" xml:space="preserve">
+		<value>Hinweis beim Öffnen</value>
+	</data>
+  <data name="ProjectView_lbProjectDescription_Text" xml:space="preserve">
+		<value>Projektbeschreibung</value>
+	</data>
+  <data name="ProjectView_lbShortDescription_Text" xml:space="preserve">
+    <value>Kurzbeschreibung</value>
+  </data>
+  <data name="ProjectView_lbProjectName_Text" xml:space="preserve">
+		<value>Projektbezeichnung</value>
+	</data>
+  <data name="PropertyViewListViewFactory_ComponentActionsLoadingFailure_Message" xml:space="preserve">
+		<value>Beim Ermitteln der verfügbaren Aktionen für die Komponente ist ein Fehler aufgetreten. Weitere Details finden Sie in den Anwendungsprotokollen.</value>
+	</data>
+  <data name="PropertyViewListViewFactory_ComponentActionsLoadingFailure_Title" xml:space="preserve">
+		<value>Fehler beim Laden der Aktionen</value>
+	</data>
+  <data name="PropertyViewListViewFactory_SelectionDialog_Message" xml:space="preserve">
+		<value>Bitte wählen Sie ein Objekt aus.</value>
+	</data>
+  <data name="PropertyViewListViewFactory_SelectionDialog_Title" xml:space="preserve">
+		<value>Auswählen</value>
+	</data>
+  <data name="PropertyWindow_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="PropertyWindow_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="RenameWindow_btApply_Text" xml:space="preserve">
+		<value>&amp;Annehmen</value>
+	</data>
+  <data name="RenameWindow_btCancel_Text" xml:space="preserve">
+		<value>&amp;Zurück</value>
+	</data>
+  <data name="RenameWindow_lbCurrentValue_Text" xml:space="preserve">
+		<value>--- Aktueller Wert:</value>
+	</data>
+  <data name="RenameWindow_lbNewValue_Text" xml:space="preserve">
+		<value>--- Neuer Wert:</value>
+	</data>
+  <data name="RenameWindow_Text" xml:space="preserve">
+		<value>Eintrag umbenennen</value>
+	</data>
+  <data name="RuntimeView_btClear_Text" xml:space="preserve">
+		<value>Ausgabe lee&amp;ren</value>
+	</data>
+  <data name="RuntimeView_btContinue_Text" xml:space="preserve">
+		<value>&amp;Fortsetzen</value>
+	</data>
+  <data name="RuntimeView_btOpenLogfile_Text" xml:space="preserve">
+		<value>&amp;Logfile öffnen</value>
+	</data>
+  <data name="RuntimeView_btPause_Text" xml:space="preserve">
+		<value>&amp;Pause</value>
+	</data>
+  <data name="RuntimeView_btRefresh_Text" xml:space="preserve">
+		<value>&amp;Aktualisieren</value>
+	</data>
+  <data name="RuntimeView_btStopExecution_Text" xml:space="preserve">
+		<value>Ausführung &amp;stoppen</value>
+	</data>
+  <data name="RuntimeView_cbStepwiseExecution_Text" xml:space="preserve">
+		<value>Schrittweise &amp;ausführen</value>
+	</data>
+  <data name="RuntimeView_cbStopOnError_Text" xml:space="preserve">
+		<value>Bei &amp;Fehler anhalten</value>
+	</data>
+  <data name="RuntimeView_cbStopOnWarning_Text" xml:space="preserve">
+		<value>Bei &amp;Warnung anhalten</value>
+	</data>
+  <data name="RuntimeView_itmExportDir_Text" xml:space="preserve">
+		<value>&amp;Exportverzeichnis</value>
+	</data>
+  <data name="RuntimeView_Text" xml:space="preserve">
+		<value>Laufzeit</value>
+	</data>
+  <data name="WindowsFormWPFHelper_ShowDialog_Failure_Message" xml:space="preserve">
+		<value>Beim Versuch die Ansicht zu erzeugen ist es zu einem unerwarteten Fehler gekommen. Bitte überprüfen Sie die Logfiles, um mehr Informationen zu erhalten.</value>
+	</data>
+  <data name="WindowsFormWPFHelper_ShowDialog_Failure_Title" xml:space="preserve">
+		<value>Anzeigen des Dialogs fehlgeschlagen</value>
+	</data>
+  <data name="AppWindow_itmResetDockablePanels_Text" xml:space="preserve">
+		<value>Andockbare Dialoge zu&amp;rücksetzen</value>
+	</data>
+  <data name="AppWindow_itmVisitOnline_Text" xml:space="preserve">
+		<value>Online besuchen</value>
+	</data>
+  <data name="AppWindow_itmGitHub_Text" xml:space="preserve">
+		<value>Auf GitHub besuchen</value>
+	</data>
+  <data name="AppWindow_itmSaveToProjectSpace_Text" xml:space="preserve">
+		<value>Im Project Space speichern</value>
+	</data>
+  <data name="AppWindow_itmFbExtensions_Text" xml:space="preserve">
+		<value>Erweiterungen verwalten</value>
+	</data>
+  <data name="AppWindow_itmFbProjects_Text" xml:space="preserve">
+		<value>Projekte einsehen (Project-Space)</value>
+	</data>
+  <data name="AppWindow_itmOpenFromProjectSpace_Text" xml:space="preserve">
+		<value>Aus Project-Space öffnen</value>
+	</data>
+  <data name="OptionView_labelIsPlaceholderEnabled_Text" xml:space="preserve">
+		<value>Als Platzhalter verfügbar</value>
+	</data>
+  <data name="OptionView_Yes" xml:space="preserve">
+		<value>Ja</value>
+	</data>
+  <data name="OptionView_No" xml:space="preserve">
+		<value>Nein</value>
+	</data>
+  <data name="ProjectView_lbInputDir_Text" xml:space="preserve">
+		<value>Projekt-Eingabeverzeichnis</value>
+	</data>
+  <data name="ProjectView_lbOutputDir_Text" xml:space="preserve">
+		<value>Projekt-Ausgabeverzeichnis</value>
+	</data>
+  <data name="AppWindow_itmOpenInputDir_Text" xml:space="preserve">
+		<value>Eingabeverzeichnis öffnen</value>
+	</data>
+  <data name="AppWindow_itmManageInputFiles_Text" xml:space="preserve">
+		<value>Eingabedateien verwalten</value>
+	</data>
+  <data name="ProjectPanel_labelInvoke_Text" xml:space="preserve">
+		<value>Aufruf</value>
+	</data>
+  <data name="ProjectPanel_labelRecursiveCall_Text" xml:space="preserve">
+		<value>Rekursiver Aufruf</value>
+	</data>
+  <data name="ProjectPanel_labelIterationContext_Text" xml:space="preserve">
+		<value>Iterationskontext</value>
+	</data>
+  <data name="ProjectPanel_Legend_IterationContext_Tooltip" xml:space="preserve">
+    <value>Iterationskontext-Relation: Der ausgewählte Flow-Block wird pro Datensatz-Iteration des Ziel-Flow-Blocks (Iterationskontext) ausgeführt.</value>
+  </data>
+  <data name="ProjectPanel_Legend_RecursiveCall_Tooltip" xml:space="preserve">
+    <value>Rekursiver Aufruf:
+Der RecursiveCall-Flow-Block ruft den verbundenen, früheren Ziel-Flow-Block erneut auf. Das Ziel muss auf dem eingehenden Ausführungspfad des RecursiveCall-Flow-Blocks liegen.</value>
+  </data>
+  <data name="AppWindow_itmRecentProjects_Text" xml:space="preserve">
+    <value>Zuletzt geöffnete Projekte</value>
+  </data>
+  <data name="AppWindow_Notification_UpdateAvailable_Message" xml:space="preserve">
+    <value>Ein neues FlowBlox-Update ist verfügbar.</value>
+  </data>
+  <data name="AppWindow_Notification_UpdateAvailable_Action_Text" xml:space="preserve">
+    <value>Update herunterladen</value>
+  </data>
+  <data name="AppWindow_Notification_UpdateDownloaded_Message" xml:space="preserve">
+    <value>Das Update-Installationspaket wurde heruntergeladen.</value>
+  </data>
+  <data name="AppWindow_Notification_UpdateInstallDownloaded_Action_Text" xml:space="preserve">
+    <value>Update installieren</value>
+  </data>
+  <data name="SplashWindow_LabelMessage_Text" xml:space="preserve">
+    <value>Build, Test, and Run Flows - Visually or with AI. Always Under Your Control.</value>
+  </data>
+  <data name="AppWindow_itmAutoAdjustFlowLayout_Text" xml:space="preserve">
+    <value>Flow automatisch ausrichten</value>
+  </data>
+  <data name="ProjectPanel_AutoAdjust_NoStart_Title" xml:space="preserve">
+    <value>Keine automatische Ausrichtung</value>
+  </data>
+  <data name="ProjectPanel_AutoAdjust_NoStart_Message" xml:space="preserve">
+    <value>Es wurde kein Start-Flow-Block gefunden. Die automatische Ausrichtung kann daher nicht ausgeführt werden.</value>
+  </data>
+  <data name="AppWindow_itmAutomation_Text" xml:space="preserve">
+    <value>Automatisierung</value>
+  </data>
+  <data name="AppWindow_itmFlowBloxTaskManagement_Text" xml:space="preserve">
+    <value>Geplante Projektausführungen...</value>
+  </data>
+  <data name="AppWindow_itmNotifications_Text" xml:space="preserve"><value>Benachrichtigungen...</value></data>
+  <data name="AppWindow_Notifications_LoadError_Title" xml:space="preserve"><value>Benachrichtigungen konnten nicht geladen werden</value></data>
+  <data name="AppWindow_Notifications_SaveError_Title" xml:space="preserve"><value>Benachrichtigungen konnten nicht gespeichert werden</value></data>
+  <data name="AppWindow_itmOpenExampleProject_Text" xml:space="preserve"><value>Beispielprojekt öffnen...</value></data>
+  <data name="AppWindow_Notification_ProjectGuidChanged_Message" xml:space="preserve"><value>Eine neue interne Projekt-GUID wurde erzeugt: {0}</value></data>
+</root>

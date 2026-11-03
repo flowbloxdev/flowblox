@@ -48,6 +48,11 @@ namespace FlowBlox.Core.Models.Components.IO
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlighting = "SQL")]
         public string SQLStatement { get; set; }
 
+        [Display(Name = "SQLTable_UseFieldValuesAsParameters",
+                 Description = "SQLTable_UseFieldValuesAsParameters_Tooltip",
+                 ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        public bool UseFieldValuesAsParameters { get; set; } = true;
+
         public bool CanRead(BaseRuntime runtime = null)
         {
             if (this.TryRead(out _, runtime))
@@ -98,7 +103,11 @@ namespace FlowBlox.Core.Models.Components.IO
             if (dbConnection != null)
             {
                 Dictionary<string, object> parameters;
-                var sqlStatement = FlowBloxFieldHelper.ReplaceFieldsInSQL(SQLStatement, DbType, out parameters);
+                var sqlStatement = FlowBloxFieldHelper.ReplaceFieldsInSQL(
+                    SQLStatement,
+                    DbType,
+                    out parameters,
+                    useFieldValuesAsParameters: UseFieldValuesAsParameters);
                 return DbConnectionUtil.GetOutputAsDataTable(sqlStatement, parameters, dbConnection);
             }
             throw new InvalidOperationException($"Unable to connect to \"{SQLConnectionstring}\".");

@@ -39,7 +39,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.table_large, 32, SKColors.MediumPurple);
 
         public override FlowBlockCardinalities GetInputCardinality() => FlowBlockCardinalities.One;
-        public override FlowBlockCategory GetCategory() => FlowBlockCategory.IO;
+        public override FlowBlockCategory GetCategory() => FlowBlockCategory.Conversion;
 
         public override bool Execute(BaseRuntime runtime, object data)
         {

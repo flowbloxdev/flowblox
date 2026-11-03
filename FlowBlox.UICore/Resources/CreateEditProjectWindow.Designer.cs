@@ -25,6 +25,7 @@ public static class CreateEditProjectWindow
     public static string OutputDirectory => ResourceManager.GetString(nameof(OutputDirectory), Culture) ?? nameof(OutputDirectory);
     public static string ProjectName => ResourceManager.GetString(nameof(ProjectName), Culture) ?? nameof(ProjectName);
     public static string ShortDescription => ResourceManager.GetString(nameof(ShortDescription), Culture) ?? nameof(ShortDescription);
+    public static string AssistantMetadataHeader => ResourceManager.GetString(nameof(AssistantMetadataHeader), Culture) ?? nameof(AssistantMetadataHeader);
     public static string InputDirectoryTooltip => ResourceManager.GetString(nameof(InputDirectoryTooltip), Culture) ?? nameof(InputDirectoryTooltip);
     public static string OutputDirectoryTooltip => ResourceManager.GetString(nameof(OutputDirectoryTooltip), Culture) ?? nameof(OutputDirectoryTooltip);
     public static string DescriptionTooltip => ResourceManager.GetString(nameof(DescriptionTooltip), Culture) ?? nameof(DescriptionTooltip);

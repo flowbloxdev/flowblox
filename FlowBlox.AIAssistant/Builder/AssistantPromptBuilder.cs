@@ -198,7 +198,7 @@ namespace FlowBlox.AIAssistant.Builder
                 .Select(x => new
                 {
                     ProjectName = x.Project.Value<string>(nameof(FlowBloxProject.ProjectName)) ?? Path.GetFileNameWithoutExtension(x.Path),
-                    ShortDescription = x.Project.Value<string>(nameof(FlowBloxProject.ShortDescription)) ?? string.Empty
+                    ShortDescription = x.Project[nameof(FlowBloxProject.AssistantMetadata)]?.Value<string>(nameof(AssistantMetadata.ShortDescription)) ?? string.Empty
                 })
                 .OrderBy(metadata => metadata.ProjectName, StringComparer.OrdinalIgnoreCase)
                 .Select(metadata => $"- {metadata.ProjectName}: {metadata.ShortDescription}")

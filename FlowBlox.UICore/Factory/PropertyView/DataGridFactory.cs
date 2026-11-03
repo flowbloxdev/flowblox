@@ -97,10 +97,10 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         public FrameworkElement Create()
         {
-            // Property-Wert auslesen und Liste überprüfen
-            var propertyValue = _property.GetValue(_target);
-            if (!(propertyValue is IList list))
+            if (!typeof(IList).IsAssignableFrom(_property.PropertyType))
                 throw new InvalidOperationException("DataGridFactory can only work with IList-based properties.");
+
+            var list = (IList)_property.GetValue(_target) ?? (IList)Activator.CreateInstance(_property.PropertyType);
 
             var dataGrid = new DataGrid
             {
@@ -249,26 +249,8 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 else if (propertyType.IsEnum)
                 {
                     var isReadOnly = IsPropertyReadOnly(childProperty, uiAttribute);
-                    var itemSource = Enum.GetValues(propertyType)
-                        .Cast<Enum>()
-                        .Select(e => new { Display = e.GetDisplayName(), Value = e })
-                        .ToList();
-
-                    if (underlyingType != null)
-                        itemSource.Insert(0, new { Display = string.Empty, Value = (Enum)null });
-
-                    var column = new DataGridComboBoxColumn
-                    {
-                        Header = headerText,
-                        ItemsSource = itemSource,
-                        SelectedValuePath = "Value",
-                        SelectedValueBinding = new Binding(childProperty.Name)
-                        {
-                            Mode = isReadOnly ? BindingMode.OneWay : BindingMode.TwoWay
-                        },
-                        DisplayMemberPath = "Display",
-                        IsReadOnly = isReadOnly
-                    };
+                    var itemSource = EnumerationDropDown.CreateItems(propertyType, underlyingType != null);
+                    var column = EnumerationDropDown.CreateColumn(headerText, itemSource, childProperty.Name, isReadOnly);
                     dataGrid.Columns.Add(column);
                 }
                 // Selection-Filter
@@ -745,8 +727,51 @@ namespace FlowBlox.UICore.Factory.PropertyView
         private void AddNewItem(IList list, Type listItemType, DataGrid dataGrid)
         {
             object newItem = CreateNewInstance(_window, listItemType);
-            if (newItem != null)
-                list.Add(newItem);
+            if (newItem == null)
+                return;
+
+            list.Add(newItem);
+
+            if (_property.GetValue(_target) == null)
+                _property.SetValue(_target, list);
+
+            dataGrid.SelectedItems.Clear();
+            dataGrid.SelectedItem = newItem;
+
+            dataGrid.Dispatcher.InvokeAsync(() =>
+            {
+                if (!dataGrid.IsLoaded || !ReferenceEquals(dataGrid.SelectedItem, newItem))
+                    return;
+
+                var firstEditableColumn = dataGrid.Columns
+                    .Where(column => column.Visibility == Visibility.Visible && !column.IsReadOnly)
+                    .OrderBy(column => column.DisplayIndex)
+                    .FirstOrDefault();
+
+                if (dataGrid.IsReadOnly || firstEditableColumn == null)
+                {
+                    dataGrid.ScrollIntoView(newItem);
+                    dataGrid.Focus();
+                    return;
+                }
+
+                dataGrid.ScrollIntoView(newItem, firstEditableColumn);
+                dataGrid.CurrentCell = new DataGridCellInfo(newItem, firstEditableColumn);
+                dataGrid.Focus();
+                dataGrid.UpdateLayout();
+
+                var content = firstEditableColumn.GetCellContent(newItem);
+                if (content != null)
+                {
+                    DependencyObject element = content;
+                    while (element != null && element is not DataGridCell)
+                        element = VisualTreeHelper.GetParent(element);
+
+                    (element as DataGridCell)?.Focus();
+                }
+
+                dataGrid.BeginEdit();
+            }, DispatcherPriority.Input);
         }
 
         private void MoveItem(IList list, DataGrid dataGrid, int direction)

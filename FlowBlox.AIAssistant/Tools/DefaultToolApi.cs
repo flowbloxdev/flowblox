@@ -1,6 +1,9 @@
 using FlowBlox.AIAssistant.Models;
 using Newtonsoft.Json.Linq;
 using FlowBlox.Core.Provider;
+using FlowBlox.Core.Enums;
+using FlowBlox.Core.Models.Project;
+using FlowBlox.Core.Util.Fields;
 
 namespace FlowBlox.AIAssistant.Tools
 {
@@ -44,15 +47,26 @@ namespace FlowBlox.AIAssistant.Tools
             if (!_handlers.TryGetValue(request.ToolName, out var handler))
                 return Task.FromResult(ToolHandlerUtilities.Fail($"Tool '{request.ToolName}' is not registered."));
 
-            if (RequiresUserConfirmation(request) && !IsToolExecutionApproved(request))
+            try
             {
-                return Task.FromResult(ToolHandlerUtilities.Fail(
-                    $"Execution for tool '{request.ToolName}' was cancelled by user confirmation.",
-                    new JObject
+                if (RequiresUserConfirmation(request))
+                {
+                    request = CreateConfirmationRequest(request);
+                    if (!IsToolExecutionApproved(request))
                     {
-                        ["cancelledByUser"] = true,
-                        ["toolName"] = request.ToolName
-                    }));
+                        return Task.FromResult(ToolHandlerUtilities.Fail(
+                            $"Execution for tool '{request.ToolName}' was cancelled by user confirmation.",
+                            new JObject
+                            {
+                                ["cancelledByUser"] = true,
+                                ["toolName"] = request.ToolName
+                            }));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(ToolHandlerUtilities.Fail(ex.Message));
             }
 
             return ExecuteHandlerAndNotifyChanges(handler, request, ct);
@@ -80,26 +94,48 @@ namespace FlowBlox.AIAssistant.Tools
             if (request == null || string.IsNullOrWhiteSpace(request.ToolName))
                 return false;
 
-            return string.Equals(
-                request.ToolName,
-                ExecuteInputFileCommandToolName,
-                StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase) ||
-                (string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase) &&
-                 (!string.IsNullOrWhiteSpace(request.Arguments?.Value<string>("projectFile")) ||
-                  ToolHandlerUtilities.IsAuxiliaryProjectActive()));
+            if (string.Equals(request.ToolName, ExecuteInputFileCommandToolName, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            var isDebugTest = string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase);
+            if (!isDebugTest && !string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(request.Arguments?.Value<string>("projectFile") ?? string.Empty);
+            if (string.IsNullOrWhiteSpace(projectFile))
+            {
+                if (!isDebugTest)
+                    return true;
+                if (!AuxiliaryProjectSessionStore.TryGetActiveProjectInfo(ToolHandlerUtilities.CurrentSessionGuid, out _, out projectFile))
+                    return false;
+            }
+
+            return !AuxiliaryProjectApprovalStore.IsApproved(projectFile);
         }
 
         private bool IsToolExecutionApproved(ToolRequest request)
         {
             try
             {
-                return ToolExecutionConfirmationCallback?.Invoke(CreateConfirmationRequest(request)) == true;
+                if (ToolExecutionConfirmationCallback?.Invoke(request) != true)
+                    return false;
+
+                if (request.RememberProjectApproval &&
+                    (string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var projectFile = request.Arguments?.Value<string>("projectFile") ??
+                        request.Arguments?.Value<string>("confirmationProjectFile");
+                    if (!string.IsNullOrWhiteSpace(projectFile) && File.Exists(projectFile))
+                        AuxiliaryProjectApprovalStore.Approve(projectFile);
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
                 FlowBloxLogManager.Instance.GetLogger().Error(
-                    $"The confirmation callback for AI Assistant tool '{request.ToolName}' failed.",
+                    $"Failed to obtain or persist user approval for AI Assistant tool '{request.ToolName}'.",
                     ex);
                 return false;
             }
@@ -107,24 +143,59 @@ namespace FlowBlox.AIAssistant.Tools
 
         private static ToolRequest CreateConfirmationRequest(ToolRequest request)
         {
-            if (!string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrWhiteSpace(request.Arguments?.Value<string>("projectFile")) ||
-                !AuxiliaryProjectSessionStore.TryGetActiveProjectInfo(
-                    ToolHandlerUtilities.CurrentSessionGuid,
-                    out _,
-                    out var projectFile))
-            {
+            var isDebugTest = string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase);
+            if (!isDebugTest && !string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase))
                 return request;
+
+            var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(request.Arguments?.Value<string>("projectFile") ?? string.Empty);
+            FlowBloxProject project;
+            var usesActiveProject = string.IsNullOrWhiteSpace(projectFile);
+            if (usesActiveProject)
+            {
+                if (!isDebugTest || !AuxiliaryProjectSessionStore.TryGetActiveProjectInfo(
+                    ToolHandlerUtilities.CurrentSessionGuid,
+                    out project,
+                    out projectFile))
+                    return request;
+            }
+            else
+            {
+                if (!File.Exists(projectFile))
+                    return request;
+                project = AuxiliaryProjectSerializer.FromFile(projectFile);
             }
 
             var arguments = request.Arguments == null
                 ? new JObject()
                 : new JObject(request.Arguments);
-            arguments["confirmationProjectFile"] = projectFile;
+            if (usesActiveProject)
+            {
+                arguments.Remove("projectFile");
+                arguments["confirmationProjectFile"] = projectFile;
+            }
+            else
+                arguments["projectFile"] = projectFile;
+
+            var inputs = ProjectExecutionToolUtilities.ResolveInputParameters(arguments["inputParameters"] as JObject, project);
+            var effectiveInputs = project.UserFields
+                .Where(field => field.UserFieldType == UserFieldTypes.Input)
+                .ToDictionary(
+                    field => field.Name,
+                    field => inputs.TryGetValue(field.Name, out var value)
+                        ? value
+                        : FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue ?? string.Empty),
+                    StringComparer.OrdinalIgnoreCase);
+
+            var inputSnapshot = JObject.FromObject(effectiveInputs);
+            inputSnapshot.AddAnnotation(new ProjectExecutionToolUtilities.ResolvedInputParameters(effectiveInputs));
+            arguments["inputParameters"] = inputSnapshot;
+
             return new ToolRequest
             {
                 ToolName = request.ToolName,
-                Arguments = arguments
+                Arguments = arguments,
+                CorrelationId = request.CorrelationId,
+                ConfirmationInputParameters = effectiveInputs
             };
         }
 
@@ -138,6 +209,7 @@ namespace FlowBlox.AIAssistant.Tools
                 new GetDistributedDataContentHandler(),
                 new GetProjectMetadataHandler(),
                 new GetAuxiliaryProjectsHandler(),
+                new GetAuxiliaryProjectHandler(),
                 new CreateOrUpdateAuxiliaryProjectHandler(),
                 new AuxiliaryProjectEditingHandler(),
                 new GetRootCategoriesHandler(),

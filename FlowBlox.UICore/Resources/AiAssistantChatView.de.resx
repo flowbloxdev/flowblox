@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Header_Title" xml:space="preserve"><value>KI-Assistent</value></data>
   <data name="Header_Description" xml:space="preserve"><value>Der KI-Assistent kann genutzt werden, um den aktuellen Flow anzupassen oder einen kompletten Flow auf Basis einer Beschreibung zu erstellen.</value></data>
-  <data name="Warning_MissingProvider" xml:space="preserve"><value>Bitte konfigurieren Sie zuerst Ihren AI-Provider. API-Key erforderlich.</value></data>
+  <data name="Warning_MissingProvider" xml:space="preserve"><value>Es ist kein KI-Provider mit nutzbarem API-Key eingerichtet. Öffnen Sie die Konfiguration über das Zahnrad, fügen Sie einen KI-Provider hinzu oder bearbeiten Sie den vorhandenen Provider, hinterlegen Sie dessen API-Key und speichern Sie. Senden Sie Ihre Anfrage anschließend erneut.</value></data>
   <data name="Tooltip_NewHistory" xml:space="preserve"><value>Neuen Chat starten</value></data>
   <data name="Tooltip_BackToHistory" xml:space="preserve"><value>Zurück zu den Verläufen</value></data>
   <data name="Tooltip_Undo" xml:space="preserve"><value>Letzte KI-Projektzustandsänderung rückgängig machen</value></data>
@@ -38,7 +38,7 @@
   <data name="Message_ExternalProjectExecution_ProjectFile" xml:space="preserve"><value>Projektdatei: {0}</value></data>
   <data name="Message_ExternalProjectExecution_ActiveAuxiliaryProject" xml:space="preserve"><value>Das aktuell geöffnete Hilfsprojekt wird ausgeführt.</value></data>
   <data name="Message_ExternalProjectExecution_Review" xml:space="preserve"><value>Projekt überprüfen</value></data>
-  <data name="Message_ExternalProjectExecution_Execute" xml:space="preserve"><value>Ausführen</value></data>
+  <data name="Message_ExternalProjectExecution_Execute" xml:space="preserve"><value>Einmal erlauben</value></data>
   <data name="Message_ExternalProjectExecution_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
   <data name="Button_Pause" xml:space="preserve"><value>Pausieren</value></data>
   <data name="Button_PausePending" xml:space="preserve"><value>Wird pausiert…</value></data>
@@ -49,4 +49,23 @@
   <data name="Status_Stopped" xml:space="preserve"><value>Gestoppt.</value></data>
   <data name="Button_Continue" xml:space="preserve"><value>Fortfahren</value></data>
   <data name="Tooltip_Continue" xml:space="preserve"><value>Den pausierten Assistentenlauf fortsetzen. Eingeschobene Nachrichten werden als Nächstes verarbeitet.</value></data>
+  <data name="Message_ExternalProjectExecution_InputParameters" xml:space="preserve">
+    <value>Eingabeparameter</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ParameterName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ParameterValue" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ViewParameterContent" xml:space="preserve">
+    <value>Vollständigen Wert anzeigen (schreibgeschützt)</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ApprovalPersistence" xml:space="preserve">
+    <value>Erlaubt künftige Ausführungen dieses Projekts durch den KI-Assistenten ohne Rückfrage. Zum Zurücksetzen entfernen Sie den Projekteintrag unter Optionen &gt; AI.ApprovedAuxiliaryProjects.</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_AlwaysAllow" xml:space="preserve">
+    <value>Immer erlauben</value>
+  </data>
+  <data name="Message_ProviderConfiguration_Title" xml:space="preserve"><value>KI-Assistent einrichten</value></data>
 </root>

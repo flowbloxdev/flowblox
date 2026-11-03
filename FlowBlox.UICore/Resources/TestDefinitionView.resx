@@ -199,11 +199,13 @@
   <value>Value</value>
 </data>
   <data name="Icon_UIRequiredForExecution_FieldConfiguration_Tooltip" xml:space="preserve">
-    <value>This test configuration is required for execution. Green indicates that a valid value selection is configured.</value>
-</data>
+    <value>This test configuration is required for execution.
+Status: Configuration required.</value>
+  </data>
   <data name="Icon_AssociatedFlowBlockRequiredForExecution_Tooltip" xml:space="preserve">
-    <value>An executed flow block depends on this associated flow block. Green indicates that its execution is enabled and the required runtime state will be initialized.</value>
-</data>
+    <value>An executed flow block depends on this associated flow block.
+Status: Enable execution to initialize the required runtime state.</value>
+  </data>
   <data name="Icon_TargetFlowBlock_Tooltip" xml:space="preserve">
   <value>This is the current target flow block. The test ends here and the test results are read from this flow block. This flow block must be executed for test execution in this context.</value>
 </data>
@@ -275,5 +277,13 @@ Message(s):
   </data>
   <data name="Text_EditInEditor" xml:space="preserve">
     <value>Edit in editor</value>
+  </data>
+  <data name="Icon_UIRequiredForExecution_FieldConfiguration_Configured_Tooltip" xml:space="preserve">
+    <value>This test configuration is required for execution.
+Status: Configured.</value>
+  </data>
+  <data name="Icon_AssociatedFlowBlockRequiredForExecution_Configured_Tooltip" xml:space="preserve">
+    <value>An executed flow block depends on this associated flow block.
+Status: Execution enabled. The required runtime state will be initialized.</value>
   </data>
 </root>

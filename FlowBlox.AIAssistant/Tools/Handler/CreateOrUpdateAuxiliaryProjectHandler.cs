@@ -69,7 +69,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     ["operation"] = result.Created ? "created" : "updated",
                     ["mode"] = mode,
                     ["projectName"] = result.Project.ProjectName,
-                    ["shortDescription"] = result.Project.ShortDescription,
+                    ["shortDescription"] = result.Project.AssistantMetadata.ShortDescription,
                     ["description"] = result.Project.ProjectDescription,
                     ["projectGuid"] = result.Project.ProjectGuid,
                     ["projectFile"] = result.ProjectFile
@@ -97,14 +97,14 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 return new FlowBloxProject
                 {
                     ProjectDescription = description,
-                    ShortDescription = shortDescription
+                    AssistantMetadata = new AssistantMetadata { ShortDescription = shortDescription }
                 };
 
             var project = AuxiliaryProjectSerializer.FromFile(
                 AuxiliaryProjectSessionStore.GetStoredProjectFile(sessionId, projectName));
             project.ProjectDescription = description;
             if (!string.IsNullOrWhiteSpace(shortDescription))
-                project.ShortDescription = shortDescription;
+                project.AssistantMetadata.ShortDescription = shortDescription;
             return project;
         }
 
@@ -132,7 +132,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             if (!string.IsNullOrWhiteSpace(description))
                 project.ProjectDescription = description;
             if (!string.IsNullOrWhiteSpace(shortDescription))
-                project.ShortDescription = shortDescription;
+                project.AssistantMetadata.ShortDescription = shortDescription;
             return project;
         }
     }

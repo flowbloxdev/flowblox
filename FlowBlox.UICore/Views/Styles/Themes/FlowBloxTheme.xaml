@@ -1,0 +1,150 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                    xmlns:behavior="clr-namespace:FlowBlox.UICore.Behavior"
+                    xmlns:controls="clr-namespace:FlowBlox.UICore.Utilities">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Steel.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Semantic resources shared by static dialogs and runtime property editors. -->
+    <SolidColorBrush x:Key="FlowBlox.Brush.WindowBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Surface" Color="#EEEEEE" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.EditorBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Text" Color="#202830" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.MutedText" Color="#65737E" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Border" Color="#CCD3DA" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.WindowBorder" Color="#E6E6E6" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.InactiveWindowBorder" Color="#E6E6E6" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Accent" Color="#2F6DB3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Chrome" Color="#343434" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.InactiveChrome" Color="#343434" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ChromeText" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DialogHeader" Color="#EDF3F9" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DialogHeaderText" Color="#202830" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DialogDescriptionText" Color="#666666" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DialogSectionSeparator" Color="#D8D8D8" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DialogHeaderBorder" Color="#E6E6E6" />
+    <Thickness x:Key="FlowBlox.Thickness.DialogHeaderBorder">0,1,0,0</Thickness>
+    <SolidColorBrush x:Key="FlowBlox.Brush.LabelBackground" Color="#D9E6F2" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.LabelText" Color="#202830" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.InformationBackground" Color="#EDF3F9" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolbarBackground" Color="#DDE7F3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolbarButtonHover" Color="#DCECF9" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolbarButtonPressed" Color="#C5DFF3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolbarButtonFocus" Color="#7EAEDC" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.HostedHeaderBorder" Color="#D4DEE9" />
+    <CornerRadius x:Key="FlowBlox.CornerRadius.HostedHeader">6</CornerRadius>
+    <SolidColorBrush x:Key="FlowBlox.Brush.TabBackground" Color="#EFF4F9" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.TabHover" Color="#DAE6F2" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.TabSelected" Color="#BBD6F0" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.TabText" Color="#2F4F4F" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.InformationHeader" Color="#8494A3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.InformationHeaderText" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolTipBackground" Color="#E9F3FD" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolTipBorder" Color="#7EAEDC" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ToolTipText" Color="#305E86" />
+    <Thickness x:Key="FlowBlox.Thickness.ToolTipBorder">2</Thickness>
+    <CornerRadius x:Key="FlowBlox.CornerRadius.ToolTip">8</CornerRadius>
+    <SolidColorBrush x:Key="FlowBlox.Brush.HelpBackground" Color="#8FBCDF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.HelpBorder" Color="#6EA2CF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownBorder" Color="#ABADB3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownHoverBackground" Color="#F0F6FC" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownHoverBorder" Color="#7EB4EA" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownOpenBackground" Color="#E5F1FB" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownFocusBorder" Color="#569DE5" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownDisabledBackground" Color="#F4F4F4" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.DropDownDisabledText" Color="#8A8A8A" />
+    <sys:Boolean x:Key="FlowBlox.Window.UseRoundedCorners">True</sys:Boolean>
+
+    <!-- MahApps' default theme style continues to supply the window template and chrome behavior. -->
+    <Style x:Key="FlowBlox.WindowBase" TargetType="{x:Type mah:MetroWindow}">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.WindowBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.Text}" />
+        <Setter Property="WindowTitleBrush" Value="{DynamicResource FlowBlox.Brush.Chrome}" />
+        <Setter Property="NonActiveWindowTitleBrush" Value="{DynamicResource FlowBlox.Brush.InactiveChrome}" />
+        <Setter Property="TitleForeground" Value="{DynamicResource FlowBlox.Brush.ChromeText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.WindowBorder}" />
+        <Setter Property="NonActiveBorderBrush" Value="{DynamicResource FlowBlox.Brush.InactiveWindowBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="behavior:WindowAppearanceBehavior.UseRoundedCorners" Value="{DynamicResource FlowBlox.Window.UseRoundedCorners}" />
+    </Style>
+
+    <Style x:Key="FlowBlox.Window" TargetType="{x:Type mah:MetroWindow}" BasedOn="{StaticResource FlowBlox.WindowBase}" />
+    <Style TargetType="{x:Type mah:MetroWindow}" BasedOn="{StaticResource FlowBlox.Window}" />
+
+    <!-- An enum selector should resemble a ComboBox rather than a pressed ToggleButton. -->
+    <Style TargetType="{x:Type controls:EnumerationDropDownControl}">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DropDownBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.Text}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:EnumerationDropDownControl}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DropDownHoverBackground}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownHoverBorder}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownFocusBorder}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DropDownOpenBackground}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownFocusBorder}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DropDownDisabledBackground}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownBorder}" />
+                            <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.DropDownDisabledText}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FlowBlox.DialogHeader" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DialogHeader}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.DialogHeaderText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DialogHeaderBorder}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource FlowBlox.Thickness.DialogHeaderBorder}" />
+        <Setter Property="Padding" Value="12,10" />
+    </Style>
+
+    <Style x:Key="FlowBlox.DialogDescription" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DialogHeader}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DialogSectionSeparator}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="12" />
+    </Style>
+
+    <Style x:Key="FlowBlox.DialogDescriptionText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.DialogDescriptionText}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="FlowBlox.DialogHeaderTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

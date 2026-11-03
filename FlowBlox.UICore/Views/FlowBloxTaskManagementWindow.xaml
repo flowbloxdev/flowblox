@@ -1,4 +1,4 @@
-<mah:MetroWindow
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.FlowBloxTaskManagementWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -47,7 +47,7 @@
             </Style>
             <Style x:Key="TaskMgmt.DetailLabelBorder"
                    TargetType="{x:Type Border}">
-                <Setter Property="Background" Value="#D9E6F2"/>
+                <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.LabelBackground}"/>
                 <Setter Property="Padding" Value="4"/>
                 <Setter Property="Margin" Value="0,8,0,5"/>
                 <Setter Property="CornerRadius" Value="4"/>
@@ -56,33 +56,23 @@
     </Window.Resources>
 
     <DockPanel Margin="10">
-        <Border Background="#FFEEEEEE"
-                DockPanel.Dock="Top"
-                Height="50"
-                Padding="8">
+        <Border Style="{DynamicResource FlowBlox.DialogHeader}"
+                DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <iconPacks:PackIconMaterial Kind="CalendarClock"
                                             Width="30"
                                             Height="30"
                                             Margin="0,0,10,0"
                                             VerticalAlignment="Center"
-                                            Foreground="DarkSlateGray"/>
-                <TextBlock Text="{x:Static resources:FlowBloxTaskManagementWindow.Header_Title_Main}"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           FontSize="16"/>
+                                            Foreground="{DynamicResource FlowBlox.Brush.DialogHeaderText}"/>
+                <TextBlock Style="{DynamicResource FlowBlox.DialogHeaderTitle}" Text="{x:Static resources:FlowBloxTaskManagementWindow.Header_Title_Main}"/>
             </StackPanel>
         </Border>
 
-        <Border Background="#EDF3F9"
+        <Border Style="{DynamicResource FlowBlox.DialogDescription}"
                 DockPanel.Dock="Top"
-                Padding="12"
-                CornerRadius="4"
-                Margin="0,8,0,10">
-            <TextBlock Text="{x:Static resources:FlowBloxTaskManagementWindow.Header_Description_Main}"
-                       FontWeight="UltraLight"
-                       Foreground="DarkSlateGray"
-                       TextWrapping="Wrap"/>
+                Margin="0,0,0,10">
+            <TextBlock Style="{DynamicResource FlowBlox.DialogDescriptionText}" Text="{x:Static resources:FlowBloxTaskManagementWindow.Header_Description_Main}"/>
         </Border>
 
         <Grid>

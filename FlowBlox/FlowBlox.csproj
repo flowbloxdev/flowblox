@@ -150,12 +150,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Optimize>False</Optimize>
   </PropertyGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="&quot;$(ProjectDir)prebuild.bat&quot; $(Configuration)" />
-  </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(ProjectDir)postbuild.bat&quot; &quot;$(TargetDir)&quot;" />
-  </Target>
+  <Import Project="..\FlowBlox.Build\FlowBlox.Build.targets" />
   <Target Name="CopyRunnerHostToOutput" AfterTargets="Build">
     <Message Importance="high" Text="[FlowBlox] Copying RunnerHost application files from $(RunnerHostOutputDir) to $(TargetDir)" />
     <ItemGroup>

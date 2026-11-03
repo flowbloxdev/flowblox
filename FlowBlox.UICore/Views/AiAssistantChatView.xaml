@@ -334,19 +334,15 @@
                          MinHeight="120"
                          AcceptsReturn="True"
                          TextWrapping="Wrap"
+                         VerticalContentAlignment="Top"
+                         mah:TextBoxHelper.Watermark="{Binding InputWatermark}"
+                         mah:TextBoxHelper.WatermarkWrapping="Wrap"
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Disabled"
                          BorderThickness="0"
                          Background="Transparent"
                          IsEnabled="{Binding CanEditInput}"
                          Text="{Binding CurrentInput, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Margin="2,1,8,0"
-                           VerticalAlignment="Top"
-                           Foreground="#FF9CA3AF"
-                           IsHitTestVisible="False"
-                           Text="{Binding InputWatermark}"
-                           TextWrapping="Wrap"
-                           Visibility="{Binding IsInputEmpty, Converter={StaticResource BoolToVisibilityConverter}}" />
             </Grid>
         </Border>
 

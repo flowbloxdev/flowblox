@@ -1,3 +1,5 @@
+using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.Project;
@@ -110,7 +112,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
         {
             return new JObject
             {
-                ["placeholder"] = $"$Options::{optionElement.Name}",
+                ["placeholder"] = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Options, optionElement.Name),
                 ["name"] = optionElement.Name ?? string.Empty,
                 ["displayName"] = optionElement.DisplayName ?? optionElement.Name ?? string.Empty,
                 ["description"] = optionElement.Description ?? string.Empty,

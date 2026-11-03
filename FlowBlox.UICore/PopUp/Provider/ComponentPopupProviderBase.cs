@@ -36,11 +36,7 @@ namespace FlowBlox.UICore.PopUp.Provider
             if (items.Count == 0)
                 return false;
 
-            var window = new ComponentPopupWindow(WindowTitle, items)
-            {
-                Owner = owner ?? Application.Current?.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive),
-                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen
-            };
+            var window = CreateWindow(items, owner);
 
             var completed = window.ShowDialog() == true;
             if (completed && !option.GetValueBoolean())
@@ -50,6 +46,15 @@ namespace FlowBlox.UICore.PopUp.Provider
             }
 
             return true;
+        }
+
+        protected virtual ComponentPopupWindow CreateWindow(IReadOnlyList<ComponentPopupItem> items, Window owner)
+        {
+            return new ComponentPopupWindow(WindowTitle, items)
+            {
+                Owner = owner ?? Application.Current?.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive),
+                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen
+            };
         }
 
         private OptionElement EnsureOption(FlowBloxOptions options)

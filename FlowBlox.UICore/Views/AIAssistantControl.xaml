@@ -23,41 +23,13 @@
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-            <Style x:Key="ToolbarButtonStyle" TargetType="{x:Type Button}">
+            <Style x:Key="ToolbarButtonStyle" TargetType="{x:Type Button}"
+                   BasedOn="{StaticResource FlowBlox.ToolbarButton}">
                 <Setter Property="Width" Value="32" />
                 <Setter Property="Height" Value="32" />
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="Margin" Value="4,0,0,0" />
-                <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FFE5E7EB" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FFDADDE1" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Background" Value="Transparent" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="Background" Value="Transparent" />
-                    </Trigger>
-                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -69,9 +41,8 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="#FFEEEEEE"
-                Height="48"
-                Padding="10,6">
+                Style="{DynamicResource FlowBlox.HostedHeader}"
+                Height="48">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -149,6 +120,15 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center">
+                    <Button Style="{StaticResource ToolbarButtonStyle}"
+                            ToolTip="{x:Static resources:AiAssistantControl.Tooltip_QuickStart}"
+                            Click="QuickStartButton_Click">
+                        <iconPacks:PackIconMaterial Kind="HelpCircleOutline"
+                                                    Width="18"
+                                                    Height="18"
+                                                    Style="{StaticResource FlowBlox.ToolbarIconBase}" />
+                    </Button>
+
                     <Button Style="{StaticResource ToolbarButtonStyle}"
                             ToolTip="{x:Static resources:AiAssistantControl.Tooltip_OpenCommunicationProtocolDirectory}"
                             Command="{Binding OpenCommunicationProtocolDirectoryCommand}">

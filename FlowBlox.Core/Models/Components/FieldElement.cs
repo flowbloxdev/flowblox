@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Interfaces;
@@ -27,7 +28,7 @@ namespace FlowBlox.Core.Models.Components
     {
         private const string FallbackFieldFormat = "Field{0}";
 
-        private static readonly SKColor RegularFieldColor = new(71, 85, 105);
+        private static readonly SKColor RegularFieldColor = new(15, 118, 110);
         private static readonly SKColor InputFieldColor = new(30, 136, 229);
         private static readonly SKColor MemoryFieldColor = new(124, 58, 237);
 
@@ -344,8 +345,8 @@ namespace FlowBlox.Core.Models.Components
         }
 
         [ActivationCondition(ActivationMethod = nameof(IsRegularField))]
-        [Display(Name = "FieldElement_Conditions", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Conditions", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [Display(Name = "FieldElement_Conditions", Description = "FieldElement_Conditions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Conditions", Order = 0)]
+        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = true)]
         [FlowBloxDataGrid(
             GridColumnMemberNames = new[]
             {
@@ -355,9 +356,9 @@ namespace FlowBlox.Core.Models.Components
         public ObservableCollection<ComparisonCondition> Conditions { get; set; }
 
         [ActivationCondition(ActivationMethod = nameof(IsRegularField))]
-        [Display(Name = "FieldElement_Modifiers", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Modifiers", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete, DisplayLabel = false)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(ModifierBase.ObjectDisplayName) })]
+        [Display(Name = "FieldElement_Modifiers", Description = "FieldElement_Modifiers_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Modifiers", Order = 0)]
+        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete, DisplayLabel = true)]
+        [FlowBloxListView(IsMovable = true, LVColumnMemberNames = new[] { nameof(ModifierBase.ObjectDisplayName) })]
         public ObservableCollection<ModifierBase> Modifiers { get; set; }
 
         public string FullyQualifiedName => GetFullyQualifiedName(Source, UserField, Name);
@@ -386,7 +387,7 @@ namespace FlowBlox.Core.Models.Components
                 if (!userField)
                     throw new Exception("The source object must not be null in field definition. FieldName=" + fieldName);
                 else
-                    return "$" + "User" + "::" + fieldName;
+                    return FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.User, fieldName);
             }
 
             return "$" + source.Name + "::" + fieldName;
@@ -470,13 +471,13 @@ namespace FlowBlox.Core.Models.Components
         private byte[] GetIconSvg()
         {
             if (!UserField)
-                return FlowBloxIcons.component;
+                return FlowBloxIcons.variable;
 
             return UserFieldType switch
             {
                 UserFieldTypes.Memory => FlowBloxIcons.memory,
                 UserFieldTypes.Input => FlowBloxIcons.form_textbox,
-                _ => FlowBloxIcons.component
+                _ => FlowBloxIcons.variable
             };
         }
 

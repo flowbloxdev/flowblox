@@ -142,4 +142,19 @@
   <data name="Tooltip_IterationProgress" xml:space="preserve">
     <value>Aktueller Datensatz: {0} von insgesamt {1} Datensätzen. Ein Haken zeigt an, dass alle Iterationen abgeschlossen sind.</value>
   </data>
+  <data name="Legend_Invoke_Tooltip" xml:space="preserve">
+    <value>Der nachfolgende Flow-Block wird für jeden Datensatz des verbundenen Ergebnis-Flow-Blocks aufgerufen. Bei Flow-Blocks, die keine Ergebnisdatensätze bereitstellen, erfolgt der Aufruf einmalig.</value>
+  </data>
+  <data name="Legend_IterationContext_Tooltip" xml:space="preserve">
+    <value>Der Flow-Block wird nach Abschluss der Verarbeitung jedes Datensatzes des verbundenen Iterationskontext-Flow-Blocks ausgeführt.</value>
+  </data>
+  <data name="Legend_RecursiveCall_Tooltip" xml:space="preserve">
+    <value>Rekursive Flow-Blocks rufen den verbundenen, zuvor ausgeführten Ziel-Flow-Block erneut auf. Das Ziel muss auf dem eingehenden Ausführungspfad des rekursiven Flow-Blocks liegen.</value>
+  </data>
+  <data name="Legend_IterationContext_QuickStart" xml:space="preserve">
+    <value>Quick-Start</value>
+  </data>
+  <data name="Legend_IterationContext_QuickStart_Tooltip" xml:space="preserve">
+    <value>Erklärung des Iterationskontexts anhand eines Praxisbeispiels.</value>
+  </data>
 </root>

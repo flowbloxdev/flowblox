@@ -235,6 +235,10 @@
   <data name="folder_zip_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\folder-zip-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="selection_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\selection-search.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers Material Design Icons: https://pictogrammers.com/library/mdi/icon/selection-search/ (Apache-2.0). Original SVG, coloring applied at render time.</comment>
+  </data>
   <data name="format_line_style" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\format-line-style.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -334,6 +338,10 @@
   <data name="text_long" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\text-long.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="text_box_search_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\text-box-search-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers Material Design Icons: https://pictogrammers.com/library/mdi/icon/text-box-search-outline/ (Apache-2.0). Original SVG, coloring applied at render time.</comment>
+  </data>
   <data name="text_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\text-search.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -357,5 +365,8 @@
   </data>
   <data name="xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\xml.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="variable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\variable.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

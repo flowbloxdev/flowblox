@@ -3,6 +3,7 @@ using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Util.FlowBlocks;
 using System.Collections;
 using System.Reflection;
+using FlowBlox.Core.Models.FlowBlocks.Base;
 
 namespace FlowBlox.Core.Validations
 {
@@ -54,7 +55,15 @@ namespace FlowBlox.Core.Validations
                 var index = 0;
                 foreach (var item in collection)
                 {
-                    ValidateChild(item, $"{property.Name}[{index}]", path, visited, messages);
+                    // An unbound input assignment represents no input and is
+                    // removed by the next reference sync. Keep Required on the RO
+                    // itself: the same RO may be meaningful in another context.
+                    var assignment = item as InputBehaviorAssignment;
+                    var isUnboundInput = target is BaseFlowBlock &&
+                        property.Name == nameof(BaseFlowBlock.InputBehaviorAssignments) &&
+                        assignment != null && assignment.FlowBlock == null;
+                    if (!isUnboundInput)
+                        ValidateChild(item, $"{property.Name}[{index}]", path, visited, messages);
                     index++;
                 }
             }

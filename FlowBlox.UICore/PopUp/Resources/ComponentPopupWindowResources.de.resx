@@ -7,4 +7,5 @@
   <data name="Button_Next" xml:space="preserve"><value>Weiter</value></data>
   <data name="Button_Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Image_Placeholder" xml:space="preserve"><value>Bild-Resource nicht zugewiesen</value></data>
+  <data name="Button_Previous" xml:space="preserve"><value>Zurück</value></data>
 </root>

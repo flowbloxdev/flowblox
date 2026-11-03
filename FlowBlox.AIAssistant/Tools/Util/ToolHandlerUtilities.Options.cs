@@ -17,6 +17,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
         private static readonly HashSet<string> ImmutableOptionNames = new(StringComparer.OrdinalIgnoreCase)
         {
             "AI.AssistantConfiguration",
+            AuxiliaryProjectApprovalStore.OptionName,
             "AI.CommuncationProtocolDir",
             "AI.AssistantHistoryDirectory",
             "Account.LicenseToken",

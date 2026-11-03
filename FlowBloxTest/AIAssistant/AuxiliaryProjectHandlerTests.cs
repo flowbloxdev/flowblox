@@ -3,6 +3,7 @@ using FlowBlox.AIAssistant.Tools;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Provider.Project;
+using FlowBlox.Core.Util;
 using Newtonsoft.Json.Linq;
 
 namespace FlowBloxTest.AIAssistant
@@ -15,10 +16,16 @@ namespace FlowBloxTest.AIAssistant
         private readonly string _sessionId = Guid.NewGuid().ToString("N");
         private readonly string _projectName = "Schema inspection " + Guid.NewGuid().ToString("N");
         private const string ProjectDescription = "Inspects a database schema for the current assistant session.";
+        private string _previousLocalAppDataDirectory = null!;
+        private string _localAppDataDirectory = null!;
 
         [TestInitialize]
         public void Initialize()
         {
+            var option = FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir");
+            _previousLocalAppDataDirectory = option.Value;
+            _localAppDataDirectory = Path.Combine(Path.GetTempPath(), "FlowBloxAuxiliaryTests", Guid.NewGuid().ToString("N"));
+            option.Value = _localAppDataDirectory;
             FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject { ProjectName = "Main" };
             ToolHandlerUtilities.SetCurrentSessionGuid(_sessionId);
         }
@@ -47,6 +54,9 @@ namespace FlowBloxTest.AIAssistant
                         File.Delete(file);
                 }
             }
+            FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir").Value = _previousLocalAppDataDirectory;
+            if (Directory.Exists(_localAppDataDirectory))
+                Directory.Delete(_localAppDataDirectory, recursive: true);
         }
 
         [TestMethod]
@@ -77,6 +87,13 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsTrue(created.Ok, created.Error);
             Assert.IsTrue(editing.Ok, editing.Error);
             Assert.IsTrue(flowBlock.Ok, flowBlock.Error);
+            var activeProject = await Execute(api, "GetAuxiliaryProject", new JObject
+            {
+                ["projectName"] = _projectName,
+                ["mode"] = "session"
+            });
+            Assert.IsTrue(activeProject.Ok, activeProject.Error);
+            Assert.IsTrue(activeProject.Result.Value<bool>("isOpen"));
             Assert.IsTrue(auxiliaryMetadata.Result.Value<bool>("isAuxiliaryProject"));
             Assert.AreEqual(_projectName, auxiliaryMetadata.Result.Value<string>("projectName"));
             Assert.IsFalse(string.IsNullOrWhiteSpace(auxiliaryMetadata.Result.Value<string>("description")));
@@ -98,6 +115,13 @@ namespace FlowBloxTest.AIAssistant
                 string.Equals(x!.Value<string>("projectName"), _projectName, StringComparison.Ordinal));
             Assert.IsFalse(string.IsNullOrWhiteSpace(discoveredProject!.Value<string>("description")));
             Assert.IsTrue(File.Exists(discoveredProject.Value<string>("projectFile")));
+            var singleProject = await Execute(api, "GetAuxiliaryProject", new JObject
+            {
+                ["projectName"] = _projectName,
+                ["mode"] = "session"
+            });
+            Assert.IsTrue(singleProject.Ok, singleProject.Error);
+            Assert.IsTrue(JToken.DeepEquals(discoveredProject, singleProject.Result));
             StringAssert.Contains(File.ReadAllText(saved.Result.Value<string>("projectFile")), "AuxStart");
             Assert.IsFalse(mainMetadata.Result.Value<bool>("isAuxiliaryProject"));
             Assert.AreEqual("Main", mainMetadata.Result.Value<string>("projectName"));
@@ -107,6 +131,12 @@ namespace FlowBloxTest.AIAssistant
             var projectsFromAnotherSession = await Execute(api, "GetAuxiliaryProjects", new JObject());
             Assert.IsFalse(projectsFromAnotherSession.Result["projects"]!.Any(x =>
                 string.Equals(x!.Value<string>("projectName"), _projectName, StringComparison.Ordinal)));
+            var singleFromAnotherSession = await Execute(api, "GetAuxiliaryProject", new JObject
+            {
+                ["projectName"] = _projectName,
+                ["mode"] = "session"
+            });
+            Assert.IsFalse(singleFromAnotherSession.Ok);
             ToolHandlerUtilities.SetCurrentSessionGuid(_sessionId);
 
             var reopened = await Execute(api, "AuxiliaryProjectEditing", new JObject
@@ -126,6 +156,8 @@ namespace FlowBloxTest.AIAssistant
         [TestMethod]
         [DataRow("BraveWebSearch.fbprj")]
         [DataRow("DeepSeekWebSearch.fbprj")]
+        [DataRow("ListFiles.fbprj")]
+        [DataRow("GetFileContent.fbprj")]
         public async Task Create_CopiesDistributedProject_AndUpdateRequiresClosedProject(string distributedProjectFile)
         {
             var api = new DefaultToolApi();
@@ -176,6 +208,89 @@ namespace FlowBloxTest.AIAssistant
             StringAssert.Contains(updateWhileOpen.Error, "not allowed while an auxiliary project is open");
             Assert.IsTrue(saved.Ok, saved.Error);
             Assert.IsTrue(updateAfterClose.Ok, updateAfterClose.Error);
+        }
+
+        [TestMethod]
+        [DataRow("executesqlquery")]
+        [DataRow("GetFileContent")]
+        public async Task GetAuxiliaryProject_ResolvesBootstrapNameWithSameParameterContractAsCatalog(string projectName)
+        {
+            var api = new DefaultToolApi();
+            var single = await Execute(api, "GetAuxiliaryProject", new JObject
+            {
+                ["projectName"] = projectName
+            });
+            Assert.IsTrue(single.Ok, single.Error);
+            var catalog = await Execute(api, "GetAuxiliaryProjects", new JObject
+            {
+                ["mode"] = "distributedData"
+            });
+            var listed = catalog.Result["projects"]!.Single(project => string.Equals(
+                project!.Value<string>("projectName"), projectName, StringComparison.OrdinalIgnoreCase));
+            Assert.IsTrue(JToken.DeepEquals(listed, single.Result));
+            Assert.IsTrue(File.Exists(single.Result.Value<string>("projectFile")));
+            Assert.IsTrue(single.Result["inputFieldListOfValues"] is JObject);
+            Assert.IsTrue(single.Result["outputFields"]!.Any());
+        }
+
+        [TestMethod]
+        [DataRow("", "distributedData", "projectName is required")]
+        [DataRow("ExecuteSQL", "distributedData", "was not found")]
+        [DataRow("ExecuteSQLQuery", "session", "was not found")]
+        [DataRow("ExecuteSQLQuery", "unknown", "not supported")]
+        public async Task GetAuxiliaryProject_RejectsMissingPartialOrWrongSourceNames(string projectName, string mode, string expectedError)
+        {
+            var response = await Execute(new DefaultToolApi(), "GetAuxiliaryProject", new JObject
+            {
+                ["projectName"] = projectName,
+                ["mode"] = mode
+            });
+            Assert.IsFalse(response.Ok);
+            StringAssert.Contains(response.Error, expectedError);
+        }
+
+        [TestMethod]
+        [DataRow("ExecuteExternalProject")]
+        [DataRow("RunProjectDebugTest")]
+        public async Task DistributedProject_CanBeSubmittedDirectlyForExecutionWithoutSessionCopy(string toolName)
+        {
+            ToolRequest? confirmation = null;
+            var api = new DefaultToolApi
+            {
+                ToolExecutionConfirmationCallback = request =>
+                {
+                    confirmation = request;
+                    return false;
+                }
+            };
+            var catalog = await Execute(api, "GetAuxiliaryProjects", new JObject
+            {
+                ["mode"] = "distributedData",
+                ["filter"] = "ExecuteSQLQuery"
+            });
+            Assert.IsTrue(catalog.Ok, catalog.Error);
+            var project = catalog.Result["projects"]!.Children<JObject>().Single();
+            var projectFile = project.Value<string>("projectFile");
+            Assert.IsTrue(File.Exists(projectFile));
+
+            var response = await Execute(api, toolName, new JObject
+            {
+                ["projectFile"] = projectFile,
+                ["reason"] = "Inspect the database using the unchanged supplied project.",
+                ["inputParameters"] = new JObject
+                {
+                    ["Input_DbType"] = "MSSQL",
+                    ["Input_SQLConnectionString"] = "Server=localhost;Database=master;Integrated Security=True;",
+                    ["Input_SQLQuery"] = "SELECT name FROM sys.databases;"
+                }
+            });
+
+            Assert.IsNotNull(confirmation);
+            Assert.AreEqual(projectFile, confirmation.Arguments.Value<string>("projectFile"));
+            Assert.AreEqual("SELECT name FROM sys.databases;", confirmation.ConfirmationInputParameters!["Input_SQLQuery"]);
+            Assert.IsTrue(response.Result.Value<bool>("cancelledByUser"));
+            var sessionProjects = await Execute(api, "GetAuxiliaryProjects", new JObject());
+            Assert.AreEqual(0, sessionProjects.Result["projects"]!.Count());
         }
 
         [TestMethod]

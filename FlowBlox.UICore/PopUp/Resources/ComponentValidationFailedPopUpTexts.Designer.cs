@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FlowBlox.UICore.PopUp.Resources {
+namespace FlowBlox.UICore.PopUp.Resources
+{
     using System;
     
     
@@ -19,26 +20,31 @@ namespace FlowBlox.UICore.PopUp.Resources {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ComponentValidationFailedPopUpTexts {
+    public class ComponentValidationFailedPopUpTexts
+    {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ComponentValidationFailedPopUpTexts() {
+        internal ComponentValidationFailedPopUpTexts()
+        {
         }
         
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlowBlox.UICore.PopUp.Resources.ComponentValidationFailedPopUpTexts", typeof(ComponentValidationFailedPopUpTexts).Assembly);
                     resourceMan = temp;
                 }
@@ -51,20 +57,25 @@ namespace FlowBlox.UICore.PopUp.Resources {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Open the arrow menu next to Apply or Save. There you can apply or save the current changes without verification. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Open the arrow menu next to **Apply** or **Save**. There you can apply or save the current changes **without verification**. ähnelt.
         /// </summary>
-        public static string Step1_Description {
-            get {
+        public static string Step1_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step1_Description", resourceCulture);
             }
         }
@@ -72,17 +83,21 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Use the additional save options ähnelt.
         /// </summary>
-        public static string Step1_Headline {
-            get {
+        public static string Step1_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step1_Headline", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Saving without verification does not disable validation. FlowBlox automatically verifies the configuration before the runtime starts. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Saving **without verification** does not disable validation. FlowBlox automatically verifies the configuration before the runtime starts. ähnelt.
         /// </summary>
-        public static string Step2_Description {
-            get {
+        public static string Step2_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step2_Description", resourceCulture);
             }
         }
@@ -90,8 +105,10 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Validation still takes place ähnelt.
         /// </summary>
-        public static string Step2_Headline {
-            get {
+        public static string Step2_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step2_Headline", resourceCulture);
             }
         }
@@ -99,8 +116,10 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save without verification ähnelt.
         /// </summary>
-        public static string Window_Title {
-            get {
+        public static string Window_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("Window_Title", resourceCulture);
             }
         }

@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.ExecutionIndexWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -22,29 +22,22 @@
     </Window.Resources>
 
     <DockPanel Margin="10">
-        <Border Background="#FFEEEEEE" DockPanel.Dock="Top" Height="50" Padding="8">
+        <Border Style="{DynamicResource FlowBlox.DialogHeader}" DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <iconPacks:PackIconMaterial Kind="FormatListNumbered"
                                             Width="28"
                                             Height="28"
                                             Margin="0,0,10,0"
                                             VerticalAlignment="Center"
-                                            Foreground="DarkSlateGray"/>
-                <TextBlock Text="{x:Static resources:ExecutionIndexWindow.Header_Title}"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           FontSize="16" />
+                                            Foreground="{DynamicResource FlowBlox.Brush.DialogHeaderText}"/>
+                <TextBlock Style="{DynamicResource FlowBlox.DialogHeaderTitle}" Text="{x:Static resources:ExecutionIndexWindow.Header_Title}" />
             </StackPanel>
         </Border>
 
-        <Border Background="#EDF3F9"
+        <Border Style="{DynamicResource FlowBlox.DialogDescription}"
                 DockPanel.Dock="Top"
-                Padding="12"
-                CornerRadius="4"
-                Margin="0,8,0,8">
-            <TextBlock Text="{x:Static resources:ExecutionIndexWindow.Header_Description}"
-                       Foreground="DarkSlateGray"
-                       TextWrapping="Wrap" />
+                Margin="0,0,0,8">
+            <TextBlock Style="{DynamicResource FlowBlox.DialogDescriptionText}" Text="{x:Static resources:ExecutionIndexWindow.Header_Description}" />
         </Border>
 
         <Grid>

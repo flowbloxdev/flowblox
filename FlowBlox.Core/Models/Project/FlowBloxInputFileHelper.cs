@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -82,8 +84,8 @@ namespace FlowBlox.Core.Models.Project
 
             var replaced = input;
             // Canonical FlowBlox placeholder syntax.
-            replaced = ReplaceOrdinalIgnoreCase(replaced, "$InputFile::Path", absolutePath);
-            replaced = ReplaceOrdinalIgnoreCase(replaced, "$InputFile::RelativePath", relativePath);
+            replaced = ReplaceOrdinalIgnoreCase(replaced, FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.InputFile, "Path"), absolutePath);
+            replaced = ReplaceOrdinalIgnoreCase(replaced, FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.InputFile, "RelativePath"), relativePath);
             return replaced;
         }
 

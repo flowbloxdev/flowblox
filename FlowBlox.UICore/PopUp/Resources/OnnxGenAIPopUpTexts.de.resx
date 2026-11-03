@@ -6,14 +6,14 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>ONNX-GenAI-Textgenerierung einrichten</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Python installieren</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Python wird zum Herunterladen des vorbereiteten Modellpakets benötigt. Lade hier die aktuelle Version herunter und aktiviere bei der Installation „Add Python to PATH“:
-{0}</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Python wird zum Herunterladen des vorbereiteten Modellpakets benötigt. Lade hier die aktuelle Version herunter und aktiviere bei der Installation „**Add Python to PATH**“:
+[Python herunterladen]({0})</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Phi-4-Mini-Instruct-Modell für ONNX GenAI herunterladen</value></data>
   <data name="Step2_Description" xml:space="preserve"><value>Für den empfohlenen CPU-Schnellstart öffne das Phi-4-Mini-Skript (etwa 4,9 GB):
-{0}
+[Phi-4 Mini (CPU)]({0})
 
-Für größere, komplexe Anforderungen mit geeigneter NVIDIA-CUDA-Hardware verwende das erweiterte Modellskript. Standard ist Mistral 7B; weitere Modelle werden über --model-id ausgewählt:
-{1}</value></data>
+Für größere, komplexe Anforderungen mit geeigneter NVIDIA-CUDA-Hardware verwende das erweiterte Modellskript. Standard ist Mistral 7B; weitere Modelle werden über `--model-id` ausgewählt:
+[Erweitertes Modellskript (CUDA)]({1})</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Fertigen Modellordner auswählen</value></data>
-  <data name="Step3_Description" xml:space="preserve"><value>ModelFolder verweist auf die GenAI-Modellstammordner-Option und den Phi-4-Mini-Instruct-Unterordner. Er muss genai_config.json, tokenizer.json, model.onnx, model.onnx.data und die weiteren vom Skript geladenen Tokenizer-Dateien enthalten.</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>`ModelFolder` verweist auf die GenAI-Modellstammordner-Option und den Phi-4-Mini-Instruct-Unterordner. Er muss `genai_config.json`, `tokenizer.json`, `model.onnx`, `model.onnx.data` und die weiteren vom Skript geladenen Tokenizer-Dateien enthalten.</value></data>
 </root>

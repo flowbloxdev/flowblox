@@ -14,6 +14,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base.DatasetSelection
             if (inputBehaviorAssignments == null)
                 throw new ArgumentNullException(nameof(inputBehaviorAssignments));
 
+            inputBehaviorAssignments = inputBehaviorAssignments
+                .Where(assignment => assignment?.FlowBlock != null)
+                .ToList();
+
             var behaviors = inputBehaviorAssignments
                 .Select(a => a.Behavior)
                 .Distinct()

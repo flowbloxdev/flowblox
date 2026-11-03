@@ -1,0 +1,494 @@
+{
+  "$id": "1",
+  "$type": "FlowBlox.Core.Models.Project.FlowBloxProject, FlowBlox.Core",
+  "UserFields": {
+    "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.Private.CoreLib",
+    "$values": [
+      {
+        "$id": "2",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "DirectoryPath",
+        "FieldType": {
+          "$id": "3",
+          "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+          "FieldType": "Text",
+          "DateFormat": "dd.MM.yyyy HH:mm:ss",
+          "DecimalSeparator": ",",
+          "GroupSeparator": ".",
+          "IsNullable": true
+        },
+        "UserField": true,
+        "UserFieldType": "Input",
+        "StringValue": null,
+        "StoreValueLocally": false,
+        "IsPassword": false,
+        "ListOfValues": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Source": null,
+        "Conditions": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Modifiers": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Version": "1.0.0.0"
+      },
+      {
+        "$id": "4",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "Recursive",
+        "FieldType": {
+          "$id": "5",
+          "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+          "FieldType": "Boolean",
+          "DateFormat": "dd.MM.yyyy HH:mm:ss",
+          "DecimalSeparator": ",",
+          "GroupSeparator": ".",
+          "IsNullable": true
+        },
+        "UserField": true,
+        "UserFieldType": "Input",
+        "StringValue": "false",
+        "StoreValueLocally": false,
+        "IsPassword": false,
+        "ListOfValues": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Source": null,
+        "Conditions": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Modifiers": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Version": "1.0.0.0"
+      },
+      {
+        "$id": "6",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "FilterString",
+        "FieldType": {
+          "$id": "7",
+          "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+          "FieldType": "Text",
+          "DateFormat": "dd.MM.yyyy HH:mm:ss",
+          "DecimalSeparator": ",",
+          "GroupSeparator": ".",
+          "IsNullable": true
+        },
+        "UserField": true,
+        "UserFieldType": "Input",
+        "StringValue": "",
+        "StoreValueLocally": false,
+        "IsPassword": false,
+        "ListOfValues": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Source": null,
+        "Conditions": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Modifiers": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Version": "1.0.0.0"
+      }
+    ]
+  },
+  "ManagedObjects": {
+    "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Interfaces.IManagedObject, FlowBlox.Core]], System.Private.CoreLib",
+    "$values": [
+      {
+        "$ref": "2"
+      },
+      {
+        "$ref": "4"
+      },
+      {
+        "$ref": "6"
+      },
+      {
+        "$id": "8",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "FullPath",
+        "FieldType": {
+          "$id": "9",
+          "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+          "FieldType": "Text",
+          "DateFormat": "dd.MM.yyyy HH:mm:ss",
+          "DecimalSeparator": ",",
+          "GroupSeparator": ".",
+          "IsNullable": true
+        },
+        "UserField": false,
+        "UserFieldType": "None",
+        "StoreValueLocally": false,
+        "IsPassword": false,
+        "ListOfValues": null,
+        "Source": {
+          "$id": "10",
+          "$type": "FlowBlox.Core.Models.FlowBlocks.IO.FSDirectoryIteratorFlowBlock, FlowBlox.Core",
+          "DirectoryPath": "$User::DirectoryPath",
+          "Recursive": false,
+          "Recursive_SelectedField": {
+            "$ref": "4"
+          },
+          "FilterExpression": "$User::FilterString",
+          "ResultFields": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.ResultFieldByEnumValue`1[[FlowBlox.Core.Models.FlowBlocks.IO.FSDirectoryIteratorDestinations, FlowBlox.Core]], FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$id": "11",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.Base.ResultFieldByEnumValue`1[[FlowBlox.Core.Models.FlowBlocks.IO.FSDirectoryIteratorDestinations, FlowBlox.Core]], FlowBlox.Core",
+                "ResultField": {
+                  "$ref": "8"
+                },
+                "EnumValue": "FullPath"
+              }
+            ]
+          },
+          "OutputIgnoreDuplicates": false,
+          "OutputBehavior": "All",
+          "StartValue": null,
+          "StartIndex": null,
+          "EndIndex": null,
+          "OverriddenNotificationEntries": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "Location": "350, 400",
+          "ExecutionIndex": -1,
+          "IsNotExecuted": false,
+          "BreakPoint": false,
+          "Name": "FSDirectoryIterator_0",
+          "ReferencedFlowBlocks": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$id": "12",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.StartFlowBlock, FlowBlox.Core",
+                "OverriddenNotificationEntries": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "Location": "50, 400",
+                "ExecutionIndex": -1,
+                "IsNotExecuted": false,
+                "BreakPoint": false,
+                "Name": "Start",
+                "ReferencedFlowBlocks": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "AssociatedIterationContext": null,
+                "InputIgnoreDuplicates": false,
+                "AutomaticInputBehaviorAssignment": true,
+                "InputBehaviorAssignments": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "InheritRequirementsNotMet": true,
+                "ActivationConditions": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.LogicalCondition, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "TestDefinitions": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Testing.FlowBloxTestDefinition, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "GenerationStrategies": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Generators.FlowBloxGenerationStrategyBase, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "RequiredFields": {
+                  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+                  "$values": []
+                },
+                "Version": "1.0.0.0"
+              }
+            ]
+          },
+          "AssociatedIterationContext": null,
+          "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
+          "InputBehaviorAssignments": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "InheritRequirementsNotMet": true,
+          "ActivationConditions": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.LogicalCondition, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "TestDefinitions": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Testing.FlowBloxTestDefinition, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "GenerationStrategies": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Generators.FlowBloxGenerationStrategyBase, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "RequiredFields": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "Version": "1.0.0.0"
+        },
+        "Conditions": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Modifiers": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Version": "1.0.0.0"
+      },
+      {
+        "$id": "13",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "Field0",
+        "FieldType": {
+          "$id": "14",
+          "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+          "FieldType": "Text",
+          "DateFormat": "dd.MM.yyyy HH:mm:ss",
+          "DecimalSeparator": ",",
+          "GroupSeparator": ".",
+          "IsNullable": true
+        },
+        "UserField": false,
+        "UserFieldType": "None",
+        "StoreValueLocally": false,
+        "IsPassword": false,
+        "ListOfValues": null,
+        "Source": {
+          "$id": "15",
+          "$type": "FlowBlox.Core.Models.FlowBlocks.TextOperations.JoinCollectorFlowBlock, FlowBlox.Core",
+          "Separator": null,
+          "SpecialSeparator": "NewLine",
+          "JoinedParameters": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$ref": "8"
+              }
+            ]
+          },
+          "Name": "Files",
+          "ResultField": {
+            "$ref": "13"
+          },
+          "ResultFieldFieldType": "Text",
+          "OutputIgnoreDuplicates": false,
+          "OutputBehavior": "All",
+          "StartValue": null,
+          "StartIndex": null,
+          "EndIndex": null,
+          "OverriddenNotificationEntries": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "Location": "650, 400",
+          "ExecutionIndex": -1,
+          "IsNotExecuted": false,
+          "BreakPoint": false,
+          "ReferencedFlowBlocks": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$ref": "10"
+              }
+            ]
+          },
+          "AssociatedIterationContext": null,
+          "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
+          "InputBehaviorAssignments": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$id": "16",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
+                "FlowBlock": {
+                  "$ref": "10"
+                },
+                "Behavior": "Cross"
+              }
+            ]
+          },
+          "InheritRequirementsNotMet": true,
+          "ActivationConditions": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.LogicalCondition, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "TestDefinitions": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Testing.FlowBloxTestDefinition, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "GenerationStrategies": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Generators.FlowBloxGenerationStrategyBase, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "RequiredFields": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "Version": "1.0.0.0"
+        },
+        "Conditions": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Modifiers": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Version": "1.0.0.0"
+      },
+      {
+        "$id": "17",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "Success",
+        "FieldType": {
+          "$id": "18",
+          "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+          "FieldType": "Boolean",
+          "DateFormat": "dd.MM.yyyy HH:mm:ss",
+          "DecimalSeparator": ",",
+          "GroupSeparator": ".",
+          "IsNullable": true
+        },
+        "UserField": false,
+        "UserFieldType": "None",
+        "StoreValueLocally": false,
+        "IsPassword": false,
+        "ListOfValues": null,
+        "Source": {
+          "$id": "19",
+          "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputFlowBlock, FlowBlox.Core",
+          "MappingEntries": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$id": "20",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
+                "Field": {
+                  "$ref": "13"
+                },
+                "IsRequired": false,
+                "OutputPropertyName": "Files"
+              }
+            ]
+          },
+          "Name": "Output",
+          "ResultField": {
+            "$ref": "17"
+          },
+          "ResultFieldFieldType": "Boolean",
+          "OutputIgnoreDuplicates": false,
+          "OutputBehavior": "All",
+          "StartValue": null,
+          "StartIndex": null,
+          "EndIndex": null,
+          "OverriddenNotificationEntries": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "Location": "950, 400",
+          "ExecutionIndex": -1,
+          "IsNotExecuted": false,
+          "BreakPoint": false,
+          "ReferencedFlowBlocks": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
+            "$values": [
+              {
+                "$ref": "15"
+              }
+            ]
+          },
+          "AssociatedIterationContext": null,
+          "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
+          "InputBehaviorAssignments": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "InheritRequirementsNotMet": true,
+          "ActivationConditions": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.LogicalCondition, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "TestDefinitions": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Testing.FlowBloxTestDefinition, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "GenerationStrategies": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Generators.FlowBloxGenerationStrategyBase, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "RequiredFields": {
+            "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+            "$values": []
+          },
+          "Version": "1.0.0.0"
+        },
+        "Conditions": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Modifiers": {
+          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+          "$values": []
+        },
+        "Version": "1.0.0.0"
+      }
+    ]
+  },
+  "FlowBlocks": {
+    "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.Private.CoreLib",
+    "$values": [
+      {
+        "$ref": "12"
+      },
+      {
+        "$ref": "10"
+      },
+      {
+        "$ref": "15"
+      },
+      {
+        "$ref": "19"
+      }
+    ]
+  },
+  "ProjectGuid": "5a7502a1-fca0-4cf2-9ecf-60059cd5cca7",
+  "ProjectName": "ListFiles",
+  "Author": null,
+  "ProjectDescription": "Returns all matching full file paths as newline-separated Files text. DirectoryPath is required; Recursive defaults to false. Optional FilterString supports semicolon-separated wildcard includes and !excludes (for example *.txt;!temp/*). Empty filters include all files.",
+  "AssistantMetadata": {
+    "ShortDescription": "List files in a directory, optionally recursively with wildcard filters."
+  },
+  "Notice": null,
+  "GridSizeX": 2500,
+  "GridSizeY": 2000,
+  "AutoIncreaseGridSize": true,
+  "ProjectDependendDataObjects": {
+    "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Interfaces.IProjectDependendData, FlowBlox.Core]], System.Private.CoreLib",
+    "$values": []
+  },
+  "InputFiles": {
+    "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Models.Project.FlowBloxInputFile, FlowBlox.Core]], System.Private.CoreLib",
+    "$values": []
+  }
+}

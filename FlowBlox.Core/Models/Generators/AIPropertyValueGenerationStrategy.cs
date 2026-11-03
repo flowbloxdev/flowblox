@@ -1,3 +1,4 @@
+using FlowBlox.Core.Provider.Placeholders;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.DependencyInjection;
@@ -188,12 +189,12 @@ namespace FlowBlox.Core.Models.Generators
             var resolved = ReplaceFieldTokensWithTestValues(template, testResults);
             resolved = FlowBloxFieldHelper.ReplaceFieldsInString(resolved);
 
-            resolved = resolved.Replace("$GenerationStrategy::TargetFlowBlockInputValues", BuildTargetFlowBlockInputValuesText(testResults));
-            resolved = resolved.Replace("$GenerationStrategy::TestExpectations", BuildTestExpectationsText(testResults));
-            resolved = resolved.Replace("$GenerationStrategy::TestResults", BuildTestResultsText(testResults));
-            resolved = resolved.Replace("$GenerationStrategy::FlowBloxQuickUpdateSchema", FlowBloxQuickUpdateSchemaProvider.BuildSchema(Source));
-            resolved = resolved.Replace("$GenerationStrategy::FlowBloxQuickUpdateFormat", BuildQuickUpdateFormatText());
-            resolved = resolved.Replace("$GenerationStrategy::FlowBlockDescriptions", BuildFlowBlockDescriptions());
+            resolved = resolved.Replace(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.GenerationStrategy, "TargetFlowBlockInputValues"), BuildTargetFlowBlockInputValuesText(testResults));
+            resolved = resolved.Replace(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.GenerationStrategy, "TestExpectations"), BuildTestExpectationsText(testResults));
+            resolved = resolved.Replace(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.GenerationStrategy, "TestResults"), BuildTestResultsText(testResults));
+            resolved = resolved.Replace(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.GenerationStrategy, "FlowBloxQuickUpdateSchema"), FlowBloxQuickUpdateSchemaProvider.BuildSchema(Source));
+            resolved = resolved.Replace(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.GenerationStrategy, "FlowBloxQuickUpdateFormat"), BuildQuickUpdateFormatText());
+            resolved = resolved.Replace(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.GenerationStrategy, "FlowBlockDescriptions"), BuildFlowBlockDescriptions());
 
             return resolved;
         }
@@ -240,7 +241,7 @@ namespace FlowBlox.Core.Models.Generators
             var tokens = regex.Matches(input)
                 .Cast<Match>()
                 .Select(x => x.Value)
-                .Where(x => !x.StartsWith("$TestDefinition::", StringComparison.OrdinalIgnoreCase))
+                .Where(x => !x.StartsWith(FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.TestDefinition, string.Empty), StringComparison.OrdinalIgnoreCase))
                 .Distinct()
                 .ToList();
 

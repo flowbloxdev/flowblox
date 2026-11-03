@@ -10,6 +10,8 @@ using System.Collections.ObjectModel;
 using SkiaSharp;
 using System.Text;
 using FlowBlox.Core.Util.Fields;
+using System.Reflection;
+using FlowBlox.Enums;
 
 namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 {
@@ -84,7 +86,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 
             if (placeholderCount != linkedFieldCount)
             {
-                var errorMessage = string.Format(FlowBloxResourceUtil.GetLocalizedString("FormatFlowBlock_Validation_InvalidFieldElementCount"), placeholderCount, linkedFieldCount);
+                var errorMessage = string.Format(FlowBloxResourceUtil.GetLocalizedString(
+                    "FormatFlowBlock_Validation_InvalidFieldElementCount"), placeholderCount, linkedFieldCount);
                 return new ValidationResult(errorMessage, [validationContext.MemberName]);
             }
 

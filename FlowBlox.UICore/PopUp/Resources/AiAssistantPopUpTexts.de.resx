@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>KI-Assistent: der Einstieg</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>Von Ihrer Anforderung zum bearbeitbaren Flow</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Beschreiben Sie Ihr Ziel in eigenen Worten. Der **KI-Assistent** nutzt eine externe Cloud-KI, beispielsweise von OpenAI, Anthropic oder DeepSeek, um Fragen zu beantworten und vollständige Anforderungen umzusetzen.
+
+Über die **FlowBlox Tool API** legt er Flow-Blocks an, konfiguriert sie, ruft Informationen ab und testet oder debuggt Flows. Das entstandene Projekt können Sie prüfen und weiterbearbeiten. Anfragen sowie relevante Projekt- oder Tool-Daten werden an den gewählten Anbieter übermittelt.</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Skills erweitern die Möglichkeiten</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>**Hilfsprojekte** dienen als Skills: Sie können Informationen von Websites, aus lokalen Dateien oder MSSQL-Datenbanken abrufen – mit Ihren verfügbaren Verbindungen und Berechtigungen.
+
+Vor der Ausführung bittet FlowBlox um Ihre **Freigabe**, sofern Sie das Projekt nicht bereits dauerhaft erlaubt haben. Prüfen Sie Begründung, Projekt und **Eingabeparameter**. Wählen Sie **Einmal erlauben** oder **Immer erlauben**; dauerhafte Freigaben können Sie unter Optionen → AI → ApprovedAuxiliaryProjects zurücknehmen.</value></data>
+  <data name="Step3_Headline" xml:space="preserve"><value>Anbieter und API-Key einrichten</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>**1. Registrieren Sie sich** bei einem KI-Cloud-Anbieter und erstellen Sie einen **API-Key**. Für den API-Zugang sind in der Regel Guthaben oder eine aktivierte nutzungsabhängige Abrechnung erforderlich. Ein Chat-Abonnement enthält üblicherweise kein API-Guthaben.
+
+**2. Öffnen Sie die Konfiguration** über das Zahnrad im KI-Assistenten. Hinterlegen Sie einen **Provider**, wählen Sie dessen **Modell**, tragen Sie den **API-Key** ein und speichern Sie.
+
+**3. Beschreiben Sie Ihre Aufgabe** und senden Sie die Anfrage. Die Nutzung wird über den gewählten Anbieter abgerechnet.</value></data>
+  <data name="Step4_Headline" xml:space="preserve"><value>Das passende Modell für Ihren Anspruch</value></data>
+  <data name="Step4_Description" xml:space="preserve"><value>**Höchste Qualität:** Für anspruchsvolle Anforderungen und komplexe Flows empfehlen wir **OpenAI** oder **Anthropic / Claude**. Wählen Sie ein leistungsfähiges aktuelles Modell des Anbieters.
+
+**Bestes Preis-Leistungs-Verhältnis:** Für einen kostenbewussten Alltagseinsatz empfehlen wir **DeepSeek Flash** (`deepseek-flash`).
+
+Diese Empfehlungen dienen als Einstieg. Qualität, Geschwindigkeit und Kosten hängen vom gewählten Modell und der Aufgabe ab. Prüfen Sie vor der Nutzung die aktuellen API-Preise des Anbieters.</value></data>
+  <data name="Option_Completed_Name" xml:space="preserve"><value>KI-Assistent: Quick-Start abgeschlossen</value></data>
+  <data name="Option_Completed_Description" xml:space="preserve"><value>Speichert, ob die Einführung zum KI-Assistenten abgeschlossen wurde.</value></data>
+</root>

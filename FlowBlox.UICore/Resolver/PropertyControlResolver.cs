@@ -1,18 +1,19 @@
 ﻿using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.UICore.Factory.PropertyView;
 using FlowBlox.UICore.Interfaces;
 using FlowBlox.UICore.PropertyView.Resolver;
 using FlowBlox.UICore.ViewModels.PropertyView;
+using FlowBlox.UICore.Utilities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace FlowBlox.UICore.Resolver
 {
@@ -134,7 +135,8 @@ namespace FlowBlox.UICore.Resolver
                 ValidatesOnExceptions = true
             };
 
-            if (IsSimpleSupportedType(property.PropertyType))
+            if (IsSupportedSimplePropertyType(property.PropertyType) ||
+                EnumHelper.IsEnumType(property))
             {
                 return new PropertyControlWithFactoryResult(
                     _simplePropertyInputControlWithOptionalButtonsCreator.CreateSimplePropertyInputControlWithOptionalButtons(
@@ -143,46 +145,6 @@ namespace FlowBlox.UICore.Resolver
                         uiAttribute,
                         binding,
                         readOnly));
-            }
-
-            if (property.PropertyType.IsEnum || Nullable.GetUnderlyingType(property.PropertyType)?.IsEnum == true)
-            {
-                var enumType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                var enumValues = Enum.GetValues(enumType)
-                    .Cast<Enum>()
-                    .Select(e => new
-                    {
-                        DisplayName = e.GetDisplayName(),
-                        EnumValue = e
-                    })
-                    .ToList();
-
-                if (Nullable.GetUnderlyingType(property.PropertyType) != null)
-                {
-                    enumValues.Insert(0, new 
-                    { 
-                        DisplayName = string.Empty, 
-                        EnumValue = (Enum)null 
-                    });
-                }
-
-                var comboBox = new ComboBox
-                {
-                    ItemsSource = enumValues,
-                    DisplayMemberPath = "DisplayName",
-                    SelectedValuePath = "EnumValue"
-                };
-
-                SetComboBoxReadOnly(comboBox, readOnly);
-
-                comboBox.SelectionChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-
-                comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
-                return new PropertyControlWithFactoryResult(new Border
-                {
-                    Child = comboBox,
-                    Background = Brushes.Transparent
-                });
             }
 
             // Selection-Filter
@@ -207,11 +169,7 @@ namespace FlowBlox.UICore.Resolver
                     AttachSelectionFilterDependencyRefresh(comboBox, property, target, uiAttribute, selectionMethodResolution);
 
                     comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
-                    return new PropertyControlWithFactoryResult(new Border
-                    {
-                        Child = comboBox,
-                        Background = Brushes.Transparent
-                    });
+                    return new PropertyControlWithFactoryResult(CreateEditorContainer(comboBox));
                 }
             }
 
@@ -303,6 +261,13 @@ namespace FlowBlox.UICore.Resolver
             throw new NotImplementedException();
         }
 
+        private static Border CreateEditorContainer(UIElement editor)
+        {
+            var container = new Border { Child = editor };
+            container.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.EditorContainerStyle");
+            return container;
+        }
+
         private void SetComboBoxReadOnly(ComboBox comboBox, bool readOnly)
         {
             comboBox.IsHitTestVisible = !readOnly;
@@ -310,7 +275,7 @@ namespace FlowBlox.UICore.Resolver
             comboBox.IsTabStop = !readOnly;
         }
 
-        private static bool IsSimpleSupportedType(Type propertyType)
+        private static bool IsSupportedSimplePropertyType(Type propertyType)
         {
             return propertyType == typeof(bool) ||
                    propertyType == typeof(bool?) ||

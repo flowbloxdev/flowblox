@@ -26,7 +26,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public string DirectoryPath { get; set; }
 
         [Display(Name = "FSDirectoryIteratorFlowBlock_Recursive", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Recursive { get; set; }
+        public FieldElement Recursive_SelectedField { get; set; }
 
         [Display(Name = "FSDirectoryIteratorFlowBlock_FilterExpression", Description = "FSDirectoryIteratorFlowBlock_FilterExpression_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
@@ -187,7 +189,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
                 var options = new EnumerationOptions
                 {
-                    RecurseSubdirectories = Recursive,
+                    RecurseSubdirectories = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.Recursive),
                     IgnoreInaccessible = true,
                     ReturnSpecialDirectories = false
                 };
@@ -203,7 +205,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
                     var fileInfo = new FileInfo(fullPath);
                     var row = new ResultFieldByEnumValueResultBuilder<FSDirectoryIteratorDestinations>()
-                        .For(FSDirectoryIteratorDestinations.FullPath, fullPath)
+                        .For(FSDirectoryIteratorDestinations.FullPath, fileInfo.FullName)
                         .For(FSDirectoryIteratorDestinations.RelativePath, NormalizePath(relativePath))
                         .For(FSDirectoryIteratorDestinations.FileName, fileName)
                         .For(FSDirectoryIteratorDestinations.Size, fileInfo.Length.ToString(CultureInfo.InvariantCulture))

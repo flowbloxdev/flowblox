@@ -1,5 +1,6 @@
 using FlowBlox.UICore.ViewModels;
 using FlowBlox.UICore.Utilities;
+using FlowBlox.UICore.PopUp.Implementations;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Controls;
@@ -13,6 +14,7 @@ namespace FlowBlox.UICore.Views
         private const double ScrollEndTolerance = 2d;
         private bool _isTranscriptScrolledToBottom = true;
         private ScrollViewer? _transcriptScrollViewer;
+        private bool _isQuickStartScheduled;
 
         public AiAssistantChatView()
         {
@@ -21,6 +23,7 @@ namespace FlowBlox.UICore.Views
             Loaded += AiAssistantChatView_Loaded;
             DataContextChanged += AiAssistantChatView_DataContextChanged;
             Unloaded += AiAssistantChatView_Unloaded;
+            IsVisibleChanged += (_, _) => QueueQuickStart();
         }
 
         private AiAssistantChatViewModel? SubscribedViewModel { get; set; }
@@ -77,12 +80,14 @@ namespace FlowBlox.UICore.Views
         {
             SubscribeViewModel(DataContext as AiAssistantChatViewModel);
             Dispatcher.BeginInvoke(new Action(SubscribeTranscriptScrollViewer), DispatcherPriority.Loaded);
+            QueueQuickStart();
         }
 
         private void AiAssistantChatView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
         {
             UnsubscribeViewModel();
             SubscribeViewModel(e.NewValue as AiAssistantChatViewModel);
+            QueueQuickStart();
         }
 
         private void SubscribeViewModel(AiAssistantChatViewModel? vm)
@@ -93,6 +98,26 @@ namespace FlowBlox.UICore.Views
             SubscribedViewModel = vm;
             vm.Transcript.CollectionChanged += Transcript_CollectionChanged;
             vm.PropertyChanged += ViewModel_PropertyChanged;
+        }
+
+        private void QueueQuickStart()
+        {
+            if (!IsLoaded || !IsVisible || _isQuickStartScheduled)
+                return;
+
+            _isQuickStartScheduled = true;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    if (IsLoaded && IsVisible && DataContext is AiAssistantChatViewModel viewModel)
+                        new AiAssistantQuickStart().Show(viewModel, System.Windows.Window.GetWindow(this));
+                }
+                finally
+                {
+                    _isQuickStartScheduled = false;
+                }
+            }), DispatcherPriority.Loaded);
         }
 
         private void AiAssistantChatView_Unloaded(object sender, System.Windows.RoutedEventArgs e)

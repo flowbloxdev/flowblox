@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.PSProjectsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -88,34 +88,24 @@
     <DockPanel Margin="10">
 
         <!-- Header -->
-        <Border Background="#FFEEEEEE"
-                DockPanel.Dock="Top"
-                Height="50"
-                Padding="8">
+        <Border Style="{DynamicResource FlowBlox.DialogHeader}"
+                DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
                 <iconPacks:PackIconMaterial Kind="FolderSearchOutline"
                                             Width="30"
                                             Height="30"
                                             Margin="0,0,10,0"
                                             VerticalAlignment="Center"
-                                            Foreground="DarkSlateGray"/>
-                <TextBlock Text="{x:Static resources:PSProjectsWindow.Header_Title_Main}"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           FontSize="16"/>
+                                            Foreground="{DynamicResource FlowBlox.Brush.DialogHeaderText}"/>
+                <TextBlock Style="{DynamicResource FlowBlox.DialogHeaderTitle}" Text="{x:Static resources:PSProjectsWindow.Header_Title_Main}"/>
             </StackPanel>
         </Border>
 
         <!-- Description -->
-        <Border Background="#EDF3F9"
+        <Border Style="{DynamicResource FlowBlox.DialogDescription}"
                 DockPanel.Dock="Top"
-                Padding="12"
-                CornerRadius="4"
-                Margin="0,8,0,10">
-            <TextBlock Text="{x:Static resources:PSProjectsWindow.Header_Description_Main}"
-                       FontWeight="UltraLight"
-                       Foreground="DarkSlateGray"
-                       TextWrapping="Wrap"/>
+                Margin="0,0,0,10">
+            <TextBlock Style="{DynamicResource FlowBlox.DialogDescriptionText}" Text="{x:Static resources:PSProjectsWindow.Header_Description_Main}"/>
         </Border>
 
         <Grid>

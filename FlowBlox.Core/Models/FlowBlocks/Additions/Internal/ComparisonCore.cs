@@ -3,6 +3,11 @@ using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.Parsing;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using FlowBlox.Core.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Additions
 {
@@ -101,8 +106,55 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
                     return Regex.IsMatch(left, right);
                 case ComparisonOperator.RegexIsFalse:
                     return !Regex.IsMatch(left, right);
+                case ComparisonOperator.JPathIsTrue:
+                case ComparisonOperator.JPathIsFalse:
+                    return CheckJPath(op, left, right);
+                case ComparisonOperator.XPathIsTrue:
+                case ComparisonOperator.XPathIsFalse:
+                    return CheckXPath(op, left, right);
                 default:
                     throw new NotSupportedException("This operator is not supported.");
+            }
+        }
+
+        private static bool CheckJPath(ComparisonOperator op, string content, string expression)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(expression))
+                    throw new JsonException("The JPath expression is empty.");
+
+                var hasResults = JToken.Parse(content).SelectTokens(expression).Any();
+                return op == ComparisonOperator.JPathIsTrue ? hasResults : !hasResults;
+            }
+            catch (Exception exception) when (exception is JsonException or ArgumentException)
+            {
+                FlowBloxLogManager.Instance.GetLogger().Warn($"Could not evaluate {op}; the condition returns false.", exception);
+                return false;
+            }
+        }
+
+        private static bool CheckXPath(ComparisonOperator op, string content, string expression)
+        {
+            try
+            {
+                var document = new XmlDocument 
+                { 
+                    XmlResolver = null 
+                };
+                using var reader = XmlReader.Create(new StringReader(content), new XmlReaderSettings
+                {
+                    DtdProcessing = DtdProcessing.Prohibit,
+                    XmlResolver = null
+                });
+                document.Load(reader);
+                var hasResults = document.SelectSingleNode(expression) != null;
+                return op == ComparisonOperator.XPathIsTrue ? hasResults : !hasResults;
+            }
+            catch (Exception exception) when (exception is XmlException or XPathException or ArgumentException)
+            {
+                FlowBloxLogManager.Instance.GetLogger().Warn($"Could not evaluate {op}; the condition returns false.", exception);
+                return false;
             }
         }
 

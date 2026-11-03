@@ -72,4 +72,7 @@
   <data name="NoticeTooltip" xml:space="preserve">
     <value>Optionaler Hinweis, der beim Öffnen des Projekts angezeigt wird, etwa Voraussetzungen oder Bedienhinweise.</value>
   </data>
+  <data name="AssistantMetadataHeader" xml:space="preserve">
+    <value>KI-Assistent</value>
+  </data>
 </root>

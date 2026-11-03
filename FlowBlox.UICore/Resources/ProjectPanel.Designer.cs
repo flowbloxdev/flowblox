@@ -268,6 +268,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The next flow block is invoked once for each dataset provided by the connected result flow block. For flow blocks that do not provide result datasets, it is invoked once. ähnelt.
+        /// </summary>
+        public static string Legend_Invoke_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("Legend_Invoke_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Iteration context ähnelt.
         /// </summary>
         public static string Legend_IterationContext
@@ -279,6 +290,39 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Quick Start ähnelt.
+        /// </summary>
+        public static string Legend_IterationContext_QuickStart
+        {
+            get
+            {
+                return ResourceManager.GetString("Legend_IterationContext_QuickStart", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Learn how iteration context works through a practical example. ähnelt.
+        /// </summary>
+        public static string Legend_IterationContext_QuickStart_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("Legend_IterationContext_QuickStart_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The flow block runs after each dataset of the connected iteration-context flow block has been processed. ähnelt.
+        /// </summary>
+        public static string Legend_IterationContext_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("Legend_IterationContext_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Recursive call ähnelt.
         /// </summary>
         public static string Legend_RecursiveCall
@@ -289,6 +333,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Recursive flow blocks invoke the connected, previously executed target flow block again. The target must lie on the recursive flow block&apos;s incoming execution path. ähnelt.
+        /// </summary>
+        public static string Legend_RecursiveCall_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("Legend_RecursiveCall_Tooltip", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Invalid Flow Block name ähnelt.
         /// </summary>
@@ -387,17 +442,6 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Toolbar_AutoLayout", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Reset notifications ähnelt.
-        /// </summary>
-        public static string Toolbar_ResetNotifications
-        {
-            get
-            {
-                return ResourceManager.GetString("Toolbar_ResetNotifications", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Connect [Shift, Control] ähnelt.
@@ -432,6 +476,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reset notifications ähnelt.
+        /// </summary>
+        public static string Toolbar_ResetNotifications
+        {
+            get
+            {
+                return ResourceManager.GetString("Toolbar_ResetNotifications", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Select ähnelt.
         /// </summary>
@@ -528,6 +583,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Toolbar_TransactionMonitor", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Current dataset: {0} of {1} total datasets. A check mark indicates that all iterations are complete. ähnelt.
+        /// </summary>
+        public static string Tooltip_IterationProgress
+        {
+            get
+            {
+                return ResourceManager.GetString("Tooltip_IterationProgress", resourceCulture);
             }
         }
     }

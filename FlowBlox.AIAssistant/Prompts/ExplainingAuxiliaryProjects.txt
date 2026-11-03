@@ -11,19 +11,29 @@ Examples:
 - **Don't:** Debugging already proved correct execution and plausible values; only stronger final evidence is missing. Use an existing low-cost check or report the remaining real-world verification gap instead of building a helper solely for confirmation.
 
 Distributed templates:
-- Before creating an auxiliary project, call `GetAuxiliaryProjects(mode="distributedData",filter=...)`. It searches project names and descriptions and returns `fileName`, `shortDescription`, `description`, `inputFields`, and `outputFields`; omit `filter` to list all templates.
-- Reuse a suitable file directly with `CreateOrUpdateAuxiliaryProject(mode="full_content",copyFromDistributedData={dataType:"auxiliary_project",fileName:<catalog fileName>},...)`. Use `GetDistributedDataContent(dataType="auxiliary_project",fileName=...)` only when its project JSON must be inspected or adapted first.
+- Supplied project names and short descriptions are already listed in the session bootstrap. Select a suitable name and call `GetAuxiliaryProject(projectName=...)` (default `mode="distributedData"`) once for its `fileName`, `projectFile`, descriptions, `inputFields`, and `outputFields`. Use `mode="session"` for a known session project.
+- Use `GetAuxiliaryProjects(mode="distributedData",filter=...)` only when you need to search or list projects; do not repeat discovery when the suitable name is already known.
+- When present, `inputFieldListOfValues` gives the allowed string values for input fields; use these when configuring execution parameters.
+- Execute a suitable supplied project directly with `ExecuteExternalProject(projectFile:<catalog projectFile>,reason,inputParameters,outputFields)`; debug it with `RunProjectDebugTest(projectFile:<catalog projectFile>,reason,inputParameters)`. Neither call requires a session copy or edit mode. Do not create copies, aliases, or description-only variants for execution.
+- Only when a different capability requires intentional adaptation, create a session copy with `CreateOrUpdateAuxiliaryProject(mode="full_content",copyFromDistributedData={dataType:"auxiliary_project",fileName:<catalog fileName>},...)` and edit that copy. Follow the diagnosis rules below for failed executions.
+- Use `GetDistributedDataContent(dataType="auxiliary_project",fileName=...)` only when its full project JSON must be inspected or adapted first, for example to clarify behavior, input/output parameters, defaults, or their `ListOfValues`.
+
+Diagnosing failures:
+- Treat supplied auxiliary projects as tested flows. Do not modify them or their session copies to "repair" a failed execution; first check input parameters, resolved field values, connection settings, permissions, and external prerequisites.
+- Debug the unchanged project directly with `RunProjectDebugTest(projectFile,reason,inputParameters)`; no `AuxiliaryProjectEditing(EDIT)` is needed. Inspect the returned runtime protocol and errors. Use `targetFlowBlockName` to stop before a specific block, or additionally `includeTargetExecution=true` to execute that block once before stopping.
+- Read captured field changes and generated datasets with `GetLastDebugArtefact(fieldChangeId=... or generatedResultId=...,runId=...)`; use `FieldValueChangeId` or `GeneratedResultId` from the returned protocol entries. Use `InspectFieldValue` only for truncated values. Correct the inputs or environment according to the evidence; ask the user when required information or access is missing.
+- If evidence still points to a defect in a supplied flow, report the cause and evidence instead of autonomously fixing it. Adapting a flow for a genuinely different capability is a separate task, not a workaround for an unexplained failure.
 
 Default workflow:
-1. Search distributed templates with `GetAuxiliaryProjects(mode="distributedData",filter=...)` and prefer a suitable one.
-2. Call `GetAuxiliaryProjects` (default `mode="session"`) for this session's existing projects, descriptions, inputs, outputs, file paths, and open state. Reuse one when suitable; otherwise copy a template or create a minimal project with `CreateOrUpdateAuxiliaryProject`.
+1. Prefer a suitable supplied project from the session bootstrap and retrieve its parameter contract with `GetAuxiliaryProject(projectName=...)`. Search with `GetAuxiliaryProjects` only when needed.
+2. Execute a suitable supplied project directly using its returned `projectFile`. If none is suitable, call `GetAuxiliaryProjects` (default `mode="session"`) to check existing session projects. Create a minimal project or intentionally adapted copy with `CreateOrUpdateAuxiliaryProject` only when the required capability is missing.
 3. If changes are needed, call `AuxiliaryProjectEditing(EDIT)` and use the normal project tools.
-4. While it is active, validate the smallest relevant path with `RunProjectDebugTest(reason,inputParameters)`. Read protocol output directly, generated results/field changes with `GetLastDebugArtefact`, and truncated debug values with `InspectFieldValue`. Fix and repeat only as needed.
+4. While it is active, validate the smallest relevant path with `RunProjectDebugTest(reason,inputParameters)`. Read protocol output directly, generated results/field changes with `GetLastDebugArtefact`, and truncated debug values with `InspectFieldValue`. Fix and repeat for your own newly created or intentionally adapted flows; for supplied flows, follow the diagnosis rules above.
 5. Hard completion rule: after `EDIT` and all required editing/debugging steps, always finish with `AuxiliaryProjectEditing(SAVE)` (closes by default).
    - Verify `isOpen=false` with `GetAuxiliaryProjects` before reporting completion or using the project through `ExecuteExternalProject`.
    - Keep it open only while work or a user decision is pending; never leave an edited project unresolved when the requested work is complete.
    - Use `CLOSE` only to discard unsaved changes.
-6. For regular use, call `ExecuteExternalProject(projectFile,reason,inputParameters,outputFields)` with the path from `GetAuxiliaryProjects`. It returns declared project outputs without another token-intensive debug run. Use `InspectOutputFieldValue` only for truncated outputs.
+6. For regular use, call `ExecuteExternalProject(projectFile,reason,inputParameters,outputFields)` with the path from `GetAuxiliaryProject` or `GetAuxiliaryProjects`. It returns declared project outputs without another token-intensive debug run. Use `InspectOutputFieldValue` only for truncated outputs.
 
 Create/update contract:
 - `metadata_only`: create an empty project or update its description; `description` is required.
@@ -33,6 +43,7 @@ Create/update contract:
 
 Storage and safety:
 - Projects are isolated below `$Options::Paths.LocalAppDataDir\ai_assistant_auxiliary_projects\<session-hash>` and remain active across assistant runs until `SAVE` or `CLOSE`.
-- For debugging or executing an auxiliary project, provide `reason` and call the tool directly. FlowBlox requests confirmation in the UI automatically; do not ask the user separately.
+- Project JSON stores the capability summary under `AssistantMetadata.ShortDescription`; discovery returns it as `shortDescription`.
+- For debugging or executing an auxiliary project, provide `reason` and call the tool directly. FlowBlox requests confirmation unless the project is already in the user's `AI.ApprovedAuxiliaryProjects` option, showing the resolved input values for review. The user chooses Allow once or Always allow; only Always allow is remembered for future runs. Do not ask the user separately or alter the approval list to avoid confirmation.
 - Pass secrets or main-project values through execution `inputParameters` using placeholders; keep flows read-only where possible and outputs bounded.
 - Main-project extensions are not transferred.

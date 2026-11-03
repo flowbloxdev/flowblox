@@ -1,3 +1,4 @@
+using FlowBlox.Enums;
 using FlowBlox.Core;
 using FlowBlox.Core.Models.Deletion;
 using FlowBlox.Core.Util.FlowBlocks;
@@ -94,15 +95,14 @@ namespace FlowBlox.UICore.Views
                 var status = dependencies[0].ReviewStatus;
                 var summary = dependencies
                     .GroupBy(x => x.ReviewStatus)
-                    .Select(x => string.Format(
-                        V("Summary_" + x.Key),
-                        x.Count()));
+                    .Select(x => $"{L("DeletionConfirmation_Status_" + x.Key)} ({x.Count()})")
+                    .ToList();
 
                 return new RootCard
                 {
                     ObjectType = FlowBloxComponentHelper.GetDisplayName(group.Key),
                     ObjectName = group.Key.ToString() ?? string.Empty,
-                    Summary = string.Join(", ", summary),
+                    Summary = summary,
                     Entries = dependencies.Select(CreateEntry).ToList(),
                     Palette = GetPalette(status),
                     Icon = GetIcon(status)
@@ -178,7 +178,7 @@ namespace FlowBlox.UICore.Views
 
         private sealed class RootCard : ConfirmationCard
         {
-            public required string Summary { get; init; }
+            public required IReadOnlyList<string> Summary { get; init; }
             public required IReadOnlyList<ConfirmationEntry> Entries { get; init; }
         }
 

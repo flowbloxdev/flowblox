@@ -1134,7 +1134,7 @@ Alle Eingabedaten werden innerhalb jeder referenzierten Iteration gesammelt, und
 		<value>Liest ein PDF-Dokument aus der angegebenen Datenquelle und gibt den extrahierten Klartext seitenweise als Ergebnis zurück.</value>
 	</data>
 	<data name="PDF2TextFlowBlock_DisplayName" xml:space="preserve">
-		<value>PDF zu Text (PdfPig)</value>
+		<value>PDF zu Text</value>
 	</data>
 	<data name="Phi2AiTokenizer_Description" xml:space="preserve">
 		<value>Verwendet das Phi-2-Tokenizer-Modell zur Tokenisierung und Detokenisierung von Text für AI-Inferenz.</value>
@@ -2571,7 +2571,7 @@ Mehrstufige XPath-Ausdrücke sind hier nicht erlaubt.</value>
 		<value>KI-Propertywert-Generierung</value>
 	</data>
 	<data name="AIPropertyValueGenerationStrategy_Groups_AdditionalSettings" xml:space="preserve">
-		<value>ZusÃ¤tzliche Einstellungen</value>
+		<value>Zusätzliche Einstellungen</value>
 	</data>
 	<data name="AIPropertyValueGenerationStrategy_Description" xml:space="preserve">
 		<value>Konfiguriert beschreibbare FlowBlock-Properties per KI-Prompt anhand von Testfällen. Die KI nutzt das FlowBlox Quick Update Schema ($GenerationStrategy::FlowBloxQuickUpdateSchema) und gibt FlowBlox Quick Update JSON zurück, um eine oder mehrere konfigurierbare Properties zu aktualisieren. Benötigt mindestens einen Testfall für den Ziel-FlowBlock mit Erwartungsankern (Expected Value) und erwarteter Ergebnisdatensatz-Anzahl.</value>
@@ -3786,7 +3786,7 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
     <value>Wert</value>
   </data>
   <data name="DateTimeComponentAdjustmentEntry_Value_Description" xml:space="preserve">
-    <value>Integer-Wert für den gew�hlten Modus. Beispiel: Set Hours=0 oder Add Day=2.</value>
+    <value>Integer-Wert für den gewählten Modus. Beispiel: Set Hours=0 oder Add Day=2.</value>
   </data>
 
   <data name="DateTimeComponentAdjustmentMode_Add" xml:space="preserve">
@@ -4556,9 +4556,42 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="DeletionConfirmation_Impact_CollectionEntryRemoved" xml:space="preserve"><value>Eintrag wird vollständig aus der Collection entfernt</value></data>
   <data name="DeletionConfirmation_Impact_FieldReferenceInvalidated" xml:space="preserve"><value>Feldreferenz wird ungültig</value></data>
   <data name="DeletionConfirmation_Status_Information" xml:space="preserve"><value>Information</value></data>
-  <data name="DeletionConfirmation_Status_ReviewRecommended" xml:space="preserve"><value>Überprüfung empfohlen</value></data>
-  <data name="DeletionConfirmation_Status_ManualActionRequired" xml:space="preserve"><value>Manuelle Nacharbeit erforderlich</value></data>
+  <data name="DeletionConfirmation_Status_ReviewRecommended" xml:space="preserve"><value>Manuelle Überprüfung empfohlen</value></data>
+  <data name="DeletionConfirmation_Status_ManualActionRequired" xml:space="preserve"><value>Manuelle Überprüfung erforderlich</value></data>
   <data name="InputBehaviorAssignment_DisplayName" xml:space="preserve"><value>Eingabeverhaltenszuweisung</value></data>
+	<data name="ComparisonOperator_JPathIsFalse" xml:space="preserve">
+		<value>JPath trifft nicht zu</value>
+	</data>
+	<data name="ComparisonOperator_JPathIsTrue" xml:space="preserve">
+		<value>JPath trifft zu</value>
+	</data>
+	<data name="ComparisonOperator_XPathIsFalse" xml:space="preserve">
+		<value>XPath trifft nicht zu</value>
+	</data>
+	<data name="ComparisonOperator_XPathIsTrue" xml:space="preserve">
+		<value>XPath trifft zu</value>
+	</data>
+	<data name="EnumerationGroup_AdvancedTextOperators" xml:space="preserve">
+		<value>Erweiterte Textoperatoren</value>
+	</data>
+	<data name="FieldElement_Conditions_Tooltip" xml:space="preserve">
+		<value>Prüfen den Feldwert nach Anwendung der Modifier. Ist eine Bedingung nicht erfüllt, wird der Feldwert geleert (auf null gesetzt). Der Ergebnisdatensatz bleibt erhalten; die Anzahl der Ergebnisse ändert sich nicht.</value>
+	</data>
+	<data name="FieldElement_Modifiers_Tooltip" xml:space="preserve">
+		<value>Bearbeiten den Feldwert, nachdem der Flow-Block ihn als Ergebnis gesetzt hat, z. B. durch Kürzen oder Dekodieren von Text. Sie werden in Listenreihenfolge vor den Bedingungen angewendet.</value>
+	</data>
+  <data name="SQLTable_UseFieldValuesAsParameters" xml:space="preserve">
+    <value>Feldwerte als SQL-Parameter verwenden</value>
+  </data>
+  <data name="SQLTable_UseFieldValuesAsParameters_Tooltip" xml:space="preserve">
+    <value>Aktiviert (Standard): Feldwerte werden als SQL-Datenparameter gebunden. Deaktiviert: Feldwerte werden direkt als SQL-Text eingesetzt.</value>
+  </data>
+  <data name="ExecuteSQLFlowBlock_UseFieldValuesAsParameters" xml:space="preserve">
+    <value>Feldwerte als SQL-Parameter verwenden</value>
+  </data>
+  <data name="ExecuteSQLFlowBlock_UseFieldValuesAsParameters_Tooltip" xml:space="preserve">
+    <value>Aktiviert (Standard): Feldwerte werden als SQL-Datenparameter gebunden. Deaktiviert: Feldwerte werden direkt als SQL-Text eingesetzt.</value>
+  </data>
 </root>
 
 

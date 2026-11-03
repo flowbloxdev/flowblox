@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Ohne Überprüfung speichern</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Zusätzliche Speicheroptionen verwenden</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Öffnen Sie das Pfeilmenü neben Übernehmen oder Speichern. Dort können Sie die aktuellen Änderungen ohne Überprüfung übernehmen oder speichern.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Öffnen Sie das Pfeilmenü neben **Übernehmen** oder **Speichern**. Dort können Sie die aktuellen Änderungen **ohne Überprüfung** übernehmen oder speichern.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Die Validierung erfolgt weiterhin</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Das Speichern ohne Überprüfung deaktiviert die Validierung nicht. FlowBlox prüft die Konfiguration automatisch vor dem Start der Laufzeit.</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Das **Speichern** **ohne Überprüfung** deaktiviert die Validierung nicht. FlowBlox prüft die Konfiguration automatisch vor dem Start der Laufzeit.</value></data>
 </root>

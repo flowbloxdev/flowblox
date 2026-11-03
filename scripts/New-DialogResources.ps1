@@ -30,8 +30,8 @@ $properties
 }
 "@ | Set-Content (Join-Path $resources "$name.Designer.cs") -Encoding UTF8
 }
-$english = [xml](Get-Content (Join-Path $root 'FlowBlox/FlowBloxMainUITexts.resx') -Raw -Encoding UTF8)
-$german = [xml](Get-Content (Join-Path $root 'FlowBlox/FlowBloxMainUITexts.de.resx') -Raw -Encoding UTF8)
+$english = [xml](Get-Content (Join-Path $root 'FlowBlox.Avalonia/Resources/FlowBloxMainUITexts.resx') -Raw -Encoding UTF8)
+$german = [xml](Get-Content (Join-Path $root 'FlowBlox.Avalonia/Resources/FlowBloxMainUITexts.de.resx') -Raw -Encoding UTF8)
 $mapping = @{
     CreateTitle='CreateProject_Text'; EditTitle='EditProject_Text'; Apply='btApply_Text'; Cancel='btCancel_Text'
     Author='lbCreator_Text'; DescriptionHint='lbDescription_Text'; Notice='lbNoteOnOpening_Text'

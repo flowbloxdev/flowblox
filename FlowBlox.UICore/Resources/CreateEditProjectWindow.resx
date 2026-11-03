@@ -72,4 +72,7 @@
   <data name="NoticeTooltip" xml:space="preserve">
     <value>Optional notice displayed when the project is opened, for example prerequisites or instructions.</value>
   </data>
+  <data name="AssistantMetadataHeader" xml:space="preserve">
+    <value>AI Assistant</value>
+  </data>
 </root>

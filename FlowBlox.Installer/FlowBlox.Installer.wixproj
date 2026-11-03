@@ -10,5 +10,10 @@
   </PropertyGroup>
   <Target Name="GenerateWixFileFragment" BeforeTargets="BeforeBuild">
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\Tools\Generate-WixFileFragment.ps1&quot; -SourceDir &quot;$(SourceDir)&quot; -OutputFile &quot;$(MSBuildProjectDirectory)\Generated\FlowBloxFiles.wxs&quot;" />
+    <ItemGroup>
+      <!-- The generated file does not exist when the first build evaluates the SDK's glob. -->
+      <Compile Remove="Generated\FlowBloxFiles.wxs" />
+      <Compile Include="Generated\FlowBloxFiles.wxs" />
+    </ItemGroup>
   </Target>
 </Project>

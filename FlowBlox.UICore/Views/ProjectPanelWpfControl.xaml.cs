@@ -1,4 +1,5 @@
 using FlowBlox.UICore.Factory;
+using FlowBlox.UICore.PopUp.Implementations;
 using FlowBlox.UICore.ViewModels.ProjectPanel;
 using FlowBlox.UICore.Utilities;
 using System.Windows;
@@ -48,6 +49,9 @@ namespace FlowBlox.UICore.Views
 
         private void TransactionMonitorButton_Click(object sender, RoutedEventArgs e)
             => TransactionMonitorWindowFactory.Show();
+
+        private void IterationContextQuickStartButton_Click(object sender, RoutedEventArgs e)
+            => IterationContextQuickStart.Show(Window.GetWindow(this));
 
         private void TransactionMenuButton_Click(object sender, RoutedEventArgs e)
         {

@@ -7,6 +7,7 @@ namespace FlowBloxTest.Services
     internal sealed class RecordingAiExecutor : IAiExecutor
     {
         public List<AIChatRequest> Requests { get; } = new();
+        public Action<AIChatRequest>? SummaryRequestReceived { get; set; }
         public List<AIChatRequest> ChatRequests => Requests
             .Where(x => x.Source != "FlowBloxAIAssistantSummary")
             .ToList();
@@ -20,6 +21,7 @@ namespace FlowBloxTest.Services
 
             if (request.Source == "FlowBloxAIAssistantSummary")
             {
+                SummaryRequestReceived?.Invoke(request);
                 return Task.FromResult(new AiExecutorResult
                 {
                     Success = true,

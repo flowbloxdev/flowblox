@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Header_Title" xml:space="preserve"><value>AI Assistant</value></data>
   <data name="Header_Description" xml:space="preserve"><value>The AI Assistant can help you adjust the current flow or create a complete flow from a description.</value></data>
-  <data name="Warning_MissingProvider" xml:space="preserve"><value>Please configure your AI provider first. API key required.</value></data>
+  <data name="Warning_MissingProvider" xml:space="preserve"><value>No AI provider with a usable API key is configured. Open Configuration using the gear icon, add an AI provider or edit the existing one, enter its API key, and save. Then send your request again.</value></data>
   <data name="Tooltip_NewHistory" xml:space="preserve"><value>Start new chat</value></data>
   <data name="Tooltip_BackToHistory" xml:space="preserve"><value>Back to histories</value></data>
   <data name="Tooltip_Undo" xml:space="preserve"><value>Undo last AI project state change</value></data>
@@ -38,7 +38,7 @@
   <data name="Message_ExternalProjectExecution_ProjectFile" xml:space="preserve"><value>Project file: {0}</value></data>
   <data name="Message_ExternalProjectExecution_ActiveAuxiliaryProject" xml:space="preserve"><value>The currently open auxiliary project will be executed.</value></data>
   <data name="Message_ExternalProjectExecution_Review" xml:space="preserve"><value>Review project</value></data>
-  <data name="Message_ExternalProjectExecution_Execute" xml:space="preserve"><value>Execute</value></data>
+  <data name="Message_ExternalProjectExecution_Execute" xml:space="preserve"><value>Allow once</value></data>
   <data name="Message_ExternalProjectExecution_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Button_Pause" xml:space="preserve"><value>Pause</value></data>
   <data name="Button_PausePending" xml:space="preserve"><value>Pausing…</value></data>
@@ -49,4 +49,23 @@
   <data name="Status_Stopped" xml:space="preserve"><value>Stopped.</value></data>
   <data name="Button_Continue" xml:space="preserve"><value>Continue</value></data>
   <data name="Tooltip_Continue" xml:space="preserve"><value>Resume the paused assistant run. Staged messages are processed next.</value></data>
+  <data name="Message_ExternalProjectExecution_InputParameters" xml:space="preserve">
+    <value>Input parameters</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ParameterName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ParameterValue" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ViewParameterContent" xml:space="preserve">
+    <value>View complete value (read-only)</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_ApprovalPersistence" xml:space="preserve">
+    <value>Allows future AI Assistant executions of this project without prompting. To reset this approval, remove the project entry in Options &gt; AI.ApprovedAuxiliaryProjects.</value>
+  </data>
+  <data name="Message_ExternalProjectExecution_AlwaysAllow" xml:space="preserve">
+    <value>Always allow</value>
+  </data>
+  <data name="Message_ProviderConfiguration_Title" xml:space="preserve"><value>Set up the AI Assistant</value></data>
 </root>

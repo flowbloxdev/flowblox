@@ -36,6 +36,27 @@ namespace FlowBloxTest.FlowBlocks.Base
         }
 
         [TestMethod]
+        public void ReferenceSync_RemovesNullAndUnboundAssignmentsAndPreservesValidBehavior()
+        {
+            var iterationContext = CreateFlowBlock<StartFlowBlock>();
+            var first = CreateFlowBlock<ExecutionOrderTestFlowBlock>(iterationContext);
+            var second = CreateFlowBlock<ExecutionOrderTestFlowBlock>(iterationContext);
+            var target = CreateFlowBlock<ExecutionOrderTestFlowBlock>(first);
+            target.AssociatedIterationContext = iterationContext;
+            var retained = target.InputBehaviorAssignments.Single();
+            retained.Behavior = InputBehavior.Last;
+            target.InputBehaviorAssignments.Add(null);
+            target.InputBehaviorAssignments.Add(new InputBehaviorAssignment { Behavior = InputBehavior.RowWise });
+
+            target.ReferencedFlowBlocks.Add(second);
+
+            Assert.AreEqual(2, target.InputBehaviorAssignments.Count);
+            Assert.AreSame(retained, target.InputBehaviorAssignments.Single(item => item.FlowBlock == first));
+            Assert.AreEqual(InputBehavior.Last, retained.Behavior);
+            Assert.AreEqual(InputBehavior.First, target.InputBehaviorAssignments.Single(item => item.FlowBlock == second).Behavior);
+        }
+
+        [TestMethod]
         public void NoPreviousAssignments_AddingMultipleReferences_SetsAllToFirst()
         {
             var iterationContext = CreateFlowBlock<StartFlowBlock>();

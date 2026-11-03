@@ -5,6 +5,7 @@ using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.FlowBlocks.Selection.StartEndPatternSelector;
 using FlowBlox.Core.Models.Runtime;
+using FlowBlox.Core.Util.Resources;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -21,8 +22,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
         [FlowBloxDataGrid(IsMovable = true)]
         public ObservableCollection<StartEndPattern> StartEndPatterns { get; set; }
 
-        public override SKImage Icon16 => base.Icon16;
-        public override SKImage Icon32 => base.Icon32;
+        private static readonly SKColor SelectorIconColor = new SKColor(100, 181, 212);
+
+        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.selection_search, 16, SelectorIconColor);
+        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.selection_search, 32, SelectorIconColor);
 
         public StartEndPatternSelectorFlowBlock() : base()
         {

@@ -12,4 +12,5 @@
   <data name="Tooltip_OpenCommunicationProtocolDirectory" xml:space="preserve"><value>Open communication protocol directory</value></data>
   <data name="Tooltip_OpenDebugTools" xml:space="preserve"><value>AI-Assistant Debugging Tools</value></data>
   <data name="Tooltip_Configure" xml:space="preserve"><value>Configure AI Assistant</value></data>
+  <data name="Tooltip_QuickStart" xml:space="preserve"><value>AI Assistant: how it works, setup, and model recommendations</value></data>
 </root>

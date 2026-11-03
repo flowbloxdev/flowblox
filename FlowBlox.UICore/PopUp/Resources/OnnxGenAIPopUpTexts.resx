@@ -6,14 +6,14 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Set up ONNX GenAI text generation</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Install Python</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Python is required to download the prepared model package. Download the latest release here and enable “Add Python to PATH” during setup:
-{0}</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Python is required to download the prepared model package. Download the latest release here and enable “**Add Python to PATH**” during setup:
+[Download Python]({0})</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Download the Phi-4 Mini Instruct ONNX GenAI model</value></data>
   <data name="Step2_Description" xml:space="preserve"><value>For the recommended CPU quick start, open the Phi-4 Mini script (about 4.9 GB):
-{0}
+[Phi-4 Mini (CPU)]({0})
 
-For larger, complex requirements with suitable NVIDIA CUDA hardware, use the advanced model script. It defaults to Mistral 7B and supports further models through --model-id:
-{1}</value></data>
+For larger, complex requirements with suitable NVIDIA CUDA hardware, use the advanced model script. It defaults to Mistral 7B and supports further models through `--model-id`:
+[Advanced model script (CUDA)]({1})</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Select the completed model folder</value></data>
-  <data name="Step3_Description" xml:space="preserve"><value>ModelFolder points to the GenAI model root option and Phi-4 Mini Instruct subfolder. It must contain genai_config.json, tokenizer.json, model.onnx, model.onnx.data, and the additional tokenizer assets downloaded by the script.</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>`ModelFolder` points to the GenAI model root option and Phi-4 Mini Instruct subfolder. It must contain `genai_config.json`, `tokenizer.json`, `model.onnx`, `model.onnx.data`, and the additional tokenizer assets downloaded by the script.</value></data>
 </root>

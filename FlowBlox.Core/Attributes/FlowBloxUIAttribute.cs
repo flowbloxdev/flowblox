@@ -127,8 +127,7 @@
                          Models.FlowBlocks.Base.BaseFlowBlock.Regex_FullyQualifiedFieldNames))
             {
                 var sourceId = Models.Components.FieldElement.GetSourceId(match.Value);
-                if (string.Equals(sourceId, "Project", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(sourceId, "Options", StringComparison.OrdinalIgnoreCase))
+                if (Provider.Placeholders.FlowBloxSourceIds.GetAllSourceIds().Contains(sourceId))
                 {
                     continue;
                 }

@@ -1,0 +1,13 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="FlowBlox.AvaloniaDesktop.SplashWindow" Width="500" Height="180"
+        CanResize="False" WindowDecorations="None" WindowStartupLocation="CenterScreen" Title="FlowBlox"
+        ShowInTaskbar="False" Background="Transparent" TransparencyLevelHint="Transparent">
+  <Border x:Name="SplashSurface" CornerRadius="14" Background="#353535" BorderThickness="1" BorderBrush="#6063B9D8" Padding="16">
+    <StackPanel VerticalAlignment="Center">
+      <Image x:Name="Logo" Width="440" Height="97" Stretch="Uniform" Margin="0,0,0,-10" />
+      <TextBlock x:Name="Status" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0,0,0,8" />
+      <ProgressBar x:Name="Progress" IsIndeterminate="True" Height="4" Width="120" Foreground="#66D9EF" />
+      <Button x:Name="Quit" Content="OK" IsVisible="False" HorizontalAlignment="Center" Margin="0,8,0,0" />
+    </StackPanel>
+  </Border>
+</Window>

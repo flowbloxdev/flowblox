@@ -104,7 +104,7 @@ namespace FlowBlox.Core.Util.DistributedData
             var directory = new DirectoryInfo(AppContext.BaseDirectory);
             while (directory != null)
             {
-                candidates.Add(Path.Combine(directory.FullName, "FlowBlox", "ApplicationDir", "data"));
+                candidates.Add(Path.Combine(directory.FullName, "FlowBlox.Build", "data"));
                 directory = directory.Parent;
             }
 

@@ -11,5 +11,7 @@ namespace FlowBlox.UICore.PopUp.Constants
         public const string OnnxGenAIQuickStartCompleted = "PopUp.OnnxGenAI.QuickStartCompleted";
 
         public const string OnnxQAQuickStartCompleted = "PopUp.OnnxQA.QuickStartCompleted";
+
+        public const string AiAssistantQuickStartCompleted = "PopUp.AiAssistant.QuickStartCompleted";
     }
 }

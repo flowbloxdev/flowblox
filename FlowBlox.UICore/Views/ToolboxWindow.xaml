@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     x:Class="FlowBlox.UICore.Views.ToolboxWindow"

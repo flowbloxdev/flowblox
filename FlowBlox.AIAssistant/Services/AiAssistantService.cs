@@ -340,6 +340,14 @@ namespace FlowBlox.AIAssistant.Services
                             summaryCompactionRate));
                     await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, ct).ConfigureAwait(false);
 
+                    // Summarization can take long enough for the user to add further instructions.
+                    if (runControl != null)
+                        await PrepareRunControlForNextRoundAsync(
+                            session,
+                            runControl,
+                            hasExecutedLayoutRelevantToolCall,
+                            ct).ConfigureAwait(false);
+
                     chatRequestResult = AssistantChatRequestBuilder.Build(
                         systemPrompt,
                         sessionBootstrapPrompt,
@@ -433,10 +441,6 @@ namespace FlowBlox.AIAssistant.Services
                             : instruction.AssistantMessage;
                         AppendSingleSessionMessage(session, "assistant", finalText);
 
-                        // Continue the run when user messages were staged during the response.
-                        if (runControl != null && !runControl.TryCompleteWhenNoMessagesAreStaged())
-                            continue;
-
                         if (hasExecutedLayoutRelevantToolCall)
                             await DelayAndRunAutomaticAdjustmentIfEnabledAsync("AI run completed", ct).ConfigureAwait(false);
 
@@ -445,6 +449,11 @@ namespace FlowBlox.AIAssistant.Services
                         result.Summary = "Assistant response generated.";
                         UpdateKnownProjectJsonHash(session);
                         await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, ct).ConfigureAwait(false);
+
+                        // Keep accepting messages until all asynchronous completion work is finished.
+                        if (runControl != null && !runControl.TryCompleteWhenNoMessagesAreStaged())
+                            continue;
+
                         return result;
                     }
 

@@ -6,11 +6,11 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Set up ONNX extractive question answering</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Install Python</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Python is required to download and export the example model. Download the latest release here and enable “Add Python to PATH” during setup:
-{0}</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Python is required to download and export the example model. Download the latest release here and enable “**Add Python to PATH**” during setup:
+[Download Python]({0})</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Export the multilingual mDeBERTa-v3 QA model</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Open the included page and run or download the published Python script. It uses multilingual mDeBERTa-v3 by default. Pass --model-id for another checkpoint, --model-root-directory for a user model root, or --output-directory for an exact model folder:
-{0}</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Open the included page and run or download the published Python script. It uses multilingual mDeBERTa-v3 by default. Pass `--model-id` for another checkpoint, `--model-root-directory` for a user model root, or `--output-directory` for an exact model folder:
+[mDeBERTa-v3 export script]({0})</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Select the completed model folder</value></data>
-  <data name="Step3_Description" xml:space="preserve"><value>ModelFolder points to the QA model root option and default model subfolder. The folder must contain model.onnx, config.json, tokenizer_config.json and the exported tokenizer assets. Enable AllowNoAnswer when empty answers are required and tune its threshold with representative data.</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>`ModelFolder` points to the QA model root option and default model subfolder. The folder must contain `model.onnx`, `config.json`, `tokenizer_config.json` and the exported tokenizer assets. Enable `AllowNoAnswer` when empty answers are required and tune its threshold with representative data.</value></data>
 </root>

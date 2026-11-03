@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+using FlowBlox.Enums;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Deletion;

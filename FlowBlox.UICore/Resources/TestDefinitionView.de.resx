@@ -199,10 +199,12 @@
     <value>Wert</value>
   </data>
   <data name="Icon_UIRequiredForExecution_FieldConfiguration_Tooltip" xml:space="preserve">
-    <value>Diese Testkonfiguration ist für die Ausführung erforderlich. Grün zeigt an, dass eine gültige Wertauswahl konfiguriert ist.</value>
+    <value>Diese Testkonfiguration ist für die Ausführung erforderlich.
+Status: Konfiguration erforderlich.</value>
   </data>
   <data name="Icon_AssociatedFlowBlockRequiredForExecution_Tooltip" xml:space="preserve">
-    <value>Ein ausgeführter Flow-Block benötigt diesen zugeordneten Flow-Block. Grün zeigt an, dass seine Ausführung aktiviert ist und der erforderliche Laufzeitzustand initialisiert wird.</value>
+    <value>Ein ausgeführter Flow-Block benötigt diesen zugeordneten Flow-Block.
+Status: Ausführung aktivieren, damit der erforderliche Laufzeitzustand initialisiert wird.</value>
   </data>
   <data name="Icon_TargetFlowBlock_Tooltip" xml:space="preserve">
     <value>Dies ist der aktuelle Ziel-Flow-Block. Hier endet der Test, und die Testergebnisse werden von diesem Flow-Block gelesen. Dieser Flow-Block muss bei der Testausführung in diesem Kontext ausgeführt werden.</value>
@@ -280,5 +282,13 @@ Meldung(en):
   </data>
   <data name="Text_EditInEditor" xml:space="preserve">
     <value>Im Editor bearbeiten</value>
+  </data>
+  <data name="Icon_UIRequiredForExecution_FieldConfiguration_Configured_Tooltip" xml:space="preserve">
+    <value>Diese Testkonfiguration ist für die Ausführung erforderlich.
+Status: Konfiguriert.</value>
+  </data>
+  <data name="Icon_AssociatedFlowBlockRequiredForExecution_Configured_Tooltip" xml:space="preserve">
+    <value>Ein ausgeführter Flow-Block benötigt diesen zugeordneten Flow-Block.
+Status: Ausführung aktiviert. Der erforderliche Laufzeitzustand wird initialisiert.</value>
   </data>
 </root>

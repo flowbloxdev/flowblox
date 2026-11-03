@@ -2,7 +2,7 @@
     [string]$Configuration = "Release",
     [string]$RuntimeIdentifier = "win-x64",
     [string]$InstallerProjectPath = "FlowBlox.Installer\FlowBlox.Installer.wixproj",
-    [string]$FlowBloxProjectPath = "FlowBlox\FlowBlox.csproj",
+    [string]$FlowBloxProjectPath = "FlowBlox.Avalonia\FlowBlox.Avalonia.csproj",
     [string]$PublishDir = "artifacts\installer\publish\win-x64",
     [string]$MsiOutputDir = "artifacts\installer\msi",
     [switch]$NoRestore,
@@ -22,7 +22,7 @@ $publishStagingRoot = Join-Path $repoRoot "artifacts\installer\staging\$RuntimeI
 $msiOutputDirResolved = Join-Path $repoRoot $MsiOutputDir
 
 $applicationProjects = @(
-    @{ Name = "FlowBlox"; Path = $flowBloxProject; Framework = $null },
+    @{ Name = "FlowBlox.Avalonia"; Path = $flowBloxProject; Framework = $null },
     @{ Name = "FlowBlox.CLI"; Path = (Join-Path $repoRoot "FlowBlox.CLI\FlowBlox.CLI.csproj"); Framework = $null },
     @{ Name = "FlowBlox.RunnerHost"; Path = (Join-Path $repoRoot "FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj"); Framework = $null },
     @{ Name = "FlowBlox.WorkerService"; Path = (Join-Path $repoRoot "FlowBlox.WorkerService\FlowBlox.WorkerService.csproj"); Framework = "net10.0-windows10.0.19041.0" }
@@ -115,6 +115,10 @@ if (-not $NoPublish) {
         if ($applicationProject.Framework) {
             $publishArgs += @("-f", $applicationProject.Framework)
         }
+        if ($applicationProject.Name -eq 'FlowBlox.Avalonia') {
+            # RunnerHost is published separately with the selected RID below.
+            $publishArgs += "-p:PublishRunnerHost=false"
+        }
         if ($NoRestore) {
             $publishArgs += "--no-restore"
         }
@@ -137,6 +141,12 @@ if (-not $NoPublish) {
 
 if (-not (Test-Path $publishDirResolved)) {
     throw "Publish directory not found: $publishDirResolved"
+}
+
+foreach ($executable in @('FlowBlox.exe', 'FlowBlox.CLI.exe', 'FlowBlox.RunnerHost.exe', 'FlowBlox.WorkerService.exe')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $publishDirResolved $executable) -PathType Leaf)) {
+        throw "Required application executable missing from MSI payload: $executable. Rebuild without -NoPublish to refresh the payload."
+    }
 }
 
 $licenseFile = Join-Path $repoRoot "LICENSE.txt"

@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <FlowBloxBuildDirectory>$(MSBuildThisFileDirectory)</FlowBloxBuildDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(FlowBloxBuildDirectory)data\**\*"
+             Link="data\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="CopyFlowBloxOnnxRuntimes" AfterTargets="Build" Condition="'$(SkipFlowBloxAppDir)' != 'true'">
+    <Exec Command="&quot;$(FlowBloxBuildDirectory)postbuild.bat&quot; &quot;$(TargetDir)&quot; &quot;$(RuntimeIdentifier)&quot;" />
+  </Target>
+  <Target Name="PublishFlowBloxOnnxRuntimes" AfterTargets="Publish" Condition="'$(SkipFlowBloxAppDir)' != 'true' and '$(PublishDir)' != ''">
+    <Exec Command="&quot;$(FlowBloxBuildDirectory)postbuild.bat&quot; &quot;$(PublishDir)&quot; &quot;$(RuntimeIdentifier)&quot;" />
+  </Target>
+</Project>

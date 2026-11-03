@@ -1,4 +1,4 @@
-<mah:MetroWindow
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     x:Class="FlowBlox.UICore.Views.TransactionMonitorWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -26,9 +26,7 @@
 
     <DockPanel Margin="10">
         <Border DockPanel.Dock="Top"
-                Height="54"
-                Padding="10"
-                Background="#FFEEEEEE">
+                Style="{DynamicResource FlowBlox.DialogHeader}">
             <StackPanel Orientation="Horizontal">
                 <iconPacks:PackIconMaterial Kind="SwapHorizontal"
                                             Width="30"
@@ -36,15 +34,13 @@
                                             Margin="0,0,10,0"
                                             Foreground="#2F6DB3"
                                             VerticalAlignment="Center" />
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:TransactionMonitorWindow.Header}"
-                               FontSize="16"
-                               FontWeight="Bold" />
-                    <TextBlock Text="{x:Static resources:TransactionMonitorWindow.Description}"
-                               Foreground="#65737E"
-                               FontSize="11" />
-                </StackPanel>
+                <TextBlock Text="{x:Static resources:TransactionMonitorWindow.Header}"
+                           Style="{DynamicResource FlowBlox.DialogHeaderTitle}" />
             </StackPanel>
+        </Border>
+        <Border DockPanel.Dock="Top" Style="{DynamicResource FlowBlox.DialogDescription}">
+            <TextBlock Text="{x:Static resources:TransactionMonitorWindow.Description}"
+                       Style="{DynamicResource FlowBlox.DialogDescriptionText}" />
         </Border>
 
         <Grid DockPanel.Dock="Top" Margin="0,10,0,10">
@@ -54,7 +50,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="#EDF3F9" CornerRadius="4" Padding="12">
+            <Border Grid.Column="0" Background="{DynamicResource FlowBlox.Brush.InformationBackground}" CornerRadius="4" Padding="12">
                 <StackPanel>
                     <TextBlock Text="{x:Static resources:TransactionMonitorWindow.ActiveTransactions}"
                                Foreground="#65737E" />
@@ -65,7 +61,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Grid.Column="2" Background="#EDF3F9" CornerRadius="4" Padding="12">
+            <Border Grid.Column="2" Background="{DynamicResource FlowBlox.Brush.InformationBackground}" CornerRadius="4" Padding="12">
                 <StackPanel>
                     <TextBlock Text="{x:Static resources:TransactionMonitorWindow.CurrentTransaction}"
                                Foreground="#65737E" />

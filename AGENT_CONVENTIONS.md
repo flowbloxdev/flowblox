@@ -4,12 +4,14 @@
 This file summarizes core project conventions for AI/coding agents working in the FlowBlox repository.
 
 ## High-Level Architecture
-- `FlowBlox` is the WinForms host application.
+- `FlowBlox.Avalonia` is the active UI host and the main desktop application. Implement and verify host UI changes here, including the real desktop checks in `FlowBlox.Avalonia.IntegrationTests`.
+- `FlowBlox` is the retired WinForms host. It is retained only as a knowledge base/reference; it is no longer used. Do not implement UI fixes there unless explicitly requested.
 - `FlowBlox.UICore` contains WPF-based UI infrastructure (property rendering, editors, factories, resolvers).
 - `FlowBlox.Core` contains execution/runtime logic and the core domain model.
 - FlowBlock execution logic belongs to `FlowBlox.Core` (runtime, testing, generation, execution pipeline).
 
 ## Code Formatting
+- Always put XML documentation `<summary>` and `</summary>` on separate lines, with the summary content on one or more lines between them; never use inline summary tags.
 - Prefer open, readable formatting over compressed code: one statement or initializer entry per line.
 - Put conditional bodies on separate lines; use braces for multi-line bodies and object assignments.
 - Wrap longer signatures and calls with one parameter or argument per line; put LINQ steps on separate lines.

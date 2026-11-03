@@ -20,6 +20,67 @@ namespace FlowBloxTest.AIAssistant
     public class AiAssistantServiceContextTests
     {
         [TestMethod]
+        public async Task GenerateProjectAsync_IncludesMessagesStagedDuringSummaryInImmediatelyFollowingRequest()
+        {
+            var executor = new RecordingAiExecutor();
+            var service = CreateService(executor, CreateConfiguration(maxLatestMessages: 2, minLatestMessages: 2));
+            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
+            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
+
+            var runControl = new AssistantRunControl();
+            var stagedDuringSummary = false;
+            executor.SummaryRequestReceived = _ =>
+            {
+                Assert.IsTrue(runControl.TryStageUserMessage("INTERMEDIATE-DURING-SUMMARY"));
+                stagedDuringSummary = true;
+            };
+
+            var result = await service.GenerateProjectAsync("USER-3", CancellationToken.None, runControl);
+
+            Assert.IsTrue(stagedDuringSummary);
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(3, executor.ChatRequests.Count);
+            var request = executor.ChatRequests.Last();
+            Assert.AreEqual(1, request.Messages.Count(message =>
+                message.Role == "user" && message.Content == "INTERMEDIATE-DURING-SUMMARY"));
+            var summaryRequest = executor.Requests.Single(request => request.Source == "FlowBloxAIAssistantSummary");
+            AssertDoesNotContain(summaryRequest.Messages.Single().Content, "INTERMEDIATE-DURING-SUMMARY");
+        }
+
+        [TestMethod]
+        public async Task GenerateProjectAsync_ContinuesForMessageStagedDuringFinalSummaryRetry()
+        {
+            var executor = new RecordingAiExecutor();
+            var configuration = CreateConfiguration(maxLatestMessages: 2, minLatestMessages: 2);
+            configuration.MaxToolRounds = 3;
+            var service = CreateService(executor, configuration);
+            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
+            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
+
+            var runControl = new AssistantRunControl();
+            var summaryRequests = 0;
+            var messageAccepted = false;
+            executor.SummaryRequestReceived = _ =>
+            {
+                summaryRequests++;
+                if (summaryRequests == 1)
+                    throw new InvalidOperationException("Simulated initial summary failure.");
+
+                if (summaryRequests == 2)
+                    messageAccepted = runControl.TryStageUserMessage("INTERMEDIATE-DURING-FINAL-SUMMARY");
+            };
+
+            var result = await service.GenerateProjectAsync("USER-3", CancellationToken.None, runControl);
+
+            Assert.IsTrue(messageAccepted, "Messages must still be accepted during final summarization.");
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(4, executor.ChatRequests.Count);
+            Assert.AreEqual(1, executor.ChatRequests.Last().Messages.Count(message =>
+                message.Role == "user" && message.Content == "INTERMEDIATE-DURING-FINAL-SUMMARY"));
+            Assert.IsFalse(runControl.TryStageUserMessage("AFTER-COMPLETION"));
+        }
+
+        [TestMethod]
         public async Task GenerateProjectAsync_SummarizesOnlyMessagesLeavingLatestWindow()
         {
             var executor = new RecordingAiExecutor();

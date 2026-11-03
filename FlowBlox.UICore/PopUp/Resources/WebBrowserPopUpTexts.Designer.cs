@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FlowBlox.UICore.PopUp.Resources {
+namespace FlowBlox.UICore.PopUp.Resources
+{
     using System;
     
     
@@ -19,26 +20,31 @@ namespace FlowBlox.UICore.PopUp.Resources {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class WebBrowserPopUpTexts {
+    public class WebBrowserPopUpTexts
+    {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal WebBrowserPopUpTexts() {
+        internal WebBrowserPopUpTexts()
+        {
         }
         
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlowBlox.UICore.PopUp.Resources.WebBrowserPopUpTexts", typeof(WebBrowserPopUpTexts).Assembly);
                     resourceMan = temp;
                 }
@@ -51,20 +57,25 @@ namespace FlowBlox.UICore.PopUp.Resources {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die First install a supported web browser. To automate it, you also need at least one matching WebDriver. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die **First** install a supported web browser. To automate it, you also need at least one matching **WebDriver**. ähnelt.
         /// </summary>
-        public static string Step1_Description {
-            get {
+        public static string Step1_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step1_Description", resourceCulture);
             }
         }
@@ -72,21 +83,25 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die A browser and WebDriver are required ähnelt.
         /// </summary>
-        public static string Step1_Headline {
-            get {
+        public static string Step1_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step1_Headline", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Browser: Google Chrome is configured by default. Install it here:
-        ///https://www.google.com/chrome
+        ///   Sucht eine lokalisierte Zeichenfolge, die Browser: **Google Chrome** is configured by default. Install it here:
+        ///[**Google Chrome**](https://www.google.com/chrome)
         ///
-        ///WebDriver: ChromeDriver is also preconfigured. Download the version matching your browser here:
-        ///https://developer.chrome.com/docs/chromedriver/downloads ähnelt.
+        ///**WebDriver**: **ChromeDriver** is also preconfigured. Download the version matching your browser here:
+        ///[**ChromeDriver**](https://developer.chrome.com/docs/chromedriver/downloads) ähnelt.
         /// </summary>
-        public static string Step2_Description {
-            get {
+        public static string Step2_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step2_Description", resourceCulture);
             }
         }
@@ -94,8 +109,10 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Chrome is preconfigured ähnelt.
         /// </summary>
-        public static string Step2_Headline {
-            get {
+        public static string Step2_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step2_Headline", resourceCulture);
             }
         }
@@ -103,8 +120,10 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Set up web browser automation ähnelt.
         /// </summary>
-        public static string Window_Title {
-            get {
+        public static string Window_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("Window_Title", resourceCulture);
             }
         }

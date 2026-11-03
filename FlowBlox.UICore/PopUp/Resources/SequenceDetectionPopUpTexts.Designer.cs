@@ -70,7 +70,7 @@ namespace FlowBlox.UICore.PopUp.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die At least two test cases are required. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die At least **two test cases** are required. ähnelt.
         /// </summary>
         public static string Step1_Description
         {
@@ -92,7 +92,7 @@ namespace FlowBlox.UICore.PopUp.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Each test case requires the number of records and a search value ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Each test case requires the **number of records** and a **search value** ähnelt.
         /// </summary>
         public static string Step2_Description
         {
@@ -114,7 +114,7 @@ namespace FlowBlox.UICore.PopUp.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die The sequence pattern is generated from the two test cases and reliably finds the search value ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die The **sequence pattern** is generated from the **two test cases** and reliably finds the **search value** ähnelt.
         /// </summary>
         public static string Step3_Description
         {

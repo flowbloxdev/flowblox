@@ -2,6 +2,7 @@ using SimplePropertyInputControlWithOptionalButtonsCreatorResources = FlowBlox.U
 using FlowBlox.Core;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
+using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.Core.Util.Resources;
@@ -17,14 +18,12 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace FlowBlox.UICore.Resolver
 {
     public class SimplePropertyInputControlWithOptionalButtonsCreator
     {
         private const double IconSize = 10;
-        private static readonly Brush FieldSelectionButtonForeground = (Brush)new BrushConverter().ConvertFromString("#2F6DB3");
         private readonly Window _window;
         private readonly FlowBloxComponentIcon16Converter _iconConverter = new();
 
@@ -42,12 +41,19 @@ namespace FlowBlox.UICore.Resolver
         {
             var hasFieldSelection = uiAttribute?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true;
             var selectedFieldProperty = ResolveSelectedFieldProperty(target, property);
+            var inputControl = CreateInputControl(property, target, binding, readOnly);
+
+            if (!hasFieldSelection && EnumHelper.IsEnumType(property))
+            {
+                var container = new Border { Child = inputControl };
+                container.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.EditorContainerStyle");
+                return container;
+            }
 
             var grid = new System.Windows.Controls.Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
             var contentHost = new System.Windows.Controls.Grid();
-            var inputControl = CreateInputControl(property, target, binding, readOnly);
             contentHost.Children.Add(inputControl);
 
             if (hasFieldSelection && selectedFieldProperty != null)
@@ -86,6 +92,21 @@ namespace FlowBlox.UICore.Resolver
 
         private FrameworkElement CreateInputControl(PropertyInfo property, object target, Binding binding, bool readOnly)
         {
+            if (EnumHelper.IsEnumType(property))
+            {
+                var enumType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                var enumDropDown = new EnumerationDropDownControl
+                {
+                    ItemsSource = EnumerationDropDown.CreateItems(enumType, Nullable.GetUnderlyingType(property.PropertyType) != null),
+                    IsHitTestVisible = !readOnly,
+                    Focusable = !readOnly,
+                    IsTabStop = !readOnly
+                };
+                enumDropDown.SelectionChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                enumDropDown.SetBinding(EnumerationDropDownControl.SelectedValueProperty, binding);
+                return enumDropDown;
+            }
+
             if (property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?))
             {
                 var toggle = new ToggleSwitch
@@ -119,6 +140,7 @@ namespace FlowBlox.UICore.Resolver
                     IsReadOnly = readOnly
                 };
                 textBox.TextChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                textBox.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.TextEditorStyle");
                 textBox.SetBinding(TextBox.TextProperty, binding);
                 return textBox;
             }
@@ -186,8 +208,7 @@ namespace FlowBlox.UICore.Resolver
                 {
                     Kind = PackIconMaterialKind.Variable,
                     Width = IconSize,
-                    Height = IconSize,
-                    Foreground = FieldSelectionButtonForeground
+                    Height = IconSize
                 },
                 Width = 24,
                 Height = 24,
@@ -198,6 +219,7 @@ namespace FlowBlox.UICore.Resolver
                 IsEnabled = !readOnly
             };
 
+            ((PackIconMaterial)button.Content).SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.FieldSelectionIconStyle");
             button.Command = new RelayCommand(async () =>
             {
                 try
@@ -240,8 +262,7 @@ namespace FlowBlox.UICore.Resolver
                 {
                     Kind = PackIconMaterialKind.LinkOff,
                     Width = IconSize,
-                    Height = IconSize,
-                    Foreground = FieldSelectionButtonForeground
+                    Height = IconSize
                 },
                 Width = 24,
                 Height = 24,
@@ -252,6 +273,7 @@ namespace FlowBlox.UICore.Resolver
                 IsEnabled = !readOnly
             };
 
+            ((PackIconMaterial)button.Content).SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.UnlinkIconStyle");
             if (!readOnly && selectedFieldProperty != null)
             {
                 button.SetBinding(UIElement.IsEnabledProperty, new Binding(selectedFieldProperty.Name)

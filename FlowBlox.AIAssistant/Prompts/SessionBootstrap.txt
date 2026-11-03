@@ -51,6 +51,7 @@ Routing (use case -> explanation key):
 
 Bundled auxiliary-project skills (load `explaining_auxiliary_projects` before using, creating, or adapting one):
 {{STANDARD_AUXILIARY_PROJECTS}}
+For a known name, call `GetAuxiliaryProject(projectName=...)` once to obtain input fields, allowed values, output fields, and the executable project path. Execute or debug that path directly; do not copy the project merely to run it.
 
 When an implementation pattern is unclear, especially for polling/retry or pagination/recursion, inspect FlowBlox demo flows: list `example_project` entries with `GetDistributedData` and read a relevant project with `GetDistributedDataContent`.
 If a required use-case has no suitable FlowBlock in this version, tell the user clearly. Preferred path: search/install an extension from the component library first. Alternative: implement a custom FlowBlock (sample project: {{FlowBloxSampleExtensionRepository}}).

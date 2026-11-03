@@ -15,7 +15,7 @@ namespace FlowBloxTest.AIAssistant
             StringAssert.Contains(prompt, "Using bundled or session-created auxiliary projects as local skills");
             StringAssert.Contains(prompt, "`explaining_auxiliary_projects`");
             StringAssert.Contains(prompt, "FetchUrlDom: Open a URL and return its rendered DOM content.");
-            StringAssert.Contains(prompt, "ExecuteSQLQuery: Run a read-only SQL query and return the result as CSV.");
+            StringAssert.Contains(prompt, "ExecuteSQLQuery: Execute SQL against a database and return the query result as CSV.");
             Assert.IsFalse(prompt.Contains("{{STANDARD_AUXILIARY_PROJECTS}}", StringComparison.Ordinal));
         }
 

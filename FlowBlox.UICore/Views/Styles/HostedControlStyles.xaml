@@ -3,6 +3,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
+    <ResourceDictionary.MergedDictionaries>
+        <!-- Hosted WPF surfaces have no MetroWindow parent to supply the active theme. -->
+        <ResourceDictionary Source="/FlowBlox.UICore;component/Views/MahAppMetroResources.xaml" />
+        <ResourceDictionary Source="FlowBloxCustomStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="FlowBlox.HostedHeader" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DialogHeader}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.DialogHeaderText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.HostedHeaderBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource FlowBlox.CornerRadius.HostedHeader}" />
+        <Setter Property="Padding" Value="10,6" />
+    </Style>
+
     <Style x:Key="FlowBlox.RoundedActionButtonStyle"
        TargetType="{x:Type Button}">
         <Setter Property="MinWidth" Value="96" />

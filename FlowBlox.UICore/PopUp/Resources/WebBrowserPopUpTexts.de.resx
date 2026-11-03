@@ -6,11 +6,11 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Webbrowser-Automatisierung einrichten</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Browser und WebDriver erforderlich</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Installiere zuerst einen unterstützten Webbrowser. Um ihn zu automatisieren, benötigst du außerdem mindestens einen passenden WebDriver.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Installiere zuerst einen unterstützten Webbrowser. Um ihn zu automatisieren, benötigst du außerdem mindestens einen passenden **WebDriver**.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Chrome ist bereits vorkonfiguriert</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Browser: Google Chrome ist standardmäßig konfiguriert. Installiere ihn hier:
-https://www.google.com/chrome
+  <data name="Step2_Description" xml:space="preserve"><value>Browser: **Google Chrome** ist standardmäßig konfiguriert. Installiere ihn hier:
+[**Google Chrome**](https://www.google.com/chrome)
 
-WebDriver: ChromeDriver ist ebenfalls vorkonfiguriert. Lade hier die zu deinem Browser passende Version herunter:
-https://developer.chrome.com/docs/chromedriver/downloads</value></data>
+**WebDriver**: **ChromeDriver** ist ebenfalls vorkonfiguriert. Lade hier die zu deinem Browser passende Version herunter:
+[**ChromeDriver**](https://developer.chrome.com/docs/chromedriver/downloads)</value></data>
 </root>

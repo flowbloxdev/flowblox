@@ -30,6 +30,7 @@ using System.Transactions;
 using System.Collections.Generic;
 using System.Collections;
 using FlowBlox.Core.Models.Generators;
+using FlowBlox.Enums;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Base
 {
@@ -504,10 +505,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             return ReferencedFlowBlocks == null || !ReferencedFlowBlocks.Any();
         }
 
+        private bool _isInputBehaviorSynchronizationSuppressed;
+
+        /// <summary>
+        /// Suppresses automatic synchronization of input behavior assignments.
+        /// </summary>
+        public void SuppressInputBehaviorSynchronization() => _isInputBehaviorSynchronizationSuppressed = true;
+
+        /// <summary>
+        /// Enables automatic input behavior synchronization without replaying skipped changes.
+        /// </summary>
+        public void RestoreInputBehaviorSynchronization() => _isInputBehaviorSynchronizationSuppressed = false;
+
         private void SyncReferencedFlowBlocksWithInputBehaviorAssignments()
         {
-            // Preserve deserialized assignments and input behaviors while the component is loading.
-            if (!IsLoaded)
+            // Preserve explicitly supplied assignments during initialization or bulk updates.
+            if (!IsLoaded || _isInputBehaviorSynchronizationSuppressed)
                 return;
 
             // Input behaviors are relevant only within an iteration context.
@@ -525,7 +538,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
             // Reevaluate input behaviors only when the represented referenced flow blocks
             // have actually changed.
-            var previousAssignments = InputBehaviorAssignments.ToList();
+            var previousAssignments = InputBehaviorAssignments.Where(assignment => assignment?.FlowBlock != null).ToList();
 
             if (!SyncInputBehaviorAssignmentReferences())
                 return;
@@ -537,6 +550,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         private bool SyncInputBehaviorAssignmentReferences()
         {
             bool anyChange = false;
+
+            // Remove assignments whose source FlowBlock no longer exists.
+            foreach (var orphan in InputBehaviorAssignments.Where(assignment => assignment?.FlowBlock == null).ToList())
+            {
+                InputBehaviorAssignments.Remove(orphan);
+                anyChange = true;
+            }
 
             // Create missing assignments for newly added references.
             foreach (var missingFb in _referencedFlowBlocks.Where(x => !this.InputBehaviorAssignments.Any(y => y.FlowBlock == x)))
@@ -749,6 +769,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [ConditionallyRequired]
         [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.Edit)]
         public ObservableCollection<InputBehaviorAssignment> InputBehaviorAssignments { get; set; }
+
+        public override DeletionReviewStatus GetDeletionReviewStatus(
+            object owner, PropertyInfo property, DeletionImpact impact, PropertyInfo componentProperty)
+        {
+            if (componentProperty?.Name == nameof(InputBehaviorAssignments) &&
+                owner is InputBehaviorAssignment && 
+                property.Name == nameof(InputBehaviorAssignment.FlowBlock) &&
+                impact == DeletionImpact.DirectReferenceRemoved)
+                return DeletionReviewStatus.Information;
+
+            return base.GetDeletionReviewStatus(owner, property, impact, componentProperty);
+        }
 
         [Display(Name = "BaseFlowBlock_InheritRequirementsNotMet", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Requirements", Order = 0)]
         public bool InheritRequirementsNotMet { get; set; }

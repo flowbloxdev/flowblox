@@ -285,23 +285,26 @@ namespace FlowBlox.Core.Util.DeepCopier
             if (!property.CanWrite)
                 return;
 
-            var list = CreateList(property);
             var instances = (IEnumerable)property.GetValue(source, null);
-            if (instances != null)
+            if (instances == null)
             {
-                foreach (var instance in instances)
+                property.SetValue(copy, null);
+                return;
+            }
+
+            var list = CreateList(property);
+            foreach (var instance in instances)
+            {
+                if (IsCopiedByReference(source, property, instance))
                 {
-                    if (IsCopiedByReference(source, property, instance))
-                    {
-                        AppendProtocolAction($"Referenz {instance?.GetHashCode()} verwenden für Listen-Member {property.Name} vom Typ {property.PropertyType}");
-                        list.Add(instance);
-                    }
-                    else
-                    {
-                        var instanceCopy = Copy((T)instance);
-                        if (instanceCopy != null)
-                            list.Add(instanceCopy);
-                    }
+                    AppendProtocolAction($"Referenz {instance?.GetHashCode()} verwenden für Listen-Member {property.Name} vom Typ {property.PropertyType}");
+                    list.Add(instance);
+                }
+                else
+                {
+                    var instanceCopy = Copy((T)instance);
+                    if (instanceCopy != null)
+                        list.Add(instanceCopy);
                 }
             }
             property.SetValue(copy, list);

@@ -12,7 +12,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base.DatasetSelection
              IList<InputBehaviorAssignment> inputBehaviorAssignments)
         {
             this.passedResults = passedResults ?? throw new ArgumentNullException(nameof(passedResults));
-            this.inputBehaviorAssignments = inputBehaviorAssignments ?? throw new ArgumentNullException(nameof(inputBehaviorAssignments));
+            ArgumentNullException.ThrowIfNull(inputBehaviorAssignments);
+            this.inputBehaviorAssignments = inputBehaviorAssignments.Where(assignment => assignment?.FlowBlock != null).ToList();
         }
 
         public abstract List<FlowBlockOutDataset> GetResults();

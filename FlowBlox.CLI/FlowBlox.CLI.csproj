@@ -26,7 +26,5 @@
   <ItemGroup>
     <ProjectReference Include="..\FlowBlox.Core\FlowBlox.Core.csproj" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(ProjectDir)postbuild.bat&quot; &quot;$(TargetDir)&quot;" />
-  </Target>
+  <Import Project="..\FlowBlox.Build\FlowBlox.Build.targets" />
 </Project>

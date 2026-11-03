@@ -208,8 +208,7 @@ namespace FlowBloxTest.FlowBlocks.AI
             {
                 var candidate = Path.Combine(
                     directory.FullName,
-                    "FlowBlox",
-                    "ApplicationDir",
+                    "FlowBlox.Build",
                     "data",
                     "python",
                     PublishedDownloadScriptName);
@@ -221,7 +220,7 @@ namespace FlowBloxTest.FlowBlocks.AI
 
             throw new AssertFailedException(
                 $"The published Phi-4 Mini Instruct download script '{PublishedDownloadScriptName}' could not be found from " +
-                $"'{AppContext.BaseDirectory}' under FlowBlox/ApplicationDir/data/python.");
+                $"'{AppContext.BaseDirectory}' under FlowBlox.Build/data/python.");
         }
 
         private void LogScriptResult(FlowBloxShellExecutionResult result)

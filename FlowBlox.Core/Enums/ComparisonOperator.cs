@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using FlowBlox.Core.Attributes;
 
 namespace FlowBlox.Core.Enums
 {
@@ -35,9 +36,33 @@ namespace FlowBlox.Core.Enums
         LowerThanOrEquals,
 
         [Display(Name = "ComparisonOperator_RegexIsTrue", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
         RegexIsTrue,
 
         [Display(Name = "ComparisonOperator_RegexIsFalse", ResourceType = typeof(FlowBloxTexts))]
-        RegexIsFalse
+        [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
+        RegexIsFalse,
+
+        [Display(Name = "ComparisonOperator_JPathIsTrue", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
+        JPathIsTrue,
+
+        [Display(Name = "ComparisonOperator_JPathIsFalse", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
+        JPathIsFalse,
+
+        [Display(Name = "ComparisonOperator_XPathIsTrue", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
+        XPathIsTrue,
+
+        [Display(Name = "ComparisonOperator_XPathIsFalse", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
+        XPathIsFalse
     }
 }

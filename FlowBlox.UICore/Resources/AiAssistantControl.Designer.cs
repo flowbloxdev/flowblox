@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FlowBlox.UICore.Resources {
+namespace FlowBlox.UICore.Resources
+{
     using System;
     
     
@@ -19,26 +20,31 @@ namespace FlowBlox.UICore.Resources {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class AiAssistantControl {
+    public class AiAssistantControl
+    {
 
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AiAssistantControl() {
+        internal AiAssistantControl()
+        {
         }
         
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlowBlox.UICore.Resources.AiAssistantControl", typeof(AiAssistantControl).Assembly);
                     resourceMan = temp;
                 }
@@ -51,11 +57,14 @@ namespace FlowBlox.UICore.Resources {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
@@ -63,8 +72,10 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die AI Assistant ähnelt.
         /// </summary>
-        public static string Header_Title {
-            get {
+        public static string Header_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("Header_Title", resourceCulture);
             }
         }
@@ -72,8 +83,10 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Back to histories ähnelt.
         /// </summary>
-        public static string Tooltip_BackToHistory {
-            get {
+        public static string Tooltip_BackToHistory
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_BackToHistory", resourceCulture);
             }
         }
@@ -81,8 +94,10 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Configure AI Assistant ähnelt.
         /// </summary>
-        public static string Tooltip_Configure {
-            get {
+        public static string Tooltip_Configure
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_Configure", resourceCulture);
             }
         }
@@ -90,8 +105,10 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Start new chat ähnelt.
         /// </summary>
-        public static string Tooltip_NewHistory {
-            get {
+        public static string Tooltip_NewHistory
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_NewHistory", resourceCulture);
             }
         }
@@ -99,8 +116,10 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open communication protocol directory ähnelt.
         /// </summary>
-        public static string Tooltip_OpenCommunicationProtocolDirectory {
-            get {
+        public static string Tooltip_OpenCommunicationProtocolDirectory
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_OpenCommunicationProtocolDirectory", resourceCulture);
             }
         }
@@ -108,17 +127,32 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die AI-Assistant Debugging Tools ähnelt.
         /// </summary>
-        public static string Tooltip_OpenDebugTools {
-            get {
+        public static string Tooltip_OpenDebugTools
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_OpenDebugTools", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die AI Assistant: how it works, setup, and model recommendations ähnelt.
+        /// </summary>
+        public static string Tooltip_QuickStart
+        {
+            get
+            {
+                return ResourceManager.GetString("Tooltip_QuickStart", resourceCulture);
             }
         }
 
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Redo last AI project state change ähnelt.
         /// </summary>
-        public static string Tooltip_Redo {
-            get {
+        public static string Tooltip_Redo
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_Redo", resourceCulture);
             }
         }
@@ -126,8 +160,10 @@ namespace FlowBlox.UICore.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Undo last AI project state change ähnelt.
         /// </summary>
-        public static string Tooltip_Undo {
-            get {
+        public static string Tooltip_Undo
+        {
+            get
+            {
                 return ResourceManager.GetString("Tooltip_Undo", resourceCulture);
             }
         }

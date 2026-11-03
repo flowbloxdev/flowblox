@@ -28,7 +28,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_pdf_box, 16);
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_pdf_box, 32);
         public override FlowBlockCardinalities GetInputCardinality() => FlowBlockCardinalities.Many;
-        public override FlowBlockCategory GetCategory() => FlowBlockCategory.IO;
+        public override FlowBlockCategory GetCategory() => FlowBlockCategory.Conversion;
 
         public override List<string> GetDisplayableProperties()
         {

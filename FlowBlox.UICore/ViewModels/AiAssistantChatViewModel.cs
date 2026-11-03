@@ -277,6 +277,19 @@ namespace FlowBlox.UICore.ViewModels
             if (!CanSubmit())
                 return;
 
+            if (!IsBusy)
+            {
+                RefreshProviderConfigurationState();
+                if (ShowProviderConfigurationWarning)
+                {
+                    ShowMessageBoxOnUiThread(
+                        FlowBloxResourceUtil.GetLocalizedString("Warning_MissingProvider", typeof(Resources.AiAssistantChatView)),
+                        FlowBloxResourceUtil.GetLocalizedString("Message_ProviderConfiguration_Title", typeof(Resources.AiAssistantChatView)),
+                        FlowBloxMessageBoxTypes.Warning);
+                    return;
+                }
+            }
+
             var input = CurrentInput.Trim();
             CurrentInput = string.Empty;
 
@@ -581,7 +594,7 @@ namespace FlowBlox.UICore.ViewModels
 
             var reason = (request.Arguments?.Value<string>("reason") ?? string.Empty).Trim();
             return string.IsNullOrWhiteSpace(reason) ||
-                   ShowExternalProjectExecutionConfirmation(projectFile, reason);
+                   ShowExternalProjectExecutionConfirmation(projectFile, reason, request);
         }
 
         private bool ConfirmProjectExecution(ToolRequest request)
@@ -592,7 +605,7 @@ namespace FlowBlox.UICore.ViewModels
 
             var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(
                 request.Arguments?.Value<string>("projectFile") ?? string.Empty);
-            return ShowExternalProjectExecutionConfirmation(projectFile, reason);
+            return ShowExternalProjectExecutionConfirmation(projectFile, reason, request);
         }
 
         private bool ConfirmInputFileCommandExecution(ToolRequest request)
@@ -608,12 +621,17 @@ namespace FlowBlox.UICore.ViewModels
             return decision == FlowBloxMessageBoxDialogResult.Yes;
         }
 
-        private bool ShowExternalProjectExecutionConfirmation(string projectFile, string reason)
+        private bool ShowExternalProjectExecutionConfirmation(
+            string projectFile,
+            string reason,
+            ToolRequest request)
         {
             bool? Show()
             {
-                var window = new ExternalProjectExecutionConfirmationWindow(projectFile, reason);
-                return _dialogService.ShowWPFDialog(window);
+                var window = new ExternalProjectExecutionConfirmationWindow(projectFile, reason, request.ConfirmationInputParameters);
+                var result = _dialogService.ShowWPFDialog(window);
+                request.RememberProjectApproval = result == true && window.RememberProjectApproval;
+                return result;
             }
 
             if (_uiContext != null && _uiContext != SynchronizationContext.Current)
@@ -944,7 +962,9 @@ namespace FlowBlox.UICore.ViewModels
         public void RefreshProviderConfigurationState()
         {
             var configuration = _service.GetConfiguration(out _);
-            var isConfigured = configuration?.Provider != null;
+            var provider = configuration?.Provider;
+            var isConfigured = provider != null &&
+                !string.IsNullOrWhiteSpace(FlowBloxFieldHelper.ReplaceFieldsInString(provider.ApiKey));
 
             if (_isProviderConfigured == isConfigured)
                 return;

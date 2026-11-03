@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using FlowBlox.Core.Provider.Placeholders;
+using System.Text.RegularExpressions;
 using System.Windows;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
@@ -158,7 +159,7 @@ namespace FlowBlox.UICore.Utilities
         {
             var defs = (optionElements ?? Enumerable.Empty<OptionElement>())
                 .Select(o => o.Name)
-                .Select(name => $"$Options::{name}");
+                .Select(name => FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Options, name));
 
             ApplyFieldDefinitionsToTextBox(defs, textBox);
         }
@@ -168,7 +169,7 @@ namespace FlowBlox.UICore.Utilities
             var defs = (projectPropertyElements ?? Enumerable.Empty<FlowBloxProjectPropertyElement>())
                 .Select(p => p?.Key)
                 .Where(key => !string.IsNullOrWhiteSpace(key))
-                .Select(key => $"$Project::{key}");
+                .Select(key => FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Project, key));
 
             ApplyFieldDefinitionsToTextBox(defs, textBox);
         }

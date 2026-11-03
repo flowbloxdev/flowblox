@@ -1,4 +1,4 @@
-<mah:MetroWindow
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.OptionsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -69,7 +69,7 @@
 
             <Style x:Key="Options.DetailLabelBorder"
                    TargetType="{x:Type Border}">
-                <Setter Property="Background" Value="#D9E6F2"/>
+                <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.LabelBackground}"/>
                 <Setter Property="Padding" Value="5"/>
                 <Setter Property="Margin" Value="0,9,0,5"/>
                 <Setter Property="CornerRadius" Value="4"/>

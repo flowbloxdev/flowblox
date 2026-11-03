@@ -1,3 +1,5 @@
+using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Models.Project;
 using Newtonsoft.Json.Linq;
@@ -109,7 +111,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     ["sizeBytes"] = inputFile.ContentBytes?.LongLength ?? 0,
                     ["command"] = inputFile.Command ?? string.Empty,
                     ["executeBeforeRuntime"] = inputFile.ExecuteBeforeRuntime,
-                    ["placeholderHint"] = "$InputFile::Path",
+                    ["placeholderHint"] = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.InputFile, "Path"),
                     ["materializedPath"] = materializedPath,
                     ["projectInputDirectory"] = project.ProjectInputDirectory ?? string.Empty
                 };

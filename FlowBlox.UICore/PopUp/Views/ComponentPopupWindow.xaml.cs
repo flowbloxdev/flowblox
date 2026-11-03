@@ -1,13 +1,11 @@
+﻿using FlowBlox.UICore.Commands;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Resources;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using FlowBlox.Core.Logging;
 
@@ -15,7 +13,6 @@ namespace FlowBlox.UICore.PopUp.Views
 {
     public partial class ComponentPopupWindow : MetroWindow
     {
-        private static readonly Regex UrlRegex = new(@"(?:https?|file)://[^\s]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly SolidColorBrush ActiveStepBrush = new(Color.FromRgb(30, 126, 223));
         private static readonly SolidColorBrush InactiveStepBrush = new(Color.FromRgb(207, 216, 226));
         private readonly IReadOnlyList<ComponentPopupItem> _items;
@@ -24,6 +21,9 @@ namespace FlowBlox.UICore.PopUp.Views
         public ComponentPopupWindow(string title, IReadOnlyList<ComponentPopupItem> items)
         {
             InitializeComponent();
+
+            DescriptionMarkdown.Engine.HyperlinkCommand = new RelayCommand(parameter =>
+                OpenLink(parameter?.ToString() ?? string.Empty));
 
             Title = title;
             _items = items ?? throw new ArgumentNullException(nameof(items));
@@ -43,6 +43,15 @@ namespace FlowBlox.UICore.PopUp.Views
             ShowCurrentItem();
         }
 
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentIndex == 0)
+                return;
+
+            _currentIndex--;
+            ShowCurrentItem();
+        }
+
         private void ShowCurrentItem()
         {
             var item = _items[_currentIndex];
@@ -53,6 +62,7 @@ namespace FlowBlox.UICore.PopUp.Views
             StepImage.Source = item.Image;
             StepImage.Visibility = item.Image != null ? Visibility.Visible : Visibility.Collapsed;
             ImagePlaceholderTextBlock.Visibility = item.Image == null ? Visibility.Visible : Visibility.Collapsed;
+            PreviousButton.Visibility = _currentIndex > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             NextButtonTextBlock.Text = isLastItem
                 ? ComponentPopupWindowResources.Button_Close
@@ -69,44 +79,7 @@ namespace FlowBlox.UICore.PopUp.Views
 
         private void SetDescription(string description)
         {
-            DescriptionTextBlock.Inlines.Clear();
-
-            var currentIndex = 0;
-            foreach (Match match in UrlRegex.Matches(description ?? string.Empty))
-            {
-                if (match.Index > currentIndex)
-                    DescriptionTextBlock.Inlines.Add(new Run(description[currentIndex..match.Index]));
-
-                var url = match.Value.TrimEnd('.', ',', ';', ':', ')');
-                var linkButton = new Button
-                {
-                    Content = GetLinkDisplayText(url),
-                    Style = (Style)FindResource("DescriptionLinkStyle"),
-                    ToolTip = url
-                };
-                linkButton.Click += (_, _) => OpenLink(url);
-                DescriptionTextBlock.Inlines.Add(new InlineUIContainer(linkButton)
-                {
-                    BaselineAlignment = BaselineAlignment.Center
-                });
-
-                if (url.Length < match.Length)
-                    DescriptionTextBlock.Inlines.Add(new Run(match.Value[url.Length..]));
-
-                currentIndex = match.Index + match.Length;
-            }
-
-            if (currentIndex < (description?.Length ?? 0))
-                DescriptionTextBlock.Inlines.Add(new Run(description[currentIndex..]));
-        }
-
-        private static string GetLinkDisplayText(string url)
-        {
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.IsFile)
-                return url;
-
-            var fileName = Path.GetFileName(uri.LocalPath);
-            return string.IsNullOrWhiteSpace(fileName) ? url : fileName;
+            DescriptionMarkdown.Markdown = description ?? string.Empty;
         }
 
         private static void OpenLink(string url)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
     Microsoft ResX Schema 
@@ -1136,7 +1136,7 @@ All inputs are collected during each referenced iteration and this flow block ex
 		<value>Reads a PDF document from the specified data source and returns the extracted plain text by pages.</value>
 	</data>
 	<data name="PDF2TextFlowBlock_DisplayName" xml:space="preserve">
-		<value>PDF to Text (PdfPig)</value>
+		<value>PDF to Text</value>
 	</data>
 	<data name="Phi2AiTokenizer_Description" xml:space="preserve">
 		<value>Uses the Phi-2 tokenizer model for tokenizing and detokenizing text for AI inference.</value>
@@ -4554,9 +4554,42 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="DeletionConfirmation_Impact_CollectionEntryRemoved" xml:space="preserve"><value>Entry will be removed completely from the collection</value></data>
   <data name="DeletionConfirmation_Impact_FieldReferenceInvalidated" xml:space="preserve"><value>Field reference will become invalid</value></data>
   <data name="DeletionConfirmation_Status_Information" xml:space="preserve"><value>Information</value></data>
-  <data name="DeletionConfirmation_Status_ReviewRecommended" xml:space="preserve"><value>Review recommended</value></data>
-  <data name="DeletionConfirmation_Status_ManualActionRequired" xml:space="preserve"><value>Manual follow-up required</value></data>
+  <data name="DeletionConfirmation_Status_ReviewRecommended" xml:space="preserve"><value>Manual review recommended</value></data>
+  <data name="DeletionConfirmation_Status_ManualActionRequired" xml:space="preserve"><value>Manual review required</value></data>
   <data name="InputBehaviorAssignment_DisplayName" xml:space="preserve"><value>Input behavior assignment</value></data>
+	<data name="ComparisonOperator_JPathIsFalse" xml:space="preserve">
+		<value>JPath does not match</value>
+	</data>
+	<data name="ComparisonOperator_JPathIsTrue" xml:space="preserve">
+		<value>JPath matches</value>
+	</data>
+	<data name="ComparisonOperator_XPathIsFalse" xml:space="preserve">
+		<value>XPath does not match</value>
+	</data>
+	<data name="ComparisonOperator_XPathIsTrue" xml:space="preserve">
+		<value>XPath matches</value>
+	</data>
+	<data name="EnumerationGroup_AdvancedTextOperators" xml:space="preserve">
+		<value>Advanced text operators</value>
+	</data>
+	<data name="FieldElement_Conditions_Tooltip" xml:space="preserve">
+		<value>Check the field value after modifiers are applied. If any condition is not met, the field value is cleared (set to null). The result dataset remains; the number of results does not change.</value>
+	</data>
+	<data name="FieldElement_Modifiers_Tooltip" xml:space="preserve">
+		<value>Transform the field value after the FlowBlock sets it as a result, e.g. by trimming or decoding text. They run in list order before conditions are checked.</value>
+	</data>
+  <data name="SQLTable_UseFieldValuesAsParameters" xml:space="preserve">
+    <value>Use field values as SQL parameters</value>
+  </data>
+  <data name="SQLTable_UseFieldValuesAsParameters_Tooltip" xml:space="preserve">
+    <value>Enabled (default): field values are bound as SQL data parameters. Disabled: field values are inserted directly as SQL text.</value>
+  </data>
+  <data name="ExecuteSQLFlowBlock_UseFieldValuesAsParameters" xml:space="preserve">
+    <value>Use field values as SQL parameters</value>
+  </data>
+  <data name="ExecuteSQLFlowBlock_UseFieldValuesAsParameters_Tooltip" xml:space="preserve">
+    <value>Enabled (default): field values are bound as SQL data parameters. Disabled: field values are inserted directly as SQL text.</value>
+  </data>
 </root>
 
 

@@ -40,7 +40,7 @@ namespace FlowBlox.Core.Actions
             _restoreDeepCopier.PropertyActions = FlowBloxDeepCopyStrategy.Instance.GetDeepCopyActions(RestoreObject);
             _restoreDeepCopier.ClearRecopyCache();
             _restoreDeepCopier.SpecialMode = DeepCopierSpecialMode.Recopy;
-            _restoreDeepCopier.Copy(RestoreObject, Target);
+            RestoreSnapshot(_restoreDeepCopier, RestoreObject);
             OnAfterExecute();
             base.Undo();
         }
@@ -50,9 +50,23 @@ namespace FlowBlox.Core.Actions
             _repetitionDeepCopier.PropertyActions = FlowBloxDeepCopyStrategy.Instance.GetDeepCopyActions(RepetitionObject);
             _repetitionDeepCopier.ClearRecopyCache();
             _repetitionDeepCopier.SpecialMode = DeepCopierSpecialMode.Recopy;
-            _repetitionDeepCopier.Copy(RepetitionObject, Target);
+            RestoreSnapshot(_repetitionDeepCopier, RepetitionObject);
             OnAfterExecute();
             base.Invoke();
+        }
+
+        private void RestoreSnapshot(DynamicDeepCopier copier, object snapshot)
+        {
+            var flowBlock = Target as BaseFlowBlock;
+            flowBlock?.SuppressInputBehaviorSynchronization();
+            try
+            {
+                copier.Copy(snapshot, Target);
+            }
+            finally
+            {
+                flowBlock?.RestoreInputBehaviorSynchronization();
+            }
         }
 
         private void OnAfterExecute()

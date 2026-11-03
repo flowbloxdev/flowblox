@@ -13,28 +13,77 @@
     <!-- FlowBlox Custom Styles -->
     <!-- ====================== -->
 
+    <!-- Shared interaction colors for dialog actions and hosted toolbar buttons. -->
+    <Style x:Key="FlowBlox.ToolbarButton" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.Text}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6,3" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3" SnapsToDevicePixels="True">
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.ToolbarButtonHover}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.ToolbarButtonHover}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.ToolbarButtonFocus}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.ToolbarButtonPressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Shared tooltip appearance for windows, hosted views, and generated controls. -->
     <Style x:Key="FlowBlox.ToolTipStyle" TargetType="{x:Type ToolTip}">
         <Setter Property="Placement" Value="Mouse"/>
         <Setter Property="MaxWidth" Value="460"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.ToolTipBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.ToolTipText}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.ToolTipBorder}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource FlowBlox.Thickness.ToolTipBorder}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="Padding" Value="10"/>
         <Setter Property="HasDropShadow" Value="False"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToolTip}">
-                    <Border Background="#FFE9F3FD"
-                            BorderBrush="#FF7EAEDC"
-                            BorderThickness="2"
-                            CornerRadius="8"
-                            Padding="10">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource FlowBlox.CornerRadius.ToolTip}"
+                            Padding="{TemplateBinding Padding}">
                         <TextBlock Text="{TemplateBinding Content}"
                                    TextWrapping="Wrap"
-                                   Foreground="#FF305E86"
-                                   FontSize="12"
-                                   FontFamily="Segoe UI"/>
+                                   Foreground="{TemplateBinding Foreground}"
+                                   FontSize="{TemplateBinding FontSize}"
+                                   FontFamily="{TemplateBinding FontFamily}"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

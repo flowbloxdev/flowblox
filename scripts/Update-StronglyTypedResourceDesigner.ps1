@@ -8,7 +8,8 @@
   the neutral/main *.resx designer instead.
 
   Only existing strongly typed resource designers are processed. WinForms/WPF
-  control designers are intentionally skipped.
+  control designers are intentionally skipped. Repository-wide generation excludes
+  the obsolete FlowBlox project; an explicit ResxPath can still target it.
 
 .PARAMETER ResxPath
   Optional path to a specific .resx file. Localized paths are mapped to the
@@ -160,9 +161,11 @@ function Update-Designer {
 }
 
 if ([string]::IsNullOrWhiteSpace($ResxPath)) {
+    $legacyDirectory = (Join-Path $Root 'FlowBlox') + [System.IO.Path]::DirectorySeparatorChar
     $resxFiles = Get-ChildItem -Path $Root -Recurse -Filter *.resx |
         Where-Object {
             $_.FullName -notmatch '\\bin\\|\\obj\\' -and
+            -not $_.FullName.StartsWith($legacyDirectory, [System.StringComparison]::OrdinalIgnoreCase) -and
             $_.BaseName -notmatch '\.[a-z]{2}(-[A-Z]{2})?$'
         } |
         ForEach-Object { $_.FullName }

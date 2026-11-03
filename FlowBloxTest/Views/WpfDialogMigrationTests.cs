@@ -15,7 +15,7 @@ public class WpfDialogMigrationTests
     [STATestMethod]
     public void Edit_CancelDoesNotChangeAnyProjectMetadata()
     {
-        var project = new FlowBloxProject { ProjectName = "Original", Author = "Author", ProjectDescription = "Description", ShortDescription = "Short", Notice = "Notice" };
+        var project = new FlowBloxProject { ProjectName = "Original", Author = "Author", ProjectDescription = "Description", AssistantMetadata = new AssistantMetadata { ShortDescription = "Short" }, Notice = "Notice" };
         bool? result = null;
         var vm = new CreateEditProjectViewModel(project, true, value => result = value)
         {
@@ -26,7 +26,7 @@ public class WpfDialogMigrationTests
         Assert.AreEqual("Original", project.ProjectName);
         Assert.AreEqual("Author", project.Author);
         Assert.AreEqual("Description", project.ProjectDescription);
-        Assert.AreEqual("Short", project.ShortDescription);
+        Assert.AreEqual("Short", project.AssistantMetadata.ShortDescription);
         Assert.AreEqual("Notice", project.Notice);
     }
 
@@ -47,7 +47,7 @@ public class WpfDialogMigrationTests
         Assert.AreEqual("New project", project.ProjectName);
         Assert.AreEqual("Author", project.Author);
         Assert.AreEqual("Description", project.ProjectDescription);
-        Assert.AreEqual("Short", project.ShortDescription);
+        Assert.AreEqual("Short", project.AssistantMetadata.ShortDescription);
         Assert.AreEqual("Notice", project.Notice);
     }
 
@@ -124,6 +124,78 @@ public class WpfDialogMigrationTests
             window.UpdateLayout();
             Assert.IsTrue(editor.VerticalOffset > 0);
             Assert.AreEqual(0, editor.HorizontalOffset);
+        }
+        finally { window.Close(); }
+    }
+
+    [STATestMethod]
+    [DataRow("DescriptionInput")]
+    [DataRow("NoticeInput")]
+    public void ProjectEditors_RenderSoftWrapArrowsInsideTheWrapIndentation(string editorName)
+    {
+        var window = new CreateEditProjectWindow(new FlowBloxProject { ProjectName = "Test" }, true)
+        { Left = -10000, Top = -10000, WindowStartupLocation = System.Windows.WindowStartupLocation.Manual,
+            ShowInTaskbar = false, ShowActivated = false };
+        try
+        {
+            window.Show();
+            var editor = (ICSharpCode.AvalonEdit.TextEditor)window.FindName(editorName);
+            editor.Text = string.Join(" ", Enumerable.Repeat("A long project description with automatic wrapping", 8));
+            var view = editor.TextArea.TextView;
+            var renderer = view.BackgroundRenderers.Single(item => item.GetType().Name == "SoftWrapContinuationRenderer");
+
+            byte[] RenderView()
+            {
+                window.UpdateLayout();
+                view.EnsureVisualLines();
+                window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                var bitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(
+                    (int)Math.Ceiling(view.ActualWidth), (int)Math.Ceiling(view.ActualHeight),
+                    96, 96, System.Windows.Media.PixelFormats.Pbgra32);
+                // Render through a VisualBrush to exclude TextView's layout offset
+                // within the dialog from this editor-local pixel comparison.
+                var surface = new System.Windows.Media.DrawingVisual();
+                using (var context = surface.RenderOpen())
+                {
+                    var bounds = new System.Windows.Rect(0, 0, view.ActualWidth, view.ActualHeight);
+                    context.DrawRectangle(System.Windows.Media.Brushes.White, null, bounds);
+                    context.DrawRectangle(new System.Windows.Media.VisualBrush(view)
+                    {
+                        ViewboxUnits = System.Windows.Media.BrushMappingMode.Absolute,
+                        Viewbox = bounds,
+                        Stretch = System.Windows.Media.Stretch.None,
+                        AlignmentX = System.Windows.Media.AlignmentX.Left,
+                        AlignmentY = System.Windows.Media.AlignmentY.Top
+                    }, null, bounds);
+                }
+                bitmap.Render(surface);
+                var pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
+                bitmap.CopyPixels(pixels, bitmap.PixelWidth * 4, 0);
+                return pixels;
+            }
+
+            var withMarker = RenderView();
+            var visualLine = view.VisualLines.First();
+            Assert.IsTrue(visualLine.TextLines.Count > 1);
+            var continuation = visualLine.TextLines[1];
+            var indent = visualLine.GetTextLineVisualXPosition(continuation,
+                visualLine.GetTextLineVisualStartColumn(continuation));
+            var middle = visualLine.GetTextLineVisualYPosition(continuation,
+                ICSharpCode.AvalonEdit.Rendering.VisualYPosition.TextMiddle) - view.VerticalOffset;
+            view.BackgroundRenderers.Remove(renderer);
+            var withoutMarker = RenderView();
+            var stride = (int)Math.Ceiling(view.ActualWidth) * 4;
+            var changedPixels = 0;
+            for (var y = Math.Max(0, (int)middle - 5); y < Math.Min(view.ActualHeight, middle + 5); y++)
+                for (var x = 0; x < indent; x++)
+                {
+                    var offset = y * stride + x * 4;
+                    if (withMarker[offset] != withoutMarker[offset] ||
+                        withMarker[offset + 1] != withoutMarker[offset + 1] ||
+                        withMarker[offset + 2] != withoutMarker[offset + 2]) changedPixels++;
+                }
+            Assert.IsTrue(changedPixels > 5,
+                $"The continuation arrow must be visible in the rendered editor. Changed pixels: {changedPixels}; indent: {indent}; row center: {middle}.");
         }
         finally { window.Close(); }
     }

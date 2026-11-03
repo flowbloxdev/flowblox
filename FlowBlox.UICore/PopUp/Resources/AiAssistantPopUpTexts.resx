@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>AI Assistant: getting started</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>From your request to an editable flow</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Describe your goal in plain language. The **AI Assistant** uses an external cloud AI, such as OpenAI, Anthropic, or DeepSeek, to answer questions and implement complete requirements.
+
+Through the **FlowBlox Tool API**, it creates and configures flow blocks, retrieves information, and tests or debugs flows. You can review and continue editing the resulting project. Requests and relevant project or tool data are sent to the selected provider.</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Skills extend what the assistant can do</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>**Auxiliary projects** act as skills: they can retrieve information from websites, local files, or MSSQL databases using your available connections and permissions.
+
+Before execution, FlowBlox requests your **approval**, unless you have already allowed that project permanently. Review the reason, project, and **input parameters**. Choose **Allow once** or **Always allow**; permanent approvals can be revoked under Options → AI → ApprovedAuxiliaryProjects.</value></data>
+  <data name="Step3_Headline" xml:space="preserve"><value>Configure a provider and API key</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>**1. Create an account** with an AI cloud provider and generate an **API key**. API access usually requires credit or activated usage-based billing; a chat subscription generally does not include API usage.
+
+**2. Open Configuration** using the gear icon in the AI Assistant. Add a **provider**, select its **model**, enter the **API key**, and save.
+
+**3. Describe your task** and send it. Usage is billed by the selected provider.</value></data>
+  <data name="Step4_Headline" xml:space="preserve"><value>Choose a model to suit your priorities</value></data>
+  <data name="Step4_Description" xml:space="preserve"><value>**Highest quality:** We recommend **OpenAI** or **Anthropic / Claude** for demanding requirements and complex flows. Choose a capable current model from the provider.
+
+**Best price-performance:** We recommend **DeepSeek Flash** (`deepseek-flash`) for cost-conscious everyday use.
+
+These are starting recommendations. Quality, speed, and costs depend on the selected model and task. Check the provider’s current API pricing before use.</value></data>
+  <data name="Option_Completed_Name" xml:space="preserve"><value>AI Assistant: Quick-Start completed</value></data>
+  <data name="Option_Completed_Description" xml:space="preserve"><value>Tracks whether the AI Assistant quick-start guidance has been completed.</value></data>
+</root>

@@ -23,21 +23,12 @@
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="ComponentLibrary.ToolbarButtonStyle"
-                   TargetType="{x:Type Button}">
+                   TargetType="{x:Type Button}"
+                   BasedOn="{StaticResource FlowBlox.RoundedActionButtonStyle}">
+                <Setter Property="MinWidth" Value="0" />
                 <Setter Property="Height" Value="28" />
                 <Setter Property="Margin" Value="0,0,6,0" />
                 <Setter Property="Padding" Value="6,0" />
-                <Setter Property="Background" Value="#FFF3F6FA" />
-                <Setter Property="BorderBrush" Value="#FFD1D9E2" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#FFE9EEF4" />
-                    </Trigger>
-                    <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Background" Value="#FFDDE6F0" />
-                    </Trigger>
-                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -49,29 +40,22 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ToolBarTray Grid.Row="0"
-                     Background="Transparent"
-                     IsLocked="True">
-            <ToolBar Background="Transparent"
-                     BorderThickness="0"
-                     Padding="0"
-                     Margin="0">
-                <Button Command="{Binding ManageExtensionsCommand}"
-                        Style="{StaticResource ComponentLibrary.ToolbarButtonStyle}"
-                        ToolTip="{x:Static resources:ComponentLibraryView.Toolbar_ManageExtensions_Tooltip}">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="PuzzleOutline"
-                                                    Width="16"
-                                                    Height="16"
-                                                    Margin="0,0,5,0"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="#2E7D32" />
-                        <TextBlock Text="{x:Static resources:ComponentLibraryView.Toolbar_ManageExtensions}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
-            </ToolBar>
-        </ToolBarTray>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Command="{Binding ManageExtensionsCommand}"
+                    Style="{StaticResource ComponentLibrary.ToolbarButtonStyle}"
+                    ToolTip="{x:Static resources:ComponentLibraryView.Toolbar_ManageExtensions_Tooltip}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="PuzzleOutline"
+                                                Width="16"
+                                                Height="16"
+                                                Margin="0,0,5,0"
+                                                VerticalAlignment="Center"
+                                                Foreground="#2E7D32" />
+                    <TextBlock Text="{x:Static resources:ComponentLibraryView.Toolbar_ManageExtensions}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
 
         <DockPanel Grid.Row="1"
                    LastChildFill="True"

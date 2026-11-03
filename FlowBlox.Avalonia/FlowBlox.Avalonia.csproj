@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>FlowBlox</AssemblyName>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>FlowBlox.AvaloniaDesktop</RootNamespace>
+    <StartupObject>FlowBlox.AvaloniaDesktop.Program</StartupObject>
+    <ApplicationIcon>Assets\App.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="FlowBlox.Avalonia.IntegrationTests" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Dock.Avalonia" Version="12.1.0.12" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="12.1.0.12" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="12.1.0.12" />
+    <PackageReference Include="Dock.Serializer.Newtonsoft" Version="12.1.0.12" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <!-- Keep shared hosting/configuration dependencies aligned with the CLI and runner MSI payload. -->
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageReference Include="TaskScheduler" Version="2.12.1" />
+    <PackageReference Include="System.Management" Version="10.0.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FlowBlox.UICore\FlowBlox.UICore.csproj" />
+    <ProjectReference Include="..\FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj" ReferenceOutputAssembly="false"
+                      GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained">
+      <!-- The MSI supplies a separately published runner; standalone publishes keep it included. -->
+      <Private Condition="'$(PublishRunnerHost)' == 'false'">false</Private>
+    </ProjectReference>
+    <Resource Include="Icons\extension.ico" />
+    <EmbeddedResource Update="Resources\FlowBloxMainUITexts.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FlowBloxMainUITexts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Resources\FlowBloxMainUITexts.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FlowBloxMainUITexts.resx</DependentUpon>
+    </Compile>
+    <AvaloniaResource Include="Assets\**" />
+    <None Update="log4net.*.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Import Project="..\FlowBlox.Build\FlowBlox.Build.targets" />
+  <Target Name="CopyRunnerHost" AfterTargets="Build">
+    <ItemGroup>
+      <RunnerFiles Include="..\FlowBlox.RunnerHost\bin\$(Configuration)\$(TargetFramework)\FlowBlox.RunnerHost.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RunnerFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

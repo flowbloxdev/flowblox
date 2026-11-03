@@ -45,10 +45,10 @@ namespace FlowBlox.UICore.Factory.PropertyView
             _listViewAttribute = property.GetCustomAttribute<FlowBloxListViewAttribute>()
                 ?? throw new InvalidOperationException("Missing FlowBlockListViewAttribute.");
 
-            if (!(_property.GetValue(_target) is IList list))
+            if (!typeof(IList).IsAssignableFrom(_property.PropertyType))
                 throw new InvalidOperationException("Property is not IList.");
 
-            _list = list;
+            _list = (IList)_property.GetValue(_target) ?? (IList)Activator.CreateInstance(_property.PropertyType);
             _listItemType = _property.PropertyType.GetGenericArguments()[0];
             _dialogService = FlowBloxServiceLocator.Instance.GetService<IDialogService>();
         }

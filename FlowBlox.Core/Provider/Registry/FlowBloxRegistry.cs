@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Enums;
+﻿using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
 using FlowBlox.Core.Events;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Interfaces;
@@ -142,7 +143,7 @@ namespace FlowBlox.Core.Provider.Registry
 
         public bool HasUserField(string fieldName)
         {
-            string fullyQualifiedName = "$User::" + fieldName;
+            string fullyQualifiedName = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.User, fieldName);
             if (GetFieldElements().Any(x => x.FullyQualifiedName == fullyQualifiedName))
             {
                 return true;

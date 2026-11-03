@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Window_Title" xml:space="preserve"><value>Save without verification</value></data>
   <data name="Step1_Headline" xml:space="preserve"><value>Use the additional save options</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Open the arrow menu next to Apply or Save. There you can apply or save the current changes without verification.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Open the arrow menu next to **Apply** or **Save**. There you can apply or save the current changes **without verification**.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Validation still takes place</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Saving without verification does not disable validation. FlowBlox automatically verifies the configuration before the runtime starts.</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Saving **without verification** does not disable validation. FlowBlox automatically verifies the configuration before the runtime starts.</value></data>
 </root>

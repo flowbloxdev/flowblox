@@ -780,6 +780,18 @@ namespace FlowBlox.Core
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        public static byte[] selection_search
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("selection_search", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         public static byte[] set_all
         {
             get
@@ -936,6 +948,18 @@ namespace FlowBlox.Core
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        public static byte[] text_box_search_outline
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("text_box_search_outline", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         public static byte[] text_long
         {
             get
@@ -981,6 +1005,18 @@ namespace FlowBlox.Core
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        public static byte[] variable
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("variable", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>

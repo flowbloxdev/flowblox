@@ -13,6 +13,7 @@
       <ComponentGroupRef Id="FlowBloxFiles" />
       <ComponentRef Id="StartMenuShortcutComponent" />
       <ComponentRef Id="ProjectFileAssociationComponent" />
+      <ComponentRef Id="JetBrainsMonoFontComponent" />
     </Feature>
   </Package>
 
@@ -23,6 +24,20 @@
 
     <StandardDirectory Id="ProgramMenuFolder">
       <Directory Id="ApplicationProgramsFolder" Name="FlowBlox" />
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <StandardDirectory Id="FontsFolder">
+      <!-- Keep shared/preexisting system fonts when FlowBlox is uninstalled. -->
+      <Component Id="JetBrainsMonoFontComponent"
+                 Guid="DCD122E2-2641-4845-B392-019A18E5246D"
+                 Permanent="yes">
+        <File Id="JetBrainsMonoRegularFont"
+              Source="$(var.SourceDir)\data\fonts\JetBrainsMono-Regular.ttf"
+              KeyPath="yes"
+              TrueType="yes" />
+      </Component>
     </StandardDirectory>
   </Fragment>
 

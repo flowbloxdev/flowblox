@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
@@ -13,6 +13,9 @@ using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using System.Reflection;
+using FlowBlox.Enums;
+using FlowBlox.Core.Validations;
 
 namespace FlowBlox.Core.Models.Base
 {
@@ -42,6 +45,27 @@ namespace FlowBlox.Core.Models.Base
         public static ValidationResult ValidateName(string name, ValidationContext context) => FlowBloxComponentNameValidator.Validate(name, context);
 
         public virtual bool HandleRequirements => true;
+
+        /// <summary>
+        /// Rates the follow-up needed when deletion removes or invalidates a dependency.
+        /// </summary>
+        /// <param name="owner">The object that declares the affected property, possibly a nested reactive object.</param>
+        /// <param name="property">The property whose reference or collection entry is affected.</param>
+        /// <param name="impact">The operation performed on the dependency.</param>
+        /// <param name="componentProperty">The top-level property on this component containing the affected owner.</param>
+        public virtual DeletionReviewStatus GetDeletionReviewStatus(
+            object owner, PropertyInfo property, DeletionImpact impact, PropertyInfo componentProperty)
+            => GetDefaultDeletionReviewStatus(owner, property, impact);
+
+        internal static DeletionReviewStatus GetDefaultDeletionReviewStatus(
+            object owner, PropertyInfo property, DeletionImpact impact) => impact switch
+        {
+            DeletionImpact.CollectionEntryRemoved => DeletionReviewStatus.Information,
+            DeletionImpact.FieldReferenceInvalidated => DeletionReviewStatus.ManualActionRequired,
+            _ => ReactiveObjectRequiredStateChecker.IsRequired(owner, property)
+                ? DeletionReviewStatus.ManualActionRequired
+                : DeletionReviewStatus.ReviewRecommended
+        };
 
         public bool ShouldSerializeRequiredFields() => HandleRequirements;
 

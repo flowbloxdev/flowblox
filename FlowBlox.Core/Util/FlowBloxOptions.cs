@@ -1,3 +1,5 @@
+using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Factories;
@@ -92,6 +94,7 @@ namespace FlowBlox.Core.Util
                 new OptionElement("PropertyWindow.EnableSaveSplitButton", "true", "Use a split button for Save actions in the property window. If disabled, Save and Save without verification are displayed as separate buttons.", OptionElement.OptionType.Boolean, "Property window: Save split button"),
                 new OptionElement("PropertyWindow.ApplyButtonSelection", "ApplyWithoutVerification", "Action executed by the Apply split button. Possible values: Apply, ApplyWithoutVerification.", OptionElement.OptionType.Text),
                 new OptionElement("PropertyWindow.SaveButtonSelection", "Save", "Action executed by the Save split button. Possible values: Save, SaveWithoutVerification.", OptionElement.OptionType.Text),
+                new OptionElement("AI.ApprovedAuxiliaryProjects", string.Empty, "Auxiliary projects approved for AI Assistant execution without further confirmation. One entry per line: filename for a distributed auxiliary template, full path for a custom project. Remove an entry to revoke approval.", OptionElement.OptionType.Text),
 
                 new OptionElement("Paths.DocumentsDir", @"%userprofile%\Documents\FlowBlox", "Root directory for user documents managed by FlowBlox.", OptionElement.OptionType.Text, isPlaceholderEnabled: true),
                 new OptionElement("Paths.LocalAppDataDir", @"%localappdata%\FlowBlox", "Root directory for local application data managed by FlowBlox.", OptionElement.OptionType.Text, isPlaceholderEnabled: true),
@@ -254,7 +257,7 @@ namespace FlowBlox.Core.Util
                 .Where(x => x.IsPlaceholderEnabled)
                 .OrderByDescending(x => x.Name.Length))
             {
-                var placeholder = $"$Options::{option.Name}";
+                var placeholder = FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Options, option.Name);
                 if (!value.Contains(placeholder, StringComparison.Ordinal))
                     continue;
 

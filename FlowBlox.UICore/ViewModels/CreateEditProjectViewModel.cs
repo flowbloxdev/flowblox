@@ -24,7 +24,7 @@ public sealed class CreateEditProjectViewModel : INotifyPropertyChanged
         _projectName = project.ProjectName ?? string.Empty;
         Author = project.Author ?? string.Empty;
         Description = project.ProjectDescription ?? string.Empty;
-        ShortDescription = project.ShortDescription ?? string.Empty;
+        ShortDescription = project.AssistantMetadata.ShortDescription ?? string.Empty;
         Notice = project.Notice ?? string.Empty;
         ApplyCommand = new RelayCommand(Apply);
         CancelCommand = new RelayCommand(() => _close(false));
@@ -90,7 +90,7 @@ public sealed class CreateEditProjectViewModel : INotifyPropertyChanged
         _project.ProjectName = ProjectName;
         _project.Author = Author;
         _project.ProjectDescription = Description;
-        _project.ShortDescription = ShortDescription;
+        _project.AssistantMetadata.ShortDescription = ShortDescription;
         _project.Notice = Notice;
         _close(true);
     }

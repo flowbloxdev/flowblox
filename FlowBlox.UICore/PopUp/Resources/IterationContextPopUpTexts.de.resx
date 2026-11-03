@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>Iterationskontext: ein Praxisbeispiel</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>Praxisbeispiel: Buchdaten zusammenführen</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Der **Iterationskontext** beantwortet zwei Fragen: **Wann** werden Datensätze mehrerer Eingänge gemeinsam verarbeitet – und **wie** werden ihre Werte kombiniert (Eingabeverhalten)?
+
+Ein Flow-Block lädt beispielsweise die Detailseiten mehrerer Bücher. Jede Seite ist ein Datensatz. Verbundene Selektoren ermitteln Titel, Beschreibung und Autor der aktuellen Seite, bevor das nächste Buch verarbeitet wird.</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Eine Iteration, eine Ergebniszeile</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Verbinden Sie die drei Selektoren mit dem **TableWriter**. FlowBlox setzt ihren **nächsten gemeinsamen vorgelagerten Flow-Block**, die Detailseiten, automatisch als **Iterationskontext**.
+
+**Iteration 1:** Seite 1 → Titel, Beschreibung und Autor ermitteln&#32;&#32;
+**Iteration 1 abgeschlossen:** TableWriter ausführen.&#32;&#32;
+**Iteration 2:** Seite 2 → Titel, Beschreibung und Autor ermitteln …
+
+Bei mehreren Eingängen gilt standardmäßig **First**: Je ein Wert der Selektoren ergibt eine vollständige Buchzeile.</value></data>
+  <data name="Step3_Headline" xml:space="preserve"><value>First oder Last: den passenden Treffer wählen</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>Ein Selektor kann mehrere Werte für dasselbe Buch liefern. Wählen Sie **First**, wenn der vollständige Wert der erste Treffer ist, oder **Last**, wenn er zuletzt kommt. Das **Eingabeverhalten** stellen Sie am Ziel-Flow-Block unter Eingabe für jeden Eingang einzeln ein, nicht am **Iterationskontext**-Flow-Block.</value></data>
+  <data name="Step4_Headline" xml:space="preserve"><value>RowWise: zusammengehörige Listeneinträge verbinden</value></data>
+  <data name="Step4_Description" xml:space="preserve"><value>Liefern die Selektoren innerhalb einer Iteration Listen mit Titeln, Beschreibungen und Autoren mehrerer Bücher, wählen Sie **RowWise** für alle Eingänge am Ziel. Werte an derselben Position bilden eine Ergebniszeile. Die Listen müssen gleich lang und passend sortiert sein. **First** würde nur das erste Buch übernehmen.</value></data>
+  <data name="Step5_Headline" xml:space="preserve"><value>Cross: feste Werte mit jedem Buch kombinieren</value></data>
+  <data name="Step5_Description" xml:space="preserve"><value>Kombinieren Sie die **Eingabeverhalten**: **First** für Autor und Kategorie, **Cross** für die Buchtitel. So entsteht pro Titel eine Zeile mit demselben Autor und derselben Kategorie. Mehrere **Cross**-Eingänge erzeugen alle möglichen Kombinationen. Zusätzliche Valid-Varianten berücksichtigen nur gültige Werte. Alle Einstellungen erfolgen am Ziel-Flow-Block.</value></data>
+</root>

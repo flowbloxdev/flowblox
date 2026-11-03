@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="FlowBlox.AvaloniaDesktop.Dialogs.MessageBoxWindow"
+        Width="350" MinWidth="350" MaxWidth="700" MaxHeight="650"
+        SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" Topmost="True"
+        Background="Transparent" TransparencyLevelHint="Transparent"
+        Foreground="White" WindowDecorations="None">
+  <Border BorderBrush="#0097FB" BorderThickness="1" CornerRadius="8" Background="#2D2D30">
+    <Grid RowDefinitions="Auto,Auto">
+      <Grid ColumnDefinitions="64,*" Margin="24,24,24,30">
+        <Border x:Name="SymbolBackground" Width="32" Height="32" CornerRadius="16"
+                VerticalAlignment="Center" HorizontalAlignment="Left"
+                BorderBrush="#DCE5FF" BorderThickness="1.5" Background="#4775C8">
+          <TextBlock x:Name="Symbol" Text="?" FontSize="25" FontWeight="Bold"
+                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <StackPanel Grid.Column="1" Spacing="16">
+          <TextBlock x:Name="Caption" FontSize="23" TextWrapping="Wrap" />
+          <ScrollViewer MaxHeight="430" HorizontalScrollBarVisibility="Disabled">
+            <SelectableTextBlock x:Name="Message" FontSize="13" TextWrapping="Wrap" />
+          </ScrollViewer>
+        </StackPanel>
+      </Grid>
+      <Border Grid.Row="1" Background="#242424" Padding="24" CornerRadius="0,0,7,7">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="7">
+          <Button x:Name="Affirmative" MinWidth="76" HorizontalContentAlignment="Center"
+                  Background="Transparent" BorderBrush="#666666" BorderThickness="1" />
+          <Button x:Name="Negative" MinWidth="76" HorizontalContentAlignment="Center"
+                  Background="Transparent" BorderBrush="#666666" BorderThickness="1" />
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Border>
+</Window>

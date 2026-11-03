@@ -1,4 +1,6 @@
-﻿using TextBoxWithOptionalButtonsCreatorResources = FlowBlox.UICore.Resources.ClassResources.TextBoxWithOptionalButtonsCreator;
+﻿using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Enums;
+using TextBoxWithOptionalButtonsCreatorResources = FlowBlox.UICore.Resources.ClassResources.TextBoxWithOptionalButtonsCreator;
 using FlowBlox.Core;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Attributes.FlowBlox.Core.Attributes;
@@ -18,7 +20,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
 using FlowBlox.Core.Util.FlowBlocks;
 
 namespace FlowBlox.UICore.Resolver
@@ -79,6 +80,7 @@ namespace FlowBlox.UICore.Resolver
                     IsReadOnly = readOnly
                 };
                 textBox.TextChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                textBox.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.TextEditorStyle");
                 textBox.SetBinding(TextBox.TextProperty, binding);
                 baseTextBox = textBox;
             }
@@ -212,8 +214,7 @@ namespace FlowBlox.UICore.Resolver
                     {
                         Kind = PackIconMaterialKind.Variable,
                         Width = IconSize,
-                        Height = IconSize,
-                        Foreground = (Brush)new BrushConverter().ConvertFromString("#2F6DB3")
+                        Height = IconSize
                     },
                     Margin = new Thickness(4, 0, 0, 0),
                     Padding = new Thickness(6, 0, 6, 0),
@@ -222,6 +223,7 @@ namespace FlowBlox.UICore.Resolver
                     IsEnabled = !readOnly
                 };
 
+                ((PackIconMaterial)fieldButton.Content).SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.FieldSelectionIconStyle");
                 fieldButton.Click += (s, e) =>
                 {
                     Utilities.TextBoxHelper.ShowFieldSelectionDialog(target, uiAttribute, fieldSelectionAttribute, textBoxControl, _window);
@@ -439,9 +441,9 @@ namespace FlowBlox.UICore.Resolver
             var activeProject = FlowBloxProjectManager.Instance.ActiveProject;
             if (activeProject != null)
             {
-                candidates.Add((activeProject.ProjectInputDirectory, "$Project::InputDirectory"));
-                candidates.Add((activeProject.ProjectOutputDirectory, "$Project::OutputDirectory"));
-                candidates.Add((activeProject.ProjectDirectory, "$Project::Directory"));
+                candidates.Add((activeProject.ProjectInputDirectory, FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Project, "InputDirectory")));
+                candidates.Add((activeProject.ProjectOutputDirectory, FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Project, "OutputDirectory")));
+                candidates.Add((activeProject.ProjectDirectory, FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Project, "Directory")));
             }
 
             var options = FlowBloxOptions.GetOptionInstance();
@@ -456,7 +458,7 @@ namespace FlowBlox.UICore.Resolver
                 {
                     candidates.Add((
                         FlowBloxFieldHelper.ReplaceFieldsInString(option.Value),
-                        $"$Options::{optionName}"));
+                        FlowBloxSourceIds.GetPlaceholder(FlowBloxSourceId.Options, optionName)));
                 }
             }
 

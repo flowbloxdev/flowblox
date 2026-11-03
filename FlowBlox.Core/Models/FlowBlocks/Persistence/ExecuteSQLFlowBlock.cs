@@ -34,6 +34,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
         [Required]
         public string SQLStatement { get; set; }
 
+        [Display(Name = "ExecuteSQLFlowBlock_UseFieldValuesAsParameters",
+                 Description = "ExecuteSQLFlowBlock_UseFieldValuesAsParameters_Tooltip",
+                 ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        public bool UseFieldValuesAsParameters { get; set; } = true;
+
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.database_cog, 16, SKColors.IndianRed);
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.database_cog, 32, SKColors.IndianRed);
 
@@ -48,7 +53,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
             if (dbConnection != null)
             {
                 Dictionary<string, object> parameters;
-                sqlStatement = FlowBloxFieldHelper.ReplaceFieldsInSQL(sqlStatement, DbType, out parameters);
+                sqlStatement = FlowBloxFieldHelper.ReplaceFieldsInSQL(
+                    sqlStatement,
+                    dbType,
+                    out parameters,
+                    useFieldValuesAsParameters: UseFieldValuesAsParameters);
                 return DbConnectionUtil.ExecuteSqlQuery(sqlStatement, parameters, dbConnection);
             }
             throw new InvalidOperationException($"Unable to connect to \"{sqlConnectionstring}\".");

@@ -1,4 +1,4 @@
-<mah:MetroWindow x:Class="FlowBlox.UICore.Views.ExternalProjectExecutionConfirmationWindow"
+﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}" x:Class="FlowBlox.UICore.Views.ExternalProjectExecutionConfirmationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -17,6 +17,7 @@
     </Window.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -49,7 +50,40 @@
         </Border>
         <TextBlock x:Name="ProjectFileText" Grid.Row="2" Margin="0,12,0,0" TextWrapping="Wrap" />
 
-        <StackPanel Grid.Row="3" Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Expander Grid.Row="3" Margin="0,12,0,0" IsExpanded="False"
+                  Header="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_InputParameters}"
+                  BorderBrush="{DynamicResource FlowBlox.Brush.Border}"
+                  mah:HeaderedControlHelper.HeaderBackground="{DynamicResource FlowBlox.Brush.InformationHeader}"
+                  mah:HeaderedControlHelper.HeaderForeground="{DynamicResource FlowBlox.Brush.InformationHeaderText}">
+            <DataGrid x:Name="InputParametersGrid" Margin="0,6,0,0" MaxHeight="260"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      CanUserReorderColumns="False" HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_ParameterName}"
+                                        Binding="{Binding Key}" Width="180" />
+                    <DataGridTemplateColumn Header="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_ParameterValue}" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel LastChildFill="True">
+                                    <Button DockPanel.Dock="Right" Margin="4,2" Padding="4"
+                                            Click="ViewParameterContent_Click"
+                                            ToolTip="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_ViewParameterContent}">
+                                        <iconPacks:PackIconMaterial Kind="EyeOutline" Width="14" Height="14" Foreground="#2F6DB3" />
+                                    </Button>
+                                    <TextBox Text="{Binding Value, Mode=OneWay}" IsReadOnly="True"
+                                             BorderThickness="0" Background="Transparent" VerticalAlignment="Center"
+                                             MaxHeight="60" VerticalScrollBarVisibility="Auto"
+                                             HorizontalScrollBarVisibility="Auto" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Expander>
+
+        <StackPanel Grid.Row="4" Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="ReviewButton"
                     Content="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_Review}"
                     Style="{StaticResource FlowBlox.WindowActionButton}"
@@ -58,7 +92,21 @@
                     Style="{StaticResource FlowBlox.WindowActionButton.Back}"
                     IsCancel="True"
                     Click="CancelButton_Click" />
-            <Button Content="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_Execute}"
+            <Button x:Name="AlwaysAllowButton"
+                    Style="{StaticResource FlowBlox.WindowActionButton}"
+                    Click="AlwaysAllowButton_Click">
+                <Button.ToolTip>
+                    <ToolTip Style="{StaticResource FlowBlox.ToolTipStyle}"
+                             Content="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_ApprovalPersistence}" />
+                </Button.ToolTip>
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="ShieldCheckOutline"
+                                                Style="{StaticResource FlowBlox.WindowActionIcon.Apply}" />
+                    <AccessText Text="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_AlwaysAllow}"
+                                VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="AllowOnceButton" Content="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_Execute}"
                     Style="{StaticResource FlowBlox.WindowActionButton.Save}"
                     IsDefault="True"
                     Click="ExecuteButton_Click" />

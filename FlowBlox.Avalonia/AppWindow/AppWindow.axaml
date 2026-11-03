@@ -1,0 +1,28 @@
+<interop:DesktopWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:interop="using:FlowBlox.AvaloniaDesktop.Interop"
+        xmlns:dock="using:Dock.Avalonia.Controls"
+        x:Class="FlowBlox.AppWindow.AppWindow"
+        Title="FlowBlox" Width="1420" Height="1000" MinWidth="800" MinHeight="600"
+        WindowStartupLocation="CenterScreen" Icon="/Assets/App.ico">
+  <DockPanel>
+    <Menu x:Name="MainMenu" DockPanel.Dock="Top" />
+    <Border DockPanel.Dock="Top" Height="1" Background="#A0A0A0" />
+    <Border x:Name="NotificationBar" DockPanel.Dock="Bottom" IsVisible="False" Background="#252526" Padding="8,4">
+      <DockPanel>
+        <Button x:Name="NotificationAction" DockPanel.Dock="Right" Foreground="#66D9EF" />
+        <TextBlock x:Name="NotificationMessage" VerticalAlignment="Center" TextWrapping="Wrap" />
+      </DockPanel>
+    </Border>
+    <Grid>
+      <Image x:Name="Welcome" Source="/Assets/Welcome.png" Stretch="None" />
+      <dock:DockControl x:Name="Workspace" IsVisible="False" InitializeLayout="False" InitializeFactory="False" />
+      <Border x:Name="LoadingOverlay" IsVisible="False" Background="#343434">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" Width="300">
+          <TextBlock x:Name="LoadingText" HorizontalAlignment="Center" />
+          <ProgressBar IsIndeterminate="True" Height="4" Foreground="#66D9EF" />
+        </StackPanel>
+      </Border>
+    </Grid>
+  </DockPanel>
+</interop:DesktopWindow>

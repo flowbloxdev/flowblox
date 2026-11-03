@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a reproducible problem in FlowBlox.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Check existing issues first and provide a minimal example where possible.
+        If you want to implement the fix, mention it below so a maintainer can coordinate the scope with you.
+  - type: input
+    id: version
+    attributes:
+      label: FlowBlox version
+      description: Include the release version or commit for a source build.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system/version and any relevant runtime, provider, or data-source configuration. Omit credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Describe the steps and attach a minimal example project or sample input if useful.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include relevant error messages, logs, or screenshots with credentials removed.
+    validations:
+      required: true
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Proposed fix or contribution
+      description: Optional. Describe an approach and whether you would like to work on it.

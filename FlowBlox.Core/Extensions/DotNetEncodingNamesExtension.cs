@@ -5,6 +5,11 @@ namespace FlowBlox.Core.Extensions
 {
     public static class DotNetEncodingNamesExtension
     {
+        static DotNetEncodingNamesExtension()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
         public static Encoding ToEncoding(this DotNetEncodingNames encodingName)
         {
             return encodingName switch

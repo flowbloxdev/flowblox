@@ -11,7 +11,8 @@ namespace FlowBlox.Core.Actions
 
         public virtual void Undo()
         {
-            AssociatedActions.ForEach(x => x.Undo());
+            for (var index = AssociatedActions.Count - 1; index >= 0; index--)
+                AssociatedActions[index].Undo();
         }
 
         public virtual void Invoke()

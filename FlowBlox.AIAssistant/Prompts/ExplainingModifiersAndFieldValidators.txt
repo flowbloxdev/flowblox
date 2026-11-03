@@ -1,13 +1,13 @@
 Use this on-demand when extracted field values need post-processing or validation without adding extra flow blocks.
 
 Scope:
-- `FieldElement.Modifiers` (`Automatic adjustments`): transform output values after extraction.
+- `FieldElement.Modifiers` (`Automatic adjustments`): transform field values after FlowBlock result generation, e.g. trim or decode text.
 - `FieldElement.Conditions` (`Conditions`): validate/filter output values.
 
 Execution order per field value:
 1. Modifiers are applied in list order.
 2. Conditions are evaluated.
-3. If any condition fails, the field value is set to `null` for that dataset.
+3. If any condition fails, the field value is set to `null` for that dataset. The dataset remains; the result count is unchanged.
 
 Modifier use-cases (compact):
 - Trim trailing whitespace/newlines:

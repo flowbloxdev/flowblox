@@ -6,6 +6,8 @@ using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Provider.Project;
 using FlowBlox.Core.Validations;
+using FlowBlox.Core.Models.FlowBlocks.Base;
+using FlowBlox.Core.Models.FlowBlocks.TextOperations;
 
 namespace FlowBloxTest.Util
 {
@@ -13,6 +15,26 @@ namespace FlowBloxTest.Util
     [TestCategory(FlowBloxTestCategories.UnitTest)]
     public sealed class FlowBloxComponentValidatorTests
     {
+        [TestMethod]
+        public void Validate_IgnoresUnboundInputAssignmentOnlyInAutomaticInputCollection()
+        {
+            FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject();
+            var unbound = new InputBehaviorAssignment();
+            var block = new AssignmentContextBlock { Name = "Consumer", OtherAssignment = unbound, FormatExpression = "value" };
+            block.InputBehaviorAssignments.Add(unbound);
+
+            var messages = FlowBloxComponentValidator.Validate(block);
+
+            Assert.IsFalse(messages.Any(message => message.StartsWith("[InputBehaviorAssignments[", StringComparison.Ordinal)));
+            Assert.IsTrue(messages.Any(message => message.StartsWith("[OtherAssignment]", StringComparison.Ordinal)));
+            Assert.AreSame(unbound, block.InputBehaviorAssignments.Single(), "Validation must not remove persisted entries.");
+        }
+
+        private sealed class AssignmentContextBlock : FormatFlowBlock
+        {
+            public InputBehaviorAssignment OtherAssignment { get; set; }
+        }
+
         [TestMethod]
         public void Validate_ValidatesManagedObjectWhenItIsTheRoot()
         {

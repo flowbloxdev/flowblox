@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FlowBlox.UICore.PopUp.Resources {
+namespace FlowBlox.UICore.PopUp.Resources
+{
     using System;
     
     
@@ -19,26 +20,31 @@ namespace FlowBlox.UICore.PopUp.Resources {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class OnnxQAPopUpTexts {
+    public class OnnxQAPopUpTexts
+    {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal OnnxQAPopUpTexts() {
+        internal OnnxQAPopUpTexts()
+        {
         }
         
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlowBlox.UICore.PopUp.Resources.OnnxQAPopUpTexts", typeof(OnnxQAPopUpTexts).Assembly);
                     resourceMan = temp;
                 }
@@ -51,21 +57,26 @@ namespace FlowBlox.UICore.PopUp.Resources {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Python is required to download and export the example model. Download the latest release here and enable “Add Python to PATH” during setup:
-        ///{0} ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Python is required to download and export the example model. Download the latest release here and enable “**Add Python to PATH**” during setup:
+        ///[Download Python]({0}) ähnelt.
         /// </summary>
-        public static string Step1_Description {
-            get {
+        public static string Step1_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step1_Description", resourceCulture);
             }
         }
@@ -73,18 +84,22 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Install Python ähnelt.
         /// </summary>
-        public static string Step1_Headline {
-            get {
+        public static string Step1_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step1_Headline", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Open the included page and run or download the published Python script. It uses multilingual mDeBERTa-v3 by default. Pass --model-id for another checkpoint, --model-root-directory for a user model root, or --output-directory for an exact model folder:
-        ///{0} ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Open the included page and run or download the published Python script. It uses multilingual mDeBERTa-v3 by default. Pass `--model-id` for another checkpoint, `--model-root-directory` for a user model root, or `--output-directory` for an exact model folder:
+        ///[mDeBERTa-v3 export script]({0}) ähnelt.
         /// </summary>
-        public static string Step2_Description {
-            get {
+        public static string Step2_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step2_Description", resourceCulture);
             }
         }
@@ -92,17 +107,21 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Export the multilingual mDeBERTa-v3 QA model ähnelt.
         /// </summary>
-        public static string Step2_Headline {
-            get {
+        public static string Step2_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step2_Headline", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die ModelFolder points to the QA model root option and default model subfolder. The folder must contain model.onnx, config.json, tokenizer_config.json and the exported tokenizer assets. Enable AllowNoAnswer when empty answers are required and tune its threshold with representative data. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die `ModelFolder` points to the QA model root option and default model subfolder. The folder must contain `model.onnx`, `config.json`, `tokenizer_config.json` and the exported tokenizer assets. Enable `AllowNoAnswer` when empty answers are required and tune its threshold with representative data. ähnelt.
         /// </summary>
-        public static string Step3_Description {
-            get {
+        public static string Step3_Description
+        {
+            get
+            {
                 return ResourceManager.GetString("Step3_Description", resourceCulture);
             }
         }
@@ -110,8 +129,10 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Select the completed model folder ähnelt.
         /// </summary>
-        public static string Step3_Headline {
-            get {
+        public static string Step3_Headline
+        {
+            get
+            {
                 return ResourceManager.GetString("Step3_Headline", resourceCulture);
             }
         }
@@ -119,8 +140,10 @@ namespace FlowBlox.UICore.PopUp.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Set up ONNX extractive question answering ähnelt.
         /// </summary>
-        public static string Window_Title {
-            get {
+        public static string Window_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("Window_Title", resourceCulture);
             }
         }
