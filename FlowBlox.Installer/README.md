@@ -5,6 +5,10 @@ CLI, RunnerHost and WorkerService. It no longer builds the obsolete WinForms
 application. The Start menu shortcut and `.fbprj` file association launch
 `FlowBlox.exe`, built from `FlowBlox.Avalonia`; the product name and upgrade identity remain FlowBlox.
 
+For automatic GitHub builds and publishing through version tags, see
+[how to create a release](../docs/releases.md). The existing commands below remain
+available for local packaging; CI reuses these scripts.
+
 From the repository root:
 
 ```powershell

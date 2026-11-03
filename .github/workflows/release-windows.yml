@@ -1,0 +1,93 @@
+name: Release Windows x64
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release tag
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate version and main ancestry
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          ./scripts/Get-FlowBloxReleaseVersion.ps1 -Tag $env:RELEASE_TAG
+          git merge-base --is-ancestor HEAD origin/main
+          if ($LASTEXITCODE -ne 0) { throw 'Release tags must point to a commit on main.' }
+
+  checks:
+    needs: validate
+    uses: ./.github/workflows/ci.yml
+
+  installer:
+    name: Build Windows installer
+    needs: checks
+    runs-on: windows-2025
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '10.0.x'
+      - name: Prepare native ONNX runtimes
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File ./FlowBloxResources/Sync-OnnxRuntimes.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'ONNX runtime preparation failed.' }
+      - name: Build versioned WiX installer and checksum
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: ./scripts/Build-FlowBloxRelease.ps1 -Tag $env:RELEASE_TAG
+      - name: Upload release files
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: windows-x64-installer
+          path: |
+            artifacts/installer/msi/*.msi
+            artifacts/installer/msi/*.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  publish:
+    name: Publish GitHub Release
+    needs: installer
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: windows-x64-installer
+          path: release-files
+      - name: Publish completed release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          cd release-files
+          sha256sum --check ./*.sha256
+          gh release create "$RELEASE_TAG" ./*.msi ./*.sha256 --verify-tag --draft --generate-notes --title "FlowBlox $RELEASE_TAG (Windows x64)"
+          gh release edit "$RELEASE_TAG" --draft=false --latest

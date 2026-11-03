@@ -116,6 +116,15 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Keep notification display texts short and action-oriented.
 
 ## Practical Agent Rules
+
+### Releases and version tags
+- Before handling a release or version-tag request, read `docs/releases.md`.
+- Use `scripts/New-FlowBloxReleaseTag.ps1` to prepare a local annotated release tag from a clean `main` checkout. It uses existing local version tags, or the active application's version when no version tag exists.
+- Default to increasing **minor by one** and resetting patch to zero (`1.2.3` -> `1.3.0`). Increase major (`-Major`) or patch/hotfix (`-Patch`) only on explicit user request; never roll over to a new major automatically.
+- Creating a tag does **not** authorize pushing it, creating a GitHub Release, or publishing artifacts. Do not push without an explicit user instruction. The user can push the exact tag later, which triggers `release-windows.yml`.
+- Do not change project versions or create a version-update commit just to prepare a release tag. The release build derives its version from the tag through the existing version-update script.
+
+### General implementation
 - Reuse existing infrastructure before introducing new patterns.
 - Keep changes consistent with annotation-driven UI architecture.
 - Do not introduce user-visible strings without localization keys.

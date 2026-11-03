@@ -9,7 +9,7 @@
 
 param(
   [Parameter(Mandatory = $true)]
-  [ValidatePattern('^\d+\.\d+\.\d+$')]
+  [ValidatePattern('^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$')]
   [string]$Version,
   [string]$Root = ""
 )
@@ -27,6 +27,7 @@ if ((Split-Path -Leaf $rootPath) -ieq "scripts") {
 # ---- Configuration ----
 $Projects = @(
   "FlowBlox.Avalonia\FlowBlox.Avalonia.csproj",
+  "FlowBlox.AIAssistant\FlowBlox.AIAssistant.csproj",
   "FlowBlox.CLI\FlowBlox.CLI.csproj",
   "FlowBlox.Core\FlowBlox.Core.csproj",
   "FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj",
@@ -96,19 +97,15 @@ function Set-Property([xml]$xml, [System.Xml.XmlElement]$pg, [string]$name, [str
 $updated = @()
 foreach ($rel in $Projects) {
   $path = Join-Path $Root $rel
-  try {
-    Write-Host ("Updating {0} ..." -f $path) -ForegroundColor Cyan
+  Write-Host ("Updating {0} ..." -f $path) -ForegroundColor Cyan
 
-    $xml = Load-Xml $path
-    $pg  = Get-Or-Create-PropertyGroup $xml
-    foreach ($k in $Meta.Keys) {
-      Set-Property $xml $pg $k $Meta[$k]
-    }
-    Save-Xml $xml $path
-    $updated += $path
-  } catch {
-    Write-Warning ("Error processing {0}: {1}" -f $path, $_.Exception.Message)
+  $xml = Load-Xml $path
+  $pg  = Get-Or-Create-PropertyGroup $xml
+  foreach ($k in $Meta.Keys) {
+    Set-Property $xml $pg $k $Meta[$k]
   }
+  Save-Xml $xml $path
+  $updated += $path
 }
 
 # ---- Result ----

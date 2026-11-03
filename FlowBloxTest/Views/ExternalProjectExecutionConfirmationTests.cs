@@ -9,7 +9,7 @@ namespace FlowBloxTest.Views;
 
 [TestClass]
 [DoNotParallelize]
-[TestCategory(FlowBloxTestCategories.UnitTest)]
+[TestCategory(FlowBloxTestCategories.IntegrationTests)]
 public sealed class ExternalProjectExecutionConfirmationTests
 {
     [STATestMethod]

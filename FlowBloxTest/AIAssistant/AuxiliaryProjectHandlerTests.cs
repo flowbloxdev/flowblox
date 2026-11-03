@@ -1,5 +1,6 @@
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Tools;
+using FlowBlox.AIAssistant.Tools.Util;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Provider.Project;
@@ -18,6 +19,7 @@ namespace FlowBloxTest.AIAssistant
         private const string ProjectDescription = "Inspects a database schema for the current assistant session.";
         private string _previousLocalAppDataDirectory = null!;
         private string _localAppDataDirectory = null!;
+        private string _previousApprovals = null!;
 
         [TestInitialize]
         public void Initialize()
@@ -26,6 +28,9 @@ namespace FlowBloxTest.AIAssistant
             _previousLocalAppDataDirectory = option.Value;
             _localAppDataDirectory = Path.Combine(Path.GetTempPath(), "FlowBloxAuxiliaryTests", Guid.NewGuid().ToString("N"));
             option.Value = _localAppDataDirectory;
+            var approvals = FlowBloxOptions.GetOptionInstance().GetOption(AuxiliaryProjectApprovalStore.OptionName);
+            _previousApprovals = approvals.PersistentValue;
+            approvals.PersistentValue = string.Empty;
             FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject { ProjectName = "Main" };
             ToolHandlerUtilities.SetCurrentSessionGuid(_sessionId);
         }
@@ -33,6 +38,7 @@ namespace FlowBloxTest.AIAssistant
         [TestCleanup]
         public void Cleanup()
         {
+            FlowBloxOptions.GetOptionInstance().GetOption(AuxiliaryProjectApprovalStore.OptionName).PersistentValue = _previousApprovals;
             ToolHandlerUtilities.ClearSessionCache(_sessionId);
             ToolHandlerUtilities.SetCurrentSessionGuid(null);
             foreach (var projectName in new[]
@@ -285,7 +291,7 @@ namespace FlowBloxTest.AIAssistant
                 }
             });
 
-            Assert.IsNotNull(confirmation);
+            Assert.IsNotNull(confirmation, response.Error);
             Assert.AreEqual(projectFile, confirmation.Arguments.Value<string>("projectFile"));
             Assert.AreEqual("SELECT name FROM sys.databases;", confirmation.ConfirmationInputParameters!["Input_SQLQuery"]);
             Assert.IsTrue(response.Result.Value<bool>("cancelledByUser"));

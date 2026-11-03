@@ -69,13 +69,17 @@ Repository administration and code review are separate responsibilities. A revie
 
 FlowBlox maintains **one current release line**. There is no separate `develop` branch and no permanent `release` or `hotfix` branch.
 
+We aim to publish a regular release approximately every **six weeks**. This is a flexible planning guideline, not a fixed deadline; readiness and scope may change the timing, and important fixes may ship earlier.
+
 - Features and fixes are integrated into `main` through PRs. Only merge completed work that can ship in the next release.
-- Maintainers choose a tested commit on `main`, update version metadata through a PR when needed, and publish a version tag such as `v1.2.3` with a corresponding GitHub Release and build artifacts.
+- Maintainers tag a tested commit on `main`, for example `v1.2.3`. GitHub Actions derives the build version from that tag, reruns the checks, builds the Windows installer, and publishes the GitHub Release with its assets. No version-update commit is required.
 - Tags identify the exact source revision of each published version. Do not move a published version tag to a different commit; publish a new version instead.
 - Urgent corrections use the normal `bugfix/<issue-number>-<description>` workflow and are included in the next release from `main`.
 - Older releases remain identifiable through their tags; they are not maintained as separate patch branches. Fixes are delivered in the latest release.
 
-For packaging instructions, see the [installer guide](FlowBlox.Installer/README.md).
+Delivery workflows and packages are separated by operating system. Currently only **Windows x64** releases are available; Linux delivery is planned as part of the Avalonia port. Application versions remain shared across platforms.
+
+For the release steps and one-time GitHub setup, see [how to create a release](docs/releases.md). For local packaging instructions, see the [installer guide](FlowBlox.Installer/README.md).
 
 ## Planning work
 

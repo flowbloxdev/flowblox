@@ -17,3 +17,7 @@ FlowBloxResources/data/README.txt
 FlowBloxResources/data/onnxruntimes/
 FlowBloxResources/data/onnxruntimesgenai/
 FlowBloxResources/temp/history.json
+TestResults/ci/
+TestResults/ci-*.log
+TestResults/ci-tools/
+TestResults/release-automation/
