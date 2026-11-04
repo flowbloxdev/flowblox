@@ -18,7 +18,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
             "Runs the current project or an explicitly supplied project file in RunnerHost debug mode and returns runtime protocol output. " +
-            "For an explicitly supplied external project or an active auxiliary project, provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedAuxiliaryProjects option. The main project requires neither. " +
+            "For an explicitly supplied external project or an active skill project, provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedSkillProjects option. The main project requires neither. " +
             "FieldValueChanges and GeneratedResults must be read via GetLastDebugArtefact. " +
             "If a target is set, runtime always stops at target: default is stopping before target execution. Set includeTargetExecution=true to execute target once and then stop.",
             new JObject
@@ -29,7 +29,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["maxCapturedFieldValueChanges"] = "int? (default: 100)",
                 ["maxProtocolEntries"] = "optional: int (default: 250). Returns the latest entries in chronological order.",
                 ["projectFile"] = "string? (defaults to the project currently targeted by project tools)",
-                ["reason"] = "string? (required for an external or active auxiliary project; explain why execution is needed)",
+                ["reason"] = "string? (required for an external or active skill project; explain why execution is needed)",
                 ["inputParameters"] = "object? (input user-field name to textual value; values support FlowBlox placeholders)",
                 ["usageHint"] = "Use this call for protocol output only. Read FieldValueChanges/GeneratedResults via GetLastDebugArtefact. Prefer one optimistic debug run first (usually includeTargetExecution=false). Tune maxProtocolEntries as needed."
             });
@@ -42,10 +42,10 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 var requestedProjectFile = FlowBloxFieldHelper.ReplaceFieldsInString(
                     (args.Value<string>("projectFile") ?? string.Empty).Trim());
                 var usesExternalProjectFile = !string.IsNullOrWhiteSpace(requestedProjectFile);
-                var executesAuxiliaryProject = ToolHandlerUtilities.IsAuxiliaryProjectActive();
+                var executesSkill = ToolHandlerUtilities.IsSkillProjectActive();
                 var reason = (args.Value<string>("reason") ?? string.Empty).Trim();
-                if ((usesExternalProjectFile || executesAuxiliaryProject) && string.IsNullOrWhiteSpace(reason))
-                    return Task.FromResult(ToolHandlerUtilities.Fail("reason is required when an external or auxiliary project is executed."));
+                if ((usesExternalProjectFile || executesSkill) && string.IsNullOrWhiteSpace(reason))
+                    return Task.FromResult(ToolHandlerUtilities.Fail("reason is required when an external or skill project is executed."));
                 if (usesExternalProjectFile && !File.Exists(requestedProjectFile))
                     return Task.FromResult(ToolHandlerUtilities.Fail($"Project file does not exist: {requestedProjectFile}"));
 
@@ -171,7 +171,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     ["includeTargetExecution"] = includeTargetExecution,
                     ["projectFile"] = projectFile,
                     ["externalProjectFile"] = usesExternalProjectFile,
-                    ["auxiliaryProject"] = executesAuxiliaryProject,
+                    ["skill_project"] = executesSkill,
                     ["inputParameterCount"] = inputParameters.Count,
                     ["debuggingResultFilePath"] = response.DebuggingResultFilePath ?? debuggingResultFile,
                     ["protocolEntryCount"] = protocolLimited.Count,

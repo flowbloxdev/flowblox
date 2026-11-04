@@ -1,17 +1,17 @@
-﻿using FlowBlox.AIAssistant.Models;
+using FlowBlox.AIAssistant.Models;
 using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    internal sealed class GetAuxiliaryProjectsHandler : ToolHandlerBase
+    internal sealed class GetSkillProjectsHandler : ToolHandlerBase
     {
-        public override string Name => "GetAuxiliaryProjects";
+        public override string Name => "GetSkillProjects";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Lists auxiliary projects from the current session or distributed FlowBlox data, optionally filtered by project name or description. " +
+            "Lists skill projects from the current session or distributed FlowBlox data, optionally filtered by project name or description. " +
             "Both modes return projectFile for direct ExecuteExternalProject or RunProjectDebugTest calls; distributed projects do not need to be copied first. " +
-            "Use GetAuxiliaryProject instead when the exact name is already known from the session bootstrap.",
+            "Use GetSkillProject instead when the exact name is already known from the session bootstrap.",
             new JObject
             {
                 ["mode"] = "string? (session|distributedData; default: session)",
@@ -24,13 +24,13 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             var mode = (args.Value<string>("mode") ?? "session").Trim();
             var filter = (args.Value<string>("filter") ?? string.Empty).Trim();
             var filterTerms = ToolHandlerUtilities.ParseContainsSearchTerms(args["filter"]);
-            if (!AuxiliaryProjectCatalog.IsSupportedMode(mode))
+            if (!SkillProjectCatalog.IsSupportedMode(mode))
             {
                 return Task.FromResult(ToolHandlerUtilities.Fail(
-                    $"Auxiliary project mode '{mode}' is not supported. Supported modes: session, distributedData."));
+                    $"Skill project mode '{mode}' is not supported. Supported modes: session, distributedData."));
             }
 
-            var projects = AuxiliaryProjectCatalog.GetProjects(mode).ToList();
+            var projects = SkillProjectCatalog.GetProjects(mode).ToList();
             projects = FilterProjects(projects, filterTerms).ToList();
             return Task.FromResult(ToolHandlerUtilities.Ok(new JObject
             {
@@ -38,8 +38,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["filter"] = filter,
                 ["filterTerms"] = new JArray(filterTerms),
                 ["matchMode"] = "CaseInsensitiveContainsOR",
-                ["projects"] = new JArray(projects.OrderBy(
-                    x => x.Value<string>("projectName"),
+                ["skillProjects"] = new JArray(projects.OrderBy(
+                    x => x.Value<string>("skillProjectName"),
                     StringComparer.OrdinalIgnoreCase))
             }));
         }
@@ -49,7 +49,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             IReadOnlyCollection<string> filterTerms)
         {
             return projects.Where(x => ToolHandlerUtilities.ContainsAnySearchTerm(
-                [x.Value<string>("projectName"), x.Value<string>("shortDescription"), x.Value<string>("description")],
+                [x.Value<string>("skillProjectName"), x.Value<string>("shortDescription"), x.Value<string>("description")],
                 filterTerms));
         }
     }

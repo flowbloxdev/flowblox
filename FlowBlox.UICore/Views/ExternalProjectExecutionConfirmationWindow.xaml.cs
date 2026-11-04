@@ -25,7 +25,7 @@ namespace FlowBlox.UICore.Views
                 .OrderBy(parameter => parameter.Key, StringComparer.OrdinalIgnoreCase)
                 .ToList();
             ProjectFileText.Text = string.IsNullOrWhiteSpace(_projectFile)
-                ? Text("Message_ExternalProjectExecution_ActiveAuxiliaryProject")
+                ? Text("Message_ExternalProjectExecution_ActiveSkillProject")
                 : string.Format(Text("Message_ExternalProjectExecution_ProjectFile"), _projectFile);
             ReviewButton.IsEnabled = File.Exists(_projectFile) && File.Exists(ResolveFlowBloxExecutable());
         }

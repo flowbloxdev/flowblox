@@ -3,7 +3,7 @@
 This directory contains source-controlled application data and shared build scripts.
 Generated binaries belong in each project's output directory.
 
-- `data/`: bundled examples, auxiliary projects, prompts, fonts, HTML and Python scripts.
+- `data/`: bundled examples, Skills (`data/skill_project`), prompts, fonts, HTML and Python scripts.
 - `FlowBlox.Build.targets`: imported by WinForms, Avalonia and CLI. Copies `data/` to
   each application's build and publish directories using `PreserveNewest`.
 - `postbuild.bat` and `postbuild_onnx.ps1`: copy ONNX runtimes to the corresponding

@@ -17,7 +17,7 @@ namespace FlowBloxTest.FlowBlocks.IO;
 [TestClass]
 [DoNotParallelize]
 [TestCategory(FlowBloxTestCategories.UnitTest)]
-public sealed class AuxiliaryFileProjectsTests
+public sealed class SkillProjectFileTests
 {
     private string _directory = null!;
     private FlowBloxProject? _previousProject;
@@ -181,7 +181,7 @@ public sealed class AuxiliaryFileProjectsTests
     {
         var response = await new DefaultToolApi().ExecuteAsync(new ToolRequest
         {
-            ToolName = "GetAuxiliaryProjects",
+            ToolName = "GetSkillProjects",
             Arguments = new JObject
             {
                 ["mode"] = "distributedData",
@@ -189,13 +189,13 @@ public sealed class AuxiliaryFileProjectsTests
             }
         }, CancellationToken.None);
         Assert.IsTrue(response.Ok, response.Error);
-        var projects = response.Result["projects"]!.Children<JObject>().ToList();
-        var content = projects.Single(x => x.Value<string>("projectName") == "GetFileContent");
+        var projects = response.Result["skillProjects"]!.Children<JObject>().ToList();
+        var content = projects.Single(x => x.Value<string>("skillProjectName") == "GetFileContent");
         CollectionAssert.AreEquivalent(new[] { "FilePath", "InputFileType", "Encoding" }, content["inputFields"]!.Values<string>().ToArray());
         CollectionAssert.AreEqual(new[] { "FileContent" }, content["outputFields"]!.Values<string>().ToArray());
         CollectionAssert.AreEqual(new[] { "Pdf", "Xlsx", "Docx", "Text" }, content["inputFieldListOfValues"]!["InputFileType"]!.Values<string>().ToArray());
         Assert.AreEqual(5, content["inputFieldListOfValues"]!["Encoding"]!.Count());
-        Assert.IsNull(projects.Single(x => x.Value<string>("projectName") == "ListFiles")["inputFieldListOfValues"]);
+        Assert.IsNull(projects.Single(x => x.Value<string>("skillProjectName") == "ListFiles")["inputFieldListOfValues"]);
     }
 
     private static string RunContent(string path, string type, string? encoding = null)
@@ -208,7 +208,7 @@ public sealed class AuxiliaryFileProjectsTests
 
     private static string Run(string name, Dictionary<string, string> inputs, string output)
     {
-        var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, $"../../../../FlowBlox.Build/data/auxiliary_project/{name}.fbprj"));
+        var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, $"../../../../FlowBlox.Build/data/skill_project/{name}.fbprj"));
         var project = FlowBloxProject.FromFile(path);
         FlowBloxProjectManager.Instance.ActiveProject = project;
         foreach (var input in inputs)

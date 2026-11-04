@@ -7,16 +7,15 @@ namespace FlowBloxTest.AIAssistant
     public class AssistantPromptBuilderTests
     {
         [TestMethod]
-        public void BuildSessionBootstrapPrompt_RoutesAuxiliaryGuidanceAndListsBundledSkills()
+        public void BuildSessionBootstrapPrompt_RoutesSkillGuidanceAndListsBundledSkillProjects()
         {
             var prompt = AssistantPromptBuilder.BuildSessionBootstrapPrompt([]);
 
             Assert.IsFalse(prompt.Contains("{{EXPLANATION_ROUTING}}", StringComparison.Ordinal));
-            StringAssert.Contains(prompt, "Using bundled or session-created auxiliary projects as local skills");
-            StringAssert.Contains(prompt, "`explaining_auxiliary_projects`");
+            StringAssert.Contains(prompt, "`explaining_skills`");
             StringAssert.Contains(prompt, "FetchUrlDom: Open a URL and return its rendered DOM content.");
             StringAssert.Contains(prompt, "ExecuteSQLQuery: Execute SQL against a database and return the query result as CSV.");
-            Assert.IsFalse(prompt.Contains("{{STANDARD_AUXILIARY_PROJECTS}}", StringComparison.Ordinal));
+            Assert.IsFalse(prompt.Contains("{{STANDARD_SKILL_PROJECTS}}", StringComparison.Ordinal));
         }
 
         [TestMethod]

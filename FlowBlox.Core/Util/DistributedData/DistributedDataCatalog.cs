@@ -5,7 +5,7 @@ namespace FlowBlox.Core.Util.DistributedData
     public static class DistributedDataCatalog
     {
         public const string PythonType = "python";
-        public const string AuxiliaryProjectType = "auxiliary_project";
+        public const string SkillProjectType = "skill_project";
         public const string DemoPromptType = "demo_prompts";
         public const string ExampleProjectType = "example_project";
 
@@ -13,7 +13,7 @@ namespace FlowBlox.Core.Util.DistributedData
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 [PythonType] = ".py",
-                [AuxiliaryProjectType] = ".fbprj",
+                [SkillProjectType] = ".fbprj",
                 [DemoPromptType] = ".txt",
                 [ExampleProjectType] = ".fbprj"
             };

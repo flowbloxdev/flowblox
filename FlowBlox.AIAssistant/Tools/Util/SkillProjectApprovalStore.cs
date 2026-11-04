@@ -3,16 +3,16 @@ using FlowBlox.Core.Util.DistributedData;
 
 namespace FlowBlox.AIAssistant.Tools.Util
 {
-    internal static class AuxiliaryProjectApprovalStore
+    internal static class SkillProjectApprovalStore
     {
-        public const string OptionName = "AI.ApprovedAuxiliaryProjects";
+        public const string OptionName = "AI.ApprovedSkillProjects";
         private static readonly object Sync = new();
 
         public static string GetProjectKey(string projectFile)
         {
             var fullPath = Path.GetFullPath(projectFile);
             var fileName = Path.GetFileName(fullPath);
-            var templatePath = DistributedDataCatalog.ResolvePath(DistributedDataCatalog.AuxiliaryProjectType, fileName);
+            var templatePath = DistributedDataCatalog.ResolvePath(DistributedDataCatalog.SkillProjectType, fileName);
             if (templatePath != null && string.Equals(Path.GetFullPath(templatePath), fullPath, StringComparison.OrdinalIgnoreCase))
                 return fileName;
 

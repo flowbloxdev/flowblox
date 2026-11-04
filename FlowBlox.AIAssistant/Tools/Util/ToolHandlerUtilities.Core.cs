@@ -101,7 +101,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             }
 
             AssistantSessionContentStore.Clear(key);
-            AuxiliaryProjectSessionStore.Clear(key);
+            SkillProjectSessionStore.Clear(key);
             AiAssistantProjectRunState.Clear(key);
             AiAssistantTestExecutionState.Clear(key);
         }
@@ -119,19 +119,19 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
         public static FlowBloxProject GetProject()
         {
-            return AuxiliaryProjectSessionStore.GetCurrentProject(GetCurrentSessionCacheKey());
+            return SkillProjectSessionStore.GetCurrentProject(GetCurrentSessionCacheKey());
         }
 
         public static FlowBloxProject? TryGetProject() =>
-            AuxiliaryProjectSessionStore.TryGetCurrentProject(GetCurrentSessionCacheKey(), out var project)
+            SkillProjectSessionStore.TryGetCurrentProject(GetCurrentSessionCacheKey(), out var project)
                 ? project
                 : null;
 
-        public static bool IsAuxiliaryProjectActive() =>
-            AuxiliaryProjectSessionStore.IsActive(GetCurrentSessionCacheKey());
+        public static bool IsSkillProjectActive() =>
+            SkillProjectSessionStore.IsActive(GetCurrentSessionCacheKey());
 
-        public static string? GetActiveAuxiliaryProjectName() =>
-            AuxiliaryProjectSessionStore.TryGetActiveProject(GetCurrentSessionCacheKey(), out var project)
+        public static string? GetActiveSkillProjectName() =>
+            SkillProjectSessionStore.TryGetActiveProject(GetCurrentSessionCacheKey(), out var project)
                 ? project.ProjectName
                 : null;
 

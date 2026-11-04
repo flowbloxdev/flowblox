@@ -10,9 +10,9 @@
 
 Über die **FlowBlox Tool API** legt er Flow-Blocks an, konfiguriert sie, ruft Informationen ab und testet oder debuggt Flows. Das entstandene Projekt können Sie prüfen und weiterbearbeiten. Anfragen sowie relevante Projekt- oder Tool-Daten werden an den gewählten Anbieter übermittelt.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Skills erweitern die Möglichkeiten</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>**Hilfsprojekte** dienen als Skills: Sie können Informationen von Websites, aus lokalen Dateien oder MSSQL-Datenbanken abrufen – mit Ihren verfügbaren Verbindungen und Berechtigungen.
+  <data name="Step2_Description" xml:space="preserve"><value>**Skills** geben dem Assistenten gezielte Fähigkeiten, etwa Webinhalte abzurufen, lokale Dateien zu lesen oder Datenbanken abzufragen. Dabei nutzt er Ihre verfügbaren Verbindungen und Berechtigungen. Der Assistent verwendet mitgelieferte Skills. Fehlt ein benötigter Skill, kann er ein kompaktes **Skill-Projekt** mit definierten Ein- und Ausgaben erstellen, das diese Fähigkeit bereitstellt.
 
-Vor der Ausführung bittet FlowBlox um Ihre **Freigabe**, sofern Sie das Projekt nicht bereits dauerhaft erlaubt haben. Prüfen Sie Begründung, Projekt und **Eingabeparameter**. Wählen Sie **Einmal erlauben** oder **Immer erlauben**; dauerhafte Freigaben können Sie unter Optionen → AI → ApprovedAuxiliaryProjects zurücknehmen.</value></data>
+Vor der Ausführung bittet FlowBlox um Ihre **Freigabe**, sofern Sie das Projekt nicht bereits dauerhaft erlaubt haben. Prüfen Sie Begründung, Projekt und **Eingabeparameter**. Wählen Sie **Einmal erlauben** oder **Immer erlauben**; dauerhafte Freigaben können Sie unter Optionen → AI → ApprovedSkillProjects zurücknehmen.</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Anbieter und API-Key einrichten</value></data>
   <data name="Step3_Description" xml:space="preserve"><value>**1. Registrieren Sie sich** bei einem KI-Cloud-Anbieter und erstellen Sie einen **API-Key**. Für den API-Zugang sind in der Regel Guthaben oder eine aktivierte nutzungsabhängige Abrechnung erforderlich. Ein Chat-Abonnement enthält üblicherweise kein API-Guthaben.
 

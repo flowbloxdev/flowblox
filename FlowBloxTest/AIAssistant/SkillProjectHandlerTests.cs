@@ -12,10 +12,10 @@ namespace FlowBloxTest.AIAssistant
     [TestClass]
     [DoNotParallelize]
     [TestCategory(FlowBloxTestCategories.UnitTest)]
-    public sealed class AuxiliaryProjectHandlerTests
+    public sealed class SkillProjectHandlerTests
     {
         private readonly string _sessionId = Guid.NewGuid().ToString("N");
-        private readonly string _projectName = "Schema inspection " + Guid.NewGuid().ToString("N");
+        private readonly string _skillProjectName = "Schema inspection " + Guid.NewGuid().ToString("N");
         private const string ProjectDescription = "Inspects a database schema for the current assistant session.";
         private string _previousLocalAppDataDirectory = null!;
         private string _localAppDataDirectory = null!;
@@ -26,9 +26,9 @@ namespace FlowBloxTest.AIAssistant
         {
             var option = FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir");
             _previousLocalAppDataDirectory = option.Value;
-            _localAppDataDirectory = Path.Combine(Path.GetTempPath(), "FlowBloxAuxiliaryTests", Guid.NewGuid().ToString("N"));
+            _localAppDataDirectory = Path.Combine(Path.GetTempPath(), "FlowBloxSkillTests", Guid.NewGuid().ToString("N"));
             option.Value = _localAppDataDirectory;
-            var approvals = FlowBloxOptions.GetOptionInstance().GetOption(AuxiliaryProjectApprovalStore.OptionName);
+            var approvals = FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName);
             _previousApprovals = approvals.PersistentValue;
             approvals.PersistentValue = string.Empty;
             FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject { ProjectName = "Main" };
@@ -38,17 +38,17 @@ namespace FlowBloxTest.AIAssistant
         [TestCleanup]
         public void Cleanup()
         {
-            FlowBloxOptions.GetOptionInstance().GetOption(AuxiliaryProjectApprovalStore.OptionName).PersistentValue = _previousApprovals;
+            FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue = _previousApprovals;
             ToolHandlerUtilities.ClearSessionCache(_sessionId);
             ToolHandlerUtilities.SetCurrentSessionGuid(null);
-            foreach (var projectName in new[]
+            foreach (var skillProjectName in new[]
                      {
-                         _projectName,
-                         _projectName + " renamed",
-                         _projectName + " collision"
+                         _skillProjectName,
+                         _skillProjectName + " renamed",
+                         _skillProjectName + " collision"
                      })
             {
-                var projectFile = AuxiliaryProjectSessionStore.GetStoredProjectFile(_sessionId, projectName);
+                var projectFile = SkillProjectSessionStore.GetStoredProjectFile(_sessionId, skillProjectName);
                 foreach (var file in new[]
                          {
                              projectFile,
@@ -70,92 +70,92 @@ namespace FlowBloxTest.AIAssistant
         {
             var api = new DefaultToolApi();
 
-            var created = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var created = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["description"] = ProjectDescription,
                 ["mode"] = "metadata_only"
             });
-            var editing = await Execute(api, "AuxiliaryProjectEditing", new JObject
+            var editing = await Execute(api, "SkillProjectEditing", new JObject
             {
                 ["method"] = "EDIT",
-                ["projectName"] = _projectName
+                ["skillProjectName"] = _skillProjectName
             });
             var flowBlock = await Execute(api, "CreateFlowBlock", new JObject
             {
                 ["typeFullName"] = typeof(StartFlowBlock).FullName,
-                ["name"] = "AuxStart",
+                ["name"] = "SkillStart",
                 ["x"] = 50,
                 ["y"] = 400
             });
-            var auxiliaryMetadata = await Execute(api, "GetProjectMetadata", new JObject());
+            var skillMetadata = await Execute(api, "GetProjectMetadata", new JObject());
 
             Assert.IsTrue(created.Ok, created.Error);
             Assert.IsTrue(editing.Ok, editing.Error);
             Assert.IsTrue(flowBlock.Ok, flowBlock.Error);
-            var activeProject = await Execute(api, "GetAuxiliaryProject", new JObject
+            var activeProject = await Execute(api, "GetSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["mode"] = "session"
             });
             Assert.IsTrue(activeProject.Ok, activeProject.Error);
             Assert.IsTrue(activeProject.Result.Value<bool>("isOpen"));
-            Assert.IsTrue(auxiliaryMetadata.Result.Value<bool>("isAuxiliaryProject"));
-            Assert.AreEqual(_projectName, auxiliaryMetadata.Result.Value<string>("projectName"));
-            Assert.IsFalse(string.IsNullOrWhiteSpace(auxiliaryMetadata.Result.Value<string>("description")));
+            Assert.IsTrue(skillMetadata.Result.Value<bool>("isSkillProject"));
+            Assert.AreEqual(_skillProjectName, skillMetadata.Result.Value<string>("projectName"));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(skillMetadata.Result.Value<string>("description")));
             Assert.AreEqual(0, FlowBloxProjectManager.Instance.ActiveProject.FlowBloxRegistry.GetFlowBlocks().Count());
-            Assert.IsTrue(File.Exists(AuxiliaryProjectSessionStore.GetStoredProjectFile(_sessionId, _projectName)));
+            Assert.IsTrue(File.Exists(SkillProjectSessionStore.GetStoredProjectFile(_sessionId, _skillProjectName)));
 
-            var saved = await Execute(api, "AuxiliaryProjectEditing", new JObject
+            var saved = await Execute(api, "SkillProjectEditing", new JObject
             {
                 ["method"] = "SAVE",
-                ["projectName"] = _projectName
+                ["skillProjectName"] = _skillProjectName
             });
-            var projects = await Execute(api, "GetAuxiliaryProjects", new JObject());
+            var projects = await Execute(api, "GetSkillProjects", new JObject());
             var mainMetadata = await Execute(api, "GetProjectMetadata", new JObject());
 
             Assert.IsTrue(saved.Ok, saved.Error);
             Assert.IsTrue(saved.Result.Value<bool>("closed"));
             Assert.IsTrue(File.Exists(saved.Result.Value<string>("projectFile")));
-            var discoveredProject = projects.Result["projects"]!.Single(x =>
-                string.Equals(x!.Value<string>("projectName"), _projectName, StringComparison.Ordinal));
+            var discoveredProject = projects.Result["skillProjects"]!.Single(x =>
+                string.Equals(x!.Value<string>("skillProjectName"), _skillProjectName, StringComparison.Ordinal));
             Assert.IsFalse(string.IsNullOrWhiteSpace(discoveredProject!.Value<string>("description")));
             Assert.IsTrue(File.Exists(discoveredProject.Value<string>("projectFile")));
-            var singleProject = await Execute(api, "GetAuxiliaryProject", new JObject
+            var singleProject = await Execute(api, "GetSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["mode"] = "session"
             });
             Assert.IsTrue(singleProject.Ok, singleProject.Error);
             Assert.IsTrue(JToken.DeepEquals(discoveredProject, singleProject.Result));
-            StringAssert.Contains(File.ReadAllText(saved.Result.Value<string>("projectFile")), "AuxStart");
-            Assert.IsFalse(mainMetadata.Result.Value<bool>("isAuxiliaryProject"));
+            StringAssert.Contains(File.ReadAllText(saved.Result.Value<string>("projectFile")), "SkillStart");
+            Assert.IsFalse(mainMetadata.Result.Value<bool>("isSkillProject"));
             Assert.AreEqual("Main", mainMetadata.Result.Value<string>("projectName"));
 
             var secondSessionId = Guid.NewGuid().ToString("N");
             ToolHandlerUtilities.SetCurrentSessionGuid(secondSessionId);
-            var projectsFromAnotherSession = await Execute(api, "GetAuxiliaryProjects", new JObject());
-            Assert.IsFalse(projectsFromAnotherSession.Result["projects"]!.Any(x =>
-                string.Equals(x!.Value<string>("projectName"), _projectName, StringComparison.Ordinal)));
-            var singleFromAnotherSession = await Execute(api, "GetAuxiliaryProject", new JObject
+            var projectsFromAnotherSession = await Execute(api, "GetSkillProjects", new JObject());
+            Assert.IsFalse(projectsFromAnotherSession.Result["skillProjects"]!.Any(x =>
+                string.Equals(x!.Value<string>("skillProjectName"), _skillProjectName, StringComparison.Ordinal)));
+            var singleFromAnotherSession = await Execute(api, "GetSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["mode"] = "session"
             });
             Assert.IsFalse(singleFromAnotherSession.Ok);
             ToolHandlerUtilities.SetCurrentSessionGuid(_sessionId);
 
-            var reopened = await Execute(api, "AuxiliaryProjectEditing", new JObject
+            var reopened = await Execute(api, "SkillProjectEditing", new JObject
             {
                 ["method"] = "EDIT",
-                ["projectName"] = _projectName
+                ["skillProjectName"] = _skillProjectName
             });
             var editingMetadata = await Execute(api, "GetProjectMetadata", new JObject());
-            var closed = await Execute(api, "AuxiliaryProjectEditing", new JObject { ["method"] = "CLOSE" });
+            var closed = await Execute(api, "SkillProjectEditing", new JObject { ["method"] = "CLOSE" });
 
             Assert.IsTrue(reopened.Ok, reopened.Error);
-            Assert.IsTrue(editingMetadata.Result.Value<bool>("isAuxiliaryProject"));
-            Assert.AreEqual(_projectName, editingMetadata.Result.Value<string>("projectName"));
+            Assert.IsTrue(editingMetadata.Result.Value<bool>("isSkillProject"));
+            Assert.AreEqual(_skillProjectName, editingMetadata.Result.Value<string>("projectName"));
             Assert.IsTrue(closed.Ok, closed.Error);
         }
 
@@ -167,40 +167,40 @@ namespace FlowBloxTest.AIAssistant
         public async Task Create_CopiesDistributedProject_AndUpdateRequiresClosedProject(string distributedProjectFile)
         {
             var api = new DefaultToolApi();
-            var createWithoutDescription = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var createWithoutDescription = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["projectName"] = _projectName + " without description",
+                ["skillProjectName"] = _skillProjectName + " without description",
                 ["mode"] = "metadata_only"
             });
-            var createResponse = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var createResponse = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["mode"] = "full_content",
                 ["copyFromDistributedData"] = new JObject
                 {
-                    ["dataType"] = "auxiliary_project",
+                    ["dataType"] = "skill_project",
                     ["fileName"] = distributedProjectFile
                 }
             });
-            var opened = await Execute(api, "AuxiliaryProjectEditing", new JObject
+            var opened = await Execute(api, "SkillProjectEditing", new JObject
             {
                 ["method"] = "EDIT",
-                ["projectName"] = _projectName
+                ["skillProjectName"] = _skillProjectName
             });
-            var updateWhileOpen = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var updateWhileOpen = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["mode"] = "full_content",
                 ["projectJson"] = "{\"ProjectDescription\":\"Updated\",\"FlowBlocks\":[],\"ManagedObjects\":[],\"UserFields\":[],\"ProjectDependendDataObjects\":[],\"InputFiles\":[]}"
             });
-            var saved = await Execute(api, "AuxiliaryProjectEditing", new JObject
+            var saved = await Execute(api, "SkillProjectEditing", new JObject
             {
                 ["method"] = "SAVE",
-                ["projectName"] = _projectName
+                ["skillProjectName"] = _skillProjectName
             });
-            var updateAfterClose = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var updateAfterClose = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["projectName"] = _projectName,
+                ["skillProjectName"] = _skillProjectName,
                 ["mode"] = "full_content",
                 ["projectJson"] = "{\"ProjectDescription\":\"Updated\",\"FlowBlocks\":[],\"ManagedObjects\":[],\"UserFields\":[],\"ProjectDependendDataObjects\":[],\"InputFiles\":[]}"
             });
@@ -211,7 +211,7 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsFalse(string.IsNullOrWhiteSpace(createResponse.Result.Value<string>("description")));
             Assert.IsTrue(opened.Ok, opened.Error);
             Assert.IsFalse(updateWhileOpen.Ok);
-            StringAssert.Contains(updateWhileOpen.Error, "not allowed while an auxiliary project is open");
+            StringAssert.Contains(updateWhileOpen.Error, "not allowed while a skill project is open");
             Assert.IsTrue(saved.Ok, saved.Error);
             Assert.IsTrue(updateAfterClose.Ok, updateAfterClose.Error);
         }
@@ -219,20 +219,20 @@ namespace FlowBloxTest.AIAssistant
         [TestMethod]
         [DataRow("executesqlquery")]
         [DataRow("GetFileContent")]
-        public async Task GetAuxiliaryProject_ResolvesBootstrapNameWithSameParameterContractAsCatalog(string projectName)
+        public async Task GetSkillProject_ResolvesBootstrapNameWithSameParameterContractAsCatalog(string skillProjectName)
         {
             var api = new DefaultToolApi();
-            var single = await Execute(api, "GetAuxiliaryProject", new JObject
+            var single = await Execute(api, "GetSkillProject", new JObject
             {
-                ["projectName"] = projectName
+                ["skillProjectName"] = skillProjectName
             });
             Assert.IsTrue(single.Ok, single.Error);
-            var catalog = await Execute(api, "GetAuxiliaryProjects", new JObject
+            var catalog = await Execute(api, "GetSkillProjects", new JObject
             {
                 ["mode"] = "distributedData"
             });
-            var listed = catalog.Result["projects"]!.Single(project => string.Equals(
-                project!.Value<string>("projectName"), projectName, StringComparison.OrdinalIgnoreCase));
+            var listed = catalog.Result["skillProjects"]!.Single(project => string.Equals(
+                project!.Value<string>("skillProjectName"), skillProjectName, StringComparison.OrdinalIgnoreCase));
             Assert.IsTrue(JToken.DeepEquals(listed, single.Result));
             Assert.IsTrue(File.Exists(single.Result.Value<string>("projectFile")));
             Assert.IsTrue(single.Result["inputFieldListOfValues"] is JObject);
@@ -240,15 +240,15 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        [DataRow("", "distributedData", "projectName is required")]
+        [DataRow("", "distributedData", "skillProjectName is required")]
         [DataRow("ExecuteSQL", "distributedData", "was not found")]
         [DataRow("ExecuteSQLQuery", "session", "was not found")]
         [DataRow("ExecuteSQLQuery", "unknown", "not supported")]
-        public async Task GetAuxiliaryProject_RejectsMissingPartialOrWrongSourceNames(string projectName, string mode, string expectedError)
+        public async Task GetSkillProject_RejectsMissingPartialOrWrongSourceNames(string skillProjectName, string mode, string expectedError)
         {
-            var response = await Execute(new DefaultToolApi(), "GetAuxiliaryProject", new JObject
+            var response = await Execute(new DefaultToolApi(), "GetSkillProject", new JObject
             {
-                ["projectName"] = projectName,
+                ["skillProjectName"] = skillProjectName,
                 ["mode"] = mode
             });
             Assert.IsFalse(response.Ok);
@@ -269,13 +269,13 @@ namespace FlowBloxTest.AIAssistant
                     return false;
                 }
             };
-            var catalog = await Execute(api, "GetAuxiliaryProjects", new JObject
+            var catalog = await Execute(api, "GetSkillProjects", new JObject
             {
                 ["mode"] = "distributedData",
                 ["filter"] = "ExecuteSQLQuery"
             });
             Assert.IsTrue(catalog.Ok, catalog.Error);
-            var project = catalog.Result["projects"]!.Children<JObject>().Single();
+            var project = catalog.Result["skillProjects"]!.Children<JObject>().Single();
             var projectFile = project.Value<string>("projectFile");
             Assert.IsTrue(File.Exists(projectFile));
 
@@ -295,27 +295,27 @@ namespace FlowBloxTest.AIAssistant
             Assert.AreEqual(projectFile, confirmation.Arguments.Value<string>("projectFile"));
             Assert.AreEqual("SELECT name FROM sys.databases;", confirmation.ConfirmationInputParameters!["Input_SQLQuery"]);
             Assert.IsTrue(response.Result.Value<bool>("cancelledByUser"));
-            var sessionProjects = await Execute(api, "GetAuxiliaryProjects", new JObject());
-            Assert.AreEqual(0, sessionProjects.Result["projects"]!.Count());
+            var sessionProjects = await Execute(api, "GetSkillProjects", new JObject());
+            Assert.AreEqual(0, sessionProjects.Result["skillProjects"]!.Count());
         }
 
         [TestMethod]
-        public async Task GetAuxiliaryProjects_ListsAndFiltersDistributedProjects()
+        public async Task GetSkillProjects_ListsAndFiltersDistributedProjects()
         {
             var api = new DefaultToolApi();
-            var allProjects = await Execute(api, "GetAuxiliaryProjects", new JObject
+            var allProjects = await Execute(api, "GetSkillProjects", new JObject
             {
                 ["mode"] = "distributedData"
             });
 
             Assert.IsTrue(allProjects.Ok, allProjects.Error);
-            var projects = allProjects.Result["projects"]!.Children<JObject>().ToList();
+            var projects = allProjects.Result["skillProjects"]!.Children<JObject>().ToList();
             Assert.IsTrue(projects.Count > 0);
             Assert.IsTrue(projects.All(x => !string.IsNullOrWhiteSpace(x.Value<string>("fileName"))));
             Assert.IsTrue(projects.All(x => x["inputFields"] is JArray && x["outputFields"] is JArray));
 
             var executeSqlQuery = projects.Single(x =>
-                string.Equals(x.Value<string>("projectName"), "ExecuteSQLQuery", StringComparison.Ordinal));
+                string.Equals(x.Value<string>("skillProjectName"), "ExecuteSQLQuery", StringComparison.Ordinal));
             CollectionAssert.AreEquivalent(
                 new[] { "Input_DbType", "Input_SQLConnectionString", "Input_SQLQuery" },
                 executeSqlQuery["inputFields"]!.Values<string>().ToArray());
@@ -324,9 +324,9 @@ namespace FlowBloxTest.AIAssistant
                 executeSqlQuery["outputFields"]!.Values<string>().ToArray());
 
             var expectedProject = projects.First(x =>
-                (x.Value<string>("projectName") ?? string.Empty).Contains("MySql", StringComparison.OrdinalIgnoreCase));
+                (x.Value<string>("skillProjectName") ?? string.Empty).Contains("MySql", StringComparison.OrdinalIgnoreCase));
             var filter = "mysql schema database columns tables";
-            var filtered = await Execute(api, "GetAuxiliaryProjects", new JObject
+            var filtered = await Execute(api, "GetSkillProjects", new JObject
             {
                 ["mode"] = "distributedData",
                 ["filter"] = filter
@@ -335,7 +335,7 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsTrue(filtered.Ok, filtered.Error);
             var filterTerms = filtered.Result["filterTerms"]!.Values<string>().ToList();
             CollectionAssert.AreEquivalent(filter.Split(' ').ToList(), filterTerms);
-            var filteredProjects = filtered.Result["projects"]!.Children<JObject>().ToList();
+            var filteredProjects = filtered.Result["skillProjects"]!.Children<JObject>().ToList();
             Assert.IsTrue(filteredProjects.Any(x =>
                 string.Equals(
                     x.Value<string>("fileName"),
@@ -343,7 +343,7 @@ namespace FlowBloxTest.AIAssistant
                     StringComparison.OrdinalIgnoreCase)));
             Assert.IsTrue(filteredProjects.All(x =>
                 filterTerms.Any(term =>
-                    (x.Value<string>("projectName") ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    (x.Value<string>("skillProjectName") ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
                     (x.Value<string>("shortDescription") ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
                     (x.Value<string>("description") ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase))));
         }
@@ -352,30 +352,30 @@ namespace FlowBloxTest.AIAssistant
         public async Task MetadataUpdate_RenamesProjectFileAndRejectsExistingTarget()
         {
             var api = new DefaultToolApi();
-            var collisionName = _projectName + " collision";
-            var renamedName = _projectName + " renamed";
-            foreach (var projectName in new[] { _projectName, collisionName })
+            var collisionName = _skillProjectName + " collision";
+            var renamedName = _skillProjectName + " renamed";
+            foreach (var skillProjectName in new[] { _skillProjectName, collisionName })
             {
-                var created = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+                var created = await Execute(api, "CreateOrUpdateSkillProject", new JObject
                 {
-                    ["projectName"] = projectName,
+                    ["skillProjectName"] = skillProjectName,
                     ["description"] = ProjectDescription,
                     ["mode"] = "metadata_only"
                 });
                 Assert.IsTrue(created.Ok, created.Error);
             }
 
-            var collision = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var collision = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["existingProjectName"] = _projectName,
-                ["projectName"] = collisionName,
+                ["existingSkillProjectName"] = _skillProjectName,
+                ["skillProjectName"] = collisionName,
                 ["description"] = "Renamed project.",
                 ["mode"] = "metadata_only"
             });
-            var renamed = await Execute(api, "CreateOrUpdateAuxiliaryProject", new JObject
+            var renamed = await Execute(api, "CreateOrUpdateSkillProject", new JObject
             {
-                ["existingProjectName"] = _projectName,
-                ["projectName"] = renamedName,
+                ["existingSkillProjectName"] = _skillProjectName,
+                ["skillProjectName"] = renamedName,
                 ["description"] = "Renamed project.",
                 ["mode"] = "metadata_only"
             });
@@ -383,9 +383,9 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsFalse(collision.Ok);
             StringAssert.Contains(collision.Error, "already exists in the current session");
             Assert.IsTrue(renamed.Ok, renamed.Error);
-            Assert.IsFalse(File.Exists(AuxiliaryProjectSessionStore.GetStoredProjectFile(_sessionId, _projectName)));
-            Assert.IsTrue(File.Exists(AuxiliaryProjectSessionStore.GetStoredProjectFile(_sessionId, renamedName)));
-            Assert.AreEqual(renamedName, renamed.Result.Value<string>("projectName"));
+            Assert.IsFalse(File.Exists(SkillProjectSessionStore.GetStoredProjectFile(_sessionId, _skillProjectName)));
+            Assert.IsTrue(File.Exists(SkillProjectSessionStore.GetStoredProjectFile(_sessionId, renamedName)));
+            Assert.AreEqual(renamedName, renamed.Result.Value<string>("skillProjectName"));
         }
 
         private static Task<ToolResponse> Execute(DefaultToolApi api, string toolName, JObject arguments) =>

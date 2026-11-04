@@ -1,9 +1,9 @@
-﻿using FlowBlox.Core.Util.DistributedData;
+using FlowBlox.Core.Util.DistributedData;
 using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Util
 {
-    internal static class AuxiliaryProjectCatalog
+    internal static class SkillProjectCatalog
     {
         public static bool IsSupportedMode(string mode) =>
             string.Equals(mode, "session", StringComparison.OrdinalIgnoreCase) ||
@@ -17,12 +17,12 @@ namespace FlowBlox.AIAssistant.Tools.Util
         private static IEnumerable<JObject> GetSessionProjects()
         {
             var sessionId = ToolHandlerUtilities.CurrentSessionGuid;
-            var projects = AuxiliaryProjectSessionStore
+            var projects = SkillProjectSessionStore
                 .GetProjects(sessionId)
-                .Select(x => ToSessionJson(AuxiliaryProjectMetadataReader.Read(x.ProjectFile), isOpen: false))
+                .Select(x => ToSessionJson(SkillProjectMetadataReader.Read(x.ProjectFile), isOpen: false))
                 .ToList();
 
-            if (AuxiliaryProjectSessionStore.TryGetActiveProjectInfo(
+            if (SkillProjectSessionStore.TryGetActiveProjectInfo(
                     sessionId,
                     out var activeProject,
                     out var activeProjectFile))
@@ -32,7 +32,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     activeProjectFile,
                     StringComparison.OrdinalIgnoreCase));
                 projects.Add(ToSessionJson(
-                    AuxiliaryProjectMetadataReader.Read(activeProject, activeProjectFile),
+                    SkillProjectMetadataReader.Read(activeProject, activeProjectFile),
                     isOpen: true));
             }
 
@@ -44,25 +44,25 @@ namespace FlowBlox.AIAssistant.Tools.Util
             var projects = DistributedDataCatalog.GetDataTypes()
                 .Single(x => string.Equals(
                     x.Name,
-                    DistributedDataCatalog.AuxiliaryProjectType,
+                    DistributedDataCatalog.SkillProjectType,
                     StringComparison.OrdinalIgnoreCase))
                 .FileNames
                 .Select(fileName => new
                 {
                     FileName = fileName,
                     ProjectFile = DistributedDataCatalog.ResolvePath(
-                        DistributedDataCatalog.AuxiliaryProjectType,
+                        DistributedDataCatalog.SkillProjectType,
                         fileName)
                 })
                 .Where(x => x.ProjectFile != null)
                 .Select(x => ToDistributedDataJson(
-                    AuxiliaryProjectMetadataReader.Read(x.ProjectFile!),
+                    SkillProjectMetadataReader.Read(x.ProjectFile!),
                     x.FileName));
 
             return projects;
         }
 
-        private static JObject ToSessionJson(AuxiliaryProjectMetadata metadata, bool isOpen)
+        private static JObject ToSessionJson(SkillProjectMetadata metadata, bool isOpen)
         {
             var result = ToJson(metadata);
             result["projectFile"] = metadata.ProjectFile;
@@ -70,7 +70,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             return result;
         }
 
-        private static JObject ToDistributedDataJson(AuxiliaryProjectMetadata metadata, string fileName)
+        private static JObject ToDistributedDataJson(SkillProjectMetadata metadata, string fileName)
         {
             var result = ToJson(metadata);
             result["fileName"] = fileName;
@@ -78,11 +78,11 @@ namespace FlowBlox.AIAssistant.Tools.Util
             return result;
         }
 
-        private static JObject ToJson(AuxiliaryProjectMetadata metadata)
+        private static JObject ToJson(SkillProjectMetadata metadata)
         {
             var result = new JObject
             {
-                ["projectName"] = metadata.ProjectName,
+                ["skillProjectName"] = metadata.ProjectName,
                 ["shortDescription"] = metadata.ShortDescription,
                 ["description"] = metadata.Description,
                 ["inputFields"] = new JArray(metadata.InputFields),

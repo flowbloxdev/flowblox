@@ -15,6 +15,11 @@
     <SolidColorBrush x:Key="FlowBlox.Brush.Text" Color="#202830" />
     <SolidColorBrush x:Key="FlowBlox.Brush.MutedText" Color="#65737E" />
     <SolidColorBrush x:Key="FlowBlox.Brush.Border" Color="#CCD3DA" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.MenuBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.MenuSeparator" Color="#E5EAF0" />
+    <CornerRadius x:Key="FlowBlox.CornerRadius.Menu">8</CornerRadius>
+    <CornerRadius x:Key="FlowBlox.CornerRadius.MenuItem">4</CornerRadius>
+    <CornerRadius x:Key="FlowBlox.CornerRadius.SelectionDropDown">3</CornerRadius>
     <SolidColorBrush x:Key="FlowBlox.Brush.WindowBorder" Color="#E6E6E6" />
     <SolidColorBrush x:Key="FlowBlox.Brush.InactiveWindowBorder" Color="#E6E6E6" />
     <SolidColorBrush x:Key="FlowBlox.Brush.Accent" Color="#2F6DB3" />

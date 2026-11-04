@@ -4590,6 +4590,12 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="ExecuteSQLFlowBlock_UseFieldValuesAsParameters_Tooltip" xml:space="preserve">
     <value>Enabled (default): field values are bound as SQL data parameters. Disabled: field values are inserted directly as SQL text.</value>
   </data>
+  <data name="FieldElement_ClearOnRuntimeStart" xml:space="preserve">
+    <value>Clear on runtime start</value>
+  </data>
+  <data name="FieldElement_ClearOnRuntimeStart_Tooltip" xml:space="preserve">
+    <value>Clears this memory field at the beginning of every runtime. Disabled by default to preserve its value.</value>
+  </data>
 </root>
 
 

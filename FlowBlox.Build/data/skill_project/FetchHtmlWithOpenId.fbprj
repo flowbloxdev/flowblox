@@ -1,0 +1,151 @@
+{
+  "$type": "FlowBlox.Core.Models.Project.FlowBloxProject, FlowBlox.Core",
+  "ProjectGuid": "92a3de60-c855-40b4-a329-76383775ac14",
+  "ProjectName": "FetchHtmlWithOpenId",
+  "ProjectDescription": "Compact Skill Project providing the authenticated HTML retrieval Skill: obtain an OAuth/OpenID access token using the password grant, then GET Url with Authorization: Bearer and return the HTTP response text as Content. Inputs: TokenEndpoint, ClientId, ClientSecret, Scope (optional), Audience (optional), UserName, Password and Url. Client credentials are sent in the token request body. Pass Password and ClientSecret through protected main-project input-field references in inputParameters (for example $User::LoginPassword); never supply their secret values to the AI. Returns raw HTML without browser rendering or JavaScript execution; the page must support Bearer authentication. Access tokens and credentials are not declared outputs.",
+  "AssistantMetadata": {
+    "ShortDescription": "Fetch HTML with an OpenID password grant and Bearer-authenticated GET; returns Content."
+  },
+  "UserFields": [
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "TokenEndpoint",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input"
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "ClientId",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input"
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "ClientSecret",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input",
+      "IsPassword": true,
+      "StoreValueLocally": true
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "Scope",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input"
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "Audience",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input"
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "UserName",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input"
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "Password",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input",
+      "IsPassword": true,
+      "StoreValueLocally": true
+    },
+    {
+      "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+      "Name": "Url",
+      "FieldType": { "FieldType": "Text" },
+      "UserField": true,
+      "UserFieldType": "Input"
+    }
+  ],
+  "FlowBlocks": [
+    {
+      "$id": "start",
+      "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.StartFlowBlock, FlowBlox.Core",
+      "Name": "Start",
+      "Location": "50, 400"
+    },
+    {
+      "$id": "auth",
+      "$type": "FlowBlox.Core.Models.FlowBlocks.Authorization.OAuthFlowBlock, FlowBlox.Core",
+      "Name": "OAuth_PasswordGrant",
+      "Location": "458, 400",
+      "TokenEndpoint": "$User::TokenEndpoint",
+      "ClientId": "$User::ClientId",
+      "ClientSecret": "$User::ClientSecret",
+      "Scope": "$User::Scope",
+      "Audience": "$User::Audience",
+      "GrantType": "Password",
+      "SendClientCredentialsInBody": true,
+      "UserName": "$User::UserName",
+      "Password": "$User::Password",
+      "ResultField": {
+        "$id": "token",
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "AccessToken",
+        "FieldType": { "FieldType": "Text" },
+        "Source": { "$ref": "auth" }
+      },
+      "ReferencedFlowBlocks": [ { "$ref": "start" } ]
+    },
+    {
+      "$id": "request",
+      "$type": "FlowBlox.Core.Models.FlowBlocks.Web.WebRequestFlowBlock, FlowBlox.Core",
+      "Name": "WebRequest_Html",
+      "Location": "866, 400",
+      "Url": "$User::Url",
+      "HTTPAction": "GET",
+      "ResponseBodyKind": "Text",
+      "WebRequestTimeout": 30000,
+      "RequiredFields": [ { "$ref": "token" } ],
+      "HeaderParameters": [
+        { "Key": "Authorization", "Value": "Bearer $OAuth_PasswordGrant::AccessToken" },
+        { "Key": "Accept", "Value": "text/html" }
+      ],
+      "ResultFields": [
+        {
+          "EnumValue": "Content",
+          "ResultField": {
+            "$id": "content",
+            "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+            "Name": "Content",
+            "FieldType": { "FieldType": "Text" },
+            "Source": { "$ref": "request" }
+          }
+        }
+      ],
+      "ReferencedFlowBlocks": [ { "$ref": "auth" } ]
+    },
+    {
+      "$id": "output",
+      "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputFlowBlock, FlowBlox.Core",
+      "Name": "Output",
+      "Location": "1274, 400",
+      "MappingEntries": [
+        { "Field": { "$ref": "content" }, "IsRequired": true, "OutputPropertyName": "Content" }
+      ],
+      "RequiredFields": [ { "$ref": "content" } ],
+      "ResultField": {
+        "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+        "Name": "Success",
+        "FieldType": { "FieldType": "Boolean" },
+        "Source": { "$ref": "output" }
+      },
+      "ReferencedFlowBlocks": [ { "$ref": "request" } ]
+    }
+  ],
+  "ManagedObjects": [],
+  "GridSizeX": 2500,
+  "GridSizeY": 2000,
+  "AutoIncreaseGridSize": true
+}

@@ -157,7 +157,7 @@ public sealed class SqlFieldSubstitutionTests
 
     private static FlowBloxProject Template(string name)
     {
-        var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, $"../../../../FlowBlox.Build/data/auxiliary_project/{name}.fbprj"));
+        var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, $"../../../../FlowBlox.Build/data/skill_project/{name}.fbprj"));
         var project = FlowBloxProject.FromFile(path);
         FlowBloxProjectManager.Instance.ActiveProject = project;
         return project;

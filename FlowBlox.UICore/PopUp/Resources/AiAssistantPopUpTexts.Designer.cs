@@ -116,9 +116,9 @@ namespace FlowBlox.UICore.PopUp.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die **Auxiliary projects** act as skills: they can retrieve information from websites, local files, or MSSQL databases using your available connections and permissions.
+        ///   Sucht eine lokalisierte Zeichenfolge, die **Skills** give the assistant focused capabilities, such as retrieving web content, reading local files, or querying databases, using your available connections and permissions. The assistant reuses bundled Skills. If a required Skill is missing, it can create a compact **Skill Project** with defined inputs and outputs to provide it.
         ///
-        ///Before execution, FlowBlox requests your **approval**, unless you have already allowed that project permanently. Review the reason, project, and **input parameters**. Choose **Allow once** or **Always allow**; permanent approvals can be revoked under Options → AI → ApprovedAuxiliaryProjects. ähnelt.
+        ///Before execution, FlowBlox requests your **approval**, unless you have already allowed that project permanently. Review the reason, project, and **input parameters**. Choose * [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string Step2_Description
         {

@@ -13,7 +13,7 @@ namespace FlowBloxTest.AIAssistant
     public sealed class RunProjectDebugTestHandlerTests
     {
         [TestMethod]
-        public async Task Confirmation_IsRequiredForAuxiliaryAndExplicitExternalProjects()
+        public async Task Confirmation_IsRequiredForSkillAndExplicitExternalProjects()
         {
             var previousProject = FlowBloxProjectManager.Instance.ActiveProject;
             var localAppDataOption = FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir");
@@ -45,26 +45,26 @@ namespace FlowBloxTest.AIAssistant
                 Assert.AreEqual(0, confirmationRequests);
                 Assert.IsFalse(currentProjectResponse.Result.Value<bool?>("cancelledByUser") == true);
 
-                AuxiliaryProjectSessionStore.CreateOrUpdateFile(
+                SkillProjectSessionStore.CreateOrUpdateFile(
                     sessionId,
-                    "Auxiliary",
+                    "Skill",
                     new FlowBloxProject
                     {
-                        ProjectName = "Auxiliary",
+                        ProjectName = "Skill",
                         ProjectDescription = "Security confirmation test"
                     });
-                AuxiliaryProjectSessionStore.Edit(sessionId, "Auxiliary");
+                SkillProjectSessionStore.Edit(sessionId, "Skill");
 
-                var auxiliaryProjectResponse = await api.ExecuteAsync(
+                var skillResponse = await api.ExecuteAsync(
                     new ToolRequest
                     {
                         ToolName = "RunProjectDebugTest",
-                        Arguments = new JObject { ["reason"] = "Inspect auxiliary data" }
+                        Arguments = new JObject { ["reason"] = "Inspect skill data" }
                     },
                     CancellationToken.None);
                 Assert.AreEqual(1, confirmationRequests);
-                Assert.IsTrue(auxiliaryProjectResponse.Result.Value<bool>("cancelledByUser"));
-                AuxiliaryProjectSessionStore.Close(sessionId);
+                Assert.IsTrue(skillResponse.Result.Value<bool>("cancelledByUser"));
+                SkillProjectSessionStore.Close(sessionId);
 
                 var externalProjectResponse = await api.ExecuteAsync(
                     new ToolRequest
@@ -82,7 +82,7 @@ namespace FlowBloxTest.AIAssistant
             }
             finally
             {
-                AuxiliaryProjectSessionStore.Clear(sessionId);
+                SkillProjectSessionStore.Clear(sessionId);
                 ToolHandlerUtilities.SetCurrentSessionGuid(null);
                 FlowBloxProjectManager.Instance.ActiveProject = previousProject;
                 localAppDataOption.PersistentValue = previousLocalAppDataDirectory;

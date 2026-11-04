@@ -10,9 +10,9 @@
 
 Through the **FlowBlox Tool API**, it creates and configures flow blocks, retrieves information, and tests or debugs flows. You can review and continue editing the resulting project. Requests and relevant project or tool data are sent to the selected provider.</value></data>
   <data name="Step2_Headline" xml:space="preserve"><value>Skills extend what the assistant can do</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>**Auxiliary projects** act as skills: they can retrieve information from websites, local files, or MSSQL databases using your available connections and permissions.
+  <data name="Step2_Description" xml:space="preserve"><value>**Skills** give the assistant focused capabilities, such as retrieving web content, reading local files, or querying databases, using your available connections and permissions. The assistant reuses bundled Skills. If a required Skill is missing, it can create a compact **Skill Project** with defined inputs and outputs to provide it.
 
-Before execution, FlowBlox requests your **approval**, unless you have already allowed that project permanently. Review the reason, project, and **input parameters**. Choose **Allow once** or **Always allow**; permanent approvals can be revoked under Options → AI → ApprovedAuxiliaryProjects.</value></data>
+Before execution, FlowBlox requests your **approval**, unless you have already allowed that project permanently. Review the reason, project, and **input parameters**. Choose **Allow once** or **Always allow**; permanent approvals can be revoked under Options → AI → ApprovedSkillProjects.</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Configure a provider and API key</value></data>
   <data name="Step3_Description" xml:space="preserve"><value>**1. Create an account** with an AI cloud provider and generate an **API key**. API access usually requires credit or activated usage-based billing; a chat subscription generally does not include API usage.
 

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using FlowBlox.Core.Constants;
 
@@ -29,7 +29,7 @@ namespace FlowBlox.AIAssistant.Services
         public const string SpecialProjectSpaceKey = "explaining_project_space";
         public const string SpecialTaskSchedulingKey = "explaining_task_scheduling";
         public const string SpecialUserInterfaceKey = "explaining_user_interface";
-        public const string SpecialAuxiliaryProjectsKey = "explaining_auxiliary_projects";
+        public const string SpecialSkillsKey = "explaining_skills";
         public const string VersionNotesKey = "explaining_version_notes";
 
         private static readonly IReadOnlyDictionary<string, PromptEntryDefinition> Definitions =
@@ -173,11 +173,11 @@ namespace FlowBlox.AIAssistant.Services
                     "FlowBlox.AIAssistant.Prompts.ExplainingUserInterface.txt",
                     "FlowBlox UI panels, menus, actions, or manual workflows",
                     false),
-                [SpecialAuxiliaryProjectsKey] = new PromptEntryDefinition(
-                    SpecialAuxiliaryProjectsKey,
-                    "Explaining Auxiliary Projects",
-                    "FlowBlox.AIAssistant.Prompts.ExplainingAuxiliaryProjects.txt",
-                    "Using bundled or session-created auxiliary projects as local skills",
+                [SpecialSkillsKey] = new PromptEntryDefinition(
+                    SpecialSkillsKey,
+                    "Explaining Skills",
+                    "FlowBlox.AIAssistant.Prompts.ExplainingSkills.txt",
+                    "Discovering or using Skills (AI Assistant capabilities), or creating or editing the Skill Projects that implement them",
                     false),
                 [VersionNotesKey] = new PromptEntryDefinition(
                     VersionNotesKey,

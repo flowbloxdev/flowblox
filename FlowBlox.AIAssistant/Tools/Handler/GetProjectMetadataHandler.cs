@@ -22,7 +22,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["author"] = project.Author ?? string.Empty,
                 ["description"] = project.ProjectDescription ?? string.Empty,
                 ["notice"] = project.Notice ?? string.Empty,
-                ["isAuxiliaryProject"] = ToolHandlerUtilities.IsAuxiliaryProjectActive()
+                ["isSkillProject"] = ToolHandlerUtilities.IsSkillProjectActive()
             }));
         }
     }

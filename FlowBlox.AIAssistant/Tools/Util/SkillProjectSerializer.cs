@@ -2,7 +2,7 @@ using FlowBlox.Core.Models.Project;
 
 namespace FlowBlox.AIAssistant.Tools.Util
 {
-    internal static class AuxiliaryProjectSerializer
+    internal static class SkillProjectSerializer
     {
         public static FlowBloxProject FromFile(string projectFile)
         {

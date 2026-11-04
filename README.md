@@ -58,11 +58,11 @@ FlowBlox turns real-world data-processing problems into reusable automation proj
 
 - **Start locally, without infrastructure.** Install the Windows desktop application and build workflows without provisioning a server or Docker environment. Connections to external systems and cloud AI providers still require their respective credentials or services.
 - **AI-generated, human-editable workflows.** The AI Assistant can create new projects, continue existing ones, configure FlowBlocks, test results, and explain the application. Its output remains a regular visual project, not an opaque one-off agent action.
-- **AI that can build reusable tools.** The assistant can use existing Auxiliary Projects as skills and assemble new auxiliary flows from available FlowBlocks when it needs additional capabilities.
+- **AI that can extend its own capabilities.** The assistant uses bundled Skills and can create a missing Skill when needed to fulfill your request. To implement it, the assistant builds a compact FlowBlox project—a Skill Project—with defined inputs and outputs. It has the full capabilities of a FlowBlox project at its disposal, including the available FlowBlocks, data sources, and execution logic. Each Skill stays focused on one capability.
 - **Work with local resources.** Automate tasks involving files, local databases, intranet websites, and other resources accessible to the FlowBlox process and its configured credentials.
 - **Generate from examples.** Define expected results in test cases, then use AI-based or offline generators to derive selectors, patterns, and FlowBlock configuration.
 - **Test before execution.** Required generator tests can be validated before runtime proceeds; failing tests can trigger regeneration and prevent execution if validation still fails.
-- **Extend the platform.** Build your own FlowBlocks, share extensions, Auxiliary Projects, or complete example projects.
+- **Extend the platform.** Build your own FlowBlocks, share extensions, Skills, or complete example projects.
 
 ## See FlowBlox in action
 
@@ -156,7 +156,7 @@ The integrated AI Assistant can:
 - Configure, run, test, debug, and revise workflows.
 - Answer questions about the interface and application features.
 - Discuss a solution concept before creating the implementation.
-- Use bundled Auxiliary Projects as skills and create additional auxiliary flows from FlowBlocks.
+- Use bundled Skills and create missing ones with defined inputs and outputs.
 
 **Cloud provider integrations include:** OpenAI, Anthropic, DeepSeek, and Kimi. Cloud model use is optional for manually built workflows and offline-capable features, but requires access to the chosen provider when enabled.
 
@@ -168,13 +168,13 @@ Open the AI Assistant in the right-hand panel. Use its **gear icon** to open Con
 
 ### Example: describe the document check
 
-For the Word-document workflow described above, ask the assistant to inspect the available database structure, build the project, test it, and report documents missing the required code. It can use Auxiliary Projects as skills to retrieve the information it needs, then assemble the final editable workflow.
+For the Word-document workflow described above, ask the assistant to inspect the available database structure, build the project, test it, and report documents missing the required code. It can use Skills to retrieve the information it needs, then assemble the final editable workflow.
 
 ### Local access and execution approval
 
 The assistant can use FlowBlox capabilities to work with accessible local files, databases, and intranet systems. Its access is constrained by the application's environment, configured connections, and operating-system permissions.
 
-**AI-initiated script execution (including PowerShell/Python) and execution of Auxiliary Projects require your approval.** Previously approved Auxiliary Projects can run under a remembered approval. Requests and relevant project or tool data are sent to the selected cloud provider.
+**AI-initiated script execution (including PowerShell/Python) and execution of Skills require your approval.** Previously approved Skills can run under a remembered approval. Requests and relevant project or tool data are sent to the selected cloud provider.
 
 ## Testing and generators
 
@@ -237,7 +237,7 @@ You can help by:
 
 - Reporting reproducible bugs and suggesting improvements.
 - Creating or improving FlowBlocks.
-- Contributing extension packages and reusable Auxiliary Projects.
+- Contributing extension packages and reusable Skills.
 - Sharing complete example workflows and tutorials.
 - Improving testing, documentation, portability, and developer tooling.
 - Opening pull requests for fixes and new features.

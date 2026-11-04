@@ -33,10 +33,10 @@
   <data name="Message_DiscardUnsentDraft_Title" xml:space="preserve"><value>Discard Unsent Message?</value></data>
   <data name="Message_DiscardUnsentDraft_Description" xml:space="preserve"><value>Your message has not been sent yet. If you leave this chat now, the draft will be lost. Do you want to continue?</value></data>
   <data name="Message_ExternalProjectExecution_Confirm_Title" xml:space="preserve"><value>Confirm Project Execution</value></data>
-  <data name="Message_ExternalProjectExecution_Confirm_Description" xml:space="preserve"><value>The AI Assistant wants to execute an auxiliary or external FlowBlox project to obtain information. Review the reason and project before continuing.</value></data>
+  <data name="Message_ExternalProjectExecution_Confirm_Description" xml:space="preserve"><value>The AI Assistant wants to execute a skill project or external FlowBlox project to obtain information. Review the reason and project before continuing.</value></data>
   <data name="Message_ExternalProjectExecution_Reason" xml:space="preserve"><value>Reason:</value></data>
   <data name="Message_ExternalProjectExecution_ProjectFile" xml:space="preserve"><value>Project file: {0}</value></data>
-  <data name="Message_ExternalProjectExecution_ActiveAuxiliaryProject" xml:space="preserve"><value>The currently open auxiliary project will be executed.</value></data>
+  <data name="Message_ExternalProjectExecution_ActiveSkillProject" xml:space="preserve"><value>The currently open skill project will be executed.</value></data>
   <data name="Message_ExternalProjectExecution_Review" xml:space="preserve"><value>Review project</value></data>
   <data name="Message_ExternalProjectExecution_Execute" xml:space="preserve"><value>Allow once</value></data>
   <data name="Message_ExternalProjectExecution_Cancel" xml:space="preserve"><value>Cancel</value></data>
@@ -62,7 +62,7 @@
     <value>View complete value (read-only)</value>
   </data>
   <data name="Message_ExternalProjectExecution_ApprovalPersistence" xml:space="preserve">
-    <value>Allows future AI Assistant executions of this project without prompting. To reset this approval, remove the project entry in Options &gt; AI.ApprovedAuxiliaryProjects.</value>
+    <value>Allows future AI Assistant executions of this project without prompting. To reset this approval, remove the project entry in Options &gt; AI.ApprovedSkillProjects.</value>
   </data>
   <data name="Message_ExternalProjectExecution_AlwaysAllow" xml:space="preserve">
     <value>Always allow</value>

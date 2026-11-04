@@ -13,7 +13,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             "Returns one file from FlowBlox's central distributed data directory.",
             new JObject
             {
-                ["dataType"] = "string (python, auxiliary_project, demo_prompts, or example_project)",
+                ["dataType"] = "string (python, skill_project, demo_prompts, or example_project)",
                 ["fileName"] = "string (plain filename including extension)"
             });
 

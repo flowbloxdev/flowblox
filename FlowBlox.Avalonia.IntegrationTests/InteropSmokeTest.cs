@@ -110,6 +110,8 @@ internal sealed partial class WorkspaceIntegrationChecks
                 encoder.Save(file);
             }
             await CheckHostedFocusAsync(Check);
+            await CheckContextMenusAsync(directory, Check);
+            await CheckEditorPopupsAsync(directory, Check);
             CheckProjectCenterDocking(Check);
             await CheckAutomaticLayoutSaveAsync(directory, Check);
             var state = FlowBloxServiceLocator.Instance.GetService<IRuntimeStateService>();

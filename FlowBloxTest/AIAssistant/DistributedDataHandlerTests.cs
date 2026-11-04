@@ -18,7 +18,7 @@ namespace FlowBloxTest.AIAssistant
                 new ToolRequest
                 {
                     ToolName = "GetDistributedData",
-                    Arguments = new JObject { ["dataType"] = "auxiliary_project" }
+                    Arguments = new JObject { ["dataType"] = "skill_project" }
                 },
                 CancellationToken.None);
             var read = await api.ExecuteAsync(
@@ -60,12 +60,12 @@ namespace FlowBloxTest.AIAssistant
 
             Assert.IsTrue(listed.Ok, listed.Error);
             var fileNames = listed.Result["dataTypes"]!
-                .Single(x => x!.Value<string>("dataType") == "auxiliary_project")!["fileNames"]!
+                .Single(x => x!.Value<string>("dataType") == "skill_project")!["fileNames"]!
                 .Values<string>()
                 .ToList();
             Assert.IsTrue(fileNames.Count > 0);
             Assert.IsTrue(fileNames.All(x => !string.IsNullOrWhiteSpace(x)));
-            var distributedProjectFile = DistributedDataCatalog.ResolvePath("auxiliary_project", fileNames[0]);
+            var distributedProjectFile = DistributedDataCatalog.ResolvePath("skill_project", fileNames[0]);
             Assert.IsTrue(DistributedDataCatalog.IsDistributedDataPath(distributedProjectFile));
             Assert.IsFalse(DistributedDataCatalog.IsDistributedDataPath(
                 Path.Combine(Path.GetTempPath(), "FlowBlox", "project.fbprj")));

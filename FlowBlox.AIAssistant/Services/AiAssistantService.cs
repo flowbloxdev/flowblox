@@ -303,7 +303,7 @@ namespace FlowBlox.AIAssistant.Services
                             userPrompt,
                             shouldAttachProjectJson ? currentProjectJson : null,
                             projectAttachmentInformation,
-                            ToolHandlerUtilities.GetActiveAuxiliaryProjectName())
+                            ToolHandlerUtilities.GetActiveSkillProjectName())
                         : string.Empty;
                     var modelPrompt = toolRound == 1
                         ? initialUserPrompt
@@ -526,7 +526,7 @@ namespace FlowBlox.AIAssistant.Services
                         }
                         var toolApiResponse = AssistantPromptBuilder.BuildToolApiResponsePrompt(
                             roundToolTranscript,
-                            ToolHandlerUtilities.GetActiveAuxiliaryProjectName());
+                            ToolHandlerUtilities.GetActiveSkillProjectName());
                         AppendMessagePair(session, assistantInstructionContent, toolApiResponse, exec.MessageMetadata);
                         assistantToolRequestPersisted = true;
                     }

@@ -568,7 +568,7 @@ namespace FlowBloxTest.AIAssistant
             AssertContains(systemMessage, "Decisions");
             AssertContains(systemMessage, "Completed Changes");
             AssertContains(systemMessage, "Open Points");
-            AssertContains(systemMessage, "Active Auxiliary Project");
+            AssertContains(systemMessage, "Active Skill Project");
             AssertContains(systemMessage, "Provider And Configuration Constraints");
             AssertContains(systemMessage, "Tool API Working Memory");
             AssertContains(systemMessage, "GetTypeKindsInfo");

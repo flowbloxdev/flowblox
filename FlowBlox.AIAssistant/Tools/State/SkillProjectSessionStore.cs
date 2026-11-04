@@ -8,14 +8,14 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.State
 {
-    internal static class AuxiliaryProjectSessionStore
+    internal static class SkillProjectSessionStore
     {
-        // Auxiliary projects currently receive no extensions, so Save() persists an empty .fbdeps file.
+        // Skill projects currently receive no extensions, so Save() persists an empty .fbdeps file.
         // TODO: If the AI Assistant gains extension acquisition or installation support, transfer the
-        // main project's already loaded extensions into auxiliary projects without loading them again,
-        // and persist those transferred dependencies in the auxiliary project's .fbdeps file.
+        // main project's already loaded extensions into skill projects without loading them again,
+        // and persist those transferred dependencies in the skill project's .fbdeps file.
 
-        // Active editing state and persisted auxiliary projects are isolated per assistant session.
+        // Active editing state and persisted skill projects are isolated per assistant session.
         private static readonly ConcurrentDictionary<string, string> ActiveProjectFiles =
             new(StringComparer.Ordinal);
         private static readonly ConcurrentDictionary<string, FlowBloxProject> LoadedProjectCache =
@@ -79,7 +79,7 @@ namespace FlowBlox.AIAssistant.Tools.State
             if (!string.IsNullOrWhiteSpace(existingProjectName) && !sourceExists)
             {
                 throw new InvalidOperationException(
-                    $"Auxiliary project '{sourceProjectName}' does not exist in the current session.");
+                    $"Skill project '{sourceProjectName}' does not exist in the current session.");
             }
 
             var isRename = sourceExists &&
@@ -87,7 +87,7 @@ namespace FlowBlox.AIAssistant.Tools.State
             if (isRename && File.Exists(projectFile))
             {
                 throw new InvalidOperationException(
-                    $"Cannot rename auxiliary project to '{projectName}': a project file named " +
+                    $"Cannot rename skill project to '{projectName}': a project file named " +
                     $"'{Path.GetFileName(projectFile)}' already exists in the current session.");
             }
 
@@ -106,7 +106,7 @@ namespace FlowBlox.AIAssistant.Tools.State
 
             project.ProjectName = projectName;
             if (string.IsNullOrWhiteSpace(project.ProjectDescription))
-                throw new InvalidOperationException("The auxiliary project description must not be empty.");
+                throw new InvalidOperationException("The skill project description must not be empty.");
 
             FlowBloxProjectManager.Instance.InitializeScopedProject(project);
             try
@@ -142,9 +142,9 @@ namespace FlowBlox.AIAssistant.Tools.State
             EnsureMainProjectScope(normalizedSessionId);
             var projectFile = GetProjectFile(normalizedSessionId, projectName);
             if (!File.Exists(projectFile))
-                throw new InvalidOperationException($"Auxiliary project '{projectName}' does not exist.");
+                throw new InvalidOperationException($"Skill project '{projectName}' does not exist.");
 
-            var project = AuxiliaryProjectSerializer.FromFile(projectFile);
+            var project = SkillProjectSerializer.FromFile(projectFile);
 
             FlowBloxProjectManager.Instance.InitializeScopedProject(project);
             ActiveProjectFiles[normalizedSessionId] = projectFile;
@@ -159,10 +159,10 @@ namespace FlowBlox.AIAssistant.Tools.State
                 !string.Equals(project.ProjectName, projectName, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException(
-                    $"Auxiliary project '{projectName}' is not currently open. Open it before saving changes.");
+                    $"Skill project '{projectName}' is not currently open. Open it before saving changes.");
             }
             if (string.IsNullOrWhiteSpace(project.ProjectDescription))
-                throw new InvalidOperationException("The auxiliary project description must not be empty.");
+                throw new InvalidOperationException("The skill project description must not be empty.");
 
             var projectFile = ActiveProjectFiles.TryGetValue(normalizedSessionId, out var activeProjectFile)
                 ? activeProjectFile
@@ -176,7 +176,7 @@ namespace FlowBlox.AIAssistant.Tools.State
         {
             var normalizedSessionId = NormalizeSessionId(sessionId);
             if (!LoadedProjectCache.TryRemove(normalizedSessionId, out var project))
-                throw new InvalidOperationException("No auxiliary project is currently open.");
+                throw new InvalidOperationException("No skill project is currently open.");
 
             FlowBloxProjectManager.Instance.CloseScopedProject(project);
             ActiveProjectFiles.TryRemove(normalizedSessionId, out _);
@@ -214,7 +214,7 @@ namespace FlowBlox.AIAssistant.Tools.State
             catch (Exception ex)
             {
                 FlowBloxLogManager.Instance.GetLogger().Error(
-                    $"Failed to close the active auxiliary project while clearing AI Assistant session '{normalizedSessionId}'.",
+                    $"Failed to close the active skill project while clearing AI Assistant session '{normalizedSessionId}'.",
                     ex);
             }
         }
@@ -252,7 +252,7 @@ namespace FlowBlox.AIAssistant.Tools.State
                 .ToLowerInvariant();
             var directory = Path.Combine(
                 localAppDataDirectory,
-                "ai_assistant_auxiliary_projects",
+                "ai_assistant_skill_projects",
                 sessionHash);
             Directory.CreateDirectory(directory);
             return directory;
@@ -266,7 +266,7 @@ namespace FlowBlox.AIAssistant.Tools.State
             if (!resolvedProjectFile.StartsWith(directoryWithSeparator, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException(
-                    "Auxiliary projects may only be saved inside the current session directory.");
+                    "Skill projects may only be saved inside the current session directory.");
             }
         }
 
@@ -280,7 +280,7 @@ namespace FlowBlox.AIAssistant.Tools.State
             catch (Exception ex)
             {
                 FlowBloxLogManager.Instance.GetLogger().Error(
-                    $"Failed to read the project name from auxiliary project file '{projectFile}'.",
+                    $"Failed to read the project name from skill project file '{projectFile}'.",
                     ex);
                 return Path.GetFileNameWithoutExtension(projectFile);
             }
@@ -291,7 +291,7 @@ namespace FlowBlox.AIAssistant.Tools.State
             if (LoadedProjectCache.ContainsKey(sessionId))
             {
                 throw new InvalidOperationException(
-                    "Close the currently open auxiliary project before opening or creating another one.");
+                    "Close the currently open skill project before opening or creating another one.");
             }
         }
     }

@@ -15,10 +15,10 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Executes a saved auxiliary or external project and returns its ProjectOutputFlowBlock values. Provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedAuxiliaryProjects option. Use InspectOutputFieldValue for truncated output values.",
+            "Executes a saved skill project or external project and returns its ProjectOutputFlowBlock values. Provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedSkillProjects option. Use InspectOutputFieldValue for truncated output values.",
             new JObject
             {
-                ["projectFile"] = "string (saved .fbprj path, for example projectFile from GetAuxiliaryProjects)",
+                ["projectFile"] = "string (saved .fbprj path, for example projectFile from GetSkillProjects)",
                 ["reason"] = "string (why this execution is required)",
                 ["inputParameters"] = "object? (Input user-field name to scalar/text value; values support FlowBlox placeholders)",
                 ["outputFields"] = "string[]? (optional ProjectOutputFlowBlock property-name filter)"
@@ -29,8 +29,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             try
             {
                 ct.ThrowIfCancellationRequested();
-                if (ToolHandlerUtilities.IsAuxiliaryProjectActive())
-                    return Task.FromResult(ToolHandlerUtilities.Fail("Save and close the active auxiliary project before executing a saved project."));
+                if (ToolHandlerUtilities.IsSkillProjectActive())
+                    return Task.FromResult(ToolHandlerUtilities.Fail("Save and close the active skill project before executing a saved project."));
 
                 var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(
                     (args.Value<string>("projectFile") ?? string.Empty).Trim());

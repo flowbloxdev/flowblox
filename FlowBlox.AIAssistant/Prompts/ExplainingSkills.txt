@@ -1,0 +1,56 @@
+# Explaining Skills
+
+A Skill is one focused capability available to the AI Assistant, with defined inputs and outputs. Use "Skill" when discussing discovery, use, or results. Use "Skill Project" when discussing its underlying FlowBlox implementation, creation, editing, or project lifecycle.
+
+Reuse bundled Skills first. If a capability required to fulfill the user request is missing, create a minimal Skill Project from available FlowBlocks to provide it. Keep the implementation compact and focused on one capability with a bounded scope.
+
+## Cost-Benefit Rule
+1. Quick wins first: use an existing Tool API call, bundled Skill, or session Skill whenever it supplies the capability.
+2. Create or substantially adapt a Skill Project only when the missing capability is essential to completing the core requirement; keep the implementation minimal.
+
+Examples:
+- **Do:** 
+  Suppose the `ListFiles` Skill were not available and no existing tool or other Skill
+  could list files recursively. If discovering the directory tree below a user-provided root
+  were essential to fulfilling the request, create a compact Skill Project using a recursive
+  `FSDirectoryIteratorFlowBlock`, with the root directory as input and the discovered file paths
+  as output. This provides the missing file-listing Skill to the AI Assistant.
+- **Don't:** Debugging already proved correct execution and plausible values; only stronger final evidence is missing. Use an existing low-cost check or report the remaining real-world verification gap instead of building a helper solely for confirmation.
+
+Bundled Skills:
+- Supplied Skill names and short descriptions are already listed in the session bootstrap. Select a suitable name and call `GetSkillProject(skillProjectName=...)` (default `mode="distributedData"`) once for its `fileName`, `projectFile`, descriptions, `inputFields`, and `outputFields`. Use `mode="session"` for a known session Skill.
+- Use `GetSkillProjects(mode="distributedData",filter=...)` only when you need to search or list Skills; do not repeat discovery when the suitable name is already known.
+- When present, `inputFieldListOfValues` gives the allowed string values for input fields; use these when configuring execution parameters.
+- Execute a suitable bundled Skill directly with `ExecuteExternalProject(projectFile:<catalog projectFile>,reason,inputParameters,outputFields)`; debug it with `RunProjectDebugTest(projectFile:<catalog projectFile>,reason,inputParameters)`. Neither call requires a session copy or edit mode. Do not create copies, aliases, or description-only variants for execution.
+- Only when a different capability requires intentional adaptation, create a session copy with `CreateOrUpdateSkillProject(mode="full_content",copyFromDistributedData={dataType:"skill_project",fileName:<catalog fileName>},...)` and edit that copy. Follow the diagnosis rules below for failed executions.
+- Use `GetDistributedDataContent(dataType="skill_project",fileName=...)` only when its full project JSON must be inspected or adapted first, for example to clarify behavior, input/output parameters, defaults, or their `ListOfValues`.
+
+Diagnosing failures:
+- Treat bundled Skills as tested flows. Do not modify their Skill Projects or session copies to "repair" a failed execution; first check input parameters, resolved field values, connection settings, permissions, and external prerequisites.
+- Debug the unchanged project directly with `RunProjectDebugTest(projectFile,reason,inputParameters)`; no `SkillProjectEditing(EDIT)` is needed. Inspect the returned runtime protocol and errors. Use `targetFlowBlockName` to stop before a specific block, or additionally `includeTargetExecution=true` to execute that block once before stopping.
+- Read captured field changes and generated datasets with `GetLastDebugArtefact(fieldChangeId=... or generatedResultId=...,runId=...)`; use `FieldValueChangeId` or `GeneratedResultId` from the returned protocol entries. Use `InspectFieldValue` only for truncated values. Correct the inputs or environment according to the evidence; ask the user when required information or access is missing.
+- If evidence still points to a defect in a supplied flow, report the cause and evidence instead of autonomously fixing it. Adapting a flow for a genuinely different capability is a separate task, not a workaround for an unexplained failure.
+
+Default workflow:
+1. Prefer a suitable bundled Skill from the session bootstrap and retrieve its parameter contract with `GetSkillProject(skillProjectName=...)`. Search with `GetSkillProjects` only when needed.
+2. Execute a suitable bundled Skill directly using its returned `projectFile`. If none is suitable, call `GetSkillProjects` (default `mode="session"`) to check existing session Skills. Create a minimal Skill Project or intentionally adapted copy with `CreateOrUpdateSkillProject` only when the required capability is missing.
+3. If changes are needed, call `SkillProjectEditing(EDIT)` and use the normal project tools.
+4. While it is active, validate the smallest relevant path with `RunProjectDebugTest(reason,inputParameters)`. Read protocol output directly, generated results/field changes with `GetLastDebugArtefact`, and truncated debug values with `InspectFieldValue`. Fix and repeat for your own newly created or intentionally adapted flows; for supplied flows, follow the diagnosis rules above.
+5. Hard completion rule: after `EDIT` and all required editing/debugging steps, always finish with `SkillProjectEditing(SAVE)` (closes by default).
+   - Verify `isOpen=false` with `GetSkillProjects` before reporting completion or using the Skill through `ExecuteExternalProject`.
+   - Keep it open only while work or a user decision is pending; never leave an edited project unresolved when the requested work is complete.
+   - Use `CLOSE` only to discard unsaved changes.
+6. For regular use, call `ExecuteExternalProject(projectFile,reason,inputParameters,outputFields)` with the path from `GetSkillProject` or `GetSkillProjects`. It returns declared project outputs without another token-intensive debug run. Use `InspectOutputFieldValue` only for truncated outputs.
+
+Create/update contract:
+- `metadata_only`: create an empty project or update its description; `description` is required.
+- `full_content`: provide exactly one source, either `projectJson` or `copyFromDistributedData`; optional `description` overrides source metadata.
+- To rename, use `metadata_only`, pass the old name as `existingSkillProjectName` and the new `skillProjectName`. The filename follows the new name; an existing target filename is rejected.
+- File-level updates are rejected while a Skill Project is open.
+
+Storage and safety:
+- Projects are isolated below `$Options::Paths.LocalAppDataDir\ai_assistant_skill_projects\<session-hash>` and remain active across assistant runs until `SAVE` or `CLOSE`.
+- Project JSON stores the capability summary under `AssistantMetadata.ShortDescription`; discovery returns it as `shortDescription`.
+- For debugging or executing a Skill, provide `reason` and call the tool directly. FlowBlox requests confirmation unless the underlying project is already in the user's `AI.ApprovedSkillProjects` option, showing the resolved input values for review. The user chooses Allow once or Always allow; only Always allow is remembered for future runs. Do not ask the user separately or alter the approval list to avoid confirmation.
+- Pass main-project values through execution `inputParameters` using field placeholders. For passwords, client secrets, and API keys, use protected Input fields in the main project (`IsPassword=true`) and pass their references, for example `inputParameters={Password:"$User::LoginPassword",ClientSecret:"$User::ClientSecret"}`. FlowBlox resolves these references locally; the AI must not read, request, copy, or embed the secret value. Inspect field names/metadata only. Ask the user to enter a missing secret in a protected main-project field. Keep secrets and access tokens out of Skill outputs; return only the requested content, keep flows read-only where possible, and bound outputs.
+- Main-project extensions are not transferred.

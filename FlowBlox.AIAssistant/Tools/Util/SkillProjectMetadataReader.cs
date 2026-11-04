@@ -4,14 +4,14 @@ using FlowBlox.Core.Models.Project;
 
 namespace FlowBlox.AIAssistant.Tools.Util
 {
-    internal static class AuxiliaryProjectMetadataReader
+    internal static class SkillProjectMetadataReader
     {
-        public static AuxiliaryProjectMetadata Read(string projectFile)
+        public static SkillProjectMetadata Read(string projectFile)
         {
-            return Read(AuxiliaryProjectSerializer.FromFile(projectFile), projectFile);
+            return Read(SkillProjectSerializer.FromFile(projectFile), projectFile);
         }
 
-        public static AuxiliaryProjectMetadata Read(FlowBloxProject project, string projectFile) =>
+        public static SkillProjectMetadata Read(FlowBloxProject project, string projectFile) =>
             new(
                 project.ProjectName?.Trim() ?? Path.GetFileNameWithoutExtension(projectFile),
                 project.AssistantMetadata?.ShortDescription?.Trim() ?? string.Empty,
@@ -42,7 +42,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                         StringComparer.OrdinalIgnoreCase));
     }
 
-    internal sealed record AuxiliaryProjectMetadata(
+    internal sealed record SkillProjectMetadata(
         string ProjectName,
         string ShortDescription,
         string Description,

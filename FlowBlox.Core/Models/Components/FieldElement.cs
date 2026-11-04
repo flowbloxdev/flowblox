@@ -256,6 +256,10 @@ namespace FlowBlox.Core.Models.Components
 
         public bool IsStoreValueLocallyReadOnly() => IsPassword;
 
+        [ActivationCondition(MemberName = nameof(UserFieldType), Value = UserFieldTypes.Memory)]
+        [Display(Name = "FieldElement_ClearOnRuntimeStart", Description = "FieldElement_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 7)]
+        public bool ClearOnRuntimeStart { get; set; }
+
         private bool _isPassword;
 
         [ActivationCondition(ActivationMethod = nameof(IsUserInputField))]
@@ -461,7 +465,7 @@ namespace FlowBlox.Core.Models.Components
 
         public override void RuntimeStarted(BaseRuntime runtime)
         {
-            if (IsRegularField())
+            if (IsRegularField() || (UserField && UserFieldType == UserFieldTypes.Memory && ClearOnRuntimeStart))
                 this.SetValueWithoutEvaluation(runtime, string.Empty);
             base.RuntimeStarted(runtime);
         }

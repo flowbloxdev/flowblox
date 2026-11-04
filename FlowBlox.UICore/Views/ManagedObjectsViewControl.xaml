@@ -206,18 +206,9 @@
                                           IsEnabled="{Binding HasSelectedEntryActions}"
                                           ItemsSource="{Binding SelectedEntryActions}">
                                     <MenuItem.ItemContainerStyle>
-                                        <Style TargetType="MenuItem">
-                                            <Setter Property="Header" Value="{Binding}" />
-                                            <Setter Property="HeaderTemplate">
-                                                <Setter.Value>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="{Binding Icon}" Width="14" Height="14" Margin="0,0,6,0" />
-                                                            <TextBlock Text="{Binding DisplayName}" />
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </Setter.Value>
-                                            </Setter>
+                                        <Style TargetType="MenuItem" BasedOn="{StaticResource FlowBlox.ContextMenuItem}">
+                                            <Setter Property="Header" Value="{Binding DisplayName}" />
+                                            <Setter Property="Icon" Value="{Binding Icon}" />
                                             <Setter Property="Command" Value="{Binding Command}" />
                                             <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
                                         </Style>

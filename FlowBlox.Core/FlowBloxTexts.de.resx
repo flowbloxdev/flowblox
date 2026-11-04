@@ -4592,6 +4592,12 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="ExecuteSQLFlowBlock_UseFieldValuesAsParameters_Tooltip" xml:space="preserve">
     <value>Aktiviert (Standard): Feldwerte werden als SQL-Datenparameter gebunden. Deaktiviert: Feldwerte werden direkt als SQL-Text eingesetzt.</value>
   </data>
+  <data name="FieldElement_ClearOnRuntimeStart" xml:space="preserve">
+    <value>Bei Laufzeitstart leeren</value>
+  </data>
+  <data name="FieldElement_ClearOnRuntimeStart_Tooltip" xml:space="preserve">
+    <value>Leert dieses Speicherfeld zu Beginn jeder Laufzeit. Standardmäßig deaktiviert, damit der Wert erhalten bleibt.</value>
+  </data>
 </root>
 
 

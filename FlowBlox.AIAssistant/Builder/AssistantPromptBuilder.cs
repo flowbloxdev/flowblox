@@ -48,7 +48,7 @@ namespace FlowBlox.AIAssistant.Builder
                 .Replace("{{ROOT_CATEGORIES}}", string.Join(", ", rootCategories), StringComparison.Ordinal)
                 .Replace("{{CENTRAL_GUIDELINES}}", BuildCentralGuidelinesText(), StringComparison.Ordinal)
                 .Replace("{{EXPLANATION_ROUTING}}", BuildExplanationRoutingText(), StringComparison.Ordinal)
-                .Replace("{{STANDARD_AUXILIARY_PROJECTS}}", BuildStandardAuxiliaryProjectsText(), StringComparison.Ordinal)
+                .Replace("{{STANDARD_SKILL_PROJECTS}}", BuildStandardSkillProjectsText(), StringComparison.Ordinal)
                 .Replace("{{COMPACT_TYPE_ALIASES}}", AiAssistantTypeAliasHelper.AliasSummary, StringComparison.Ordinal)
                 .Replace("{{AVAILABLE_TOOLS}}", BuildToolDefinitionsText(toolDefinitions), StringComparison.Ordinal)
                 + $"\nApplication runtime started at: {AssistantSessionContentStore.ApplicationStartedAt:O}."
@@ -61,14 +61,14 @@ namespace FlowBlox.AIAssistant.Builder
             string userPrompt,
             string? projectJson,
             ProjectAttachmentInformation projectAttachmentInformation,
-            string? activeAuxiliaryProjectName = null)
+            string? activeSkillProjectName = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine("User prompt:");
             sb.AppendLine(userPrompt);
             sb.AppendLine();
 
-            AppendAuxiliaryProjectContext(sb, activeAuxiliaryProjectName);
+            AppendSkillProjectContext(sb, activeSkillProjectName);
 
             var attachmentReasonText = BuildProjectAttachmentInformationText(projectAttachmentInformation);
             if (!string.IsNullOrWhiteSpace(attachmentReasonText))
@@ -90,7 +90,7 @@ namespace FlowBlox.AIAssistant.Builder
 
         public static string BuildToolApiResponsePrompt(
             IReadOnlyList<string> toolTranscript,
-            string? activeAuxiliaryProjectName = null)
+            string? activeSkillProjectName = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine("Tool execution updates since last assistant request:");
@@ -106,21 +106,21 @@ namespace FlowBlox.AIAssistant.Builder
             }
 
             sb.AppendLine();
-            AppendAuxiliaryProjectContext(sb, activeAuxiliaryProjectName);
+            AppendSkillProjectContext(sb, activeSkillProjectName);
 
             return sb.ToString().TrimEnd();
         }
 
-        private static void AppendAuxiliaryProjectContext(StringBuilder sb, string? projectName)
+        private static void AppendSkillProjectContext(StringBuilder sb, string? projectName)
         {
             if (string.IsNullOrWhiteSpace(projectName))
             {
-                sb.AppendLine("Auxiliary project context: none; project tools target the main project.");
+                sb.AppendLine("Skill project context: none; project tools target the main project.");
                 sb.AppendLine();
                 return;
             }
 
-            sb.AppendLine($"Auxiliary project context: editing '{projectName}'; all project tools target this auxiliary project.");
+            sb.AppendLine($"Skill project context: editing '{projectName}'; all project tools target this skill project.");
             sb.AppendLine();
         }
 
@@ -175,19 +175,19 @@ namespace FlowBlox.AIAssistant.Builder
             return entries.Count == 0 ? "- None" : string.Join("\n", entries);
         }
 
-        private static string BuildStandardAuxiliaryProjectsText()
+        private static string BuildStandardSkillProjectsText()
         {
             var dataType = DistributedDataCatalog.GetDataTypes()
                 .SingleOrDefault(x => string.Equals(
                     x.Name,
-                    DistributedDataCatalog.AuxiliaryProjectType,
+                    DistributedDataCatalog.SkillProjectType,
                     StringComparison.OrdinalIgnoreCase));
             if (dataType == null)
                 return "- None";
 
             var entries = dataType.FileNames
                 .Select(fileName => DistributedDataCatalog.ResolvePath(
-                    DistributedDataCatalog.AuxiliaryProjectType,
+                    DistributedDataCatalog.SkillProjectType,
                     fileName))
                 .Where(path => !string.IsNullOrWhiteSpace(path))
                 .Select(path => new

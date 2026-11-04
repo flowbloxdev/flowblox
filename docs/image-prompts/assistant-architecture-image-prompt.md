@@ -20,7 +20,15 @@ A. Aligned with Cloud AI: "Choose your AI provider", containing three recognizab
 
 B. Aligned beside Tool API: a book/knowledge icon and title "Compact FlowBlox knowledge", with just three short lines: "Flow rules & explanations", "Compact type metadata", "Loaded on demand". Add a small purple/blue pill "Cache-aware prompts". A clean, short purple curved/dashed arrow should show that this context informs CLOUD AI (not that knowledge is another execution engine). Provider caching is used where supported; do not claim every token is always cached or that caching eliminates token counts. No footnote paragraph is needed; the phrase Cache-aware prompts is deliberately precise.
 
-C. Lower right: a panel titled "Skills for local resources", with three small icons and labels "Web", "Files", "SQL", and a sublabel "Auxiliary projects & scripts". A visually clear amber shield/lock strip must say "Your approval before execution". This is the important authorization gate for AI-initiated execution of skills/scripts. Connect the Tool API to this panel with a short clean curve, and place the shield on that relationship or inside the skills panel so the rule is unmistakable. Do NOT imply the cloud provider directly executes on the user's machine, nor that every Tool API read requires an approval. Tools are executed locally by FlowBlox.
+C. Lower right: a panel titled "Skills for local resources", with three small icons and labels "Web", "Files", "SQL", and a sublabel "Compact projects with defined inputs & outputs". A visually clear amber shield/lock strip must say "Your approval before execution". This is the important authorization gate for AI-initiated execution of skills/scripts. Connect the Tool API to this panel with a short clean curve, and place the shield on that relationship or inside the skills panel so the rule is unmistakable. Do NOT imply the cloud provider directly executes on the user's machine, nor that every Tool API read requires an approval. Tools are executed locally by FlowBlox.
 
 BOTTOM optional slim restrained ribbon: "Editable projects • Local execution • You stay in control".
 LAYOUT/QUALITY: balanced spacious composition, consistent card widths and typography, little text, readable at GitHub content width. Supporting panels belong on the RIGHT. Short straight or smooth curved connectors only; no long wobbly arrows, arrows through text, crossings, or unnecessary edge-to-edge lines. The image should feel like an expanded sibling of the Quick Start illustration: informative and polished, showing the intelligence, knowledge, tools and approval boundary behind an ordinary editable FlowBlox project.
+
+## Skills naming update (built-in image_gen)
+
+Use case: text-localization. Edit target: docs/images/flowblox-assistant-architecture.png.
+Preserve the entire image, aspect ratio, layout, colors, icons, all other text and arrows exactly.
+Change only the old subtitle in the lower-right panel to "Compact projects with defined inputs & outputs".
+Keep the replacement on one or two neatly centered lines inside the existing gap above the approval strip.
+Match existing navy font and size, with crisp readable lettering. No other changes.

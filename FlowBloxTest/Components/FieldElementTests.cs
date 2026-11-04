@@ -13,6 +13,28 @@ namespace FlowBloxTest.Components
     public sealed class FieldElementTests
     {
         [TestMethod]
+        [DataRow(UserFieldTypes.Memory, true, "")]
+        [DataRow(UserFieldTypes.Memory, false, "Previous run")]
+        [DataRow(UserFieldTypes.Input, true, "Previous run")]
+        public void RuntimeStarted_ClearsOnlyOptedInMemoryFields(UserFieldTypes fieldType, bool clear, string expected)
+        {
+            var project = CreateProjectWithStartFlowBlock(out _);
+            var field = project.FlowBloxRegistry.CreateUserField(fieldType, FieldTypes.Text, "Value");
+            field.StringValue = "Previous run";
+            field.ClearOnRuntimeStart = clear;
+            var runtime = new TransientRuntime(project);
+
+            field.RuntimeStarted(runtime);
+
+            Assert.AreEqual(expected, field.StringValue);
+
+            field.SetValueWithoutEvaluation(runtime, "Next run");
+            field.RuntimeStarted(runtime);
+
+            Assert.AreEqual(clear && fieldType == UserFieldTypes.Memory ? "" : "Next run", field.StringValue);
+        }
+
+        [TestMethod]
         public void RenameMemoryField_UpdatesFullyQualifiedNameInFieldSelectionProperty()
         {
             var project = new FlowBloxProject();

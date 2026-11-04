@@ -5,25 +5,25 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    internal sealed class CreateOrUpdateAuxiliaryProjectHandler : ToolHandlerBase
+    internal sealed class CreateOrUpdateSkillProjectHandler : ToolHandlerBase
     {
         private const string MetadataOnlyMode = "metadata_only";
         private const string FullContentMode = "full_content";
 
-        public override string Name => "CreateOrUpdateAuxiliaryProject";
+        public override string Name => "CreateOrUpdateSkillProject";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Creates or updates a closed auxiliary-project file in the current session. Use AuxiliaryProjectEditing for live edits.",
+            "Creates or updates a closed skill project file in the current session. Use SkillProjectEditing for live edits.",
             new JObject
             {
-                ["projectName"] = "string (required; also determines the filename)",
-                ["existingProjectName"] = "string? (metadata_only rename: current name; projectName is the new name)",
+                ["skillProjectName"] = "string (required; also determines the filename)",
+                ["existingSkillProjectName"] = "string? (metadata_only rename: current name; skillProjectName is the new name)",
                 ["description"] = "string? (required for metadata_only; optional metadata override for full_content)",
                 ["shortDescription"] = "string? (compact capability summary; optional metadata override)",
                 ["mode"] = "string (metadata_only|full_content)",
                 ["projectJson"] = "string? (complete full_content source including description unless overridden; use exactly one content source)",
-                ["copyFromDistributedData"] = "object? ({ dataType: 'auxiliary_project', fileName: string }); alternative full_content source; use exactly one"
+                ["copyFromDistributedData"] = "object? ({ dataType: 'skill_project', fileName: string }); alternative full_content source; use exactly one"
             });
 
         public override Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
@@ -32,43 +32,43 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             try
             {
                 var sessionId = ToolHandlerUtilities.CurrentSessionGuid;
-                if (AuxiliaryProjectSessionStore.IsActive(sessionId))
+                if (SkillProjectSessionStore.IsActive(sessionId))
                 {
                     return Task.FromResult(ToolHandlerUtilities.Fail(
-                        "File-level auxiliary-project changes are not allowed while an auxiliary project is open. Save or close it first."));
+                        "File-level skill project changes are not allowed while a skill project is open. Save or close it first."));
                 }
 
-                var projectName = (args.Value<string>("projectName") ?? string.Empty).Trim();
-                var existingProjectName = (args.Value<string>("existingProjectName") ?? string.Empty).Trim();
+                var skillProjectName = (args.Value<string>("skillProjectName") ?? string.Empty).Trim();
+                var existingSkillProjectName = (args.Value<string>("existingSkillProjectName") ?? string.Empty).Trim();
                 var description = (args.Value<string>("description") ?? string.Empty).Trim();
                 var shortDescription = (args.Value<string>("shortDescription") ?? string.Empty).Trim();
                 var mode = (args.Value<string>("mode") ?? string.Empty).Trim().ToLowerInvariant();
-                if (string.IsNullOrWhiteSpace(projectName))
-                    return Task.FromResult(ToolHandlerUtilities.Fail("projectName is required."));
+                if (string.IsNullOrWhiteSpace(skillProjectName))
+                    return Task.FromResult(ToolHandlerUtilities.Fail("skillProjectName is required."));
                 if (mode is not (MetadataOnlyMode or FullContentMode))
                     return Task.FromResult(ToolHandlerUtilities.Fail("mode must be metadata_only or full_content."));
-                if (mode == FullContentMode && !string.IsNullOrWhiteSpace(existingProjectName))
-                    return Task.FromResult(ToolHandlerUtilities.Fail("existingProjectName is only supported for metadata_only."));
+                if (mode == FullContentMode && !string.IsNullOrWhiteSpace(existingSkillProjectName))
+                    return Task.FromResult(ToolHandlerUtilities.Fail("existingSkillProjectName is only supported for metadata_only."));
 
                 var project = mode == MetadataOnlyMode
                     ? ResolveMetadataOnlyProject(
                         sessionId,
-                        string.IsNullOrWhiteSpace(existingProjectName) ? projectName : existingProjectName,
+                        string.IsNullOrWhiteSpace(existingSkillProjectName) ? skillProjectName : existingSkillProjectName,
                         description,
                         shortDescription,
                         args)
                     : ResolveFullContentProject(description, shortDescription, args);
-                var result = AuxiliaryProjectSessionStore.CreateOrUpdateFile(
+                var result = SkillProjectSessionStore.CreateOrUpdateFile(
                     sessionId,
-                    projectName,
+                    skillProjectName,
                     project,
-                    existingProjectName);
+                    existingSkillProjectName);
 
                 return Task.FromResult(ToolHandlerUtilities.Ok(new JObject
                 {
                     ["operation"] = result.Created ? "created" : "updated",
                     ["mode"] = mode,
-                    ["projectName"] = result.Project.ProjectName,
+                    ["skillProjectName"] = result.Project.ProjectName,
                     ["shortDescription"] = result.Project.AssistantMetadata.ShortDescription,
                     ["description"] = result.Project.ProjectDescription,
                     ["projectGuid"] = result.Project.ProjectGuid,
@@ -83,7 +83,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         private static FlowBloxProject ResolveMetadataOnlyProject(
             string sessionId,
-            string projectName,
+            string skillProjectName,
             string description,
             string shortDescription,
             JObject args)
@@ -93,15 +93,15 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             if (args["projectJson"] != null || args["copyFromDistributedData"] != null)
                 throw new InvalidOperationException("metadata_only does not accept a content source.");
 
-            if (!AuxiliaryProjectSessionStore.ProjectExists(sessionId, projectName))
+            if (!SkillProjectSessionStore.ProjectExists(sessionId, skillProjectName))
                 return new FlowBloxProject
                 {
                     ProjectDescription = description,
                     AssistantMetadata = new AssistantMetadata { ShortDescription = shortDescription }
                 };
 
-            var project = AuxiliaryProjectSerializer.FromFile(
-                AuxiliaryProjectSessionStore.GetStoredProjectFile(sessionId, projectName));
+            var project = SkillProjectSerializer.FromFile(
+                SkillProjectSessionStore.GetStoredProjectFile(sessionId, skillProjectName));
             project.ProjectDescription = description;
             if (!string.IsNullOrWhiteSpace(shortDescription))
                 project.AssistantMetadata.ShortDescription = shortDescription;
@@ -125,10 +125,10 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             {
                 projectJson = DistributedDataCopyResolver.Resolve(
                     distributedData,
-                    DistributedDataCatalog.AuxiliaryProjectType).Content;
+                    DistributedDataCatalog.SkillProjectType).Content;
             }
 
-            var project = AuxiliaryProjectSerializer.FromJson(projectJson!);
+            var project = SkillProjectSerializer.FromJson(projectJson!);
             if (!string.IsNullOrWhiteSpace(description))
                 project.ProjectDescription = description;
             if (!string.IsNullOrWhiteSpace(shortDescription))

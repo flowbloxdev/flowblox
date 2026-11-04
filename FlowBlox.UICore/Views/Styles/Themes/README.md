@@ -37,6 +37,20 @@ eight-DIP radius. Resource changes also update an already open tooltip popup.
 Embedded WPF views receive the same central resources through
 `HostedControlStyles.xaml`.
 
+`ContextMenuStyles.xaml`, merged by `FlowBloxCustomStyles.xaml`, supplies the shared
+context-menu appearance for hosted views and dialogs: Segoe UI at 12 DIP, padded
+rows, rounded highlights, a rounded popup surface and a subtle shadow. Nested
+menus reuse `FlowBlox.MenuSurface`; menu items keep icons, checkmarks, shortcuts
+and keyboard navigation. Colors and corner radii come from the central theme.
+Custom action-item styles should be based on `FlowBlox.ContextMenuItem` so their
+bindings retain the shared presentation. Menu bars keep their own templates.
+
+Text editors use the same context-menu style through the `MahApps.TextBox.ContextMenu`
+resource, with routed Cut/Copy/Paste commands targeting the owning editor.
+Enum value selection uses `FlowBlox.SelectionDropDown`: the same row styling,
+but compact spacing, a three-DIP radius, control-aligned width and no floating
+shadow margin. Its typography continues to follow the property or grid editor.
+
 ## Native corners
 
 `FlowBlox.Window.UseRoundedCorners` enables the regular native Windows 11 corner

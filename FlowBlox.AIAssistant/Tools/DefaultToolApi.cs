@@ -106,11 +106,11 @@ namespace FlowBlox.AIAssistant.Tools
             {
                 if (!isDebugTest)
                     return true;
-                if (!AuxiliaryProjectSessionStore.TryGetActiveProjectInfo(ToolHandlerUtilities.CurrentSessionGuid, out _, out projectFile))
+                if (!SkillProjectSessionStore.TryGetActiveProjectInfo(ToolHandlerUtilities.CurrentSessionGuid, out _, out projectFile))
                     return false;
             }
 
-            return !AuxiliaryProjectApprovalStore.IsApproved(projectFile);
+            return !SkillProjectApprovalStore.IsApproved(projectFile);
         }
 
         private bool IsToolExecutionApproved(ToolRequest request)
@@ -127,7 +127,7 @@ namespace FlowBlox.AIAssistant.Tools
                     var projectFile = request.Arguments?.Value<string>("projectFile") ??
                         request.Arguments?.Value<string>("confirmationProjectFile");
                     if (!string.IsNullOrWhiteSpace(projectFile) && File.Exists(projectFile))
-                        AuxiliaryProjectApprovalStore.Approve(projectFile);
+                        SkillProjectApprovalStore.Approve(projectFile);
                 }
 
                 return true;
@@ -152,7 +152,7 @@ namespace FlowBlox.AIAssistant.Tools
             var usesActiveProject = string.IsNullOrWhiteSpace(projectFile);
             if (usesActiveProject)
             {
-                if (!isDebugTest || !AuxiliaryProjectSessionStore.TryGetActiveProjectInfo(
+                if (!isDebugTest || !SkillProjectSessionStore.TryGetActiveProjectInfo(
                     ToolHandlerUtilities.CurrentSessionGuid,
                     out project,
                     out projectFile))
@@ -162,7 +162,7 @@ namespace FlowBlox.AIAssistant.Tools
             {
                 if (!File.Exists(projectFile))
                     return request;
-                project = AuxiliaryProjectSerializer.FromFile(projectFile);
+                project = SkillProjectSerializer.FromFile(projectFile);
             }
 
             var arguments = request.Arguments == null
@@ -208,10 +208,10 @@ namespace FlowBlox.AIAssistant.Tools
                 new GetDistributedDataHandler(),
                 new GetDistributedDataContentHandler(),
                 new GetProjectMetadataHandler(),
-                new GetAuxiliaryProjectsHandler(),
-                new GetAuxiliaryProjectHandler(),
-                new CreateOrUpdateAuxiliaryProjectHandler(),
-                new AuxiliaryProjectEditingHandler(),
+                new GetSkillProjectsHandler(),
+                new GetSkillProjectHandler(),
+                new CreateOrUpdateSkillProjectHandler(),
+                new SkillProjectEditingHandler(),
                 new GetRootCategoriesHandler(),
                 new GetCategoryChildrenHandler(),
                 new SearchFlowBlockHandler(),

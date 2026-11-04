@@ -68,6 +68,8 @@ namespace FlowBlox.UICore.Utilities
         {
             var menu = new ContextMenu
             {
+                Style = control.TryFindResource("FlowBlox.SelectionDropDown") as Style
+                    ?? control.TryFindResource("MahApps.Styles.ContextMenu") as Style,
                 PlacementTarget = control,
                 Placement = PlacementMode.Bottom,
                 MinWidth = control.ActualWidth,
@@ -75,12 +77,14 @@ namespace FlowBlox.UICore.Utilities
                 FontFamily = control.FontFamily,
                 FontWeight = control.FontWeight,
                 FontStyle = control.FontStyle,
-                Padding = new Thickness(0, 1, 0, 1),
+                Padding = new Thickness(2),
                 SnapsToDevicePixels = true,
                 UseLayoutRounding = true
             };
             // Apply to both levels: popup menus otherwise use their own theme font and row spacing.
-            var itemStyle = new Style(typeof(MenuItem), control.TryFindResource(typeof(MenuItem)) as Style);
+            var itemBaseStyle = control.TryFindResource("FlowBlox.ContextMenuItem") as Style
+                ?? control.TryFindResource(typeof(MenuItem)) as Style;
+            var itemStyle = new Style(typeof(MenuItem), itemBaseStyle);
             itemStyle.Setters.Add(new Setter(Control.FontSizeProperty, control.FontSize));
             itemStyle.Setters.Add(new Setter(Control.FontFamilyProperty, control.FontFamily));
             itemStyle.Setters.Add(new Setter(Control.FontWeightProperty, control.FontWeight));

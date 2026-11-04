@@ -13,7 +13,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             "Lists filenames distributed with FlowBlox in the central application data directory.",
             new JObject
             {
-                ["dataType"] = "string? (optional: python, auxiliary_project, demo_prompts, or example_project)"
+                ["dataType"] = "string? (optional: python, skill_project, demo_prompts, or example_project)"
             });
 
         public override Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
