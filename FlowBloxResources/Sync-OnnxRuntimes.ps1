@@ -121,22 +121,23 @@ function Get-PackageVersionFromCsproj([string]$csprojPath, [string]$packageId) {
 }
 
 function Get-NuGetGlobalPackagesFolder {
-    # Default global packages folder:
-    $default = Join-Path $env:USERPROFILE ".nuget\packages"
-    if (Test-Path $default) { return $default }
+    # A fresh checkout/runner may not have a cache directory yet. Resolve its
+    # configured location independently of existence; restore will populate it.
+    if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) {
+        return [System.IO.Path]::GetFullPath($env:NUGET_PACKAGES)
+    }
 
-    # Fallback: ask dotnet
-    try {
-        $out = & dotnet nuget locals global-packages -l 2>$null
-        # typical: "global-packages: C:\Users\...\ .nuget\packages\"
-        $m = [regex]::Match($out, "global-packages:\s*(.+)$")
-        if ($m.Success) {
-            $p = $m.Groups[1].Value.Trim()
-            if (Test-Path $p) { return $p }
-        }
-    } catch { }
+    $output = & dotnet nuget locals global-packages --list --force-english-output
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not determine NuGet global packages folder: dotnet exited with code $LASTEXITCODE."
+    }
 
-    throw "Could not determine NuGet global packages folder."
+    # First-run SDK messages can precede the actual path. Parse a complete output line.
+    $match = [regex]::Match(($output -join "`n"), '(?m)^global-packages:\s*(.+)$')
+    if (-not $match.Success) {
+        throw "Could not determine NuGet global packages folder from dotnet output."
+    }
+    return [System.IO.Path]::GetFullPath($match.Groups[1].Value.Trim())
 }
 
 function Test-PackageInCache([string]$nugetRoot, [string]$packageId, [string]$version) {
@@ -165,7 +166,7 @@ function Get-PackageDependencyVersion(
     return $dependency.version.Trim().Trim('[', ']', '(', ')').Split(',')[0].Trim()
 }
 
-function Ensure-PackagesInCache([string]$csprojDir, [hashtable[]]$packages) {
+function Ensure-PackagesInCache([string]$csprojDir, [hashtable[]]$packages, [string]$nugetRoot) {
     # Create a temp csproj that references all required packages and dotnet restore it.
     # This will populate the NuGet global cache without touching your real project refs.
     $tmpDir = Join-Path $csprojDir ".tmp_restore_runtimes"
@@ -197,9 +198,9 @@ $refs
     Write-Info "  $tmpProj"
 
     # Restore
-    $p = Start-Process -FilePath "dotnet" -ArgumentList @("restore", $tmpProj, "-v", "minimal") -NoNewWindow -PassThru -Wait
-    if ($p.ExitCode -ne 0) {
-        throw "dotnet restore returned exit code $($p.ExitCode)."
+    & dotnet restore $tmpProj --packages $nugetRoot -v minimal
+    if ($LASTEXITCODE -ne 0) {
+        throw "dotnet restore returned exit code $LASTEXITCODE."
     }
 
     # Cleanup project file (keep folder for troubleshooting if needed)
@@ -279,7 +280,7 @@ independently from NuGet to support dynamic runtime/provider loading.
 
 When to run this script?
 ------------------------
-Run Sync-OnnxRuntimes.ps1 whenever you change the managed NuGet versions in:
+Run Sync-OnnxRuntimes.ps1 after checkout and whenever you change the managed NuGet versions in:
   ../FlowBlox.Core/FlowBlox.Core.csproj
 
 The script reads the managed versions:
@@ -287,10 +288,11 @@ The script reads the managed versions:
   - Microsoft.ML.OnnxRuntimeGenAI.Managed
 
 Then it:
-  1) Ensures the corresponding runtime/provider packages are present in the NuGet global cache
-     (via a temporary 'dotnet restore').
+  1) Resolves NUGET_PACKAGES or the global packages path reported by dotnet.
+     The cache does not need to exist yet. Missing runtime/provider packages are
+     downloaded via a temporary 'dotnet restore' into that exact cache.
   2) Copies files from:
-       %USERPROFILE%\.nuget\packages\<package>\<version>\runtimes\<rid>\native\*
+       <resolved NuGet cache>\<package>\<version>\runtimes\<rid>\native\*
      into:
        data\onnxruntimes\...
        data\onnxruntimesgenai\...
@@ -298,6 +300,7 @@ Then it:
 Notes
 -----
 - The sync fails if a required provider package, RID, or native file set is unavailable.
+- The cache is only a build-time package source. Deployed runtimes are loaded from data, not NuGet.
 - All GenAI provider packages must depend on the same ONNX Runtime version selected by FlowBlox.Core.
 - Each runtime output folder contains a runtime-manifest.json with the synchronized package and layout versions.
 - Matching manifests keep the existing folders and enable incremental copying. A version or layout change rebuilds only the affected runtime output folder.
@@ -325,6 +328,7 @@ function Sync-OrtAndGenAiRuntimes {
     Write-Info "  ONNX Runtime GenAI: $genaiVer"
 
     $nugetRoot = Get-NuGetGlobalPackagesFolder
+    Ensure-Directory $nugetRoot
     Write-Info "NuGet global cache: $nugetRoot"
 
     # --- Define required packages based on managed versions
@@ -355,7 +359,7 @@ function Sync-OrtAndGenAiRuntimes {
     if ($missing.Count -gt 0) {
         Write-Warn "Some packages are missing in NuGet global cache. Running 'dotnet restore' helper..."
         $missing | ForEach-Object { Write-Warn "  missing: $($_.Id) $($_.Version)" }
-        Ensure-PackagesInCache $csprojDir ($ortPackages + $genaiPackages)
+        Ensure-PackagesInCache $csprojDir ($ortPackages + $genaiPackages) $nugetRoot
     } else {
         Write-Info "All required packages already present in NuGet cache."
     }

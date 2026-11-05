@@ -39,6 +39,8 @@ jobs:
     needs: checks
     runs-on: windows-2025
     timeout-minutes: 90
+    env:
+      NUGET_PACKAGES: ${{ runner.temp }}/flowblox-nuget-packages
     defaults:
       run:
         shell: pwsh

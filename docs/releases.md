@@ -110,6 +110,11 @@ does not authorize a push or publication.
   tests also fails. TRX results are attached to the Actions run for 14 days.
 - Release tags rerun the same checks before preparing native ONNX runtimes and
   invoking the existing `scripts/Build-FlowBloxMsi.ps1` on a Windows runner.
+  The installer job uses its own `NUGET_PACKAGES` directory under `runner.temp`.
+  `Sync-OnnxRuntimes.ps1` downloads missing provider packages into this initially
+  empty cache and copies their native libraries into `FlowBloxResources/data`
+  before publishing. It does not depend on a developer cache or the checks job's
+  runner. The installed application loads the bundled files, without a NuGet cache.
 - Interactive desktop checks and tests requiring external services, credentials,
   or model downloads are separate from this unit-test job.
 - If checks or packaging fail, no public release is created. Inspect the failed

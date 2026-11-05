@@ -35,6 +35,8 @@ jobs:
         run: |
           ./scripts/tests/Test-ReleaseAutomation.ps1
           ./scripts/tests/Test-ReleaseTag.ps1
+          powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/tests/Test-OnnxRuntimeSync.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'ONNX runtime synchronization checks failed.' }
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
