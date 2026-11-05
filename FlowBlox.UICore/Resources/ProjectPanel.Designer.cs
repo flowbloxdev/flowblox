@@ -466,6 +466,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Input fields ähnelt.
+        /// </summary>
+        public static string Toolbar_InputFields
+        {
+            get
+            {
+                return ResourceManager.GetString("Toolbar_InputFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Memory fields ähnelt.
+        /// </summary>
+        public static string Toolbar_MemoryFields
+        {
+            get
+            {
+                return ResourceManager.GetString("Toolbar_MemoryFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Pause ähnelt.
         /// </summary>
         public static string Toolbar_Pause

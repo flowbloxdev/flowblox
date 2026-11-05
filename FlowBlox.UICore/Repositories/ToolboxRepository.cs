@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using System.IO;
 using System.Text.Json;
 using FlowBlox.Core.Enums;
@@ -14,9 +15,9 @@ namespace FlowBlox.UICore.Repositories
 
         public ToolboxRepository(FlowBloxOptions options)
         {
-            _toolboxUserFile = options.GetOption("Paths.ToolboxUserFile")?.Value;
-            _toolboxDirectory = options.GetOption("Paths.ToolboxDir")?.Value;
-            _toolboxCacheDirectory = options.GetOption("Paths.ToolboxCacheDir")?.Value;
+            _toolboxUserFile = options.GetOption(OptionsConstants.PathsToolboxUserFile)?.Value;
+            _toolboxDirectory = options.GetOption(OptionsConstants.PathsToolboxDir)?.Value;
+            _toolboxCacheDirectory = options.GetOption(OptionsConstants.PathsToolboxCacheDir)?.Value;
 
             if (string.IsNullOrWhiteSpace(_toolboxUserFile))
                 throw new InvalidOperationException("Toolbox user file is not set.");

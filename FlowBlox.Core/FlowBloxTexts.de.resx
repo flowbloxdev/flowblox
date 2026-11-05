@@ -2541,7 +2541,7 @@ Mehrstufige XPath-Ausdrücke sind hier nicht erlaubt.</value>
 		<value>Passwortfeld</value>
 	</data>
 	<data name="FieldElement_UsePasswordChar_Tooltip" xml:space="preserve">
-		<value>Maskiert den Feldwert in der Feldansicht. Für Passwortfelder werden keine Klartextwerte in Protokollen oder Logdateien geschrieben und nicht an den AI Assistant weitergegeben.</value>
+		<value>Schützt den Wert vor Protokollen, Logs und dem AI Assistant; maskiert ihn in der Feldansicht. Editormaskierung optional über UI.PropertyView.MaskPasswordValues (Standard: false).</value>
 	</data>
 	<data name="ExecuteProjectFlowBlock_ProjectFile_Description" xml:space="preserve">
 		<value>Wählen Sie die auszuführende FlowBlox-Projektdatei aus. Feldplatzhalter werden unterstützt.</value>
@@ -4596,8 +4596,44 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
     <value>Bei Laufzeitstart leeren</value>
   </data>
   <data name="FieldElement_ClearOnRuntimeStart_Tooltip" xml:space="preserve">
-    <value>Leert dieses Speicherfeld zu Beginn jeder Laufzeit. Standardmäßig deaktiviert, damit der Wert erhalten bleibt.</value>
+    <value>Leert dieses Speicherfeld zu Beginn jeder Laufzeit. Standardmäßig deaktiviert, damit der Wert erhalten bleibt. Nicht mit einem erforderlichen Wert bei Laufzeitstart kombinierbar.</value>
   </data>
+  <data name="FieldElement_Groups_Behavior" xml:space="preserve"><value>Verhalten</value></data>
+  <data name="FieldElement_IsRequiredAtRuntimeStartup" xml:space="preserve"><value>Bei Laufzeitstart erforderlich</value></data>
+  <data name="FieldElement_IsRequiredAtRuntimeStartup_Tooltip" xml:space="preserve"><value>Der Laufzeitstart bricht ab, wenn dieses Eingabe- oder Speicherfeld leer ist oder nur Leerzeichen enthält. Ein erforderliches Speicherfeld darf nicht zugleich bei Laufzeitstart geleert werden.</value></data>
+  <data name="FieldElement_LoVType" xml:space="preserve"><value>Art der Werteliste</value></data>
+  <data name="FieldElement_LoVType_Tooltip" xml:space="preserve"><value>Suggestion: frei bearbeitbare Vorschläge und Beispiele. PossibleValues: nicht leere Startwerte müssen genau einem Eintrag entsprechen. Eine leere Liste schränkt die Werte nicht ein.</value></data>
+  <data name="LoVType_Suggestion" xml:space="preserve"><value>Vorschläge / Beispiele</value></data>
+  <data name="LoVType_PossibleValues" xml:space="preserve"><value>Erlaubte Werte</value></data>
+  <data name="FieldElement_ValueSuggestions_Tooltip" xml:space="preserve"><value>Wählen Sie einen Eintrag, um ihn in den Werteditor zu übernehmen. Vorschläge können frei angepasst werden; erlaubte Werte werden bei Laufzeitstart geprüft.</value></data>
+  <data name="FieldElement_RequiredValueMissing" xml:space="preserve"><value>Das erforderliche Eingabe- oder Speicherfeld '{0}' ist leer. Setzen Sie es vor dem Laufzeitstart.</value></data>
+  <data name="FieldElement_RequiredAndClearedAtStartup" xml:space="preserve"><value>Das Speicherfeld '{0}' ist bei Laufzeitstart erforderlich, soll dabei aber auch geleert werden. Deaktivieren Sie eine dieser Einstellungen.</value></data>
+  <data name="FieldElement_ValueNotAllowed" xml:space="preserve"><value>Der Wert des Feldes '{0}' ist nicht in seiner Liste erlaubter Werte enthalten.</value></data>
+  <data name="OpenApiRestFlowBlock_Groups_Authentication" xml:space="preserve"><value>Authentifizierung</value></data>
+  <data name="OpenApiRestFlowBlock_Groups_Pagination" xml:space="preserve"><value>Seitennavigation</value></data>
+  <data name="OpenApiRestFlowBlock_UserName" xml:space="preserve"><value>Basic-Auth-Benutzername</value></data>
+  <data name="OpenApiRestFlowBlock_UserName_Tooltip" xml:space="preserve"><value>Benutzername für HTTP Basic Auth. Unterstützt Feldreferenzen. Bei Bearer-Authentifizierung leer lassen.</value></data>
+  <data name="OpenApiRestFlowBlock_Password" xml:space="preserve"><value>Basic-Auth-Passwort</value></data>
+  <data name="OpenApiRestFlowBlock_Password_Tooltip" xml:space="preserve"><value>Verwenden Sie eine geschützte Eingabefeldreferenz, zum Beispiel $User::Password. Das Passwort wird erst lokal beim Senden aufgelöst. Verwenden Sie für entfernte Systeme HTTPS.</value></data>
+  <data name="OpenApiRestFlowBlock_FailOnHttpError" xml:space="preserve"><value>Bei HTTP-Fehler abbrechen</value></data>
+  <data name="OpenApiRestFlowBlock_FailOnHttpError_Tooltip" xml:space="preserve"><value>Bricht die Laufzeit bei Verbindungsfehlern oder HTTP-Antworten außerhalb von 200–299 ab. Es werden keine Ergebniszeilen weitergegeben.</value></data>
+  <data name="OpenApiRestFlowBlock_Paginate" xml:space="preserve"><value>Alle Seiten über Offset abrufen</value></data>
+  <data name="OpenApiRestFlowBlock_Paginate_Tooltip" xml:space="preserve"><value>Für GET-Endpunkte mit numerischem Query-Offset. Verbindet die Arrays am Ergebnispfad und erhöht den Offset um die tatsächlich empfangene Anzahl. Endet bei der gemeldeten Gesamtzahl oder ohne Gesamtzahl bei einer leeren Seite. HTTP-Fehler, unvollständige Seitenfolgen und das Seitenlimit führen zum Abbruch ohne Teilergebnis.</value></data>
+  <data name="OpenApiRestFlowBlock_PaginationItemsPath" xml:space="preserve"><value>JSON-Pfad zum Ergebnisarray</value></data>
+  <data name="OpenApiRestFlowBlock_PaginationOffsetParameter" xml:space="preserve"><value>Offset-Query-Parameter</value></data>
+  <data name="OpenApiRestFlowBlock_PaginationTotalPath" xml:space="preserve"><value>JSON-Pfad zur Gesamtzahl (optional)</value></data>
+  <data name="OpenApiRestFlowBlock_MaximumPages" xml:space="preserve"><value>Maximale Seitenzahl</value></data>
+  <data name="OpenApiRestFlowBlock_RequestFailed" xml:space="preserve"><value>REST-Aufruf fehlgeschlagen; HTTP-Status, Anmeldedaten, Berechtigungen und Verbindung prüfen.</value></data>
+  <data name="OpenApiRestFlowBlock_InvalidResponseOrConfiguration" xml:space="preserve"><value>Ungültige REST-Konfiguration oder unvollständige Seitennavigation; es wurden keine Ergebnisse weitergegeben.</value></data>
+  <data name="TableWriterFlowBlock_WriteOnRuntimeFinished" xml:space="preserve"><value>Bei Laufzeitende schreiben</value></data>
+  <data name="TableWriterFlowBlock_WriteOnRuntimeFinished_Tooltip" xml:space="preserve"><value>Sammelt Zeilen und schreibt die Tabelle einmal am erfolgreichen Laufzeitende, einschließlich einer leeren Tabelle mit Kopfzeile. Abgebrochene Läufe überschreiben die vorherige Ausgabe nicht.</value></data>
+  <data name="OpenApiRestFlowBlock_DefinitionWarnings" xml:space="preserve"><value>OpenAPI-Validierungshinweise</value></data>
+  <data name="OpenApiRestFlowBlock_DefinitionWarnings_Tooltip" xml:space="preserve"><value>Bei der semantischen Prüfung erkannte Unstimmigkeiten in der Anbieterdefinition. Nutzbare Endpunkte bleiben verfügbar; Parserfehler verhindern weiterhin das Laden.</value></data>
+  <data name="FlowBloxOptions_MaskPasswordValues_DisplayName" xml:space="preserve"><value>Passwortwerte in Eigenschaftseditoren maskieren</value></data>
+  <data name="FlowBloxOptions_MaskPasswordValues_Description" xml:space="preserve"><value>Maskiert Passwortfeldwerte in Eigenschaftseditoren. Für bessere Lesbarkeit standardmäßig deaktiviert. Nach einer Änderung den Editor erneut öffnen. Die Maskierung in der Feldansicht und der Schutz vor Logs und dem AI Assistant bleiben aktiv.</value></data>
+  <data name="FieldElement_SyntaxHighlighting" xml:space="preserve"><value>Syntaxhervorhebung</value></data>
+  <data name="FieldElement_SyntaxHighlighting_Tooltip" xml:space="preserve"><value>Sprache zur Hervorhebung des Feldwerts im Editor. Wähle eine der verfügbaren Sprachen. Standard: Text (keine Hervorhebung); eine leere Auswahl bedeutet ebenfalls Text. Ändert nur die Darstellung, nicht Feldtyp oder Wert.</value></data>
+  <data name="OpenApiRestFlowBlockUIActions_ReloadDefinition" xml:space="preserve"><value>API-Definition neu laden</value></data>
 </root>
 
 

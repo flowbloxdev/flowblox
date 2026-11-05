@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -39,7 +40,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         {
             Separators.Add(new SplitSeparatorDefinition
             {
-                Separator = FlowBloxOptions.GetOptionInstance().OptionCollection["SplitFlowBlock.DefaultSeparator"].Value
+                Separator = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.SplitFlowBlockDefaultSeparator].Value
             });
 
             base.OnAfterCreate();

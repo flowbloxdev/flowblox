@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.History;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Services;
@@ -723,7 +724,7 @@ namespace FlowBlox.UICore.ViewModels
             try
             {
                 var options = FlowBloxOptions.GetOptionInstance();
-                var directory = options.GetOption("AI.CommuncationProtocolDir")?.Value;
+                var directory = options.GetOption(OptionsConstants.AICommuncationProtocolDir)?.Value;
                 if (string.IsNullOrWhiteSpace(directory))
                 {
                     directory = Path.Combine(

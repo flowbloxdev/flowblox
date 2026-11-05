@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using Aspose.Words;
 using Aspose.Words.Saving;
 using FlowBlox.Core.Attributes;
@@ -31,7 +32,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     [Display(Name = "AsposeWordToPdfFlowBlock_DisplayName", Description = "AsposeWordToPdfFlowBlock_Description", ResourceType = typeof(FlowBloxTexts))]
     public class AsposeWordToPdfFlowBlock : BaseSingleResultFlowBlock
     {
-        public const string LicenseOptionName = "Aspose.Words.LicenseBase64";
 
         private FieldElement _wordDocumentField;
 
@@ -70,7 +70,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public override void OptionsInit(List<OptionElement> defaults)
         {
             defaults.Add(new OptionElement(
-                LicenseOptionName,
+                "Aspose.Words.LicenseBase64",
                 string.Empty,
                 FlowBloxResourceUtil.GetLocalizedString("AsposeWordToPdfFlowBlock_Option_License_Description", typeof(FlowBloxTexts)),
                 OptionElement.OptionType.Password,
@@ -104,7 +104,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         private static void ApplyConfiguredLicense()
         {
             var options = FlowBloxOptions.GetOptionInstance();
-            if (!options.OptionCollection.TryGetValue(LicenseOptionName, out var licenseOption))
+            if (!options.OptionCollection.TryGetValue(OptionsConstants.AsposeWordsLicenseBase64, out var licenseOption))
                 return;
 
             var licenseBase64 = licenseOption.Value?.Trim();

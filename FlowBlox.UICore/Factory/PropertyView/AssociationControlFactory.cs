@@ -158,29 +158,30 @@ namespace FlowBlox.UICore.Factory.PropertyView
             stackPanel.Children.Add(_textBox);
 
             if (_uiAttribute?.Operations.HasFlag(UIOperations.Create) == true)
-                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Plus, _createCommand));
+                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Plus, _createCommand, Brushes.Green));
 
             if (_uiAttribute?.Operations.HasFlag(UIOperations.Link) == true)
-                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Link, _linkCommand));
+                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Link, _linkCommand, Brushes.Blue));
 
             if (_uiAttribute?.Operations.HasFlag(UIOperations.Unlink) == true)
-                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.LinkOff, _unlinkCommand));
+                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.LinkOff, _unlinkCommand, Brushes.DarkRed));
 
             if (_uiAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
-                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Pencil, _editCommand));
+                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Pencil, _editCommand, Brushes.Orange));
 
             if (_uiAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
-                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Delete, _deleteCommand));
+                stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Delete, _deleteCommand, Brushes.DarkRed));
 
             AppendResolvedFlowBlockHint(stackPanel);
 
             return stackPanel;
         }
 
-        private Button CreateButton(PackIconMaterialKind iconKind, RelayCommand command)
+        private Button CreateButton(PackIconMaterialKind iconKind, RelayCommand command, Brush activeColor)
         {
-            return new Button
+            var button = new Button
             {
+                Style = (Style)_window.FindResource("MahApps.Styles.Button"),
                 Content = new PackIconMaterial
                 {
                     Kind = iconKind,
@@ -192,6 +193,8 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 Margin = new Thickness(5, 0, 0, 0),
                 Command = command
             };
+            ButtonStyleHelper.SetButtonStyle(button, activeColor, Brushes.Gray);
+            return button;
         }
 
         private void ExecuteCreate()

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Models.FlowBlocks.AI;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
@@ -18,7 +19,7 @@ namespace FlowBloxTest.FlowBlocks.AI
     {
         private const string PublishedExportScriptName = "export_onnx_qa_model.py";
         private static string ModelRoot => FlowBloxOptions.GetOptionInstance()
-            .GetOption(OnnxQAFlowBlock.ModelRootDirectoryOptionName)?.Value
+            .GetOption(OptionsConstants.AIOnnxQAModelRootDirectory)?.Value
             ?? throw new InvalidOperationException("The ONNX QA model root option is unavailable.");
 
         private FlowBloxProject _project = null!;

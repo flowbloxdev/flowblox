@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Tools;
 using FlowBlox.AIAssistant.Tools.Util;
@@ -24,11 +25,11 @@ namespace FlowBloxTest.AIAssistant
         [TestInitialize]
         public void Initialize()
         {
-            var option = FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir");
+            var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsLocalAppDataDir);
             _previousLocalAppDataDirectory = option.Value;
             _localAppDataDirectory = Path.Combine(Path.GetTempPath(), "FlowBloxSkillTests", Guid.NewGuid().ToString("N"));
             option.Value = _localAppDataDirectory;
-            var approvals = FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName);
+            var approvals = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects);
             _previousApprovals = approvals.PersistentValue;
             approvals.PersistentValue = string.Empty;
             FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject { ProjectName = "Main" };
@@ -38,7 +39,7 @@ namespace FlowBloxTest.AIAssistant
         [TestCleanup]
         public void Cleanup()
         {
-            FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue = _previousApprovals;
+            FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue = _previousApprovals;
             ToolHandlerUtilities.ClearSessionCache(_sessionId);
             ToolHandlerUtilities.SetCurrentSessionGuid(null);
             foreach (var skillProjectName in new[]
@@ -60,7 +61,7 @@ namespace FlowBloxTest.AIAssistant
                         File.Delete(file);
                 }
             }
-            FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir").Value = _previousLocalAppDataDirectory;
+            FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsLocalAppDataDir).Value = _previousLocalAppDataDirectory;
             if (Directory.Exists(_localAppDataDirectory))
                 Directory.Delete(_localAppDataDirectory, recursive: true);
         }
@@ -237,6 +238,28 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsTrue(File.Exists(single.Result.Value<string>("projectFile")));
             Assert.IsTrue(single.Result["inputFieldListOfValues"] is JObject);
             Assert.IsTrue(single.Result["outputFields"]!.Any());
+        }
+
+        [TestMethod]
+        public async Task GetSkillProject_ReportsStartupRequirementsAndValueListSemantics()
+        {
+            var api = new DefaultToolApi();
+            var file = await Execute(api, "GetSkillProject", new JObject { ["skillProjectName"] = "GetFileContent" });
+            Assert.IsTrue(file.Ok, file.Error);
+            var metadata = file.Result["inputFieldMetadata"]!;
+            Assert.IsTrue(metadata["FilePath"]!.Value<bool>("isRequiredAtRuntimeStartup"));
+            Assert.AreEqual("PossibleValues", metadata["InputFileType"]!.Value<string>("loVType"));
+            Assert.AreEqual("Suggestion", metadata["Encoding"]!.Value<string>("loVType"));
+            Assert.IsTrue(file.Result["memoryFieldMetadata"]!["CsvContent"]!.Value<bool>("clearOnRuntimeStart"));
+            Assert.IsFalse(file.Result["memoryFieldMetadata"]!["CsvContent"]!.Value<bool>("isRequiredAtRuntimeStartup"));
+
+            var auth = await Execute(api, "GetSkillProject", new JObject { ["skillProjectName"] = "FetchHtmlWithOpenId" });
+            Assert.IsTrue(auth.Ok, auth.Error);
+            Assert.IsTrue(auth.Result["inputFieldMetadata"]!["Password"]!.Value<bool>("isPassword"));
+            Assert.IsTrue(auth.Result["inputFieldMetadata"]!["Password"]!.Value<bool>("isRequiredAtRuntimeStartup"));
+            Assert.IsFalse(auth.Result["inputFieldMetadata"]!["ClientSecret"]!.Value<bool>("isRequiredAtRuntimeStartup"));
+            Assert.IsFalse(auth.Result["inputFieldMetadata"]!["Scope"]!.Value<bool>("isRequiredAtRuntimeStartup"));
+            Assert.IsFalse(auth.Result["inputFieldMetadata"]!.SelectTokens("$..StringValue").Any());
         }
 
         [TestMethod]

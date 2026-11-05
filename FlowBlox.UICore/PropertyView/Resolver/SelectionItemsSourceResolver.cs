@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Reflection;
+using FlowBlox.Core.Attributes;
 
 namespace FlowBlox.UICore.PropertyView.Resolver
 {
@@ -7,30 +8,35 @@ namespace FlowBlox.UICore.PropertyView.Resolver
     {
         public static IList ResolveItemsSource(
             SelectionMethodResolutionResult selectionMethodResolution,
-            PropertyInfo property)
+            PropertyInfo property,
+            object target = null)
         {
             if (selectionMethodResolution?.Method == null)
                 return null;
 
-            var originalItems = selectionMethodResolution.Method.Invoke(selectionMethodResolution.InvocationTarget, null) as IList;
-            if (originalItems == null || IsRequired(property))
-                return originalItems;
+            var originalItems = selectionMethodResolution.Method.Invoke(selectionMethodResolution.InvocationTarget, null) as IEnumerable;
+            var items = new ArrayList();
+            var nullable = !property.PropertyType.IsValueType || Nullable.GetUnderlyingType(property.PropertyType) != null;
+            if (nullable && !IsRequired(property, target ?? selectionMethodResolution.InvocationTarget))
+                items.Add(null);
 
-            var items = Activator.CreateInstance(originalItems.GetType()) as IList;
-            if (items == null)
-                return originalItems;
-
-            items.Add(null);
-
-            foreach (var item in originalItems)
-                items.Add(item);
+            foreach (var item in originalItems ?? Array.Empty<object>())
+            {
+                if (item != null)
+                    items.Add(item);
+            }
 
             return items;
         }
 
-        private static bool IsRequired(PropertyInfo property)
+        public static bool IsRequired(PropertyInfo property, object target)
         {
-            return property.GetCustomAttribute<System.ComponentModel.DataAnnotations.RequiredAttribute>() != null;
+            if (property.GetCustomAttribute<System.ComponentModel.DataAnnotations.RequiredAttribute>() != null)
+                return true;
+
+            var condition = property.GetCustomAttribute<RequiredIfAttribute>();
+            return condition != null && target != null
+                && Equals(target.GetType().GetProperty(condition.MemberName)?.GetValue(target), condition.Value);
         }
     }
 }

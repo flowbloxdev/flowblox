@@ -1,7 +1,7 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Web;
-using FlowBlox.UICore.PopUp.Constants;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Resources;
 using FlowBlox.UICore.PopUp.Utilities;
@@ -12,7 +12,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         ComponentPopupProviderBase<WebBrowserFlowBlock>,
         IOptionsRegistration
     {
-        public override string OptionKey => PopupOptionNames.WebBrowserQuickStartCompleted;
+        public override string OptionKey => OptionsConstants.PopUpWebBrowserQuickStartCompleted;
 
         protected override string WindowTitle => WebBrowserPopUpTexts.Window_Title;
 
@@ -34,7 +34,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
             defaults.Add(new OptionElement(
-                PopupOptionNames.WebBrowserQuickStartCompleted,
+                "PopUp.WebBrowser.QuickStartCompleted",
                 bool.FalseString,
                 "Tracks whether the Web Browser quick-start guidance has been completed.",
                 OptionElement.OptionType.Boolean,

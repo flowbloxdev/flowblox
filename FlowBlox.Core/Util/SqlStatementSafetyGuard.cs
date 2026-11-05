@@ -1,8 +1,8 @@
+using FlowBlox.Core.Constants;
 namespace FlowBlox.Core.Util
 {
     internal static class SqlStatementSafetyGuard
     {
-        public const string AllowDestructiveStatementsOptionName = "SQL.AllowDestructiveStatements";
 
         private static readonly HashSet<string> DestructiveKeywords = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -14,7 +14,7 @@ namespace FlowBlox.Core.Util
         public static void EnsureAllowed(string sqlStatement)
         {
             var option = FlowBloxOptions.GetOptionInstance()
-                .GetOption(AllowDestructiveStatementsOptionName);
+                .GetOption(OptionsConstants.SQLAllowDestructiveStatements);
             if (option != null && bool.TryParse(option.Value, out var allowed) && allowed)
                 return;
 
@@ -24,7 +24,7 @@ namespace FlowBlox.Core.Util
 
             throw new NotSupportedException(
                 $"Destructive SQL statement '{keyword.ToUpperInvariant()}' is disabled by application option " +
-                $"'{AllowDestructiveStatementsOptionName}'. Enable this option manually in FlowBlox only when the operation is intended.");
+                $"'{OptionsConstants.SQLAllowDestructiveStatements}'. Enable this option manually in FlowBlox only when the operation is intended.");
         }
     }
 }

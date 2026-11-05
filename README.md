@@ -47,9 +47,7 @@ FlowBlox turns real-world data-processing problems into reusable automation proj
 
 ## Video overview
 
-<!-- TODO: Replace VIDEO_ID with the published FlowBlox overview video ID and add its thumbnail at docs/images/youtube-overview.png. -->
-
-<a href="https://www.youtube.com/watch?v=VIDEO_ID"><img src="docs/images/youtube-overview.png" alt="Watch the FlowBlox overview" width="600"></a>
+<a href="https://www.youtube.com/watch?v=-c0xJJYNA2A"><img src="docs/images/youtube-overview.png" alt="Watch the FlowBlox overview" width="600"></a>
 
 
 ## Why FlowBlox?
@@ -246,7 +244,7 @@ Start with [GitHub Issues](https://github.com/flowbloxdev/flowblox/issues) and t
 
 Releases are tagged from tested commits on `main` (for example, `v1.2.3`). FlowBlox maintains one current release line without separate permanent release or hotfix branches.
 
-FlowBlock APIs are adaptable, and the Extension API and Project Space API can evolve with community contributions.
+FlowBlock APIs are adaptable, and the Extension API and Project Space API can evolve with community contributions. The complete API implementation will soon be published in a dedicated repository at [flowbloxdev/flowbloxwebapi](https://github.com/flowbloxdev/flowbloxwebapi).
 
 <!-- TODO: Label beginner-friendly GitHub issues (e.g. "good first issue") to help new contributors get started. -->
 

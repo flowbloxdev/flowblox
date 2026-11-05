@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Extensions;
@@ -170,8 +171,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         public override void OnAfterCreate()
         {
-            Payload_ContentType = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.PostContentType"].Value;
-            WebRequestTimeout = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.Timeout"].GetValueInt();
+            Payload_ContentType = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestPostContentType].Value;
+            WebRequestTimeout = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestTimeout].GetValueInt();
             CreateDefaultResultFields();
             base.OnAfterCreate();
         }
@@ -363,12 +364,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             webRequest.Url = url;
             webRequest.HttpAction = HTTPAction?.ToString();
             webRequest.Timeout = WebRequestTimeout;
-            webRequest.UserAgent = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.UserAgent"].Value;
-            webRequest.Accept = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.Accept"].Value;
-            webRequest.AcceptEncoding = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.AcceptEncoding"].Value;
-            webRequest.KeepAlive = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.KeepAlive"].GetValueBoolean();
-            webRequest.ExpectContinue = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.ExpectContinue"].GetValueBoolean();
-            webRequest.Version = FlowBloxOptions.GetOptionInstance().OptionCollection["WebRequest.Version"].Value;
+            webRequest.UserAgent = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestUserAgent].Value;
+            webRequest.Accept = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestAccept].Value;
+            webRequest.AcceptEncoding = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestAcceptEncoding].Value;
+            webRequest.KeepAlive = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestKeepAlive].GetValueBoolean();
+            webRequest.ExpectContinue = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestExpectContinue].GetValueBoolean();
+            webRequest.Version = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestVersion].Value;
             webRequest.ResponseBodyKind = ResponseBodyKind;
             webRequest.UserName = UserName;
             webRequest.Password = Password;

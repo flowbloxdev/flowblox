@@ -5,6 +5,9 @@ using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.Testing;
 using FlowBlox.Core.Provider.Project;
+using FlowBlox.Core.Models.Components;
+using FlowBlox.Test.Runtime;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlowBloxTest.Components
 {
@@ -12,6 +15,81 @@ namespace FlowBloxTest.Components
     [TestCategory(FlowBloxTestCategories.UnitTest)]
     public sealed class FieldElementTests
     {
+        [TestMethod]
+        [DataRow(UserFieldTypes.Input, null)]
+        [DataRow(UserFieldTypes.Input, " \r\n")]
+        [DataRow(UserFieldTypes.Memory, "")]
+        public void RuntimeStartup_RejectsMissingRequiredValuesBeforeExecuting(UserFieldTypes fieldType, string value)
+        {
+            var project = CreateProjectWithStartFlowBlock(out _);
+            var field = project.FlowBloxRegistry.CreateUserField(fieldType, FieldTypes.Text, "RequiredValue");
+            field.IsRequiredAtRuntimeStartup = true;
+            field.StringValue = value;
+            var runtime = new FlowBloxUnitTestRuntime(project);
+
+            var exception = Assert.ThrowsExactly<ValidationException>(() => runtime.Execute());
+
+            StringAssert.Contains(exception.Message, field.FullyQualifiedName);
+        }
+
+        [TestMethod]
+        public void RuntimeStartup_RejectsRequiredMemoryThatWillBeCleared()
+        {
+            var project = CreateProjectWithStartFlowBlock(out _);
+            var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, FieldTypes.Text, "Memory");
+            field.StringValue = "Existing value";
+            field.IsRequiredAtRuntimeStartup = true;
+            field.ClearOnRuntimeStart = true;
+
+            Assert.ThrowsExactly<ValidationException>(() => new FlowBloxUnitTestRuntime(project).Execute());
+            Assert.AreEqual("Existing value", field.StringValue);
+        }
+
+        [TestMethod]
+        public void StartupValueList_RestrictsOnlyPossibleValuesWithoutDisclosingValues()
+        {
+            var project = CreateProjectWithStartFlowBlock(out _);
+            var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Input, FieldTypes.Text, "Choice");
+            field.ListOfValues.Add(new ValueItem { Value = "Allowed" });
+            field.StringValue = "Other confidential value";
+            var runtime = new FlowBloxUnitTestRuntime(project);
+            runtime.ValidateUserFieldsAtRuntimeStartup();
+
+            field.LoVType = LoVType.PossibleValues;
+            var exception = Assert.ThrowsExactly<ValidationException>(runtime.ValidateUserFieldsAtRuntimeStartup);
+            Assert.IsFalse(exception.Message.Contains(field.StringValue, StringComparison.Ordinal));
+            field.StringValue = "Allowed";
+            runtime.ValidateUserFieldsAtRuntimeStartup();
+            field.StringValue = "";
+            runtime.ValidateUserFieldsAtRuntimeStartup();
+        }
+
+        [TestMethod]
+        public void TestExecution_ValidatesRequiredInputsAfterApplyingTestValues()
+        {
+            var project = CreateProjectWithStartFlowBlock(out var start);
+            var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Input, FieldTypes.Text, "Input");
+            field.IsRequiredAtRuntimeStartup = true;
+            var definition = new FlowBloxTestDefinition { Name = "Required input" };
+            start.TestDefinitions.Add(definition);
+            var input = definition.Entries.Single(x => x.FlowBlock == null)
+                .FlowBloxTestConfigurations.Single(x => x.FieldElement == field);
+            input.SelectionMode = FlowBloxTestConfigurationSelectionMode.UserInput;
+            input.UserInput = "Test value";
+            var executor = new FlowBloxTestExecutor();
+            executor.Initialize(definition, start);
+            try
+            {
+                Assert.IsTrue(executor.ExecuteTest().Success);
+                input.UserInput = "";
+                Assert.ThrowsExactly<ValidationException>(() => executor.ExecuteTest());
+            }
+            finally
+            {
+                executor.Shutdown();
+            }
+        }
+
         [TestMethod]
         [DataRow(UserFieldTypes.Memory, true, "")]
         [DataRow(UserFieldTypes.Memory, false, "Previous run")]

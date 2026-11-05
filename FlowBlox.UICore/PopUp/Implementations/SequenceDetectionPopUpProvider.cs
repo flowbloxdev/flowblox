@@ -1,7 +1,7 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Selection;
-using FlowBlox.UICore.PopUp.Constants;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Resources;
 using FlowBlox.UICore.PopUp.Utilities;
@@ -12,7 +12,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         ComponentPopupProviderBase<SequenceDetectionFlowBlock>,
         IOptionsRegistration
     {
-        public override string OptionKey => PopupOptionNames.SequenceDetectionQuickStartCompleted;
+        public override string OptionKey => OptionsConstants.PopUpSequenceDetectionQuickStartCompleted;
 
         protected override string WindowTitle => SequenceDetectionPopUpTexts.Window_Title;
 
@@ -38,7 +38,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
             defaults.Add(new OptionElement(
-                PopupOptionNames.SequenceDetectionQuickStartCompleted,
+                "PopUp.SequenceDetection.QuickStartCompleted",
                 bool.FalseString,
                 "Tracks whether the Sequence Detection quick-start guidance has been completed.",
                 OptionElement.OptionType.Boolean,

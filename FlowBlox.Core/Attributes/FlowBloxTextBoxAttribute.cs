@@ -11,9 +11,12 @@ namespace FlowBlox.Core.Attributes
         /// </summary>
         public bool IsPassword { get; set; }
 
+        /// <summary>
+        /// Parameterless instance method returning whether the editor masks its value.
+        /// </summary>
+        public string IsPasswordMethod { get; set; }
+
         public bool IsCodingMode { get; set; }
-        public bool Suggestions { get; set; }
-        public string SuggestionMember { get; set; }
 
         /// <summary>
         /// Optional syntax highlighting definition used by the AvalonEdit code editor.
@@ -34,12 +37,18 @@ namespace FlowBlox.Core.Attributes
         /// </summary>
         public string SyntaxHighlighting { get; set; }
 
+        /// <summary>
+        /// Optional instance property supplying the syntax definition name or resource path.
+        /// Overrides SyntaxHighlighting; an empty value disables highlighting.
+        /// Changes are reflected in an open editor through INotifyPropertyChanged.
+        /// </summary>
+        public string SyntaxHighlightingMember { get; set; }
+
         public FlowBloxTextBoxAttribute()
         {
             MultiLine = false;
             IsPassword = false;
             IsCodingMode = false;
-            Suggestions = false;
         }
     }
 }

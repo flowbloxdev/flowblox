@@ -47,9 +47,38 @@ bindings retain the shared presentation. Menu bars keep their own templates.
 
 Text editors use the same context-menu style through the `MahApps.TextBox.ContextMenu`
 resource, with routed Cut/Copy/Paste commands targeting the owning editor.
-Enum value selection uses `FlowBlox.SelectionDropDown`: the same row styling,
+Enum and attribute-driven value selection use `FlowBlox.SelectionDropDown`: the same row styling,
 but compact spacing, a three-DIP radius, control-aligned width and no floating
 shadow margin. Its typography continues to follow the property or grid editor.
+
+Property and grid editors use `UIFactory.ComboBox` with `SelectionFilterMethod`
+to obtain choices. `FlowBloxComboBoxAttribute` selects `DropDownMode.SelectionOnly`
+(the default) or `Suggestion`; `DropDownModeMethod` can determine the mode on the
+target or parent. Suggestions support scalar values and retain the configured
+text or AvalonEdit editor. Complex properties always select existing objects.
+Suggestion selectors show a muted badge and an explicit selection prompt when
+the current value matches no example. A matching suggestion uses an amber badge;
+custom text remains freely editable in the value editor below.
+`SelectionDisplayMember` supplies labels, and `SelectionValueMember` optionally
+maps each choice to its stored value. `Required` and `RequiredIf` determine
+whether an empty choice is offered. Password masking is configured through
+`FlowBloxTextBoxAttribute.IsPassword` or `IsPasswordMethod`.
+
+AvalonEdit resolves `FlowBloxTextBoxAttribute.SyntaxHighlighting` as a built-in
+language name or embedded XSHD resource. `SyntaxHighlightingMember` can instead
+name an instance property supplying the definition; changes to that property
+update an open editor. `Text` or an empty value disables highlighting. Embedded
+definitions such as `SQL` and `JQL` also accept their short names. User fields
+store this presentation setting beside the value editor in the General tab,
+with a selection-only language list and `Text` as the default. An empty selection
+remains null in the field; only the editor interprets it as plain text.
+Runtime startup, password protection and local storage
+are grouped in the Behavior tab; related settings remain adjacent through their
+`DisplayAttribute.Order` values.
+
+Binding-based editors report changes through `PropertyEditorBinding` after a
+successful update to the source. Initializing, refreshing or reloading their
+displayed values does not mark a split-view transaction as edited.
 
 ## Native corners
 

@@ -24,7 +24,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
     [FlowBloxSpecialExplanation("OnnxGenAIFlowBlock_SpecialExplanation_ModelProvisioning", Icon = SpecialExplanationIcon.Hint)]
     public class OnnxGenAIFlowBlock : BaseSingleResultFlowBlock
     {
-        public const string ModelRootDirectoryOptionName = "AI.Onnx.GenAI.ModelRootDirectory";
         public const string DefaultModelFolderName = "Phi-4-mini-instruct-onnx";
 
         private static readonly FlowBloxRuntimeModelCache<GenAIModelSession> ModelCache = new();
@@ -62,7 +61,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         {
             get
             {
-                var providerOption = FlowBloxOptions.GetOptionInstance().GetOption("AI.Onnx.Provider");
+                var providerOption = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIOnnxProvider);
                 if (providerOption == null)
                     return AiExecutionProviders.Default;
 
@@ -126,7 +125,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         public OnnxGenAIFlowBlock()
         {
-            ModelFolder = $"$Options::{ModelRootDirectoryOptionName}\\{DefaultModelFolderName}";
+            ModelFolder = $"$Options::{OptionsConstants.AIOnnxGenAIModelRootDirectory}\\{DefaultModelFolderName}";
             MaxNewTokens = 200;
 
             Temperature = 0.0f;
@@ -143,7 +142,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         public override void OptionsInit(List<OptionElement> defaults)
         {
             defaults.Add(new OptionElement(
-                ModelRootDirectoryOptionName,
+                "AI.Onnx.GenAI.ModelRootDirectory",
                 @"$Options::Paths.GlobalDataDir\onnx\genai",
                 "User-specific root directory for ONNX Runtime GenAI models.",
                 OptionElement.OptionType.Text,
@@ -278,7 +277,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         private string GetInitialModelDirectory()
         {
             var directory = FlowBloxOptions.GetOptionInstance()
-                .GetOption(ModelRootDirectoryOptionName)?.Value;
+                .GetOption(OptionsConstants.AIOnnxGenAIModelRootDirectory)?.Value;
             return !string.IsNullOrWhiteSpace(directory) && Directory.Exists(directory)
                 ? directory
                 : string.Empty;

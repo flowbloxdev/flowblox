@@ -102,8 +102,7 @@ namespace FlowBlox.UICore.Resolver
                     Focusable = !readOnly,
                     IsTabStop = !readOnly
                 };
-                enumDropDown.SelectionChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-                enumDropDown.SetBinding(EnumerationDropDownControl.SelectedValueProperty, binding);
+                PropertyEditorBinding.Bind(enumDropDown, EnumerationDropDownControl.SelectedValueProperty, binding, target, property.Name);
                 return enumDropDown;
             }
 
@@ -119,8 +118,7 @@ namespace FlowBlox.UICore.Resolver
                     OffContent = FlowBloxResourceUtil.GetLocalizedString("ToggleSwitch_OffContent", typeof(SimplePropertyInputControlWithOptionalButtonsCreatorResources))
                 };
 
-                toggle.SetBinding(ToggleSwitch.IsOnProperty, binding);
-                toggle.Toggled += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                PropertyEditorBinding.Bind(toggle, ToggleSwitch.IsOnProperty, binding, target, property.Name);
                 return toggle;
             }
 
@@ -139,9 +137,8 @@ namespace FlowBlox.UICore.Resolver
                 {
                     IsReadOnly = readOnly
                 };
-                textBox.TextChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
                 textBox.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.TextEditorStyle");
-                textBox.SetBinding(TextBox.TextProperty, binding);
+                PropertyEditorBinding.Bind(textBox, TextBox.TextProperty, binding, target, property.Name);
                 return textBox;
             }
 
@@ -151,8 +148,7 @@ namespace FlowBlox.UICore.Resolver
                 {
                     IsEnabled = !readOnly
                 };
-                datePicker.SetBinding(DatePicker.SelectedDateProperty, binding);
-                datePicker.SelectedDateChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                PropertyEditorBinding.Bind(datePicker, DatePicker.SelectedDateProperty, binding, target, property.Name);
                 return datePicker;
             }
 

@@ -39,7 +39,7 @@ namespace FlowBlox.Core.Runner
 
             // Build Web API client and token
             var baseUrl = FlowBloxOptions.GetOptionInstance()
-                .OptionCollection["Api.ProjectServiceBaseUrl"]
+                .OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl]
                 .Value;
 
             var webApi = new FlowBloxWebApiService(baseUrl);

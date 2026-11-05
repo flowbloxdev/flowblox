@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using System.IO;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Models.Components;
@@ -30,9 +31,9 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             var maxEntries = Math.Clamp(args.Value<int?>("maxEntries") ?? 200, 1, 1000);
 
             var options = FlowBloxOptions.GetOptionInstance();
-            var toolboxUserFile = options.GetOption("Paths.ToolboxUserFile")?.Value ?? string.Empty;
-            var toolboxDirectory = options.GetOption("Paths.ToolboxDir")?.Value ?? string.Empty;
-            var toolboxCacheDirectory = options.GetOption("Paths.ToolboxCacheDir")?.Value ?? string.Empty;
+            var toolboxUserFile = options.GetOption(OptionsConstants.PathsToolboxUserFile)?.Value ?? string.Empty;
+            var toolboxDirectory = options.GetOption(OptionsConstants.PathsToolboxDir)?.Value ?? string.Empty;
+            var toolboxCacheDirectory = options.GetOption(OptionsConstants.PathsToolboxCacheDir)?.Value ?? string.Empty;
 
             var files = CollectToolboxFiles(toolboxUserFile, toolboxDirectory, toolboxCacheDirectory);
             var entries = new List<JObject>();

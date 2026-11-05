@@ -52,8 +52,9 @@ namespace FlowBlox.Core.Models.FlowBlocks
 
         [Required]
         [Display(Name = "ProjectOutputIteratorFlowBlock_OutputName", ResourceType = typeof(FlowBloxTexts), GroupName = "ProjectOutputIteratorFlowBlock_Groups_Source", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
-        [FlowBloxTextBox(Suggestions = true, SuggestionMember = nameof(GetOutputNames))]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetOutputNames),
+            SelectionFilterDependency = nameof(AssociatedExecuteProjectFlowBlock))]
+        [FlowBloxComboBox(DropDownMode = DropDownMode.Suggestion)]
         public string OutputName { get; set; }
 
         [Display(Name = "ProjectOutputIteratorFlowBlock_OutputMappings", ResourceType = typeof(FlowBloxTexts), GroupName = "ProjectOutputIteratorFlowBlock_Groups_Mapping", Order = 0)]

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.DistributedData;
 
@@ -5,7 +6,6 @@ namespace FlowBlox.AIAssistant.Tools.Util
 {
     internal static class SkillProjectApprovalStore
     {
-        public const string OptionName = "AI.ApprovedSkillProjects";
         private static readonly object Sync = new();
 
         public static string GetProjectKey(string projectFile)
@@ -34,7 +34,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             lock (Sync)
             {
                 var options = FlowBloxOptions.GetOptionInstance();
-                var option = options.GetOption(OptionName);
+                var option = options.GetOption(OptionsConstants.AIApprovedSkillProjects);
                 var entries = ReadEntries();
                 if (entries.Contains(key, StringComparer.OrdinalIgnoreCase))
                     return;
@@ -54,7 +54,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
         }
 
         private static List<string> ReadEntries() =>
-            (FlowBloxOptions.GetOptionInstance().GetOption(OptionName).PersistentValue ?? string.Empty)
+            (FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue ?? string.Empty)
                 .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
                 .Select(entry => entry.Trim())
                 .Where(entry => entry.Length > 0)

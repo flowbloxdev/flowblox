@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using FlowBlox.Core.Constants;
+using CommandLine;
 using FlowBlox.CommandLine;
 using FlowBlox.Core.Authentication;
 using FlowBlox.Core.Logging;
@@ -53,7 +54,7 @@ namespace FlowBlox
         {
             var uiCultureOption = FlowBloxOptions
                 .GetOptionInstance()
-                .GetOption("UI.Culture");
+                .GetOption(OptionsConstants.UICulture);
 
             if (uiCultureOption == null || string.IsNullOrWhiteSpace(uiCultureOption.Value))
                 return;

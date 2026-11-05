@@ -60,10 +60,9 @@ internal sealed partial class WorkspaceIntegrationChecks
 
         // Exercise the synchronous UICore contract while a real WPF modal window
         // pumps its dispatcher. Closing the message box must not enable AppWindow.
-        var wpf = new System.Windows.Window
+        var wpf = new FlowBlox.UICore.Views.EditValueWindow("TextBuilderAppend_1", false, false)
         {
-            Title = "WPF ownership integration check", Width = 350, Height = 200,
-            Content = new System.Windows.Controls.TextBox { Text = "WPF dialog input" }
+            Title = "Create Flow Block ownership integration check"
         };
         Exception failure = null;
         wpf.ContentRendered += (_, _) =>
@@ -71,6 +70,9 @@ internal sealed partial class WorkspaceIntegrationChecks
             try
             {
                 var wpfHandle = new System.Windows.Interop.WindowInteropHelper(wpf).Handle;
+                var dialogCenter = wpf.PointToScreen(new System.Windows.Point(wpf.ActualWidth / 2, wpf.ActualHeight / 2));
+                check(Math.Abs(dialogCenter.X - ownerCenterX) < 40 && Math.Abs(dialogCenter.Y - ownerCenterY) < 40,
+                    "Create Flow Block naming dialog is centered on the Avalonia owner in screen coordinates");
                 check(!DialogNative.IsWindowEnabled(_window.Handle), "WPF modal dialog disables AppWindow");
                 Dispatcher.UIThread.Post(() =>
                 {

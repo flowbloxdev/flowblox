@@ -3,7 +3,6 @@ using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.AI;
 using FlowBlox.Core.Util.Resources;
-using FlowBlox.UICore.PopUp.Constants;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Resources;
 using FlowBlox.UICore.PopUp.Utilities;
@@ -16,7 +15,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         ComponentPopupProviderBase<OnnxQAFlowBlock>,
         IOptionsRegistration
     {
-        public override string OptionKey => PopupOptionNames.OnnxQAQuickStartCompleted;
+        public override string OptionKey => OptionsConstants.PopUpOnnxQAQuickStartCompleted;
 
         protected override string WindowTitle => Text("Window_Title");
 
@@ -50,7 +49,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
             defaults.Add(new OptionElement(
-                PopupOptionNames.OnnxQAQuickStartCompleted,
+                "PopUp.OnnxQA.QuickStartCompleted",
                 bool.FalseString,
                 "Tracks whether the ONNX QA quick-start guidance has been completed.",
                 OptionElement.OptionType.Boolean,

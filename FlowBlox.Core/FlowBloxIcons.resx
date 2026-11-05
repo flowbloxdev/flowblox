@@ -369,4 +369,15 @@
   <data name="variable" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\variable.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\refresh.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="clipboard_check_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\clipboard-check-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/clipboard-check-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="creation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\creation.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/creation/ (Apache-2.0).</comment>
+  </data>
 </root>

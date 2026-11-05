@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Enums;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Enums;
 using FlowBlox.Core;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Models.Base;
@@ -31,7 +32,6 @@ namespace FlowBlox.UICore.ViewModels
 {
     public class TestDefinitionViewModel : INotifyPropertyChanged
     {
-        private const string HideLastLayerNeighboursOptionName = "TestDefinitionView.HideLastLayerNeighbours";
         private bool _isDirty;
         private FlowBloxTestDefinition _testDefinition;
         private BaseFlowBlock _currentFlowBlock;
@@ -774,7 +774,7 @@ namespace FlowBlox.UICore.ViewModels
 
         private static bool ResolveHideLastLayerNeighboursOption()
         {
-            var option = FlowBloxOptions.GetOptionInstance().GetOption(HideLastLayerNeighboursOptionName);
+            var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.TestDefinitionViewHideLastLayerNeighbours);
             if (option?.Type == OptionElement.OptionType.Boolean && bool.TryParse(option.Value, out var parsed))
                 return parsed;
 
@@ -784,7 +784,7 @@ namespace FlowBlox.UICore.ViewModels
         private static void SaveHideLastLayerNeighboursOption(bool value)
         {
             var options = FlowBloxOptions.GetOptionInstance();
-            var option = options.GetOption(HideLastLayerNeighboursOptionName);
+            var option = options.GetOption(OptionsConstants.TestDefinitionViewHideLastLayerNeighbours);
             if (option?.Type != OptionElement.OptionType.Boolean)
                 return;
 
@@ -797,7 +797,7 @@ namespace FlowBlox.UICore.ViewModels
                 }
                 catch (Exception e)
                 {
-                    FlowBloxLogManager.Instance.GetLogger().Error($"Failed to persist option '{HideLastLayerNeighboursOptionName}'.", e);
+                    FlowBloxLogManager.Instance.GetLogger().Error($"Failed to persist option '{OptionsConstants.TestDefinitionViewHideLastLayerNeighbours}'.", e);
                 }
             });
         }

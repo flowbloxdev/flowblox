@@ -22,13 +22,13 @@ namespace FlowBlox.Core.Services.Notifications
             };
 
             defaults.Add(new OptionElement(
-                RuntimeNotificationConstants.ConfigurationOptionName,
+                "Notifications.Configuration",
                 JsonConvert.SerializeObject(new RuntimeNotificationConfiguration(), settings),
                 "JSON configuration for runtime notifications.",
                 OptionElement.OptionType.Text));
 
             defaults.Add(new OptionElement(
-                RuntimeNotificationConstants.SmtpPasswordOptionName,
+                "Notifications.SmtpPassword",
                 string.Empty,
                 "SMTP password for runtime notifications, protected with Windows DPAPI for the current user.",
                 OptionElement.OptionType.Password));

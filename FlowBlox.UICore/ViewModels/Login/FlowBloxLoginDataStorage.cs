@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Authentication;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Authentication;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
@@ -9,11 +10,10 @@ namespace FlowBlox.UICore.ViewModels.Login
 {
     public static class FlowBloxLoginDataStorage
     {
-        private const string OptionKey = "Account.LoginData";
 
         public static List<FbLoginData> LoadLoginDataList(Window ownerWindow)
         {
-            var optionValue = FlowBloxOptions.GetOptionInstance().GetOption(OptionKey)?.Value;
+            var optionValue = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AccountLoginData)?.Value;
 
             if (string.IsNullOrWhiteSpace(optionValue))
                 return new List<FbLoginData>();
@@ -62,7 +62,7 @@ namespace FlowBlox.UICore.ViewModels.Login
 
             var json = JsonConvert.SerializeObject(list);
             var optionsInst = FlowBloxOptions.GetOptionInstance();
-            optionsInst.GetOption(OptionKey).Value = json;
+            optionsInst.GetOption(OptionsConstants.AccountLoginData).Value = json;
             optionsInst.Save();
         }
     }

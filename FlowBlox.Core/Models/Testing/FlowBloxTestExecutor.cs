@@ -116,6 +116,10 @@ namespace FlowBlox.Core.Models.Testing
                 }
             }
 
+            // TransientRuntime defers this check until the test's input assignments
+            // are applied, so validation sees the effective runtime-bound values.
+            _localRuntime.ValidateUserFieldsAtRuntimeStartup();
+
             foreach (var capturedFlowBlock in _capturedFlowBlocks)
             {
                 var testDataset = _testDefinition.Entries.SingleOrDefault(x => x.FlowBlock == capturedFlowBlock);

@@ -109,7 +109,7 @@ namespace FlowBlox.Core.Models.Project
         /// </summary>
         public string GetProjectInputDirectory(string projectName)
         {
-            var baseDir = FlowBloxOptions.GetOptionInstance().GetOption("Paths.InputDir")?.Value;
+            var baseDir = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsInputDir)?.Value;
             return BuildProjectDir(baseDir, projectName);
         }
 
@@ -118,7 +118,7 @@ namespace FlowBlox.Core.Models.Project
         /// </summary>
         public string GetProjectOutputDirectory(string projectName)
         {
-            var baseDir = FlowBloxOptions.GetOptionInstance().GetOption("Paths.OutputDir")?.Value;
+            var baseDir = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsOutputDir)?.Value;
             return BuildProjectDir(baseDir, projectName);
         }
 

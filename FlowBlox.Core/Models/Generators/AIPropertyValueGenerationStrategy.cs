@@ -15,6 +15,8 @@ using FlowBlox.Core.Provider.Toolbox;
 using FlowBlox.Core.Services;
 using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.FlowBlocks;
+using FlowBlox.Core.Util.Resources;
+using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
@@ -29,6 +31,10 @@ namespace FlowBlox.Core.Models.Generators
     [FlowBloxUIGroup("AIPropertyValueGenerationStrategy_Groups_AdditionalSettings", 1)]
     public class AIPropertyValueGenerationStrategy : FlowBloxGenerationStrategyBase
     {
+        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.creation, 16, SKColors.MediumPurple);
+
+        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.creation, 32, SKColors.MediumPurple);
+
         public AIPropertyValueGenerationStrategy()
             : base()
         {

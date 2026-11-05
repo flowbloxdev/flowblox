@@ -34,7 +34,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "4",
@@ -66,7 +68,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "6",
@@ -98,7 +102,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "8",
@@ -130,7 +136,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": false
       },
       {
         "$id": "10",
@@ -148,6 +156,7 @@
         "UserField": true,
         "UserFieldType": "Memory",
         "StringValue": "{\n  \"gmail\": {\n    \"address\": \"$User::Input_Gmail_UserName\",\n    \"imap\": {\n      \"host\": \"imap.gmail.com\",\n      \"port\": 993,\n      \"useSsl\": true,\n      \"searchQuery\": \"\",\n      \"maxMails\": 50\n    }\n  },\n  \"mail\": {\n    \"smtp\": {\n      \"host\": \"smtp.gmail.com\",\n      \"port\": 587,\n      \"useSsl\": true\n    },\n    \"fromAddress\": \"$User::Input_Gmail_UserName\",\n    \"toAddress\": \"$User::Input_Gmail_UserName\",\n    \"subjectTemplate\": \"Daily Mail Summary (today)\"\n  },\n  \"openai\": {\n    \"model\": \"gpt-4o-mini\"\n  }\n}",
+        "SyntaxHighlighting": "JSON",
         "StoreValueLocally": false,
         "IsPassword": false,
         "ListOfValues": {
@@ -163,7 +172,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true,
+        "ClearOnRuntimeStart": false
       }
     ]
   },

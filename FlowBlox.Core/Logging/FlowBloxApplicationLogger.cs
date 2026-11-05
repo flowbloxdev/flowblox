@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using log4net;
 using FlowBlox.Core.Util;
 
@@ -14,7 +15,7 @@ namespace FlowBlox.Core.Logging
                 throw new ArgumentNullException(nameof(applicationLogFileName));
 
             _applicationId = applicationLogFileName;
-            _applicationLogDirectory = FlowBloxOptions.GetOptionInstance().GetOption("Paths.ApplicationLogDir")?.Value;
+            _applicationLogDirectory = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsApplicationLogDir)?.Value;
             if (string.IsNullOrWhiteSpace(_applicationLogDirectory))
             {
                 _applicationLogDirectory = Path.Combine(

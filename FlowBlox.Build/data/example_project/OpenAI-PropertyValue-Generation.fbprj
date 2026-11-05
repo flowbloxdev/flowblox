@@ -20,6 +20,7 @@
         "UserField": true,
         "UserFieldType": "Memory",
         "StringValue": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Company>\r\n  <Name>Northbridge Solutions Ltd</Name>\r\n  <Country>\r\n    <Code>GB</Code>\r\n    <EnglishName>United Kingdom</EnglishName>\r\n  </Country>\r\n  <Headquarters>\r\n    <Address>\r\n      <Street>221 Baker Street</Street>\r\n      <City>London</City>\r\n      <PostalCode>NW1 6XE</PostalCode>\r\n    </Address>\r\n    <Geo>\r\n      <Lat>51.523767</Lat>\r\n      <Lon>-0.158555</Lon>\r\n    </Geo>\r\n  </Headquarters>\r\n  <Sites>\r\n    <Site id=\"MAN-01\" type=\"Branch\">\r\n      <City>Manchester</City>\r\n    </Site>\r\n  </Sites>\r\n</Company>",
+        "SyntaxHighlighting": "XML",
         "StoreValueLocally": false,
         "IsPassword": false,
         "ListOfValues": {
@@ -35,7 +36,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true,
+        "ClearOnRuntimeStart": false
       },
       {
         "$id": "4",
@@ -68,7 +72,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "6",
@@ -100,7 +106,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       }
     ]
   },
@@ -649,7 +657,7 @@
                               "PromptTemplate": "You are a FlowBlox flow block configurator.\n\nGoal:\nConfigure the target flow block so that, for the provided field values, it produces one or more expected result datasets that satisfy the test expectations.\nA result dataset can contain multiple fields, and all relevant field expectations must be considered.\n\nTarget flow block input values:\nThe following entries contain the fully qualified names of all fields referenced by the target flow block and their current values for each test case.\nPassword field values are hidden. Known fully qualified field names can be used directly as placeholders in configuration values.\n$GenerationStrategy::TargetFlowBlockInputValues\n\nTest expectations:\n$GenerationStrategy::TestExpectations\n\nAll test expectations are binding. If `NumberOfDatasets` is specified, configure the flow block so that it produces exactly that number of result datasets.\n\nFlow block description:\n$GenerationStrategy::FlowBlockDescriptions\n\nQuick Update schema:\n$GenerationStrategy::FlowBloxQuickUpdateSchema\n\nRequired output format:\n$GenerationStrategy::FlowBloxQuickUpdateFormat\n\nRules:\n- Return valid JSON only. No explanation, no Markdown, no code block.\n- Only update properties listed in the Quick Update schema.\n- Omit properties that should remain unchanged.\n- Return collections completely; existing collection items are replaced by the provided list.\n- Prefer robust, structural configuration values over volatile literal full values.\n- Use a known fully qualified field name directly when the configuration should read that field at runtime.\n- Do not copy the ExpectedValue or any unnecessary part of it into selectors, patterns, queries or expressions.\n- For XPath selectors on element-based flow blocks, select the owning element node unless the flow block schema explicitly supports attribute output via a separate property.\n- For start/end pattern based flow blocks, build ordered pattern entries that can be applied hierarchically and generalize beyond a single literal example.",
                               "SystemInstruction": "Return exactly one FlowBlox Quick Update JSON object.\nReturn only the JSON object, no Markdown, no comments, no alternative JSON objects.\nIf multiple configurations are possible, choose the single most likely configuration.",
                               "ModelOverride": null,
-                              "Temperature": 0.0,
+                              "Temperature": 0,
                               "MaxTokens": null,
                               "TimeoutSecondsOverride": null,
                               "Name": "AIPropertyValueGenerationStrategy_0",
@@ -792,7 +800,7 @@
                               "PromptTemplate": "You are a FlowBlox flow block configurator.\n\nGoal:\nConfigure the target flow block so that, for the provided field values, it produces one or more expected result datasets that satisfy the test expectations.\nA result dataset can contain multiple fields, and all relevant field expectations must be considered.\n\nTarget flow block input values:\nThe following entries contain the fully qualified names of all fields referenced by the target flow block and their current values for each test case.\nPassword field values are hidden. Known fully qualified field names can be used directly as placeholders in configuration values.\n$GenerationStrategy::TargetFlowBlockInputValues\n\nTest expectations:\n$GenerationStrategy::TestExpectations\n\nAll test expectations are binding. If `NumberOfDatasets` is specified, configure the flow block so that it produces exactly that number of result datasets.\n\nFlow block description:\n$GenerationStrategy::FlowBlockDescriptions\n\nQuick Update schema:\n$GenerationStrategy::FlowBloxQuickUpdateSchema\n\nRequired output format:\n$GenerationStrategy::FlowBloxQuickUpdateFormat\n\nRules:\n- Return valid JSON only. No explanation, no Markdown, no code block.\n- Only update properties listed in the Quick Update schema.\n- Omit properties that should remain unchanged.\n- Return collections completely; existing collection items are replaced by the provided list.\n- Prefer robust, structural configuration values over volatile literal full values.\n- Use a known fully qualified field name directly when the configuration should read that field at runtime.\n- Do not copy the ExpectedValue or any unnecessary part of it into selectors, patterns, queries or expressions.\n- For XPath selectors on element-based flow blocks, select the owning element node unless the flow block schema explicitly supports attribute output via a separate property.\n- For start/end pattern based flow blocks, build ordered pattern entries that can be applied hierarchically and generalize beyond a single literal example.",
                               "SystemInstruction": "Return exactly one FlowBlox Quick Update JSON object.\nReturn only the JSON object, no Markdown, no comments, no alternative JSON objects.\nIf multiple configurations are possible, choose the single most likely configuration.",
                               "ModelOverride": null,
-                              "Temperature": 0.0,
+                              "Temperature": 0,
                               "MaxTokens": null,
                               "TimeoutSecondsOverride": null,
                               "Name": "AIPropertyValueGenerationStrategy_0",
@@ -935,7 +943,7 @@
                               "PromptTemplate": "You are a FlowBlox flow block configurator.\n\nGoal:\nConfigure the target flow block so that, for the provided field values, it produces one or more expected result datasets that satisfy the test expectations.\nA result dataset can contain multiple fields, and all relevant field expectations must be considered.\n\nTarget flow block input values:\nThe following entries contain the fully qualified names of all fields referenced by the target flow block and their current values for each test case.\nPassword field values are hidden. Known fully qualified field names can be used directly as placeholders in configuration values.\n$GenerationStrategy::TargetFlowBlockInputValues\n\nTest expectations:\n$GenerationStrategy::TestExpectations\n\nAll test expectations are binding. If `NumberOfDatasets` is specified, configure the flow block so that it produces exactly that number of result datasets.\n\nFlow block description:\n$GenerationStrategy::FlowBlockDescriptions\n\nQuick Update schema:\n$GenerationStrategy::FlowBloxQuickUpdateSchema\n\nRequired output format:\n$GenerationStrategy::FlowBloxQuickUpdateFormat\n\nRules:\n- Return valid JSON only. No explanation, no Markdown, no code block.\n- Only update properties listed in the Quick Update schema.\n- Omit properties that should remain unchanged.\n- Return collections completely; existing collection items are replaced by the provided list.\n- Prefer robust, structural configuration values over volatile literal full values.\n- Use a known fully qualified field name directly when the configuration should read that field at runtime.\n- Do not copy the ExpectedValue or any unnecessary part of it into selectors, patterns, queries or expressions.\n- For XPath selectors on element-based flow blocks, select the owning element node unless the flow block schema explicitly supports attribute output via a separate property.\n- For start/end pattern based flow blocks, build ordered pattern entries that can be applied hierarchically and generalize beyond a single literal example.",
                               "SystemInstruction": "Return exactly one FlowBlox Quick Update JSON object.\nReturn only the JSON object, no Markdown, no comments, no alternative JSON objects.\nIf multiple configurations are possible, choose the single most likely configuration.",
                               "ModelOverride": null,
-                              "Temperature": 0.0,
+                              "Temperature": 0,
                               "MaxTokens": null,
                               "TimeoutSecondsOverride": null,
                               "Name": "AIPropertyValueGenerationStrategy_0",
@@ -1078,7 +1086,7 @@
                               "PromptTemplate": "You are a FlowBlox flow block configurator.\n\nGoal:\nConfigure the target flow block so that, for the provided field values, it produces one or more expected result datasets that satisfy the test expectations.\nA result dataset can contain multiple fields, and all relevant field expectations must be considered.\n\nTarget flow block input values:\nThe following entries contain the fully qualified names of all fields referenced by the target flow block and their current values for each test case.\nPassword field values are hidden. Known fully qualified field names can be used directly as placeholders in configuration values.\n$GenerationStrategy::TargetFlowBlockInputValues\n\nTest expectations:\n$GenerationStrategy::TestExpectations\n\nAll test expectations are binding. If `NumberOfDatasets` is specified, configure the flow block so that it produces exactly that number of result datasets.\n\nFlow block description:\n$GenerationStrategy::FlowBlockDescriptions\n\nQuick Update schema:\n$GenerationStrategy::FlowBloxQuickUpdateSchema\n\nRequired output format:\n$GenerationStrategy::FlowBloxQuickUpdateFormat\n\nRules:\n- Return valid JSON only. No explanation, no Markdown, no code block.\n- Only update properties listed in the Quick Update schema.\n- Omit properties that should remain unchanged.\n- Return collections completely; existing collection items are replaced by the provided list.\n- Prefer robust, structural configuration values over volatile literal full values.\n- Use a known fully qualified field name directly when the configuration should read that field at runtime.\n- Do not copy the ExpectedValue or any unnecessary part of it into selectors, patterns, queries or expressions.\n- For XPath selectors on element-based flow blocks, select the owning element node unless the flow block schema explicitly supports attribute output via a separate property.\n- For start/end pattern based flow blocks, build ordered pattern entries that can be applied hierarchically and generalize beyond a single literal example.",
                               "SystemInstruction": "Return exactly one FlowBlox Quick Update JSON object.\nReturn only the JSON object, no Markdown, no comments, no alternative JSON objects.\nIf multiple configurations are possible, choose the single most likely configuration.",
                               "ModelOverride": null,
-                              "Temperature": 0.0,
+                              "Temperature": 0,
                               "MaxTokens": null,
                               "TimeoutSecondsOverride": null,
                               "Name": "AIPropertyValueGenerationStrategy_0",
@@ -1148,7 +1156,7 @@
                 "PromptTemplate": "You are a FlowBlox flow block configurator.\n\nGoal:\nConfigure the target flow block so that, for the provided field values, it produces one or more expected result datasets that satisfy the test expectations.\nA result dataset can contain multiple fields, and all relevant field expectations must be considered.\n\nTarget flow block input values:\nThe following entries contain the fully qualified names of all fields referenced by the target flow block and their current values for each test case.\nPassword field values are hidden. Known fully qualified field names can be used directly as placeholders in configuration values.\n$GenerationStrategy::TargetFlowBlockInputValues\n\nTest expectations:\n$GenerationStrategy::TestExpectations\n\nAll test expectations are binding. If `NumberOfDatasets` is specified, configure the flow block so that it produces exactly that number of result datasets.\n\nFlow block description:\n$GenerationStrategy::FlowBlockDescriptions\n\nQuick Update schema:\n$GenerationStrategy::FlowBloxQuickUpdateSchema\n\nRequired output format:\n$GenerationStrategy::FlowBloxQuickUpdateFormat\n\nRules:\n- Return valid JSON only. No explanation, no Markdown, no code block.\n- Only update properties listed in the Quick Update schema.\n- Omit properties that should remain unchanged.\n- Return collections completely; existing collection items are replaced by the provided list.\n- Prefer robust, structural configuration values over volatile literal full values.\n- Use a known fully qualified field name directly when the configuration should read that field at runtime.\n- Do not copy the ExpectedValue or any unnecessary part of it into selectors, patterns, queries or expressions.\n- For XPath selectors on element-based flow blocks, select the owning element node unless the flow block schema explicitly supports attribute output via a separate property.\n- For start/end pattern based flow blocks, build ordered pattern entries that can be applied hierarchically and generalize beyond a single literal example.",
                 "SystemInstruction": "Return exactly one FlowBlox Quick Update JSON object.\nReturn only the JSON object, no Markdown, no comments, no alternative JSON objects.\nIf multiple configurations are possible, choose the single most likely configuration.",
                 "ModelOverride": null,
-                "Temperature": 0.0,
+                "Temperature": 0,
                 "MaxTokens": null,
                 "TimeoutSecondsOverride": null,
                 "Name": "AIPropertyValueGenerationStrategy_0",

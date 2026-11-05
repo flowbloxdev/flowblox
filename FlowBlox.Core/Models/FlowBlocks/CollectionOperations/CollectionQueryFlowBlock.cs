@@ -21,7 +21,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
     {
         [Required]
         [Display(Name = "CollectionQueryFieldMapping_InputField", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), SelectionFilterMethod = nameof(CollectionQueryFlowBlock.GetPossibleInputFields), SelectionFilterDependency = nameof(CollectionQueryFlowBlock.ReferencedFlowBlocks))]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, 
+            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), 
+            SelectionFilterMethod = nameof(CollectionQueryFlowBlock.GetPossibleInputFields), 
+            SelectionFilterDependency = nameof(CollectionQueryFlowBlock.ReferencedFlowBlocks))]
         public FieldElement InputField { get; set; }
 
         [Required]

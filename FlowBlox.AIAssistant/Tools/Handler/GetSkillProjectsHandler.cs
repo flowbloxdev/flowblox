@@ -9,7 +9,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Lists skill projects from the current session or distributed FlowBlox data, optionally filtered by project name or description. " +
+            "Lists Skills and their metadata from the current session or distributed FlowBlox data, optionally filtered by name or description. " +
             "Both modes return projectFile for direct ExecuteExternalProject or RunProjectDebugTest calls; distributed projects do not need to be copied first. " +
             "Use GetSkillProject instead when the exact name is already known from the session bootstrap.",
             new JObject

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -31,7 +32,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (_internalWebBrowser == null)
                 {
                     var options = FlowBloxOptions.GetOptionInstance().OptionCollection;
-                    if (!options.TryGetValue("WebBrowser.ServiceName", out var serviceNameOption) || string.IsNullOrWhiteSpace(serviceNameOption.Value))
+                    if (!options.TryGetValue(OptionsConstants.WebBrowserServiceName, out var serviceNameOption) || string.IsNullOrWhiteSpace(serviceNameOption.Value))
                     {
                         throw new InvalidOperationException(
                             "Option 'WebBrowser.ServiceName' is not configured or is empty. " +
@@ -40,7 +41,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
                     var serviceName = serviceNameOption.Value;
 
-                    if (!options.TryGetValue("WebBrowser.ServiceSettings", out var serializedSettings) || string.IsNullOrWhiteSpace(serializedSettings.Value))
+                    if (!options.TryGetValue(OptionsConstants.WebBrowserServiceSettings, out var serializedSettings) || string.IsNullOrWhiteSpace(serializedSettings.Value))
                     {
                         throw new InvalidOperationException(
                             "Option 'WebBrowser.ServiceSettings' is not configured or is empty. " +
@@ -70,7 +71,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             string configuredServiceName = null;
 
             var existingServiceNameOption = currentOptions
-                .FirstOrDefault(o => o.Name == "WebBrowser.ServiceName");
+                .FirstOrDefault(o => o.Name == OptionsConstants.WebBrowserServiceName);
 
             if (!string.IsNullOrWhiteSpace(existingServiceNameOption?.Value))
                 configuredServiceName = existingServiceNameOption.Value;

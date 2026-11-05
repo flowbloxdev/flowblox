@@ -9,6 +9,7 @@ using FlowBlox.Core.Models.FlowBlocks;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.FlowBlocks.ControlFlow;
 using FlowBlox.Core.Models.Project;
+using FlowBlox.Core.Models.ObjectManager;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider.Project;
 using FlowBlox.Core.Provider.Registry;
@@ -85,6 +86,8 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
             PauseRuntimeCommand = new RelayCommand(() => PauseRuntimeRequested?.Invoke(this, EventArgs.Empty), () => CanPauseRuntime);
             StopRuntimeCommand = new RelayCommand(() => StopRuntimeRequested?.Invoke(this, EventArgs.Empty), () => CanStopRuntime);
             GridSettingsCommand = new RelayCommand(ShowGridSettings, () => HasProject() && !IsExternalProjectEditActive && (!IsRuntimeActive || IsRuntimePaused));
+            ManageInputFieldsCommand = new RelayCommand(() => ShowUserFields(nameof(UserFieldObjectManager.InputFields)), CanManageUserFields);
+            ManageMemoryFieldsCommand = new RelayCommand(() => ShowUserFields(nameof(UserFieldObjectManager.MemoryFields)), CanManageUserFields);
             ToggleBreakpointCommand = new RelayCommand(ToggleBreakpoint, () => SelectedNode != null);
             DefineExecutionIndexCommand = new RelayCommand(DefineExecutionIndex, () => CanManageExecutionIndex);
             RemoveExecutionIndexCommand = new RelayCommand(RemoveExecutionIndex, () => CanManageExecutionIndex);
@@ -129,6 +132,8 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         public RelayCommand PauseRuntimeCommand { get; }
         public RelayCommand StopRuntimeCommand { get; }
         public RelayCommand GridSettingsCommand { get; }
+        public RelayCommand ManageInputFieldsCommand { get; }
+        public RelayCommand ManageMemoryFieldsCommand { get; }
         public RelayCommand ToggleBreakpointCommand { get; }
         public RelayCommand DefineExecutionIndexCommand { get; }
         public RelayCommand RemoveExecutionIndexCommand { get; }
@@ -788,6 +793,8 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
             OnPropertyChanged(nameof(CanvasHeight));
             AutoLayoutCommand.Invalidate();
             GridSettingsCommand.Invalidate();
+            ManageInputFieldsCommand.Invalidate();
+            ManageMemoryFieldsCommand.Invalidate();
         }
 
         private bool EnsureBoundToActiveProject()
@@ -1360,6 +1367,27 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
             }
         }
 
+        private bool CanManageUserFields() => HasProject()
+            && !FlowBlox.Core.Provider.FlowBloxRegistryProvider.IsCurrentNestedTransactionForDifferentTarget(_project);
+
+        private void ShowUserFields(string preselectedProperty)
+        {
+            if (!CanManageUserFields())
+                return;
+
+            var registry = FlowBlox.Core.Provider.FlowBloxRegistryProvider.GetRegistry();
+            var dialog = new FlowBlox.UICore.Views.PropertyWindow(new PropertyWindowArgs(
+                new UserFieldObjectManager(registry),
+                readOnly: IsProjectEditingReadOnly,
+                deepCopy: false,
+                canSave: false,
+                preselectedProperty: preselectedProperty))
+            {
+                Height = 800
+            };
+            ShowDialog(dialog);
+        }
+
         private void ToggleBreakpoint()
         {
             if (SelectedNode == null)
@@ -1636,6 +1664,8 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
             PauseRuntimeCommand.Invalidate();
             StopRuntimeCommand.Invalidate();
             GridSettingsCommand.Invalidate();
+            ManageInputFieldsCommand.Invalidate();
+            ManageMemoryFieldsCommand.Invalidate();
             InvalidateSelectionCommands();
         }
 

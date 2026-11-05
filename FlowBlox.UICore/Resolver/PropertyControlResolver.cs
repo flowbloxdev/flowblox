@@ -135,6 +135,16 @@ namespace FlowBlox.UICore.Resolver
                 ValidatesOnExceptions = true
             };
 
+            var useDefaultEnumEditor = EnumHelper.IsEnumType(property)
+                && string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterMethod)
+                && property.GetCustomAttribute<FlowBloxComboBoxAttribute>() == null;
+
+            if (uiAttribute?.Factory == UIFactory.ComboBox && !useDefaultEnumEditor)
+            {
+                var factory = new ComboBoxControlFactory(_window, property, target, _parent, readOnly);
+                return new PropertyControlWithFactoryResult(factory.Create());
+            }
+
             if (IsSupportedSimplePropertyType(property.PropertyType) ||
                 EnumHelper.IsEnumType(property))
             {
@@ -145,32 +155,6 @@ namespace FlowBlox.UICore.Resolver
                         uiAttribute,
                         binding,
                         readOnly));
-            }
-
-            // Selection-Filter
-            if (uiAttribute?.Factory == UIFactory.ComboBox)
-            {
-                var selectionMethodResolution = SelectionMethodResolver.ResolveSelectionFilterMethodFromTargetOrParent(
-                    target,
-                    _parent,
-                    uiAttribute?.SelectionFilterMethod);
-
-                if (selectionMethodResolution?.Method != null)
-                {
-                    var comboBox = new ComboBox
-                    {
-                        ItemsSource = SelectionItemsSourceResolver.ResolveItemsSource(selectionMethodResolution, property),
-                        DisplayMemberPath = uiAttribute?.SelectionDisplayMember
-                    };
-
-                    comboBox.SelectionChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-
-                    SetComboBoxReadOnly(comboBox, readOnly);
-                    AttachSelectionFilterDependencyRefresh(comboBox, property, target, uiAttribute, selectionMethodResolution);
-
-                    comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
-                    return new PropertyControlWithFactoryResult(CreateEditorContainer(comboBox));
-                }
             }
 
             if (uiAttribute?.Factory == UIFactory.Association)
@@ -199,80 +183,9 @@ namespace FlowBlox.UICore.Resolver
                 return new PropertyControlWithFactoryResult(listViewSplitModeFactory.Create(), listViewSplitModeFactory);
             }
 
-            var textAttribute = property.GetCustomAttribute<FlowBloxTextBoxAttribute>();
-            if (property.PropertyType == typeof(string) && textAttribute?.IsPassword == true)
-            {
-                var passwordBox = new PasswordBox
-                {
-                    IsEnabled = !readOnly,
-                    Password = property.GetValue(target)?.ToString() ?? string.Empty
-                };
-                passwordBox.PasswordChanged += (s, e) =>
-                {
-                    if (readOnly)
-                        return;
-
-                    property.SetValue(target, passwordBox.Password);
-                    FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-                };
-                return new PropertyControlWithFactoryResult(passwordBox);
-            }
-
             return new PropertyControlWithFactoryResult(
                 _textBoxWithOptionalButtonsCreator
                     .CreateTextBoxWithOptionalButtons(property, target, displayName, uiAttribute, binding, readOnly));
-        }
-
-        private void AttachSelectionFilterDependencyRefresh(
-            ComboBox comboBox,
-            PropertyInfo property,
-            object target,
-            FlowBloxUIAttribute uiAttribute,
-            SelectionMethodResolutionResult selectionMethodResolution)
-        {
-            if (string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterDependency))
-                return;
-
-            var dependencyResolution = SelectionFilterDependencyResolver.ResolveSelectionFilterDependencyFromTargetOrParent(
-                target,
-                _parent,
-                uiAttribute.SelectionFilterDependency);
-
-            if (dependencyResolution?.Property == null ||
-                dependencyResolution.InvocationTarget is not INotifyPropertyChanged notifyPropertyChanged)
-            {
-                return;
-            }
-
-            PropertyChangedEventHandler handler = (s, e) =>
-            {
-                if (e.PropertyName != dependencyResolution.Property.Name)
-                    return;
-
-                comboBox.ItemsSource = SelectionItemsSourceResolver.ResolveItemsSource(selectionMethodResolution, property);
-                FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-            };
-
-            notifyPropertyChanged.PropertyChanged += handler;
-        }
-
-        private void Toggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static Border CreateEditorContainer(UIElement editor)
-        {
-            var container = new Border { Child = editor };
-            container.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.EditorContainerStyle");
-            return container;
-        }
-
-        private void SetComboBoxReadOnly(ComboBox comboBox, bool readOnly)
-        {
-            comboBox.IsHitTestVisible = !readOnly;
-            comboBox.Focusable = !readOnly;
-            comboBox.IsTabStop = !readOnly;
         }
 
         private static bool IsSupportedSimplePropertyType(Type propertyType)

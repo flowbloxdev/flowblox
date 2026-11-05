@@ -3,12 +3,18 @@ using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.Testing;
+using FlowBlox.Core.Util.Resources;
+using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
 
 namespace FlowBlox.Core.Models.Generators
 {
     public abstract class FlowBloxGenerationStrategyBase : FlowBloxReactiveObject
     {
+        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.auto_fix, 16, SKColors.SeaGreen);
+
+        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.auto_fix, 32, SKColors.SeaGreen);
+
         protected FlowBloxGenerationStrategyBase()
         {
         }

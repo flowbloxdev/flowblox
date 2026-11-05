@@ -49,6 +49,20 @@ namespace FlowBlox.UICore.Factory.PropertyView
             };
             editor.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.CodeEditorStyle");
 
+            var highlightingProperty = string.IsNullOrWhiteSpace(textAttr.SyntaxHighlightingMember)
+                ? null
+                : _target.GetType().GetProperty(textAttr.SyntaxHighlightingMember)
+                    ?? throw new InvalidOperationException(
+                        $"Syntax highlighting member '{textAttr.SyntaxHighlightingMember}' was not found on '{_target.GetType().FullName}'.");
+
+            void UpdateHighlighting()
+            {
+                var definition = highlightingProperty == null
+                    ? textAttr.SyntaxHighlighting
+                    : highlightingProperty.GetValue(_target)?.ToString();
+                SetHighlighting(editor, definition);
+            }
+
             if (textAttr.MultiLine)
             {
                 ParentScrollViewerMouseWheelForwarder.Register(editor);
@@ -56,9 +70,21 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
             if (_target is INotifyPropertyChanged inpc)
             {
-                PropertyChangedEventHandler propertyChangedEventHandler = (s, e) =>
+                EventHandler<PropertyChangedEventArgs> propertyChangedEventHandler = (s, e) =>
                 {
-                    if (!_initialized || _updatingToModel || e.PropertyName != _property.Name)
+                    if (!_initialized)
+                        return;
+
+                    if (highlightingProperty != null
+                        && (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == highlightingProperty.Name))
+                    {
+                        if (editor.Dispatcher.CheckAccess())
+                            UpdateHighlighting();
+                        else
+                            _ = editor.Dispatcher.InvokeAsync(UpdateHighlighting, DispatcherPriority.DataBind);
+                    }
+
+                    if (_updatingToModel || (!string.IsNullOrEmpty(e.PropertyName) && e.PropertyName != _property.Name))
                         return;
 
                     void UpdateEditor()
@@ -83,10 +109,10 @@ namespace FlowBlox.UICore.Factory.PropertyView
                         _ = editor.Dispatcher.InvokeAsync(UpdateEditor, DispatcherPriority.DataBind);
                 };
 
-                inpc.PropertyChanged += propertyChangedEventHandler;
+                PropertyChangedEventManager.AddHandler(inpc, propertyChangedEventHandler, string.Empty);
             }
 
-            SetHighlighting(editor, textAttr.SyntaxHighlighting);
+            UpdateHighlighting();
 
             editor.TextArea.TextView.LineTransformers.Add(new RegexColorizer(
                 _fieldRegexResolver.ResolveFieldRegex(), 
@@ -130,17 +156,25 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         private void SetHighlighting(TextEditor editor, string resourceOrName)
         {
-            if (string.IsNullOrWhiteSpace(resourceOrName))
+            // Null and empty names render as plain text without changing the configured value.
+            editor.SyntaxHighlighting = null;
+            if (string.IsNullOrWhiteSpace(resourceOrName)
+                || string.Equals(resourceOrName, "Text", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var builtin = HighlightingManager.Instance.GetDefinition(resourceOrName);
+            var builtin = HighlightingManager.Instance.HighlightingDefinitions
+                .FirstOrDefault(definition => string.Equals(definition.Name, resourceOrName, StringComparison.OrdinalIgnoreCase));
             if (builtin != null)
             {
                 editor.SyntaxHighlighting = builtin;
                 return;
             }
 
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceOrName);
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetManifestResourceNames()
+                .FirstOrDefault(name => string.Equals(name, resourceOrName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(name, $"FlowBlox.UICore.Resources.Highlighting.{resourceOrName}.xshd", StringComparison.OrdinalIgnoreCase));
+            using var stream = resourceName == null ? null : assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
                 return;
 

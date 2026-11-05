@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -23,7 +24,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
     [FlowBloxSpecialExplanation("OnnxQAFlowBlock_SpecialExplanation_Extractive", Icon = SpecialExplanationIcon.Hint)]
     public class OnnxQAFlowBlock : BaseSingleResultFlowBlock
     {
-        public const string ModelRootDirectoryOptionName = "AI.Onnx.QA.ModelRootDirectory";
         public const string DefaultModelFolderName = "mdeberta-v3-base-squad2";
 
         private static readonly FlowBloxRuntimeModelCache<QAModelSession> ModelCache = new();
@@ -67,7 +67,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         {
             get
             {
-                var providerName = FlowBloxOptions.GetOptionInstance().GetOption("AI.Onnx.Provider")?.Value?.Trim();
+                var providerName = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIOnnxProvider)?.Value?.Trim();
                 return Enum.TryParse<AiExecutionProviders>(providerName, ignoreCase: true, out var provider)
                     ? provider
                     : AiExecutionProviders.Default;
@@ -102,7 +102,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         public OnnxQAFlowBlock()
         {
-            ModelFolder = $"$Options::{ModelRootDirectoryOptionName}\\{DefaultModelFolderName}";
+            ModelFolder = $"$Options::{OptionsConstants.AIOnnxQAModelRootDirectory}\\{DefaultModelFolderName}";
             MaxSequenceLength = 384;
             DocumentStride = 128;
             MaxAnswerLength = 30;
@@ -117,7 +117,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         public override void OptionsInit(List<OptionElement> defaults)
         {
             defaults.Add(new OptionElement(
-                ModelRootDirectoryOptionName,
+                "AI.Onnx.QA.ModelRootDirectory",
                 @"$Options::Paths.GlobalDataDir\onnx\qa",
                 "User-specific root directory for ONNX question-answering models.",
                 OptionElement.OptionType.Text,
@@ -384,7 +384,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         private string GetInitialModelDirectory()
         {
             var directory = FlowBloxOptions.GetOptionInstance()
-                .GetOption(ModelRootDirectoryOptionName)?.Value;
+                .GetOption(OptionsConstants.AIOnnxQAModelRootDirectory)?.Value;
             return !string.IsNullOrWhiteSpace(directory) && Directory.Exists(directory)
                 ? directory
                 : string.Empty;

@@ -2612,7 +2612,7 @@ Multi-level XPath expressions are not allowed here.</value>
 		<value>Password field</value>
 	</data>
 	<data name="FieldElement_UsePasswordChar_Tooltip" xml:space="preserve">
-		<value>Masks the field value in the field view. For password fields, plain-text values are never written to protocol or log files and are not exposed to the AI Assistant.</value>
+		<value>Protects the value from protocols, logs and the AI Assistant; masks it in the field view. Editor masking is optional via UI.PropertyView.MaskPasswordValues (default: false).</value>
 	</data>
 	<data name="ExecuteProjectFlowBlock_ProjectFile_Description" xml:space="preserve">
 		<value>Select the FlowBlox project file to execute. Field placeholders are supported.</value>
@@ -4594,8 +4594,44 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
     <value>Clear on runtime start</value>
   </data>
   <data name="FieldElement_ClearOnRuntimeStart_Tooltip" xml:space="preserve">
-    <value>Clears this memory field at the beginning of every runtime. Disabled by default to preserve its value.</value>
+    <value>Clears this memory field at the beginning of every runtime. Disabled by default to preserve its value. Cannot be combined with a required value at runtime startup.</value>
   </data>
+  <data name="FieldElement_Groups_Behavior" xml:space="preserve"><value>Behavior</value></data>
+  <data name="FieldElement_IsRequiredAtRuntimeStartup" xml:space="preserve"><value>Required at runtime startup</value></data>
+  <data name="FieldElement_IsRequiredAtRuntimeStartup_Tooltip" xml:space="preserve"><value>Runtime startup fails if this input or memory field is empty or contains only whitespace. A required memory field cannot also be cleared at startup.</value></data>
+  <data name="FieldElement_LoVType" xml:space="preserve"><value>Value list type</value></data>
+  <data name="FieldElement_LoVType_Tooltip" xml:space="preserve"><value>Suggestion: examples that can be edited freely. PossibleValues: non-empty startup values must exactly match an entry. An empty list adds no restriction.</value></data>
+  <data name="LoVType_Suggestion" xml:space="preserve"><value>Suggestions / examples</value></data>
+  <data name="LoVType_PossibleValues" xml:space="preserve"><value>Allowed values</value></data>
+  <data name="FieldElement_ValueSuggestions_Tooltip" xml:space="preserve"><value>Select an entry to insert it into the value editor. Suggestions can be freely adapted; allowed values are checked at runtime startup.</value></data>
+  <data name="FieldElement_RequiredValueMissing" xml:space="preserve"><value>Required input or memory field '{0}' is empty. Set it before starting the runtime.</value></data>
+  <data name="FieldElement_RequiredAndClearedAtStartup" xml:space="preserve"><value>Memory field '{0}' is required at startup but is also configured to be cleared. Disable one of these settings.</value></data>
+  <data name="FieldElement_ValueNotAllowed" xml:space="preserve"><value>The value of field '{0}' is not in its allowed values list.</value></data>
+  <data name="OpenApiRestFlowBlock_Groups_Authentication" xml:space="preserve"><value>Authentication</value></data>
+  <data name="OpenApiRestFlowBlock_Groups_Pagination" xml:space="preserve"><value>Pagination</value></data>
+  <data name="OpenApiRestFlowBlock_UserName" xml:space="preserve"><value>Basic authentication username</value></data>
+  <data name="OpenApiRestFlowBlock_UserName_Tooltip" xml:space="preserve"><value>Username for HTTP Basic authentication. Supports field references. Leave empty when using Bearer authentication.</value></data>
+  <data name="OpenApiRestFlowBlock_Password" xml:space="preserve"><value>Basic authentication password</value></data>
+  <data name="OpenApiRestFlowBlock_Password_Tooltip" xml:space="preserve"><value>Use a protected input-field reference, for example $User::Password. The password is resolved locally when sending the request. Use HTTPS for remote systems.</value></data>
+  <data name="OpenApiRestFlowBlock_FailOnHttpError" xml:space="preserve"><value>Abort on HTTP error</value></data>
+  <data name="OpenApiRestFlowBlock_FailOnHttpError_Tooltip" xml:space="preserve"><value>Abort the runtime on connection failures or HTTP responses outside 200–299. No result rows are forwarded.</value></data>
+  <data name="OpenApiRestFlowBlock_Paginate" xml:space="preserve"><value>Retrieve all offset pages</value></data>
+  <data name="OpenApiRestFlowBlock_Paginate_Tooltip" xml:space="preserve"><value>For GET endpoints with a numeric query offset. Combines the arrays at the item path, advances by the number of received items, and stops at the reported total or an empty page if no total exists. HTTP errors, incomplete pagination, and the page limit abort execution without partial results.</value></data>
+  <data name="OpenApiRestFlowBlock_PaginationItemsPath" xml:space="preserve"><value>JSON path to result array</value></data>
+  <data name="OpenApiRestFlowBlock_PaginationOffsetParameter" xml:space="preserve"><value>Offset query parameter</value></data>
+  <data name="OpenApiRestFlowBlock_PaginationTotalPath" xml:space="preserve"><value>JSON path to total count (optional)</value></data>
+  <data name="OpenApiRestFlowBlock_MaximumPages" xml:space="preserve"><value>Maximum pages</value></data>
+  <data name="OpenApiRestFlowBlock_RequestFailed" xml:space="preserve"><value>REST request failed; check the HTTP status, credentials, permissions and connection.</value></data>
+  <data name="OpenApiRestFlowBlock_InvalidResponseOrConfiguration" xml:space="preserve"><value>Invalid REST configuration or incomplete pagination; no results were forwarded.</value></data>
+  <data name="TableWriterFlowBlock_WriteOnRuntimeFinished" xml:space="preserve"><value>Write at runtime finish</value></data>
+  <data name="TableWriterFlowBlock_WriteOnRuntimeFinished_Tooltip" xml:space="preserve"><value>Buffer rows and write the table once at successful runtime finish, including an empty table with headers. Aborted runs do not overwrite the previous output.</value></data>
+  <data name="OpenApiRestFlowBlock_DefinitionWarnings" xml:space="preserve"><value>OpenAPI validation warnings</value></data>
+  <data name="OpenApiRestFlowBlock_DefinitionWarnings_Tooltip" xml:space="preserve"><value>Provider definition inconsistencies detected by semantic validation. Usable endpoints remain available; parser errors still prevent loading.</value></data>
+  <data name="FlowBloxOptions_MaskPasswordValues_DisplayName" xml:space="preserve"><value>Mask password values in property editors</value></data>
+  <data name="FlowBloxOptions_MaskPasswordValues_Description" xml:space="preserve"><value>Mask password field values in property editors. Disabled by default for readability. Reopen an editor after changing this option. Field-view masking and protection from logs and the AI Assistant remain active.</value></data>
+  <data name="FieldElement_SyntaxHighlighting" xml:space="preserve"><value>Syntax highlighting</value></data>
+  <data name="FieldElement_SyntaxHighlighting_Tooltip" xml:space="preserve"><value>Language used to highlight the field value in its editor. Choose from the available languages. Default: Text (no highlighting); an empty selection also means Text. This changes only the display, not the field type or value.</value></data>
+  <data name="OpenApiRestFlowBlockUIActions_ReloadDefinition" xml:space="preserve"><value>Reload API definition</value></data>
 </root>
 
 

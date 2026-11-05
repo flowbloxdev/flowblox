@@ -168,6 +168,18 @@ namespace FlowBlox.Core
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        public static byte[] clipboard_check_outline
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("clipboard_check_outline", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         public static byte[] cloud_download_outline
         {
             get
@@ -273,6 +285,18 @@ namespace FlowBlox.Core
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        public static byte[] creation
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("creation", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
@@ -705,6 +729,18 @@ namespace FlowBlox.Core
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        public static byte[] refresh
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("refresh", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>

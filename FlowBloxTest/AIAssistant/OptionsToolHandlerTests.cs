@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Tools;
 using FlowBlox.Core.Models.Components;
@@ -67,7 +68,7 @@ namespace FlowBloxTest.AIAssistant
         public async Task SetOptionValue_RejectsImmutableOption()
         {
             var toolApi = CreateToolApi(AssistantOptionsAccessLevel.ReadWrite);
-            var option = FlowBloxOptions.GetOptionInstance().GetOption("SQL.AllowDestructiveStatements")!;
+            var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.SQLAllowDestructiveStatements)!;
             var originalValue = option.Value;
             try
             {

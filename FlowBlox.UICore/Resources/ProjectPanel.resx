@@ -156,4 +156,6 @@
   <data name="Legend_IterationContext_QuickStart_Tooltip" xml:space="preserve">
     <value>Learn how iteration context works through a practical example.</value>
   </data>
+  <data name="Toolbar_InputFields" xml:space="preserve"><value>Input fields</value></data>
+  <data name="Toolbar_MemoryFields" xml:space="preserve"><value>Memory fields</value></data>
 </root>

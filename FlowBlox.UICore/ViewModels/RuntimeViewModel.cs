@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Util;
@@ -15,10 +16,6 @@ namespace FlowBlox.UICore.ViewModels
 {
     public class RuntimeViewModel : INotifyPropertyChanged, IDisposable
     {
-        private const string DebuggingStepTimeunitOptionName = "Runtime.Debugging.StepTimeunit";
-        private const string StepwiseExecutionOptionName = "Runtime.Debugging.StepwiseExecution";
-        private const string StopOnWarningOptionName = "Runtime.Debugging.StopOnWarning";
-        private const string StopOnErrorOptionName = "Runtime.Debugging.StopOnError";
         private const int DebuggingStepTimeunitMinimum = 20;
         private const int DebuggingStepTimeunitMaximum = 1000;
         private readonly IRuntimeStateService _runtimeStateService;
@@ -64,7 +61,7 @@ namespace FlowBlox.UICore.ViewModels
 
                 _stepwiseExecution = value;
                 OnPropertyChanged(nameof(StepwiseExecution));
-                ApplyBooleanRuntimeOption(StepwiseExecutionOptionName, value, runtime => runtime.StepwiseExecution = value);
+                ApplyBooleanRuntimeOption(OptionsConstants.RuntimeDebuggingStepwiseExecution, value, runtime => runtime.StepwiseExecution = value);
             }
         }
 
@@ -78,7 +75,7 @@ namespace FlowBlox.UICore.ViewModels
 
                 _stopOnWarning = value;
                 OnPropertyChanged(nameof(StopOnWarning));
-                ApplyBooleanRuntimeOption(StopOnWarningOptionName, value, runtime => runtime.StopOnWarning = value);
+                ApplyBooleanRuntimeOption(OptionsConstants.RuntimeDebuggingStopOnWarning, value, runtime => runtime.StopOnWarning = value);
             }
         }
 
@@ -92,7 +89,7 @@ namespace FlowBlox.UICore.ViewModels
 
                 _stopOnError = value;
                 OnPropertyChanged(nameof(StopOnError));
-                ApplyBooleanRuntimeOption(StopOnErrorOptionName, value, runtime => runtime.StopOnError = value);
+                ApplyBooleanRuntimeOption(OptionsConstants.RuntimeDebuggingStopOnError, value, runtime => runtime.StopOnError = value);
             }
         }
 
@@ -113,7 +110,7 @@ namespace FlowBlox.UICore.ViewModels
                 _debuggingStepTimeunit = stepTimeunit;
                 OnPropertyChanged(nameof(DebuggingStepTimeunit));
                 OnPropertyChanged(nameof(DebuggingStepTimeunitText));
-                ApplyIntegerRuntimeOption(DebuggingStepTimeunitOptionName, stepTimeunit, runtime => runtime.DebuggingStepTimeunit = stepTimeunit);
+                ApplyIntegerRuntimeOption(OptionsConstants.RuntimeDebuggingStepTimeunit, stepTimeunit, runtime => runtime.DebuggingStepTimeunit = stepTimeunit);
             }
         }
 
@@ -170,10 +167,10 @@ namespace FlowBlox.UICore.ViewModels
         {
             _initialized = false;
 
-            _stepwiseExecution = GetBooleanOption(StepwiseExecutionOptionName);
-            _stopOnWarning = GetBooleanOption(StopOnWarningOptionName);
-            _stopOnError = GetBooleanOption(StopOnErrorOptionName);
-            _debuggingStepTimeunit = CoerceDebuggingStepTimeunit(GetIntegerOption(DebuggingStepTimeunitOptionName));
+            _stepwiseExecution = GetBooleanOption(OptionsConstants.RuntimeDebuggingStepwiseExecution);
+            _stopOnWarning = GetBooleanOption(OptionsConstants.RuntimeDebuggingStopOnWarning);
+            _stopOnError = GetBooleanOption(OptionsConstants.RuntimeDebuggingStopOnError);
+            _debuggingStepTimeunit = CoerceDebuggingStepTimeunit(GetIntegerOption(OptionsConstants.RuntimeDebuggingStepTimeunit));
 
             OnPropertyChanged(nameof(StepwiseExecution));
             OnPropertyChanged(nameof(StopOnWarning));
@@ -261,7 +258,7 @@ namespace FlowBlox.UICore.ViewModels
         {
             try
             {
-                var outputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection["Paths.OutputDir"].Value;
+                var outputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.PathsOutputDir].Value;
                 if (!Directory.Exists(outputDirectory))
                     Directory.CreateDirectory(outputDirectory);
 

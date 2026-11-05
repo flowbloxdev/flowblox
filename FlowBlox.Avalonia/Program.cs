@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using System;
 using System.Globalization;
 using System.IO;
@@ -24,7 +25,7 @@ internal static class Program
                 try { FontInstaller.InstallFontForCurrentUser(file); }
                 catch (Exception ex) { FlowBloxLogManager.Instance.GetLogger().Error("Unable to install font.", ex); }
 
-        var culture = FlowBloxOptions.GetOptionInstance().GetOption("UI.Culture")?.Value;
+        var culture = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.UICulture)?.Value;
         if (!string.IsNullOrWhiteSpace(culture))
             try { CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(culture); }
             catch (CultureNotFoundException ex) { FlowBloxLogManager.Instance.GetLogger().Error("Invalid UI culture.", ex); }

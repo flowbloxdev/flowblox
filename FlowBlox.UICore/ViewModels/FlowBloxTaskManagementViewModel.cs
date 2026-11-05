@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Authentication;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Extensions;
@@ -28,7 +29,6 @@ namespace FlowBlox.UICore.ViewModels
 {
     public sealed class FlowBloxTaskManagementViewModel : INotifyPropertyChanged
     {
-        private const string RuntimeLogOptionKey = "Paths.RuntimeLogDir";
         private readonly Window _ownerWindow;
         private readonly ITaskManagementService _taskManagementService;
         private readonly IReadOnlyList<string> _optionKeys;
@@ -171,7 +171,7 @@ namespace FlowBlox.UICore.ViewModels
             _optionKeys = FlowBloxOptions.GetOptionInstance()
                 .GetOptions()
                 .Select(x => x.Name)
-                .Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, RuntimeLogOptionKey, StringComparison.OrdinalIgnoreCase))
+                .Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, OptionsConstants.PathsRuntimeLogDir, StringComparison.OrdinalIgnoreCase))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
                 .ToList();
@@ -246,7 +246,7 @@ namespace FlowBlox.UICore.ViewModels
 
         private void AddProjectFile()
         {
-            var initialDirectory = FlowBloxOptions.GetOptionInstance().GetOption("Paths.ProjectDir")?.Value;
+            var initialDirectory = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsProjectDir)?.Value;
             if (!string.IsNullOrWhiteSpace(initialDirectory))
             {
                 initialDirectory = Environment.ExpandEnvironmentVariables(initialDirectory);
@@ -466,7 +466,7 @@ namespace FlowBlox.UICore.ViewModels
 
             task.UserFields = new Dictionary<string, string>(request.UserFields ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
             task.OptionOverrides = (request.OptionOverrides ?? new Dictionary<string, string>())
-                .Where(x => !string.Equals(x.Key, RuntimeLogOptionKey, StringComparison.OrdinalIgnoreCase))
+                .Where(x => !string.Equals(x.Key, OptionsConstants.PathsRuntimeLogDir, StringComparison.OrdinalIgnoreCase))
                 .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
         }
 
@@ -517,7 +517,7 @@ namespace FlowBlox.UICore.ViewModels
 
         private static string BuildTaskDirectory(string safeProjectName)
         {
-            var baseDir = FlowBloxOptions.GetOptionInstance().GetOption("Paths.ScheduledTasksDir")?.Value;
+            var baseDir = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsScheduledTasksDir)?.Value;
             if (string.IsNullOrWhiteSpace(baseDir))
                 baseDir = @"%localappdata%\FlowBlox\tasks";
 
@@ -580,7 +580,7 @@ namespace FlowBlox.UICore.ViewModels
 
             if (!string.IsNullOrWhiteSpace(task.ProjectSpaceGuid))
             {
-                var baseUrl = FlowBloxOptions.GetOptionInstance().OptionCollection["Api.ProjectServiceBaseUrl"].Value;
+                var baseUrl = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl].Value;
                 var webApi = new FlowBloxWebApiService(baseUrl);
                 var token = FlowBloxAccountManager.Instance.GetUserToken(baseUrl);
                 return await FlowBloxProject.FromProjectSpaceGuidAsync(task.ProjectSpaceGuid, task.ProjectSpaceVersion, token, webApi);
@@ -793,7 +793,7 @@ namespace FlowBlox.UICore.ViewModels
                     .ToDictionary(x => x.OptionKey, x => x.StringValue ?? string.Empty, StringComparer.OrdinalIgnoreCase)
             };
 
-            request.OptionOverrides[RuntimeLogOptionKey] = Path.Combine(task.TaskDirectory, "logs", "%NewUID(8,0)%");
+            request.OptionOverrides[OptionsConstants.PathsRuntimeLogDir] = Path.Combine(task.TaskDirectory, "logs", "%NewUID(8,0)%");
 
             RunnerJson.WriteFile(task.RequestFilePath, request);
         }

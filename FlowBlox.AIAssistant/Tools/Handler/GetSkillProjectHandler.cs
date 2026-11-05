@@ -9,8 +9,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Returns one skill project's metadata by exact project name, including projectFile, inputFields, " +
-            "inputFieldListOfValues when present, and outputFields. Use a name from the session bootstrap for a supplied project, " +
+            "Returns a Skill and its metadata by exact name. Use a name from the session bootstrap for a supplied Skill, " +
             "then execute or debug its returned projectFile directly without making a copy.",
             new JObject
             {

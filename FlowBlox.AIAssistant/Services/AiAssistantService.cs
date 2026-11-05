@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using System.Text;
 using FlowBlox.AIAssistant.Builder;
 using FlowBlox.AIAssistant.Constants;
@@ -163,7 +164,7 @@ namespace FlowBlox.AIAssistant.Services
             if (_configurationProvider != null)
                 return _configurationProvider() ?? throw new InvalidOperationException("Assistant configuration provider returned null.");
 
-            var rawConfig = FlowBloxOptions.GetOptionInstance().GetOption("AI.AssistantConfiguration")?.Value ?? string.Empty;
+            var rawConfig = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIAssistantConfiguration)?.Value ?? string.Empty;
             var parseResult = AssistantConfigurationJson.Parse(rawConfig);
             if (parseResult.HasError)
             {
@@ -183,7 +184,7 @@ namespace FlowBlox.AIAssistant.Services
 
                 var serialized = AssistantConfigurationJson.Serialize(configuration);
                 var options = FlowBloxOptions.GetOptionInstance();
-                var option = options.GetOption("AI.AssistantConfiguration");
+                var option = options.GetOption(OptionsConstants.AIAssistantConfiguration);
                 if (option == null)
                 {
                     error = $"Option 'AI.AssistantConfiguration' not found.";
@@ -651,7 +652,7 @@ namespace FlowBlox.AIAssistant.Services
             {
                 var options = FlowBloxOptions.GetOptionInstance();
                 var directory = options
-                    .GetOption("AI.CommuncationProtocolDir")?
+                    .GetOption(OptionsConstants.AICommuncationProtocolDir)?
                     .Value;
 
                 if (string.IsNullOrWhiteSpace(directory))

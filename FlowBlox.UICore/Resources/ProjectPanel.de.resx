@@ -157,4 +157,6 @@
   <data name="Legend_IterationContext_QuickStart_Tooltip" xml:space="preserve">
     <value>Erklärung des Iterationskontexts anhand eines Praxisbeispiels.</value>
   </data>
+  <data name="Toolbar_InputFields" xml:space="preserve"><value>Eingabefelder</value></data>
+  <data name="Toolbar_MemoryFields" xml:space="preserve"><value>Speicherfelder</value></data>
 </root>

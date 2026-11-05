@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.Builder;
 using FlowBlox.AIAssistant.Constants;
 using FlowBlox.AIAssistant.Models;
@@ -171,7 +172,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
         private static AssistantConfiguration LoadConfiguration()
         {
             var rawConfig = FlowBloxOptions.GetOptionInstance()
-                .GetOption("AI.AssistantConfiguration")?
+                .GetOption(OptionsConstants.AIAssistantConfiguration)?
                 .Value ?? string.Empty;
             var parseResult = AssistantConfigurationJson.Parse(rawConfig);
             return parseResult.Configuration ?? new AssistantConfiguration();

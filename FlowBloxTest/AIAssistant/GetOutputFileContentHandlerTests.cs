@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Tools;
 using FlowBlox.Core.Models.Project;
@@ -24,7 +25,7 @@ namespace FlowBloxTest.AIAssistant
         public void Initialize()
         {
             _temporaryOutputRoot = Path.Combine(Path.GetTempPath(), "FlowBloxAiOutputFileTests", Guid.NewGuid().ToString("N"));
-            var option = FlowBloxOptions.GetOptionInstance().GetOption("Paths.OutputDir")
+            var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsOutputDir)
                 ?? throw new AssertFailedException("Paths.OutputDir option is missing.");
             _previousOutputRoot = option.Value;
             option.Value = _temporaryOutputRoot;
@@ -36,7 +37,7 @@ namespace FlowBloxTest.AIAssistant
         {
             FlowBloxProjectManager.Instance.ActiveProject = _previousProject;
 
-            var option = FlowBloxOptions.GetOptionInstance().GetOption("Paths.OutputDir");
+            var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsOutputDir);
             if (option != null)
                 option.Value = _previousOutputRoot;
 

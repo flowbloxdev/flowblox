@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Tools;
 using FlowBlox.Core.Models.Project;
@@ -16,7 +17,7 @@ namespace FlowBloxTest.AIAssistant
         public async Task Confirmation_IsRequiredForSkillAndExplicitExternalProjects()
         {
             var previousProject = FlowBloxProjectManager.Instance.ActiveProject;
-            var localAppDataOption = FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir");
+            var localAppDataOption = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsLocalAppDataDir);
             var previousLocalAppDataDirectory = localAppDataOption.PersistentValue;
             var testDirectory = Path.Combine(Path.GetTempPath(), "FlowBloxTest", Guid.NewGuid().ToString("N"));
             var sessionId = Guid.NewGuid().ToString("N");

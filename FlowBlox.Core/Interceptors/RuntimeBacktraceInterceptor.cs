@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Models.FlowBlocks.Base;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Provider;
@@ -77,7 +78,7 @@ namespace FlowBlox.Core.Interceptors
             {
                 if (_maxFieldValueLength == null)
                 {
-                    var optionMaxFieldValueLength = FlowBloxOptions.GetOptionInstance().GetOption("Runtime.ProblemTracing.MaxFieldValueLength");
+                    var optionMaxFieldValueLength = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.RuntimeProblemTracingMaxFieldValueLength);
                     var maxFieldValueLengthString = optionMaxFieldValueLength.Value;
 
                     int maxFieldValueLength;

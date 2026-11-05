@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using AsposeWordToPdfFlowBlockUIActionsResources = FlowBlox.UICore.Resources.ClassResources.AsposeWordToPdfFlowBlockUIActions;
 using FlowBlox.Core;
 using FlowBlox.Core.DependencyInjection;
@@ -41,7 +42,7 @@ namespace FlowBlox.Grid.Elements.UI.CustomActions
             try
             {
                 var options = FlowBloxOptions.GetOptionInstance();
-                options.OptionCollection[AsposeWordToPdfFlowBlock.LicenseOptionName].Value =
+                options.OptionCollection[OptionsConstants.AsposeWordsLicenseBase64].Value =
                     Convert.ToBase64String(File.ReadAllBytes(dialog.FileName));
                 options.Save();
 

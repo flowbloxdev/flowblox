@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Events;
 using FlowBlox.Core.Logging;
@@ -26,9 +27,6 @@ namespace FlowBlox.UICore.ViewModels
     public sealed class FieldViewModel : INotifyPropertyChanged, IDisposable
     {
         private const int DefaultFieldViewMaxDisplayLength = 4000;
-        private const string FieldViewMaxDisplayLengthOptionName = "FieldView.MaxDisplayLength";
-        private const string FieldViewShowFlowBlockOptionName = "FieldView.ShowFlowBlock";
-        private const string FieldViewSingleLineFieldValuesOptionName = "FieldView.SingleLineFieldValues";
 
         private readonly IFlowBloxProjectComponentProvider _componentProvider;
         private readonly IFlowBloxMessageBoxService _messageBoxService;
@@ -77,7 +75,7 @@ namespace FlowBlox.UICore.ViewModels
                 _showFlowBlock = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FlowBlockColumnWidth));
-                SaveFieldViewBooleanOption(FieldViewShowFlowBlockOptionName, value);
+                SaveFieldViewBooleanOption(OptionsConstants.FieldViewShowFlowBlock, value);
             }
         }
 
@@ -92,7 +90,7 @@ namespace FlowBlox.UICore.ViewModels
                 _isSingleLineFieldValues = value;
                 OnPropertyChanged();
                 UpdateFieldValuePresentation();
-                SaveFieldViewBooleanOption(FieldViewSingleLineFieldValuesOptionName, value);
+                SaveFieldViewBooleanOption(OptionsConstants.FieldViewSingleLineFieldValues, value);
             }
         }
 
@@ -414,7 +412,7 @@ namespace FlowBlox.UICore.ViewModels
         {
             try
             {
-                var option = FlowBloxOptions.GetOptionInstance().GetOption(FieldViewMaxDisplayLengthOptionName);
+                var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.FieldViewMaxDisplayLength);
                 if (option?.Type == OptionElement.OptionType.Integer)
                 {
                     var value = option.GetValueInt();
@@ -431,10 +429,10 @@ namespace FlowBlox.UICore.ViewModels
         }
 
         private bool ResolveFieldViewShowFlowBlock()
-            => ResolveFieldViewBooleanOption(FieldViewShowFlowBlockOptionName, defaultValue: false);
+            => ResolveFieldViewBooleanOption(OptionsConstants.FieldViewShowFlowBlock, defaultValue: false);
 
         private bool ResolveFieldViewSingleLineFieldValues()
-            => ResolveFieldViewBooleanOption(FieldViewSingleLineFieldValuesOptionName, defaultValue: false);
+            => ResolveFieldViewBooleanOption(OptionsConstants.FieldViewSingleLineFieldValues, defaultValue: true);
 
         private static bool ResolveFieldViewBooleanOption(string optionName, bool defaultValue)
         {

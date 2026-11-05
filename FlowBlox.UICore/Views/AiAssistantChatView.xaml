@@ -156,11 +156,12 @@
 
         <Border Grid.Row="1"
                 Background="#FFF6E27A"
-                Padding="10"
+                Padding="8,6"
                 CornerRadius="4"
                 Margin="0,0,0,8"
                 Visibility="{Binding ShowProviderConfigurationWarning, Converter={StaticResource BoolToVisibilityConverter}}">
             <TextBlock Text="{x:Static resources:AiAssistantChatView.Warning_MissingProvider}"
+                       FontSize="11"
                        Foreground="#FF5E4A00"
                        TextWrapping="Wrap" />
         </Border>

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Logging;
 using Newtonsoft.Json;
@@ -21,7 +22,7 @@ namespace FlowBlox.Core.Models.Runtime
 
         public ProblemsTracer(BaseRuntime runtime)
         {
-            _problemTraceDir = FlowBloxOptions.GetOptionInstance().GetOption("Paths.ProblemTraceDir").Value;
+            _problemTraceDir = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsProblemTraceDir).Value;
             
             if (runtime is not FlowBloxRuntime fBRuntime)
                 throw new NotSupportedException($"ProblemsTracer only supports instances of {nameof(FlowBloxRuntime)}.");

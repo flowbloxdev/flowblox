@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util.DeepCopier;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Base;
@@ -178,7 +179,7 @@ namespace FlowBlox.UICore.Manager
 
 		private void StoreProtocol(object target, string protocol, bool recopy = false)
 		{
-			var protocolDirectory = FlowBloxOptions.GetOptionInstance().GetOption("Paths.DeepCopierProtocolDir").Value;
+			var protocolDirectory = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsDeepCopierProtocolDir).Value;
 
 			if (!Directory.Exists(protocolDirectory))
 				Directory.CreateDirectory(protocolDirectory);

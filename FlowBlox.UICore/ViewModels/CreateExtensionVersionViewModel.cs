@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
 using FlowBlox.Core.Util;
@@ -25,7 +26,7 @@ namespace FlowBlox.UICore.ViewModels
 
         private readonly Lazy<FlowBloxWebApiService> _flowBloxWebApiService = new Lazy<FlowBloxWebApiService>(() =>
         {
-            var webApiServiceUrl = FlowBloxOptions.GetOptionInstance().OptionCollection["Api.ExtensionServiceBaseUrl"].Value;
+            var webApiServiceUrl = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ApiExtensionServiceBaseUrl].Value;
             return new FlowBloxWebApiService(webApiServiceUrl);
         });
 

@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Models.FlowBlocks.Base;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Enums;
@@ -88,7 +89,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
 
         public override void OnAfterCreate()
         {
-            AlphaRange = FlowBloxOptions.GetOptionInstance().OptionCollection["Counter.Alphanumeric.Range"].Value;
+            AlphaRange = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.CounterAlphanumericRange].Value;
             base.OnAfterCreate();
         }
 
@@ -153,7 +154,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         private void ExecuteAlphanumericCounter(BaseRuntime runtime)
         {
             string alphaRange = string.IsNullOrEmpty(AlphaRange) ? 
-                FlowBloxOptions.GetOptionInstance().OptionCollection["Counter.Alphanumeric.Range"].Value : 
+                FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.CounterAlphanumericRange].Value :
                 AlphaRange;
 
             List<char> characters = alphaRange.ToCharArray().ToList();

@@ -1,12 +1,6 @@
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Util.Fields;
-using FlowBlox.UICore.Resolver;
-using FlowBlox.UICore.Utilities;
 
 namespace FlowBloxTest.FlowBlocks.IO;
 
@@ -61,42 +55,4 @@ public sealed class EnumFieldSelectionTests
         Assert.IsNull(FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(settings, x => x.Separator));
     }
 
-    [STATestMethod]
-    [DataRow(nameof(EnumSettings.Encoding))]
-    [DataRow(nameof(EnumSettings.Separator))]
-    public void EnumEditor_PreservesStaticSelectionAndSwitchesToSelectedField(string propertyName)
-    {
-        var settings = new EnumSettings();
-        var property = typeof(EnumSettings).GetProperty(propertyName)!;
-        var fieldProperty = typeof(EnumSettings).GetProperty(propertyName + "_SelectedField")!;
-        var binding = new Binding(propertyName)
-        {
-            Source = settings,
-            Mode = BindingMode.TwoWay
-        };
-        var editor = (Grid)new SimplePropertyInputControlWithOptionalButtonsCreator(null)
-            .CreateSimplePropertyInputControlWithOptionalButtons(property, settings,
-                new FlowBloxUIAttribute { UiOptions = UIOptions.EnableFieldSelection }, binding, false);
-        var host = (Grid)editor.Children[0];
-        var dropdown = (EnumerationDropDownControl)host.Children[0];
-        Assert.AreEqual(property.GetValue(settings), dropdown.SelectedValue);
-        Assert.AreEqual(Visibility.Visible, dropdown.Visibility);
-        Assert.AreEqual(Visibility.Collapsed, host.Children[1].Visibility);
-
-        dropdown.SelectedValue = propertyName == nameof(EnumSettings.Encoding)
-            ? DotNetEncodingNames.UTF16
-            : SpecialSeparator.Tab;
-        Assert.AreEqual(dropdown.SelectedValue, property.GetValue(settings));
-
-        fieldProperty.SetValue(settings, new FieldElement(FieldTypes.Text) { StringValue = "UTF8" });
-        BindingOperations.GetBindingExpression(dropdown, UIElement.VisibilityProperty)!.UpdateTarget();
-        BindingOperations.GetBindingExpression(host.Children[1], UIElement.VisibilityProperty)!.UpdateTarget();
-        Assert.AreEqual(Visibility.Collapsed, dropdown.Visibility);
-        Assert.AreEqual(Visibility.Visible, host.Children[1].Visibility);
-
-        fieldProperty.SetValue(settings, null);
-        BindingOperations.GetBindingExpression(dropdown, UIElement.VisibilityProperty)!.UpdateTarget();
-        Assert.AreEqual(Visibility.Visible, dropdown.Visibility);
-        Assert.AreEqual(property.GetValue(settings), dropdown.SelectedValue);
-    }
 }

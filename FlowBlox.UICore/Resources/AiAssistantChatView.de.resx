@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Header_Title" xml:space="preserve"><value>KI-Assistent</value></data>
   <data name="Header_Description" xml:space="preserve"><value>Der KI-Assistent kann genutzt werden, um den aktuellen Flow anzupassen oder einen kompletten Flow auf Basis einer Beschreibung zu erstellen.</value></data>
-  <data name="Warning_MissingProvider" xml:space="preserve"><value>Es ist kein KI-Provider mit nutzbarem API-Key eingerichtet. Öffnen Sie die Konfiguration über das Zahnrad, fügen Sie einen KI-Provider hinzu oder bearbeiten Sie den vorhandenen Provider, hinterlegen Sie dessen API-Key und speichern Sie. Senden Sie Ihre Anfrage anschließend erneut.</value></data>
+  <data name="Warning_MissingProvider" xml:space="preserve"><value>KI-Provider oder API-Key fehlt. Bitte über das Zahnrad konfigurieren.</value></data>
   <data name="Tooltip_NewHistory" xml:space="preserve"><value>Neuen Chat starten</value></data>
   <data name="Tooltip_BackToHistory" xml:space="preserve"><value>Zurück zu den Verläufen</value></data>
   <data name="Tooltip_Undo" xml:space="preserve"><value>Letzte KI-Projektzustandsänderung rückgängig machen</value></data>

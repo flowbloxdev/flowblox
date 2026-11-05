@@ -4,6 +4,8 @@ using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.FlowBlocks.Selection;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.Testing;
+using FlowBlox.Core.Util.Resources;
+using SkiaSharp;
 using FlowBlox.SequenceDetection;
 using FlowBlox.SequenceDetection.Model;
 using Newtonsoft.Json;
@@ -15,6 +17,10 @@ namespace FlowBlox.Core.Models.Generators
     [FlowBloxSupportedTypes(typeof(SequenceDetectionFlowBlock))]
     public class SequenceDetectionGenerationStrategy : FlowBloxPipeGenerationStrategyBase
     {
+        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_search, 16, SKColors.SteelBlue);
+
+        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_search, 32, SKColors.SteelBlue);
+
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings()
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,

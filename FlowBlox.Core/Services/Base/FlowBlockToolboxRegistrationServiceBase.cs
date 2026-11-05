@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using FlowBlox.Core.Constants;
+using System.Reflection;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Components;
@@ -37,7 +38,7 @@ namespace FlowBlox.Core.Services.Base
             string validFileName = IOUtil.GetValidFileName(resourceName.Substring(0, resourceName.Length - extension.Length));
             string fileName = string.Concat(validFileName, extension);
 
-            string targetDirectory = FlowBloxOptions.GetOptionInstance().GetOption("Paths.ToolboxCacheDir")?.Value;
+            string targetDirectory = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsToolboxCacheDir)?.Value;
             if (string.IsNullOrWhiteSpace(targetDirectory))
                 throw new InvalidOperationException("Required option 'Paths.ToolboxCacheDir' is missing.");
             Directory.CreateDirectory(targetDirectory);

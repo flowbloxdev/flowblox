@@ -1,6 +1,6 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
-using FlowBlox.UICore.PopUp.Constants;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Resources;
 using FlowBlox.UICore.PopUp.Utilities;
@@ -13,7 +13,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
     {
         public override ComponentPopupEvent PopupEvent => ComponentPopupEvent.ValidationFailed;
 
-        public override string OptionKey => PopupOptionNames.ComponentValidationGuidanceCompleted;
+        public override string OptionKey => OptionsConstants.PopUpComponentValidationGuidanceCompleted;
 
         protected override string WindowTitle => ComponentValidationFailedPopUpTexts.Window_Title;
 
@@ -39,7 +39,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
             defaults.Add(new OptionElement(
-                PopupOptionNames.ComponentValidationGuidanceCompleted,
+                "PopUp.Component.ValidationGuidanceCompleted",
                 bool.FalseString,
                 "Tracks whether guidance for saving without verification has been completed.",
                 OptionElement.OptionType.Boolean,

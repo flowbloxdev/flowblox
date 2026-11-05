@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
@@ -236,7 +237,7 @@ namespace FlowBlox.AIAssistant.Tools.State
         private static string GetSessionDirectory(string sessionId)
         {
             var localAppDataDirectory = FlowBloxOptions.GetOptionInstance()
-                .GetOption("Paths.LocalAppDataDir")?
+                .GetOption(OptionsConstants.PathsLocalAppDataDir)?
                 .Value;
             if (string.IsNullOrWhiteSpace(localAppDataDirectory))
             {

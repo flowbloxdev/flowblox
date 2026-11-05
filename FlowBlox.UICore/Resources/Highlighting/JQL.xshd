@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SyntaxDefinition name="JQL" extensions=".jql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Keyword" foreground="Blue" fontWeight="bold" />
+  <Color name="String" foreground="Maroon" />
+  <Color name="Number" foreground="#098658" />
+  <Color name="Function" foreground="#795E26" />
+  <Color name="Operator" foreground="#444444" />
+  <!-- Jira Data Center JQL operators:
+       https://confluence.atlassian.com/jirasoftwareserver/advanced-searching-operators-reference-939938745.html -->
+  <RuleSet ignoreCase="true">
+    <Span color="String" begin="&quot;" end="&quot;">
+      <RuleSet><Rule color="String">\\.</Rule></RuleSet>
+    </Span>
+    <Span color="String" begin="'" end="'">
+      <RuleSet><Rule color="String">\\.</Rule></RuleSet>
+    </Span>
+    <Keywords color="Keyword">
+      <Word>AND</Word>
+      <Word>OR</Word>
+      <Word>NOT</Word>
+      <Word>IN</Word>
+      <Word>IS</Word>
+      <Word>EMPTY</Word>
+      <Word>NULL</Word>
+      <Word>ORDER</Word>
+      <Word>BY</Word>
+      <Word>ASC</Word>
+      <Word>DESC</Word>
+      <Word>WAS</Word>
+      <Word>CHANGED</Word>
+      <Word>FROM</Word>
+      <Word>TO</Word>
+      <Word>BEFORE</Word>
+      <Word>AFTER</Word>
+      <Word>ON</Word>
+      <Word>DURING</Word>
+    </Keywords>
+    <Rule color="Function">\b[A-Za-z_][A-Za-z0-9_]*(?=\s*\()</Rule>
+    <Rule color="Number">\b\d+(?:\.\d+)?\b</Rule>
+    <Rule color="Operator">!=|!~|&lt;=|&gt;=|[=&lt;&gt;~]</Rule>
+  </RuleSet>
+</SyntaxDefinition>

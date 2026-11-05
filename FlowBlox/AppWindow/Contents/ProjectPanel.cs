@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Exceptions;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -24,7 +25,6 @@ namespace FlowBlox.AppWindow.Contents
 {
     public partial class ProjectPanel : DockContent
     {
-        private const string ResetNotificationsOnRuntimeFinishOptionName = "Grid.ResetNotificationsOnRuntimeFinish";
         private const int RuntimeFocusUpdateThrottleMilliseconds = 50;
 
         private readonly ElementHost _elementHost;
@@ -265,7 +265,7 @@ namespace FlowBlox.AppWindow.Contents
             }
 
             var resetNotificationsOnRuntimeFinish =
-                FlowBloxOptions.GetOptionInstance().GetOption(ResetNotificationsOnRuntimeFinishOptionName)?.GetValueBoolean() ?? true;
+                FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.GridResetNotificationsOnRuntimeFinish)?.GetValueBoolean() ?? true;
 
             if (resetNotificationsOnRuntimeFinish)
                 _projectPanelWpfControl.ResetNotifications(_runtime);

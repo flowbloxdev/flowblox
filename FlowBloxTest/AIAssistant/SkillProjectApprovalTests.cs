@@ -29,7 +29,7 @@ public sealed class SkillProjectApprovalTests
         FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject { ProjectName = "Main" };
         _directory = Path.Combine(Path.GetTempPath(), "FlowBloxApprovalTests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(_directory);
-        var option = FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName);
+        var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects);
         _previousApprovals = option.PersistentValue;
         option.PersistentValue = string.Empty;
         _previousLocalAppData = Environment.GetEnvironmentVariable("LOCALAPPDATA");
@@ -40,7 +40,7 @@ public sealed class SkillProjectApprovalTests
     public void Cleanup()
     {
         FlowBloxProjectManager.Instance.ActiveProject = _previousProject;
-        FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue = _previousApprovals;
+        FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue = _previousApprovals;
         Environment.SetEnvironmentVariable("LOCALAPPDATA", _previousLocalAppData);
         Directory.Delete(_directory, recursive: true);
     }
@@ -87,7 +87,7 @@ public sealed class SkillProjectApprovalTests
     [DataRow("RunProjectDebugTest")]
     public async Task ApprovedDistributedTemplate_DoesNotRequestApproval(string toolName)
     {
-        FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue = "Other.fbprj\r\n  listfiles.fbprj \r\n";
+        FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue = "Other.fbprj\r\n  listfiles.fbprj \r\n";
         var asked = false;
         var api = new DefaultToolApi
         {
@@ -206,10 +206,10 @@ public sealed class SkillProjectApprovalTests
         SkillProjectApprovalStore.Approve(DistributedDataCatalog.ResolvePath(DistributedDataCatalog.SkillProjectType, "GetFileContent.fbprj")!);
         var xml = new XmlDocument();
         xml.Load(GlobalPaths.GlobalConfigurationXml);
-        var stored = xml.SelectSingleNode($"//option_element[@name='{SkillProjectApprovalStore.OptionName}']/@value")!.Value!;
+        var stored = xml.SelectSingleNode($"//option_element[@name='{OptionsConstants.AIApprovedSkillProjects}']/@value")!.Value!;
         CollectionAssert.AreEqual(new[] { "ListFiles.fbprj", "GetFileContent.fbprj" }, stored.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
 
-        FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue = string.Empty;
+        FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue = string.Empty;
         approve = false;
         var response = await api.ExecuteAsync(request, CancellationToken.None);
         Assert.AreEqual(2, count);
@@ -219,7 +219,7 @@ public sealed class SkillProjectApprovalTests
     [TestMethod]
     public async Task CustomProjectWithTemplateFileName_DoesNotInheritItsApproval()
     {
-        FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue = "ListFiles.fbprj";
+        FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue = "ListFiles.fbprj";
         var path = Path.Combine(_directory, "ListFiles.fbprj");
         new FlowBloxProject { ProjectName = "Custom" }.Save(path);
         var asked = false;
@@ -244,7 +244,7 @@ public sealed class SkillProjectApprovalTests
     public async Task ActiveSkillProject_RemembersApprovalWhenProjectFileArgumentIsEmpty()
     {
         var sessionId = Guid.NewGuid().ToString("N");
-        var localDataOption = FlowBloxOptions.GetOptionInstance().GetOption("Paths.LocalAppDataDir");
+        var localDataOption = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsLocalAppDataDir);
         var previousLocalData = localDataOption.PersistentValue;
         localDataOption.PersistentValue = _directory;
         ToolHandlerUtilities.SetCurrentSessionGuid(sessionId);
@@ -308,7 +308,7 @@ public sealed class SkillProjectApprovalTests
         await api.ExecuteAsync(request, CancellationToken.None);
         Assert.AreEqual(2, count);
         Assert.IsFalse(SkillProjectApprovalStore.IsApproved(path));
-        Assert.AreEqual(string.Empty, FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue);
+        Assert.AreEqual(string.Empty, FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue);
         Assert.IsFalse(File.Exists(GlobalPaths.GlobalConfigurationXml));
     }
 
@@ -317,9 +317,9 @@ public sealed class SkillProjectApprovalTests
     {
         Assert.ThrowsExactly<InvalidOperationException>(() => ToolHandlerUtilities.SetOptionValue(new JObject
         {
-            ["key"] = SkillProjectApprovalStore.OptionName,
+            ["key"] = OptionsConstants.AIApprovedSkillProjects,
             ["stringValue"] = "ExecuteSQLQuery.fbprj"
         }));
-        Assert.AreEqual(string.Empty, FlowBloxOptions.GetOptionInstance().GetOption(SkillProjectApprovalStore.OptionName).PersistentValue);
+        Assert.AreEqual(string.Empty, FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue);
     }
 }

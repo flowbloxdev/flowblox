@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Interfaces;
@@ -25,10 +26,6 @@ namespace FlowBlox.UICore.ViewModels.PropertyView
 {
     public class PropertyWindowViewModel : INotifyPropertyChanged
     {
-        private const string ApplyButtonSelectionOptionName = "PropertyWindow.ApplyButtonSelection";
-        private const string SaveButtonSelectionOptionName = "PropertyWindow.SaveButtonSelection";
-        private const string EnableApplySplitButtonOptionName = "PropertyWindow.EnableApplySplitButton";
-        private const string EnableSaveSplitButtonOptionName = "PropertyWindow.EnableSaveSplitButton";
         private const string ApplyOptionValue = "Apply";
         private const string ApplyWithoutVerificationOptionValue = "ApplyWithoutVerification";
         private const string SaveOptionValue = "Save";
@@ -75,7 +72,7 @@ namespace FlowBlox.UICore.ViewModels.PropertyView
 
                 _selectedApplyButtonAction = value;
                 OnPropertyChanged();
-                StoreButtonSelection(ApplyButtonSelectionOptionName, value.OptionValue);
+                StoreButtonSelection(OptionsConstants.PropertyWindowApplyButtonSelection, value.OptionValue);
             }
         }
 
@@ -90,7 +87,7 @@ namespace FlowBlox.UICore.ViewModels.PropertyView
 
                 _selectedSaveButtonAction = value;
                 OnPropertyChanged();
-                StoreButtonSelection(SaveButtonSelectionOptionName, value.OptionValue);
+                StoreButtonSelection(OptionsConstants.PropertyWindowSaveButtonSelection, value.OptionValue);
             }
         }
 
@@ -167,13 +164,13 @@ namespace FlowBlox.UICore.ViewModels.PropertyView
                     Command = SaveWithoutVerificationCommand
                 }
             ];
-            EnableApplySplitButton = ResolveBooleanOption(EnableApplySplitButtonOptionName, defaultValue: true);
-            EnableSaveSplitButton = ResolveBooleanOption(EnableSaveSplitButtonOptionName, defaultValue: true);
+            EnableApplySplitButton = ResolveBooleanOption(OptionsConstants.PropertyWindowEnableApplySplitButton, defaultValue: true);
+            EnableSaveSplitButton = ResolveBooleanOption(OptionsConstants.PropertyWindowEnableSaveSplitButton, defaultValue: true);
             _selectedApplyButtonAction = EnableApplySplitButton
-                ? ResolveButtonSelection(ApplyButtonActions, ApplyButtonSelectionOptionName, ApplyWithoutVerificationOptionValue)
+                ? ResolveButtonSelection(ApplyButtonActions, OptionsConstants.PropertyWindowApplyButtonSelection, ApplyWithoutVerificationOptionValue)
                 : ApplyButtonActions.First(x => x.OptionValue == ApplyWithoutVerificationOptionValue);
             _selectedSaveButtonAction = EnableSaveSplitButton
-                ? ResolveButtonSelection(SaveButtonActions, SaveButtonSelectionOptionName, SaveOptionValue)
+                ? ResolveButtonSelection(SaveButtonActions, OptionsConstants.PropertyWindowSaveButtonSelection, SaveOptionValue)
                 : SaveButtonActions.First(x => x.OptionValue == SaveOptionValue);
             UIActions = new ObservableCollection<UIActionViewModel>();
         }

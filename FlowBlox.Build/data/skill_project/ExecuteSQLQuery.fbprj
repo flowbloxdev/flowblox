@@ -59,7 +59,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "PossibleValues",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "8",
@@ -91,12 +93,15 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "10",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Input_SQLQuery",
+        "SyntaxHighlighting": "SQL",
         "FieldType": {
           "$id": "11",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
@@ -123,7 +128,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "12",
@@ -156,7 +163,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": false,
+        "ClearOnRuntimeStart": true
       }
     ]
   },

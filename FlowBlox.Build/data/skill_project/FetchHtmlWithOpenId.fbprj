@@ -10,62 +10,94 @@
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "TokenEndpoint",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
-      "UserFieldType": "Input"
+      "UserFieldType": "Input",
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": true
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "ClientId",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
-      "UserFieldType": "Input"
+      "UserFieldType": "Input",
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": true
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "ClientSecret",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
       "UserFieldType": "Input",
       "IsPassword": true,
-      "StoreValueLocally": true
+      "StoreValueLocally": true,
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": false
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "Scope",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
-      "UserFieldType": "Input"
+      "UserFieldType": "Input",
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": false
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "Audience",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
-      "UserFieldType": "Input"
+      "UserFieldType": "Input",
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": false
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "UserName",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
-      "UserFieldType": "Input"
+      "UserFieldType": "Input",
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": true
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "Password",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
       "UserFieldType": "Input",
       "IsPassword": true,
-      "StoreValueLocally": true
+      "StoreValueLocally": true,
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": true
     },
     {
       "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
       "Name": "Url",
-      "FieldType": { "FieldType": "Text" },
+      "FieldType": {
+        "FieldType": "Text"
+      },
       "UserField": true,
-      "UserFieldType": "Input"
+      "UserFieldType": "Input",
+      "LoVType": "Suggestion",
+      "IsRequiredAtRuntimeStartup": true
     }
   ],
   "FlowBlocks": [
@@ -93,10 +125,18 @@
         "$id": "token",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "AccessToken",
-        "FieldType": { "FieldType": "Text" },
-        "Source": { "$ref": "auth" }
+        "FieldType": {
+          "FieldType": "Text"
+        },
+        "Source": {
+          "$ref": "auth"
+        }
       },
-      "ReferencedFlowBlocks": [ { "$ref": "start" } ]
+      "ReferencedFlowBlocks": [
+        {
+          "$ref": "start"
+        }
+      ]
     },
     {
       "$id": "request",
@@ -107,10 +147,20 @@
       "HTTPAction": "GET",
       "ResponseBodyKind": "Text",
       "WebRequestTimeout": 30000,
-      "RequiredFields": [ { "$ref": "token" } ],
+      "RequiredFields": [
+        {
+          "$ref": "token"
+        }
+      ],
       "HeaderParameters": [
-        { "Key": "Authorization", "Value": "Bearer $OAuth_PasswordGrant::AccessToken" },
-        { "Key": "Accept", "Value": "text/html" }
+        {
+          "Key": "Authorization",
+          "Value": "Bearer $OAuth_PasswordGrant::AccessToken"
+        },
+        {
+          "Key": "Accept",
+          "Value": "text/html"
+        }
       ],
       "ResultFields": [
         {
@@ -119,12 +169,20 @@
             "$id": "content",
             "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
             "Name": "Content",
-            "FieldType": { "FieldType": "Text" },
-            "Source": { "$ref": "request" }
+            "FieldType": {
+              "FieldType": "Text"
+            },
+            "Source": {
+              "$ref": "request"
+            }
           }
         }
       ],
-      "ReferencedFlowBlocks": [ { "$ref": "auth" } ]
+      "ReferencedFlowBlocks": [
+        {
+          "$ref": "auth"
+        }
+      ]
     },
     {
       "$id": "output",
@@ -132,16 +190,34 @@
       "Name": "Output",
       "Location": "1274, 400",
       "MappingEntries": [
-        { "Field": { "$ref": "content" }, "IsRequired": true, "OutputPropertyName": "Content" }
+        {
+          "Field": {
+            "$ref": "content"
+          },
+          "IsRequired": true,
+          "OutputPropertyName": "Content"
+        }
       ],
-      "RequiredFields": [ { "$ref": "content" } ],
+      "RequiredFields": [
+        {
+          "$ref": "content"
+        }
+      ],
       "ResultField": {
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
-        "FieldType": { "FieldType": "Boolean" },
-        "Source": { "$ref": "output" }
+        "FieldType": {
+          "FieldType": "Boolean"
+        },
+        "Source": {
+          "$ref": "output"
+        }
       },
-      "ReferencedFlowBlocks": [ { "$ref": "request" } ]
+      "ReferencedFlowBlocks": [
+        {
+          "$ref": "request"
+        }
+      ]
     }
   ],
   "ManagedObjects": [],

@@ -20,6 +20,7 @@
         "UserField": true,
         "UserFieldType": "Memory",
         "StringValue": "{\r\n  \"jobs\": []\r\n}",
+        "SyntaxHighlighting": "JSON",
         "StoreValueLocally": false,
         "IsPassword": false,
         "ListOfValues": {
@@ -35,7 +36,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true,
+        "ClearOnRuntimeStart": false
       },
       {
         "$id": "4",
@@ -53,6 +57,7 @@
         "UserField": true,
         "UserFieldType": "Memory",
         "StringValue": "{\n  \"jobs\": [\n    {\n      \"jobId\": \"job-1001\",\n      \"status\": \"Pending\"\n    }\n  ]\n}",
+        "SyntaxHighlighting": "JSON",
         "StoreValueLocally": false,
         "IsPassword": false,
         "ListOfValues": {
@@ -68,7 +73,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true,
+        "ClearOnRuntimeStart": false
       },
       {
         "$id": "6",
@@ -86,6 +94,7 @@
         "UserField": true,
         "UserFieldType": "Memory",
         "StringValue": "{\r\n  \"jobs\": [\r\n    {\r\n      \"jobId\": \"job-1001\",\r\n      \"status\": \"Success\"\r\n    }\r\n  ]\r\n}",
+        "SyntaxHighlighting": "JSON",
         "StoreValueLocally": false,
         "IsPassword": false,
         "ListOfValues": {
@@ -101,7 +110,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true,
+        "ClearOnRuntimeStart": false
       }
     ]
   },

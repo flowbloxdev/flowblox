@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AvaloniaDesktop.Services;
 using FlowBlox.AvaloniaDesktop.Resources;
 using FlowBlox.Core.DependencyInjection;
@@ -23,7 +24,6 @@ namespace FlowBlox.AppWindow.Contents
 {
     public partial class ProjectPanel : WpfPanel
     {
-        private const string ResetNotificationsOnRuntimeFinishOptionName = "Grid.ResetNotificationsOnRuntimeFinish";
         private const int RuntimeFocusUpdateThrottleMilliseconds = 50;
 
         private readonly ProjectPanelWpfControl _projectPanelWpfControl;
@@ -250,7 +250,7 @@ namespace FlowBlox.AppWindow.Contents
             }
 
             var resetNotificationsOnRuntimeFinish =
-                FlowBloxOptions.GetOptionInstance().GetOption(ResetNotificationsOnRuntimeFinishOptionName)?.GetValueBoolean() ?? true;
+                FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.GridResetNotificationsOnRuntimeFinish)?.GetValueBoolean() ?? true;
 
             if (resetNotificationsOnRuntimeFinish)
                 _projectPanelWpfControl.ResetNotifications(_runtime);

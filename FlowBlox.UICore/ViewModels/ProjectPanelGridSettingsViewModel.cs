@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Util;
@@ -10,7 +11,6 @@ namespace FlowBlox.UICore.ViewModels
     {
         public const int MinimumGridWidth = 2000;
         public const int MinimumGridHeight = 1000;
-        public const string ResetNotificationsOptionName = "Grid.ResetNotificationsOnRuntimeFinish";
 
         private readonly FlowBloxProject _project;
 
@@ -29,7 +29,7 @@ namespace FlowBlox.UICore.ViewModels
 
             var options = FlowBloxOptions.GetOptionInstance();
             _resetNotificationsOnRuntimeFinish =
-                options.GetOption(ResetNotificationsOptionName)?.GetValueBoolean() ?? true;
+                options.GetOption(OptionsConstants.GridResetNotificationsOnRuntimeFinish)?.GetValueBoolean() ?? true;
         }
 
         public int GridWidth
@@ -107,15 +107,15 @@ namespace FlowBlox.UICore.ViewModels
             _project.AutoIncreaseGridSize = AutoIncreaseGridSize;
 
             var options = FlowBloxOptions.GetOptionInstance();
-            var option = options.GetOption(ResetNotificationsOptionName);
+            var option = options.GetOption(OptionsConstants.GridResetNotificationsOnRuntimeFinish);
             if (option == null)
             {
                 option = new OptionElement(
-                    ResetNotificationsOptionName,
+                    "Grid.ResetNotificationsOnRuntimeFinish",
                     "true",
                     "Controls whether flow-block notifications (warning/error) are reset when runtime execution finishes.",
                     OptionElement.OptionType.Boolean);
-                options.OptionCollection[ResetNotificationsOptionName] = option;
+                options.OptionCollection[OptionsConstants.GridResetNotificationsOnRuntimeFinish] = option;
             }
 
             option.Value = ResetNotificationsOnRuntimeFinish.ToString().ToLowerInvariant();

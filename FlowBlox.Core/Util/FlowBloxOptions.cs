@@ -7,12 +7,14 @@ using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Provider.Project;
+using FlowBlox.Core.Util.Resources;
 using System.Xml;
 
 namespace FlowBlox.Core.Util
 {
     public class FlowBloxOptions
     {
+
         private static FlowBloxOptions _instance = null;
 
         public SortedDictionary<string, OptionElement> OptionCollection { get; } = new SortedDictionary<string, OptionElement>();
@@ -74,9 +76,9 @@ namespace FlowBlox.Core.Util
             // Parsing formats are owned by field and column type definitions.
             lock (_saveLock)
             {
-                OptionCollection.Remove("Parsing.DateTimeFormat");
-                OptionCollection.Remove("Parsing.DecimalSeparator");
-                OptionCollection.Remove("Parsing.GroupSeparator");
+                OptionCollection.Remove(OptionsConstants.ParsingDateTimeFormat);
+                OptionCollection.Remove(OptionsConstants.ParsingDecimalSeparator);
+                OptionCollection.Remove(OptionsConstants.ParsingGroupSeparator);
             }
 
             var defaultOptions = new List<OptionElement>
@@ -86,9 +88,15 @@ namespace FlowBlox.Core.Util
                 new OptionElement("Editor.DefaultPath", GetDefaultEditorPath(), "Path to the default editor for directly editing or viewing data from FlowBlox. We recommend the free software Notepad++: https://notepad-plus-plus.org/", OptionElement.OptionType.Text),
                 new OptionElement("UI.Style", "Professional", "Set your style here. Available styles by default: \"Default\", \"Professional\". To apply a new style, you must change this setting and restart FlowBlox.", OptionElement.OptionType.Text),
                 new OptionElement("UI.Culture", "", "Optional UI culture to force language/formatting, for example 'de-DE' or 'en-US'. Leave empty to use the operating system culture.", OptionElement.OptionType.Text),
+                new OptionElement(
+                    "UI.PropertyView.MaskPasswordValues",
+                    "false",
+                    FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_MaskPasswordValues_Description", typeof(FlowBloxTexts)),
+                    OptionElement.OptionType.Boolean,
+                    FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_MaskPasswordValues_DisplayName", typeof(FlowBloxTexts))),
                 new OptionElement("FieldView.MaxDisplayLength", "3000", "Maximum number of characters displayed per field value in the FieldView UI. Full content remains available when opening/editing the field value.", OptionElement.OptionType.Integer),
                 new OptionElement("FieldView.ShowFlowBlock", "false", "Show or hide the Flow Block column in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: Show Flow Block"),
-                new OptionElement("FieldView.SingleLineFieldValues", "false", "Show field values in single-line mode in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: 1 Line Values"),
+                new OptionElement("FieldView.SingleLineFieldValues", "true", "Show field values in single-line mode in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: 1 Line Values"),
                 new OptionElement("TestDefinitionView.HideLastLayerNeighbours", "true", "Hide sibling flow blocks in the target flow block layer and their successor trees when editing a test definition in flow-block context.", OptionElement.OptionType.Boolean),
                 new OptionElement("PropertyWindow.EnableApplySplitButton", "true", "Use a split button for Apply actions in the property window. If disabled, Apply and Apply without verification are displayed as separate buttons.", OptionElement.OptionType.Boolean, "Property window: Apply split button"),
                 new OptionElement("PropertyWindow.EnableSaveSplitButton", "true", "Use a split button for Save actions in the property window. If disabled, Save and Save without verification are displayed as separate buttons.", OptionElement.OptionType.Boolean, "Property window: Save split button"),
@@ -128,7 +136,7 @@ namespace FlowBlox.Core.Util
                 new OptionElement("Runtime.CacheMode", "AutoClear", "With this option, you can set how FlowBlox should behave before re-execution when extraction elements have already processed web pages from a past execution. Possible values: AskUser, AutoClear", OptionElement.OptionType.Text),
                 new OptionElement("Runtime.ProblemTracing.MaxFieldValueLength", "200", "With this option you can specify the maximum field value length recorded. Set to a low value for performance/memory reasons.", OptionElement.OptionType.Integer),
 
-                new OptionElement(SqlStatementSafetyGuard.AllowDestructiveStatementsOptionName, "false", "Allow destructive SQL statements such as DELETE, DROP, and TRUNCATE. Keep disabled unless such operations are explicitly intended.", OptionElement.OptionType.Boolean, "Allow destructive SQL statements"),
+                new OptionElement("SQL.AllowDestructiveStatements", "false", "Allow destructive SQL statements such as DELETE, DROP, and TRUNCATE. Keep disabled unless such operations are explicitly intended.", OptionElement.OptionType.Boolean, "Allow destructive SQL statements"),
 
                 new OptionElement("Grid.DefaultSize", "3000,1000", "When a new project is created, the grid size width, height is set to this value by default.", OptionElement.OptionType.Text),
                 new OptionElement("Grid.ResetNotificationsOnRuntimeFinish", "true", "Controls whether flow-block notifications (warning/error) are reset when runtime execution finishes.", OptionElement.OptionType.Boolean),

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.FlowBlocks.Additions;
 using FlowBlox.Core.Util;
@@ -18,11 +19,11 @@ namespace FlowBlox.Core.Models.Runtime
 
         public FlowBloxRuntime(FlowBloxProject project) : base(project)
         {
-            this.StepTimeunit = FlowBloxOptions.GetOptionInstance().OptionCollection["Runtime.StepTimeunit"].GetValueInt();
-            this.StepwiseExecution = FlowBloxOptions.GetOptionInstance().OptionCollection["Runtime.Debugging.StepwiseExecution"].Value.ToLower().Equals("true");
-            this.StopOnWarning = FlowBloxOptions.GetOptionInstance().OptionCollection["Runtime.Debugging.StopOnWarning"].Value.ToLower().Equals("true");
-            this.StopOnError = FlowBloxOptions.GetOptionInstance().OptionCollection["Runtime.Debugging.StopOnError"].Value.ToLower().Equals("true");
-            this.AutoRestart = FlowBloxOptions.GetOptionInstance().OptionCollection["Runtime.AutoRestart"].Value.ToLower().Equals("true");
+            this.StepTimeunit = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.RuntimeStepTimeunit].GetValueInt();
+            this.StepwiseExecution = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.RuntimeDebuggingStepwiseExecution].Value.ToLower().Equals("true");
+            this.StopOnWarning = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.RuntimeDebuggingStopOnWarning].Value.ToLower().Equals("true");
+            this.StopOnError = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.RuntimeDebuggingStopOnError].Value.ToLower().Equals("true");
+            this.AutoRestart = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.RuntimeAutoRestart].Value.ToLower().Equals("true");
         }
 
         private void ExecuteRequiredTestDefinitions()
@@ -166,7 +167,7 @@ namespace FlowBlox.Core.Models.Runtime
 
                     lock (_logfileLock)
                     {
-                        var runtimeLogDirectory = FlowBloxOptions.GetOptionInstance().GetOption("Paths.RuntimeLogDir").Value;
+                        var runtimeLogDirectory = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsRuntimeLogDir).Value;
                         if (_alreadyCreatedLogfileNames.Contains(_runtimeLogFileName) ||
                             File.Exists(Path.Combine(runtimeLogDirectory, _runtimeLogFileName)))
                         {
@@ -247,12 +248,14 @@ namespace FlowBlox.Core.Models.Runtime
             }
             catch (RuntimeCancellationException e)
             {
+                this.Aborted = true;
                 this.Running = false;
                 this.OnAfterRuntimeFinished();
                 this.NotifyRuntimeFinished();
             }
             catch (Exception e)
             {
+                this.Aborted = true;
                 this.Running = false;
                 this.NotifyRuntimeAborted(e);
                 this.Report("Runtime execution has aborted due to an critical error.", FlowBloxLogLevel.Error, e);

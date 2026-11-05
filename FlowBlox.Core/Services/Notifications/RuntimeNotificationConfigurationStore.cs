@@ -19,7 +19,7 @@ namespace FlowBlox.Core.Services.Notifications
         {
             error = string.Empty;
             var options = FlowBloxOptions.GetOptionInstance();
-            var raw = options.GetOption(RuntimeNotificationConstants.ConfigurationOptionName)?.Value;
+            var raw = options.GetOption(OptionsConstants.NotificationsConfiguration)?.Value;
             RuntimeNotificationConfiguration configuration;
 
             try
@@ -38,7 +38,7 @@ namespace FlowBlox.Core.Services.Notifications
             configuration.EnsureDefaultRules();
             try
             {
-                configuration.Password = options.GetOption(RuntimeNotificationConstants.SmtpPasswordOptionName)?.Value ?? string.Empty;
+                configuration.Password = options.GetOption(OptionsConstants.NotificationsSmtpPassword)?.Value ?? string.Empty;
             }
             catch (Exception ex)
             {
@@ -57,8 +57,8 @@ namespace FlowBlox.Core.Services.Notifications
                 configuration.EnsureDefaultRules();
 
                 var options = FlowBloxOptions.GetOptionInstance();
-                var configurationOption = options.GetOption(RuntimeNotificationConstants.ConfigurationOptionName);
-                var passwordOption = options.GetOption(RuntimeNotificationConstants.SmtpPasswordOptionName);
+                var configurationOption = options.GetOption(OptionsConstants.NotificationsConfiguration);
+                var passwordOption = options.GetOption(OptionsConstants.NotificationsSmtpPassword);
                 if (configurationOption == null || passwordOption == null)
                     throw new InvalidOperationException("Runtime notification options have not been initialized.");
 

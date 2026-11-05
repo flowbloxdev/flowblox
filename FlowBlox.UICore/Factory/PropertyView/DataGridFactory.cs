@@ -159,37 +159,17 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 // Standard-Datentypen (inklusive Nullable<int>, Nullable<long>, etc.)
                 var underlyingType = Nullable.GetUnderlyingType(childProperty.PropertyType);
                 var propertyType = underlyingType ?? childProperty.PropertyType;
-                var textAttribute = childProperty.GetCustomAttribute<FlowBloxTextBoxAttribute>();
                 var activationCondition = childProperty.GetCustomAttribute<ActivationConditionAttribute>();
 
-                if (propertyType == typeof(string) &&
-                    textAttribute?.Suggestions == true &&
-                    !string.IsNullOrWhiteSpace(textAttribute.SuggestionMember))
+                var useDefaultEnumEditor = propertyType.IsEnum
+                    && string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterMethod)
+                    && childProperty.GetCustomAttribute<FlowBloxComboBoxAttribute>() == null;
+                if (uiAttribute?.Factory == UIFactory.ComboBox && !useDefaultEnumEditor)
                 {
-                    var suggestionItems = ResolveSuggestions(_target, textAttribute.SuggestionMember);
-
-                    var comboStyle = new Style(typeof(ComboBox));
-                    comboStyle.Setters.Add(new Setter(ComboBox.IsEditableProperty, true));
-                    comboStyle.Setters.Add(new Setter(ComboBox.IsTextSearchEnabledProperty, true));
-
-                    var column = new DataGridComboBoxColumn
-                    {
-                        Header = headerText,
-                        ItemsSource = suggestionItems,
-                        SelectedItemBinding = new Binding(childProperty.Name)
-                        {
-                            Mode = IsPropertyReadOnly(childProperty, uiAttribute) ? BindingMode.OneWay : BindingMode.TwoWay,
-                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                            TargetNullValue = string.Empty
-                        },
-                        IsReadOnly = IsPropertyReadOnly(childProperty, uiAttribute),
-                        EditingElementStyle = comboStyle
-                    };
-
-                    dataGrid.Columns.Add(column);
+                    dataGrid.Columns.Add(CreateSelectionColumn(headerText, childProperty, uiAttribute));
                     continue;
                 }
-                 
+
                 if (propertyType == typeof(int) ||
                     propertyType == typeof(long) ||
                     propertyType == typeof(float) ||
@@ -253,46 +233,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     var column = EnumerationDropDown.CreateColumn(headerText, itemSource, childProperty.Name, isReadOnly);
                     dataGrid.Columns.Add(column);
                 }
-                // Selection-Filter
-                else if (uiAttribute?.Factory == UIFactory.ComboBox)
-                {
-                    var selectionMethodResolution = SelectionMethodResolver.ResolveSelectionFilterMethodFromTargetOrParent(
-                        _target,
-                        _parent,
-                        uiAttribute?.SelectionFilterMethod);
-
-                    if (selectionMethodResolution?.Method != null)
-                    {
-                        var column = new DataGridComboBoxColumn
-                        {
-                            Header = headerText,
-                            ItemsSource = SelectionItemsSourceResolver.ResolveItemsSource(selectionMethodResolution, childProperty),
-                            SelectedValueBinding = new Binding(childProperty.Name) { 
-                                Mode = IsPropertyReadOnly(childProperty, uiAttribute) ? BindingMode.OneWay : BindingMode.TwoWay
-                            },
-                            DisplayMemberPath = uiAttribute.SelectionDisplayMember,
-                            IsReadOnly = IsPropertyReadOnly(childProperty, uiAttribute)
-                        };
-                        dataGrid.Columns.Add(column);
-                        AttachSelectionFilterDependencyRefresh(dataGrid, column, childProperty, uiAttribute, selectionMethodResolution);
-                    }
-                    else
-                    {
-                        var fallbackColumn = new DataGridTextColumn
-                        {
-                            Header = headerText,
-                            MinWidth = DefaultTextColumnMinWidth,
-                            Binding = new Binding(childProperty.Name)
-                            {
-                                Mode = BindingMode.OneWay
-                            },
-                            IsReadOnly = true
-                        };
-                        ApplyCenteredTextColumnStyles(fallbackColumn);
-                        dataGrid.Columns.Add(fallbackColumn);
-                    }
-                }
-
                 // Association (Create/Edit Button)
                 else if (uiAttribute?.Factory == UIFactory.Association)
                 {
@@ -477,37 +417,39 @@ namespace FlowBlox.UICore.Factory.PropertyView
             return ResizableControlContainer.Create(stackPanel, minHeight: 150);
         }
 
-        private void AttachSelectionFilterDependencyRefresh(
-            DataGrid dataGrid,
-            DataGridComboBoxColumn column,
+        private DataGridColumn CreateSelectionColumn(
+            string header,
             PropertyInfo property,
-            FlowBloxUIAttribute uiAttribute,
-            SelectionMethodResolutionResult selectionMethodResolution)
+            FlowBloxUIAttribute attribute)
         {
-            if (string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterDependency))
-                return;
+            var readOnly = IsPropertyReadOnly(property, attribute);
+            var display = new FrameworkElementFactory(typeof(TextBlock));
+            var displayPath = property.Name;
+            if (!FlowBlox.Core.Util.PropertyTypeHelper.IsSimpleType(property.PropertyType)
+                && !string.IsNullOrWhiteSpace(attribute.SelectionDisplayMember))
+                displayPath += "." + attribute.SelectionDisplayMember;
+            display.SetBinding(TextBlock.TextProperty, new Binding(displayPath));
+            display.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center);
 
-            var dependencyResolution = SelectionFilterDependencyResolver.ResolveSelectionFilterDependencyFromTargetOrParent(
-                _target,
-                _parent,
-                uiAttribute.SelectionFilterDependency);
-
-            if (dependencyResolution?.Property == null ||
-                dependencyResolution.InvocationTarget is not INotifyPropertyChanged notifyPropertyChanged)
+            var editor = new FrameworkElementFactory(typeof(ContentControl));
+            editor.SetValue(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch);
+            editor.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler((sender, _) =>
             {
-                return;
-            }
-
-            PropertyChangedEventHandler handler = (s, e) =>
+                var host = (ContentControl)sender;
+                if (host.Content == null && host.DataContext != null)
+                {
+                    host.Content = new ComboBoxControlFactory(
+                        _window, property, host.DataContext, _target, readOnly).Create();
+                }
+            }));
+            return new DataGridTemplateColumn
             {
-                if (e.PropertyName != dependencyResolution.Property.Name)
-                    return;
-
-                column.ItemsSource = SelectionItemsSourceResolver.ResolveItemsSource(selectionMethodResolution, property);
-                FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
+                Header = header,
+                MinWidth = DefaultTextColumnMinWidth,
+                IsReadOnly = readOnly,
+                CellTemplate = new DataTemplate { VisualTree = display },
+                CellEditingTemplate = new DataTemplate { VisualTree = editor }
             };
-
-            notifyPropertyChanged.PropertyChanged += handler;
         }
 
         private void ApplyCenteredTextColumnStyles(DataGridTextColumn column)
@@ -515,25 +457,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var elementStyle = new Style(typeof(TextBlock));
             elementStyle.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center));
             column.ElementStyle = elementStyle;
-        }
-
-        private static IEnumerable<string> ResolveSuggestions(object target, string suggestionMember)
-        {
-            var method = target?.GetType().GetMethod(suggestionMember, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (method == null || method.GetParameters().Length != 0)
-                return Array.Empty<string>();
-
-            var result = method.Invoke(target, null);
-            if (result is not IEnumerable enumerable)
-                return Array.Empty<string>();
-
-            return enumerable
-                .Cast<object>()
-                .Select(x => x?.ToString())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x!)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
         }
 
         private void OnPreviewKeyDownForFieldSelection(object sender, KeyEventArgs e)

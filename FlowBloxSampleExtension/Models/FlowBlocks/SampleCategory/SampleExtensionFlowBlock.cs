@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FlowBlox.Core.Constants;
+using System.ComponentModel.DataAnnotations;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Util;
@@ -89,7 +90,7 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
         /// </summary>
         public override void OnAfterCreate()
         {
-            OutputText = FlowBloxOptions.GetOptionInstance().OptionCollection["SampleExtensionFlowBlock.DefaultOutputText"].Value.ToString();
+            OutputText = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.SampleExtensionFlowBlockDefaultOutputText].Value.ToString();
             base.OnAfterCreate();
         }
 

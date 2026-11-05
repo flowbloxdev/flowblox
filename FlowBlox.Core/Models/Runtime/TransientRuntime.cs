@@ -39,5 +39,9 @@ namespace FlowBlox.Core.Models.Runtime
         }
 
         protected override bool ShouldExecuteInputFileStartupCommands() => false;
+
+        // The test executor applies runtime-bound input values after initialization
+        // and validates them before executing the test flow.
+        protected override bool ShouldValidateUserFieldsAtRuntimeStartup() => false;
     }
 }

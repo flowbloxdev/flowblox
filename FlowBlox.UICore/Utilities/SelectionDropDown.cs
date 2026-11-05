@@ -1,0 +1,103 @@
+using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Extensions;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using FlowBlox.UICore.Converters;
+
+namespace FlowBlox.UICore.Utilities
+{
+    public static class SelectionDropDown
+    {
+        public class Item
+        {
+            public Item(string display, object? value, string? group, UIIconDefinition groupIcon = default)
+            {
+                Display = display;
+                Value = value;
+                Group = group;
+                GroupIcon = groupIcon;
+            }
+
+            public string Display { get; }
+            public object? Value { get; }
+            public string? Group { get; }
+            public UIIconDefinition GroupIcon { get; }
+        }
+
+        public static ContextMenu CreateMenu(SelectionDropDownControl control, IReadOnlyList<Item> items)
+        {
+            var menu = new ContextMenu
+            {
+                Style = control.TryFindResource("FlowBlox.SelectionDropDown") as Style
+                    ?? control.TryFindResource("MahApps.Styles.ContextMenu") as Style,
+                PlacementTarget = control,
+                Placement = PlacementMode.Bottom,
+                MinWidth = control.ActualWidth,
+                FontSize = control.FontSize,
+                FontFamily = control.FontFamily,
+                FontWeight = control.FontWeight,
+                FontStyle = control.FontStyle,
+                Padding = new Thickness(2),
+                SnapsToDevicePixels = true,
+                UseLayoutRounding = true
+            };
+            // Apply to both levels: popup menus otherwise use their own theme font and row spacing.
+            var itemBaseStyle = control.TryFindResource("FlowBlox.ContextMenuItem") as Style
+                ?? control.TryFindResource(typeof(MenuItem)) as Style;
+            var itemStyle = new Style(typeof(MenuItem), itemBaseStyle);
+            itemStyle.Setters.Add(new Setter(Control.FontSizeProperty, control.FontSize));
+            itemStyle.Setters.Add(new Setter(Control.FontFamilyProperty, control.FontFamily));
+            itemStyle.Setters.Add(new Setter(Control.FontWeightProperty, control.FontWeight));
+            itemStyle.Setters.Add(new Setter(Control.FontStyleProperty, control.FontStyle));
+            itemStyle.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, 0d));
+            var groups = new Dictionary<string, MenuItem>();
+            foreach (var item in items)
+            {
+                var choice = new MenuItem
+                {
+                    Header = string.IsNullOrEmpty(item.Display) ? "\u00a0" : item.Display,
+                    IsCheckable = true,
+                    Style = itemStyle,
+                    // A local value also overrides the theme's MenuItem.Role padding triggers.
+                    Padding = new Thickness(4, 2, 4, 2),
+                    IsChecked = Equals(control.SelectedValue, item.Value)
+                };
+                choice.Click += (_, args) =>
+                {
+                    control.SetCurrentValue(SelectionDropDownControl.SelectedValueProperty, item.Value);
+                    menu.IsOpen = false;
+                    control.SetCurrentValue(ToggleButton.IsCheckedProperty, false);
+                    control.Focus();
+                    args.Handled = true;
+                };
+                if (item.Group == null)
+                {
+                    menu.Items.Add(choice);
+                    continue;
+                }
+
+                if (!groups.TryGetValue(item.Group, out var group))
+                {
+                    group = new MenuItem { Header = item.Group, Style = itemStyle, Padding = new Thickness(4, 2, 4, 2) };
+                    if (item.GroupIcon.TryCreateSKImage(out var icon))
+                    {
+                        group.Icon = new Image
+                        {
+                            Source = SkiaWpfImageHelper.ConvertToImageSource(icon),
+                            Width = 16,
+                            Height = 16,
+                            SnapsToDevicePixels = true
+                        };
+                    }
+                    groups.Add(item.Group, group);
+                    menu.Items.Add(group);
+                }
+                group.Items.Add(choice);
+            }
+            return menu;
+        }
+    }
+}

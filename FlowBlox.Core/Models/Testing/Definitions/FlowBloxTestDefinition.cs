@@ -4,6 +4,8 @@ using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Deletion;
 using FlowBlox.Core.Util.FlowBlocks;
+using FlowBlox.Core.Util.Resources;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +17,10 @@ namespace FlowBlox.Core.Models.Testing
     public class FlowBloxTestDefinition : ManagedObject, IDeletionMeasureProvider
     {
         private ObservableCollection<FlowBlockTestDataset> _entries;
+
+        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.clipboard_check_outline, 16, SKColors.SeaGreen);
+
+        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.clipboard_check_outline, 32, SKColors.SeaGreen);
 
         [Display(Name = "FlowBloxTestDefinition_Entries", Description = "FlowBloxTestDefinition_Entries_Description", ResourceType = typeof(FlowBloxTexts))]
         public ObservableCollection<FlowBlockTestDataset> Entries

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="SuggestionBadge" xml:space="preserve"><value>Vorschlag</value></data>
+  <data name="SelectSuggestion" xml:space="preserve"><value>Vorschlag auswählen</value></data>
+  <data name="SuggestionTooltip" xml:space="preserve"><value>Wähle einen Vorschlag, um ihn in den Editor darunter einzufügen, oder gib dort einen eigenen Wert ein.</value></data>
+</root>

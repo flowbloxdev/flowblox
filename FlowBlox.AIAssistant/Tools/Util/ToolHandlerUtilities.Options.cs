@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using System.Globalization;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Services;
@@ -16,13 +17,13 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
         private static readonly HashSet<string> ImmutableOptionNames = new(StringComparer.OrdinalIgnoreCase)
         {
-            "AI.AssistantConfiguration",
-            SkillProjectApprovalStore.OptionName,
-            "AI.CommuncationProtocolDir",
-            "AI.AssistantHistoryDirectory",
-            "Account.LicenseToken",
-            "Aspose.Words.LicenseBase64",
-            "SQL.AllowDestructiveStatements"
+            OptionsConstants.AIAssistantConfiguration,
+            OptionsConstants.AIApprovedSkillProjects,
+            OptionsConstants.AICommuncationProtocolDir,
+            OptionsConstants.AIAssistantHistoryDirectory,
+            OptionsConstants.AccountLicenseToken,
+            OptionsConstants.AsposeWordsLicenseBase64,
+            OptionsConstants.SQLAllowDestructiveStatements
         };
 
         private static readonly string[] ImmutableOptionPrefixes =
@@ -133,7 +134,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 return configuration.OptionsAccessLevel;
 
             var rawConfig = FlowBloxOptions.GetOptionInstance()
-                .GetOption("AI.AssistantConfiguration")?
+                .GetOption(OptionsConstants.AIAssistantConfiguration)?
                 .Value ?? string.Empty;
 
             var parseResult = AssistantConfigurationJson.Parse(rawConfig);

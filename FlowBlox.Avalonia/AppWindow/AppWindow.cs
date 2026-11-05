@@ -556,7 +556,7 @@ namespace FlowBlox.AppWindow
 
         private string GetProjectDirectoryForDialogs()
         {
-            var projectDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection["Paths.ProjectDir"].Value;
+            var projectDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.PathsProjectDir].Value;
             if (!Directory.Exists(projectDirectory))
                 Directory.CreateDirectory(projectDirectory);
             return projectDirectory;
@@ -959,7 +959,7 @@ namespace FlowBlox.AppWindow
 
         private void itmOpenOutputDir_Click(object sender, EventArgs e)
         {
-            string outputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection["Paths.OutputDir"].Value;
+            string outputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.PathsOutputDir].Value;
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
 
@@ -987,7 +987,7 @@ namespace FlowBlox.AppWindow
         {
             try
             {
-                string OutputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection["Paths.OutputDir"].Value;
+                string OutputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.PathsOutputDir].Value;
                 if (!Directory.Exists(OutputDirectory))
                 {
                     Directory.CreateDirectory(OutputDirectory);
@@ -1047,7 +1047,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
         private void itmOpenProjectDir_Click(object sender, EventArgs e)
         {
-            string projectDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection["Paths.ProjectDir"].Value;
+            string projectDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.PathsProjectDir].Value;
             if (!Directory.Exists(projectDirectory))
                 Directory.CreateDirectory(projectDirectory);
 
@@ -1146,7 +1146,7 @@ private void itmUndo_Click(object sender, EventArgs e)
             try
             {
                 var manifestUrl = FlowBloxOptions.GetOptionInstance()
-                    .GetOption("Updates.InstallerManifestUrl")
+                    .GetOption(OptionsConstants.UpdatesInstallerManifestUrl)
                     ?.Value;
 
                 if (string.IsNullOrWhiteSpace(manifestUrl))
@@ -1411,7 +1411,7 @@ private void itmUndo_Click(object sender, EventArgs e)
             _recentProjectPath = string.Empty;
             _recentProjectSpaceGuid = projectGuid;
 
-            var baseUrl = FlowBloxOptions.GetOptionInstance().OptionCollection["Api.ProjectServiceBaseUrl"].Value;
+            var baseUrl = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl].Value;
             var webApi = new FlowBloxWebApiService(baseUrl);
             var token = FlowBloxAccountManager.Instance.GetUserToken(baseUrl);
 
@@ -1515,7 +1515,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
         private void itmOpenInputDir_Click(object sender, EventArgs e)
         {
-            string inputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection["Paths.InputDir"].Value;
+            string inputDirectory = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.PathsInputDir].Value;
             if (!Directory.Exists(inputDirectory))
                 Directory.CreateDirectory(inputDirectory);
 
@@ -1563,12 +1563,12 @@ private void itmUndo_Click(object sender, EventArgs e)
 
         private void itmOpenOnnxQaModelRootDirectory_Click(object sender, EventArgs e)
         {
-            OpenOptionDirectory(OnnxQAFlowBlock.ModelRootDirectoryOptionName);
+            OpenOptionDirectory(OptionsConstants.AIOnnxQAModelRootDirectory);
         }
 
         private void itmOpenOnnxGenAiModelRootDirectory_Click(object sender, EventArgs e)
         {
-            OpenOptionDirectory(OnnxGenAIFlowBlock.ModelRootDirectoryOptionName);
+            OpenOptionDirectory(OptionsConstants.AIOnnxGenAIModelRootDirectory);
         }
 
         private static void OpenOptionDirectory(string optionName)

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util;
 
 namespace FlowBloxTest.Util
@@ -13,7 +14,7 @@ namespace FlowBloxTest.Util
         public void Initialize()
         {
             var option = FlowBloxOptions.GetOptionInstance()
-                .GetOption(SqlStatementSafetyGuard.AllowDestructiveStatementsOptionName)!;
+                .GetOption(OptionsConstants.SQLAllowDestructiveStatements)!;
             _originalValue = option.Value;
             option.Value = "false";
         }
@@ -22,7 +23,7 @@ namespace FlowBloxTest.Util
         public void Cleanup()
         {
             FlowBloxOptions.GetOptionInstance()
-                .GetOption(SqlStatementSafetyGuard.AllowDestructiveStatementsOptionName)!
+                .GetOption(OptionsConstants.SQLAllowDestructiveStatements)!
                 .Value = _originalValue;
         }
 
@@ -36,7 +37,7 @@ namespace FlowBloxTest.Util
             var exception = Assert.ThrowsExactly<NotSupportedException>(() =>
                 SqlStatementSafetyGuard.EnsureAllowed(sql));
 
-            StringAssert.Contains(exception.Message, SqlStatementSafetyGuard.AllowDestructiveStatementsOptionName);
+            StringAssert.Contains(exception.Message, OptionsConstants.SQLAllowDestructiveStatements);
         }
 
         [TestMethod]
@@ -62,7 +63,7 @@ namespace FlowBloxTest.Util
         public void EnsureAllowed_AllowsDestructiveStatementsWhenEnabled()
         {
             FlowBloxOptions.GetOptionInstance()
-                .GetOption(SqlStatementSafetyGuard.AllowDestructiveStatementsOptionName)!
+                .GetOption(OptionsConstants.SQLAllowDestructiveStatements)!
                 .Value = "true";
 
             SqlStatementSafetyGuard.EnsureAllowed("DELETE FROM Customers");

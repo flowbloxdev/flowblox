@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Util;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Util;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Models.Runtime;
 using System.ComponentModel.DataAnnotations;
@@ -25,7 +26,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
             MatchCollection matches = regex.Matches(value);
             if (matches.Count > 0)
             {
-                string separator = FlowBloxOptions.GetOptionInstance().OptionCollection["Modifier.DefaultSeparator"].Value.ToString();
+                string separator = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ModifierDefaultSeparator].Value.ToString();
                 Dictionary<string, bool> valueMap = new Dictionary<string, bool>();
                 StringBuilder valueBuilder = new StringBuilder();
                 foreach (Match match in matches)

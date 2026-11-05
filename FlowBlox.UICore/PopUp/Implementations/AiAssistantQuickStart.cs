@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Resources;
@@ -6,14 +7,13 @@ using FlowBlox.UICore.PopUp.Views;
 using System.Windows;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
-using FlowBlox.UICore.PopUp.Constants;
 using FlowBlox.UICore.ViewModels;
 
 namespace FlowBlox.UICore.PopUp.Implementations
 {
     public sealed class AiAssistantQuickStart : ComponentPopupProviderBase<AiAssistantChatViewModel>, IOptionsRegistration
     {
-        public override string OptionKey => PopupOptionNames.AiAssistantQuickStartCompleted;
+        public override string OptionKey => OptionsConstants.PopUpAiAssistantQuickStartCompleted;
 
         protected override string WindowTitle => Text("Window_Title");
 
@@ -42,7 +42,7 @@ namespace FlowBlox.UICore.PopUp.Implementations
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
             defaults.Add(new OptionElement(
-                OptionKey,
+                "PopUp.AiAssistant.QuickStartCompleted",
                 bool.FalseString,
                 Text("Option_Completed_Description"),
                 OptionElement.OptionType.Boolean,

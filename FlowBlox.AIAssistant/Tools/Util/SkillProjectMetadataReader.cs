@@ -39,8 +39,33 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     .ToDictionary(
                         x => x.Key,
                         x => (IReadOnlyList<string>)x.First().ListOfValues.Select(value => value.Value).ToList(),
-                        StringComparer.OrdinalIgnoreCase));
+                        StringComparer.OrdinalIgnoreCase),
+                ReadFieldMetadata(project, UserFieldTypes.Input),
+                ReadFieldMetadata(project, UserFieldTypes.Memory));
+
+        private static IReadOnlyDictionary<string, SkillFieldMetadata> ReadFieldMetadata(
+            FlowBloxProject project,
+            UserFieldTypes fieldType) =>
+            project.UserFields
+                .Where(x => x.UserFieldType == fieldType && !string.IsNullOrWhiteSpace(x.Name))
+                .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    x => x.Key,
+                    x => new SkillFieldMetadata(
+                        x.First().IsRequiredAtRuntimeStartup,
+                        x.First().LoVType,
+                        x.First().ClearOnRuntimeStart,
+                        x.First().IsPassword,
+                        x.First().SyntaxHighlighting),
+                    StringComparer.OrdinalIgnoreCase);
     }
+
+    internal sealed record SkillFieldMetadata(
+        bool IsRequiredAtRuntimeStartup,
+        LoVType LoVType,
+        bool ClearOnRuntimeStart,
+        bool IsPassword,
+        string? SyntaxHighlighting);
 
     internal sealed record SkillProjectMetadata(
         string ProjectName,
@@ -49,5 +74,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
         IReadOnlyList<string> InputFields,
         IReadOnlyList<string> OutputFields,
         string ProjectFile,
-        IReadOnlyDictionary<string, IReadOnlyList<string>> InputFieldListOfValues);
+        IReadOnlyDictionary<string, IReadOnlyList<string>> InputFieldListOfValues,
+        IReadOnlyDictionary<string, SkillFieldMetadata> InputFieldMetadata,
+        IReadOnlyDictionary<string, SkillFieldMetadata> MemoryFieldMetadata);
 }

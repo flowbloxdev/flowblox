@@ -62,6 +62,9 @@
     <SolidColorBrush x:Key="FlowBlox.Brush.DropDownFocusBorder" Color="#569DE5" />
     <SolidColorBrush x:Key="FlowBlox.Brush.DropDownDisabledBackground" Color="#F4F4F4" />
     <SolidColorBrush x:Key="FlowBlox.Brush.DropDownDisabledText" Color="#8A8A8A" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.SuggestionMatchBackground" Color="#FFF0D8" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.SuggestionMatchBorder" Color="#E0BD80" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.SuggestionMatchText" Color="#8C5700" />
     <sys:Boolean x:Key="FlowBlox.Window.UseRoundedCorners">True</sys:Boolean>
 
     <!-- MahApps' default theme style continues to supply the window template and chrome behavior. -->
@@ -81,7 +84,25 @@
     <Style TargetType="{x:Type mah:MetroWindow}" BasedOn="{StaticResource FlowBlox.Window}" />
 
     <!-- An enum selector should resemble a ComboBox rather than a pressed ToggleButton. -->
-    <Style TargetType="{x:Type controls:EnumerationDropDownControl}">
+    <Style x:Key="FlowBlox.SuggestionBadge" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.InformationBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.Border}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.MutedText}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource FlowBlox.CornerRadius.SelectionDropDown}" />
+        <Setter Property="Padding" Value="5,0" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding HasMatchingSuggestion, RelativeSource={RelativeSource AncestorType={x:Type controls:SelectionDropDownControl}}}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.SuggestionMatchBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.SuggestionMatchBorder}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.SuggestionMatchText}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type controls:SelectionDropDownControl}">
         <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DropDownBackground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownBorder}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -93,7 +114,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:EnumerationDropDownControl}">
+                <ControlTemplate TargetType="{x:Type controls:SelectionDropDownControl}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
@@ -124,6 +145,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type controls:EnumerationDropDownControl}" BasedOn="{StaticResource {x:Type controls:SelectionDropDownControl}}" />
 
     <Style x:Key="FlowBlox.DialogHeader" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DialogHeader}" />

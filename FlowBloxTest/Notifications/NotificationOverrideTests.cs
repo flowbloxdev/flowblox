@@ -1,9 +1,11 @@
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.FlowBlocks.Calculation;
+using FlowBlox.Core.Models.FlowBlocks.AIRemote;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider.Project;
+using FlowBlox.Core.Util.DistributedData;
 
 namespace FlowBloxTest.Notifications
 {
@@ -11,6 +13,20 @@ namespace FlowBloxTest.Notifications
     [TestCategory(FlowBloxTestCategories.UnitTest)]
     public class NotificationOverrideTests
     {
+        [TestMethod]
+        public void DailyMailReportExample_LoadsWithNotificationOverride()
+        {
+            var file = DistributedDataCatalog.ResolvePath("example_project", "Daily-Mail-Report.fbprj");
+            Assert.IsNotNull(file);
+
+            var project = FlowBloxProject.FromJsonContents(File.ReadAllText(file), null);
+
+            var prompt = project.FlowBlocks.OfType<AIPromptFlowBlock>().Single(x => x.HasOverriddenNotifications);
+            var entry = prompt.OverriddenNotificationEntries.Single();
+            Assert.HasCount(1, entry.Overrides);
+            Assert.AreEqual(NotificationType.Error, entry.Overrides[(long)AIPromptFlowBlock.AIPromptNotifications.AIPromptExecutionFailed]);
+        }
+
         [TestMethod]
         public void CreateNotification_UsesErrorOverrideForWarningNotification()
         {

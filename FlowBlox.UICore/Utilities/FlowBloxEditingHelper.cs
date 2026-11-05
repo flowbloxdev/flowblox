@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Util;
 using FlowBlox.UICore.Enums;
@@ -22,7 +23,7 @@ namespace FlowBlox.UICore.Utilities
         {
             if (File.Exists(path))
             {
-                string editorPath = FlowBloxOptions.GetOptionInstance().OptionCollection["Editor.DefaultPath"].Value;
+                string editorPath = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.EditorDefaultPath].Value;
                 if (File.Exists(editorPath))
                 {
                     Process process = new Process();

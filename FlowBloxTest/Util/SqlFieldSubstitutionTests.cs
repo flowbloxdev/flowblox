@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.Components.IO;
@@ -94,7 +95,7 @@ public sealed class SqlFieldSubstitutionTests
     [DataRow(true)]
     public void TextMode_DoesNotBypassDestructiveSqlGuard(bool executeNonQuery)
     {
-        var option = FlowBloxOptions.GetOptionInstance().GetOption(SqlStatementSafetyGuard.AllowDestructiveStatementsOptionName);
+        var option = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.SQLAllowDestructiveStatements);
         var previous = option.PersistentValue;
         option.PersistentValue = "false";
         try

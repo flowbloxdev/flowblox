@@ -11,7 +11,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ExecuteProject
     {
         [Required]
         [Display(Name = "ExecuteProjectOutputMappingEntry_OutputPropertyName", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxTextBox(Suggestions = true, SuggestionMember = nameof(ProjectOutputIteratorFlowBlock.GetOutputPropertyNames))]
+        [FlowBloxUI(Factory = UIFactory.ComboBox,
+            SelectionFilterMethod = nameof(ProjectOutputIteratorFlowBlock.GetOutputPropertyNames))]
+        [FlowBloxComboBox(DropDownMode = DropDownMode.Suggestion)]
         public string OutputPropertyName { get; set; }
 
         [Required]

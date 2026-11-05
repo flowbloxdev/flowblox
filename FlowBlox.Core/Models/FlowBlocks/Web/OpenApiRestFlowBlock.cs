@@ -8,22 +8,28 @@ using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.Resources;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
+using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Web
 {
     [FlowBloxUIGroup("OpenApiRestFlowBlock_Groups_Parameters", 0)]
     [FlowBloxUIGroup("OpenApiRestFlowBlock_Groups_Payload", 1)]
+    [FlowBloxUIGroup("OpenApiRestFlowBlock_Groups_Authentication", 2)]
+    [FlowBloxUIGroup("OpenApiRestFlowBlock_Groups_Pagination", 3)]
     [Display(Name = "OpenApiRestFlowBlock_DisplayName", Description = "OpenApiRestFlowBlock_Description", ResourceType = typeof(FlowBloxTexts))]
     public class OpenApiRestFlowBlock : BaseResultFlowBlock
     {
         private string _openApiSource;
         private string _endpoint;
         private IReadOnlyList<OpenApiEndpointDescriptor> _endpoints = [];
+        private bool _definitionLoadAttempted;
+        private bool _isLoadingDefinition;
 
         public OpenApiRestFlowBlock()
         {
@@ -43,14 +49,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             set
             {
                 _openApiSource = value;
-                ReloadDefinition(forceRefresh: false);
+                LoadDefinition(forceRefresh: false, clearSelection: true);
                 OnPropertyChanged();
             }
         }
 
         [Required]
         [Display(Name = "OpenApiRestFlowBlock_Endpoint", Description = "OpenApiRestFlowBlock_Endpoint_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxTextBox(Suggestions = true, SuggestionMember = nameof(GetEndpointSuggestions))]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetEndpointSuggestions),
+            SelectionFilterDependency = nameof(EndpointSuggestions))]
+        [FlowBloxComboBox(DropDownMode = DropDownMode.SelectionOnly)]
         public string Endpoint
         {
             get => _endpoint;
@@ -76,18 +84,56 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         [FlowBloxTextBox(MultiLine = true)]
         public string DefinitionError { get; private set; }
 
+        [Display(Name = "OpenApiRestFlowBlock_DefinitionWarnings", Description = "OpenApiRestFlowBlock_DefinitionWarnings_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(ReadOnly = true)]
+        [FlowBloxTextBox(MultiLine = true)]
+        public string DefinitionWarnings { get; private set; }
+
         [Display(Name = "OpenApiRestFlowBlock_BearerToken", Description = "OpenApiRestFlowBlock_BearerToken_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BearerToken { get; set; }
 
+        [Display(Name = "OpenApiRestFlowBlock_UserName", Description = "OpenApiRestFlowBlock_UserName_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
+        public string UserName { get; set; }
+
+        [Display(Name = "OpenApiRestFlowBlock_Password", Description = "OpenApiRestFlowBlock_Password_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
+        public string Password { get; set; }
+
+        [Display(Name = "OpenApiRestFlowBlock_FailOnHttpError", Description = "OpenApiRestFlowBlock_FailOnHttpError_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
+        public bool FailOnHttpError { get; set; }
+
+        [Display(Name = "OpenApiRestFlowBlock_Paginate", Description = "OpenApiRestFlowBlock_Paginate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 0)]
+        public bool Paginate { get; set; }
+
+        [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
+        [Display(Name = "OpenApiRestFlowBlock_PaginationItemsPath", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 1)]
+        public string PaginationItemsPath { get; set; } = "items";
+
+        [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
+        [Display(Name = "OpenApiRestFlowBlock_PaginationOffsetParameter", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 2)]
+        public string PaginationOffsetParameter { get; set; } = "startAt";
+
+        [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
+        [Display(Name = "OpenApiRestFlowBlock_PaginationTotalPath", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 3)]
+        public string PaginationTotalPath { get; set; } = "total";
+
+        [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
+        [Range(1, 10000)]
+        [Display(Name = "OpenApiRestFlowBlock_MaximumPages", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 4)]
+        public int MaximumPages { get; set; } = 1000;
+
         [Display(Name = "OpenApiRestFlowBlock_HeaderParameters", Description = "OpenApiRestFlowBlock_HeaderParameters_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Parameters", Order = 0)]
         [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.None)]
         [FlowBloxDataGrid(GridColumnMemberNames = [nameof(OpenApiParameterValue.Name), nameof(OpenApiParameterValue.Required), nameof(OpenApiParameterValue.Description), nameof(OpenApiParameterValue.Value)])]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public ObservableCollection<OpenApiParameterValue> HeaderParameters { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_RequestParameters", Description = "OpenApiRestFlowBlock_RequestParameters_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Parameters", Order = 1)]
         [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.None)]
         [FlowBloxDataGrid(GridColumnMemberNames = [nameof(OpenApiParameterValue.Name), nameof(OpenApiParameterValue.Location), nameof(OpenApiParameterValue.Required), nameof(OpenApiParameterValue.Description), nameof(OpenApiParameterValue.Value)])]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public ObservableCollection<OpenApiParameterValue> RequestParameters { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_ContentType", Description = "OpenApiRestFlowBlock_ContentType_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Payload", Order = 0)]
@@ -111,60 +157,76 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             return EndpointSuggestions;
         }
 
-        public void ReloadDefinition(bool forceRefresh)
+        public void ReloadDefinition(bool forceRefresh, bool preserveSelection = false)
         {
-            EndpointSuggestions.Clear();
-            _endpoints = [];
-            DefinitionError = string.Empty;
-            _endpoint = string.Empty;
-            ClearEndpointDefaults();
-            if (string.IsNullOrWhiteSpace(_openApiSource)) return;
-            try
-            {
-                _endpoints = OpenApiDefinitionLoader.Load(_openApiSource, forceRefresh);
-                foreach (var endpoint in _endpoints)
-                    EndpointSuggestions.Add(endpoint.DisplayName);
-            }
-            catch (Exception ex)
-            {
-                DefinitionError = ex.Message;
-            }
-            OnPropertyChanged(nameof(EndpointSuggestions));
-            OnPropertyChanged(nameof(DefinitionError));
-            OnPropertyChanged(nameof(Endpoint));
+            var error = LoadDefinition(forceRefresh, clearSelection: !preserveSelection);
+            if (error != null)
+                ExceptionDispatchInfo.Capture(error).Throw();
         }
 
         private void EnsureDefinitionLoaded()
         {
-            if (_endpoints.Count == 0 && !string.IsNullOrWhiteSpace(_openApiSource))
-                LoadDefinitionWithoutChangingSelection();
+            if (!_definitionLoadAttempted && !_isLoadingDefinition && !string.IsNullOrWhiteSpace(_openApiSource))
+                LoadDefinition(forceRefresh: false, clearSelection: false);
         }
 
-        private void LoadDefinitionWithoutChangingSelection()
+        private Exception? LoadDefinition(bool forceRefresh, bool clearSelection)
         {
-            EndpointSuggestions.Clear();
-            DefinitionError = string.Empty;
+            if (_isLoadingDefinition)
+                return null;
+
+            // Collection/property notifications can synchronously ask for suggestions again.
+            // Record the attempt before notifying; failures and valid empty documents must
+            // wait for an explicit reload or source change instead of retrying during rendering.
+            _isLoadingDefinition = true;
+            _definitionLoadAttempted = true;
+            Exception? error = null;
             try
             {
-                _endpoints = OpenApiDefinitionLoader.Load(_openApiSource, forceRefresh: false);
-                foreach (var endpoint in _endpoints) EndpointSuggestions.Add(endpoint.DisplayName);
+                EndpointSuggestions.Clear();
+                _endpoints = [];
+                DefinitionError = string.Empty;
+                DefinitionWarnings = string.Empty;
+                if (clearSelection)
+                {
+                    _endpoint = string.Empty;
+                    ClearEndpointDefaults();
+                }
+                if (!string.IsNullOrWhiteSpace(_openApiSource))
+                {
+                    var definition = OpenApiDefinitionLoader.Load(_openApiSource, forceRefresh);
+                    _endpoints = definition.Endpoints;
+                    DefinitionWarnings = definition.Warnings;
+                    foreach (var endpoint in _endpoints)
+                        EndpointSuggestions.Add(endpoint.DisplayName);
+                }
             }
             catch (Exception ex)
             {
                 _endpoints = [];
                 DefinitionError = ex.Message;
+                error = ex;
+            }
+            finally
+            {
+                _isLoadingDefinition = false;
             }
             OnPropertyChanged(nameof(EndpointSuggestions));
             OnPropertyChanged(nameof(DefinitionError));
+            OnPropertyChanged(nameof(DefinitionWarnings));
+            if (clearSelection)
+                OnPropertyChanged(nameof(Endpoint));
+            return error;
         }
 
         private void ApplyEndpointDefaults()
         {
-            ClearEndpointDefaults();
+            ClearEndpointDefaults(clearBaseUrl: false);
             EnsureDefinitionLoaded();
             var descriptor = FindEndpoint();
             if (descriptor == null) return;
-            BaseUrl = descriptor.ServerUrl;
+            if (string.IsNullOrWhiteSpace(BaseUrl))
+                BaseUrl = descriptor.ServerUrl;
             EndpointDescription = descriptor.Summary;
             ContentType = descriptor.ContentType;
             Payload = descriptor.PayloadExample;
@@ -185,9 +247,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             NotifyEndpointPropertiesChanged();
         }
 
-        private void ClearEndpointDefaults()
+        private void ClearEndpointDefaults(bool clearBaseUrl = true)
         {
-            BaseUrl = string.Empty;
+            if (clearBaseUrl)
+                BaseUrl = string.Empty;
             EndpointDescription = string.Empty;
             ContentType = string.Empty;
             Payload = string.Empty;
@@ -230,9 +293,27 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public override bool Execute(BaseRuntime runtime, object data) => Invoke(runtime, data, () =>
         {
             EnsureDefinitionLoaded();
-            var descriptor = FindEndpoint() ?? throw new ValidationException("The selected OpenAPI endpoint is unavailable.");
-
-            var result = InvokeEndpoint(descriptor).GetAwaiter().GetResult();
+            InvocationResult result;
+            try
+            {
+                var descriptor = FindEndpoint() ?? throw new ValidationException("The selected OpenAPI endpoint is unavailable.");
+                result = InvokeWithPagination(descriptor, runtime).GetAwaiter().GetResult();
+            }
+            catch (Exception ex) when (ex is JsonException or InvalidOperationException or ValidationException or FormatException or OverflowException)
+            {
+                CreateNotification(runtime, OpenApiRestNotifications.InvalidResponseOrConfiguration, ex);
+                runtime.Aborted = true;
+                GenerateResult(runtime);
+                return;
+            }
+            if ((FailOnHttpError || Paginate) && (result.StatusCode < 200 || result.StatusCode >= 300))
+            {
+                CreateNotification(runtime, OpenApiRestNotifications.RequestFailed);
+                runtime.Report($"OpenAPI request failed with HTTP status {result.StatusCode}.", FlowBloxLogLevel.Error);
+                runtime.Aborted = true;
+                GenerateResult(runtime);
+                return;
+            }
             var values = new ResultFieldByEnumValueResultBuilder<OpenApiRestDestinations>()
                 .For(OpenApiRestDestinations.Payload, result.Payload)
                 .For(OpenApiRestDestinations.StatusCode, result.StatusCode.ToString())
@@ -244,7 +325,63 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             GenerateResult(runtime, values);
         });
 
-        private async Task<InvocationResult> InvokeEndpoint(OpenApiEndpointDescriptor descriptor)
+        public override List<Type> NotificationTypes => base.NotificationTypes.Concat([typeof(OpenApiRestNotifications)]).ToList();
+
+        public enum OpenApiRestNotifications
+        {
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "OpenApiRestFlowBlock_RequestFailed", ResourceType = typeof(FlowBloxTexts))]
+            RequestFailed,
+
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "OpenApiRestFlowBlock_InvalidResponseOrConfiguration", ResourceType = typeof(FlowBloxTexts))]
+            InvalidResponseOrConfiguration
+        }
+
+        private async Task<InvocationResult> InvokeWithPagination(OpenApiEndpointDescriptor descriptor, BaseRuntime runtime)
+        {
+            if (!Paginate)
+                return await InvokeEndpoint(descriptor, runtime).ConfigureAwait(false);
+
+            if (descriptor.Method != "GET" || string.IsNullOrWhiteSpace(PaginationItemsPath)
+                || string.IsNullOrWhiteSpace(PaginationOffsetParameter) || MaximumPages < 1)
+                throw new ValidationException("Offset pagination requires a GET endpoint, an item path, an offset parameter and a positive page limit.");
+
+            var offsetParameter = RequestParameters.SingleOrDefault(x => x.Name == PaginationOffsetParameter);
+            if (offsetParameter == null || !string.Equals(offsetParameter.Location, "Query", StringComparison.OrdinalIgnoreCase))
+                throw new ValidationException("The pagination offset must be a configured query parameter.");
+            var offsetText = FlowBloxFieldHelper.ReplaceFieldsInString(offsetParameter.Value);
+            var offset = string.IsNullOrWhiteSpace(offsetText) ? 0 : int.Parse(offsetText, System.Globalization.CultureInfo.InvariantCulture);
+            var combined = new JArray();
+            JObject firstPage = null;
+            for (var pageNumber = 0; pageNumber < MaximumPages; pageNumber++)
+            {
+                runtime.GetCancellationToken().ThrowIfCancellationRequested();
+                var response = await InvokeEndpoint(descriptor, runtime, offset).ConfigureAwait(false);
+                if (response.StatusCode < 200 || response.StatusCode >= 300)
+                    return response;
+                var page = JObject.Parse(response.Payload);
+                firstPage ??= page;
+                var items = page.SelectToken(PaginationItemsPath) as JArray
+                    ?? throw new ValidationException("The pagination item path must select a JSON array.");
+                var total = string.IsNullOrWhiteSpace(PaginationTotalPath)
+                    ? null
+                    : page.SelectToken(PaginationTotalPath)?.Value<int?>();
+                foreach (var item in items)
+                    combined.Add(item.DeepClone());
+                offset = checked(offset + items.Count);
+                if (total.HasValue && offset >= total.Value || !total.HasValue && items.Count == 0)
+                {
+                    firstPage.SelectToken(PaginationItemsPath).Replace(combined);
+                    return response with { Payload = firstPage.ToString(Formatting.None) };
+                }
+                if (items.Count == 0)
+                    throw new ValidationException("Pagination returned an empty page before the reported total was reached.");
+            }
+            throw new ValidationException("The pagination page limit was reached; incomplete results were discarded.");
+        }
+
+        private async Task<InvocationResult> InvokeEndpoint(OpenApiEndpointDescriptor descriptor, BaseRuntime runtime, int? offset = null)
         {
             var baseUrl = FlowBloxFieldHelper.ReplaceFieldsInString(BaseUrl ?? descriptor.ServerUrl)?.TrimEnd('/');
             var path = descriptor.Path;
@@ -253,6 +390,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             foreach (var parameter in RequestParameters)
             {
                 var value = FlowBloxFieldHelper.ReplaceFieldsInString(parameter.Value ?? string.Empty);
+                if (offset.HasValue && parameter.Name == PaginationOffsetParameter)
+                    value = offset.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (parameter.Required && string.IsNullOrWhiteSpace(value))
                     throw new ValidationException($"Required OpenAPI parameter '{parameter.Name}' is empty.");
 
@@ -266,6 +405,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 else query.Add($"{Uri.EscapeDataString(parameter.Name)}={Uri.EscapeDataString(value)}");
             }
 
+            if (System.Text.RegularExpressions.Regex.IsMatch(path, @"\{[^{}]+\}"))
+                throw new ValidationException("One or more OpenAPI path parameters are unresolved.");
             var url = (baseUrl ?? string.Empty) + "/" + path.TrimStart('/');
             if (query.Count > 0)
                 url += (url.Contains('?') ? "&" : "?") + string.Join("&", query);
@@ -275,6 +416,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 using var client = new HttpClient();
                 using var request = new HttpRequestMessage(new HttpMethod(descriptor.Method), url);
                 var token = FlowBloxFieldHelper.ReplaceFieldsInString(BearerToken ?? string.Empty)?.Trim();
+                var userName = FlowBloxFieldHelper.ReplaceFieldsInString(UserName ?? string.Empty);
+                if (!string.IsNullOrWhiteSpace(userName))
+                {
+                    if (!string.IsNullOrWhiteSpace(token))
+                        throw new ValidationException("Configure either Basic authentication or a Bearer token.");
+                    var password = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Basic",
+                        Convert.ToBase64String(Encoding.UTF8.GetBytes(userName + ":" + password)));
+                }
                 if (token?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true) token = token[7..].Trim();
                 if (!string.IsNullOrWhiteSpace(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 foreach (var parameter in HeaderParameters)
@@ -287,7 +437,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (cookies.Count > 0) request.Headers.TryAddWithoutValidation("Cookie", string.Join("; ", cookies));
                 var payload = FlowBloxFieldHelper.ReplaceFieldsInString(Payload ?? string.Empty);
                 if (!string.IsNullOrEmpty(payload)) request.Content = new StringContent(payload, Encoding.UTF8, string.IsNullOrWhiteSpace(ContentType) ? "application/json" : ContentType);
-                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                runtime.Report($"Calling OpenAPI endpoint: {descriptor.Method} {url}", FlowBloxLogLevel.Info);
+                using var response = await client.SendAsync(request, runtime.GetCancellationToken()).ConfigureAwait(false);
                 var responsePayload = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var headers = response.Headers.Concat(response.Content.Headers)
                     .ToDictionary(x => x.Key, x => string.Join(", ", x.Value), StringComparer.OrdinalIgnoreCase);

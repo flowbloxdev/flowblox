@@ -20,7 +20,8 @@ Examples:
 Bundled Skills:
 - Supplied Skill names and short descriptions are already listed in the session bootstrap. Select a suitable name and call `GetSkillProject(skillProjectName=...)` (default `mode="distributedData"`) once for its `fileName`, `projectFile`, descriptions, `inputFields`, and `outputFields`. Use `mode="session"` for a known session Skill.
 - Use `GetSkillProjects(mode="distributedData",filter=...)` only when you need to search or list Skills; do not repeat discovery when the suitable name is already known.
-- When present, `inputFieldListOfValues` gives the allowed string values for input fields; use these when configuring execution parameters.
+- `inputFieldMetadata` describes each input's `isRequiredAtRuntimeStartup`, `loVType`, `isPassword`, and `clearOnRuntimeStart`; `memoryFieldMetadata` describes memory fields. Provide required inputs before execution, using protected main-project field references for secrets. The runtime rejects missing required values before starting any flow. For Memory fields, `isRequiredAtRuntimeStartup=true` and `clearOnRuntimeStart=true` are mutually exclusive: preserve a required initial value, or clear an optional working value.
+- When present, `inputFieldListOfValues` contains examples for `loVType="Suggestion"` (the default); other values are permitted. Only `loVType="PossibleValues"` restricts non-empty values to exact list entries. An empty list adds no restriction. Do not treat suggestions as an exhaustive list.
 - Execute a suitable bundled Skill directly with `ExecuteExternalProject(projectFile:<catalog projectFile>,reason,inputParameters,outputFields)`; debug it with `RunProjectDebugTest(projectFile:<catalog projectFile>,reason,inputParameters)`. Neither call requires a session copy or edit mode. Do not create copies, aliases, or description-only variants for execution.
 - Only when a different capability requires intentional adaptation, create a session copy with `CreateOrUpdateSkillProject(mode="full_content",copyFromDistributedData={dataType:"skill_project",fileName:<catalog fileName>},...)` and edit that copy. Follow the diagnosis rules below for failed executions.
 - Use `GetDistributedDataContent(dataType="skill_project",fileName=...)` only when its full project JSON must be inspected or adapted first, for example to clarify behavior, input/output parameters, defaults, or their `ListOfValues`.
@@ -43,6 +44,7 @@ Default workflow:
 6. For regular use, call `ExecuteExternalProject(projectFile,reason,inputParameters,outputFields)` with the path from `GetSkillProject` or `GetSkillProjects`. It returns declared project outputs without another token-intensive debug run. Use `InspectOutputFieldValue` only for truncated outputs.
 
 Create/update contract:
+- Set `IsRequiredAtRuntimeStartup` deliberately for input and memory fields. Keep it false for optional inputs and scratch memory populated by the flow. Never combine it with `ClearOnRuntimeStart=true` on a memory field: the runtime rejects that conflict. Set `LoVType=Suggestion` for examples or `PossibleValues` for a complete allowed-values list.
 - `metadata_only`: create an empty project or update its description; `description` is required.
 - `full_content`: provide exactly one source, either `projectJson` or `copyFromDistributedData`; optional `description` overrides source metadata.
 - To rename, use `metadata_only`, pass the old name as `existingSkillProjectName` and the new `skillProjectName`. The filename follows the new name; an existing target filename is rejected.

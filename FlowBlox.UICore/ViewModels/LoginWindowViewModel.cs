@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Authentication;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
@@ -141,8 +142,8 @@ namespace FlowBlox.UICore.ViewModels
         {
             var options = FlowBloxOptions.GetOptionInstance();
 
-            var projectUrl = options.GetOption("Api.ProjectServiceBaseUrl")?.Value;
-            var extensionUrl = options.GetOption("Api.ExtensionServiceBaseUrl")?.Value;
+            var projectUrl = options.GetOption(OptionsConstants.ApiProjectServiceBaseUrl)?.Value;
+            var extensionUrl = options.GetOption(OptionsConstants.ApiExtensionServiceBaseUrl)?.Value;
 
             var urls = new[] { projectUrl, extensionUrl }
                 .Where(u => !string.IsNullOrWhiteSpace(u))

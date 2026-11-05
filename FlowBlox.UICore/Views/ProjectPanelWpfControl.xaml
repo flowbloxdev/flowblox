@@ -260,6 +260,20 @@
                     <TextBlock Text="{x:Static resources:ProjectPanel.Toolbar_Settings}" Margin="5,0,0,0"/>
                 </StackPanel>
             </Button>
+            <Separator />
+            <Button Command="{Binding ManageInputFieldsCommand}" Style="{StaticResource ProjectPanel.ToolbarButton}" ToolTip="{x:Static resources:ProjectPanel.Toolbar_InputFields}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="FormTextbox" Width="14" Height="14" Foreground="#1E88E5" />
+                    <TextBlock Text="{x:Static resources:ProjectPanel.Toolbar_InputFields}" Margin="5,0,0,0" />
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ManageMemoryFieldsCommand}" Style="{StaticResource ProjectPanel.ToolbarButton}" ToolTip="{x:Static resources:ProjectPanel.Toolbar_MemoryFields}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Memory" Width="14" Height="14" Foreground="#7C3AED" />
+                    <TextBlock Text="{x:Static resources:ProjectPanel.Toolbar_MemoryFields}" Margin="5,0,0,0" />
+                </StackPanel>
+            </Button>
+            <Separator />
             <Button Command="{Binding AutoLayoutCommand}" Style="{StaticResource ProjectPanel.ToolbarButton}" ToolTip="{x:Static resources:ProjectPanel.Toolbar_AutoLayout}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="AlignHorizontalLeft" Width="14" Height="14" Foreground="#32D75F"/>

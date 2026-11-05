@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Logging;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using Newtonsoft.Json;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi;
@@ -76,7 +77,7 @@ namespace FlowBlox.Core.Authentication
 
         private static List<FbLoginData> LoadLoginDataList()
         {
-            var loginDataString = FlowBloxOptions.GetOptionInstance().GetOption("Account.LoginData").Value;
+            var loginDataString = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AccountLoginData).Value;
             if (string.IsNullOrWhiteSpace(loginDataString))
                 return new List<FbLoginData>();
 

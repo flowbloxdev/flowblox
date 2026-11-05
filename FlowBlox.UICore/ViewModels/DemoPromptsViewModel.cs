@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.DistributedData;
@@ -98,7 +99,7 @@ namespace FlowBlox.UICore.ViewModels
         {
             var configuredCulture = FlowBloxOptions
                 .GetOptionInstance()
-                .GetOption("UI.Culture")?
+                .GetOption(OptionsConstants.UICulture)?
                 .Value;
 
             try

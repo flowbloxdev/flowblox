@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util;
 using OfficeOpenXml;
 using System.Text;
@@ -46,8 +47,8 @@ namespace FlowBlox.AIAssistant.Tools.Converter
         private static void ConfigureEpplusLicense()
         {
             var options = FlowBloxOptions.GetOptionInstance().OptionCollection;
-            var licenseType = options["EPPlus.LicenseType"]?.Value?.Trim()?.ToLowerInvariant();
-            var licenseKeyOrName = options["EPPlus.LicenseKeyOrName"]?.Value;
+            var licenseType = options[OptionsConstants.EPPlusLicenseType]?.Value?.Trim()?.ToLowerInvariant();
+            var licenseKeyOrName = options[OptionsConstants.EPPlusLicenseKeyOrName]?.Value;
             if (string.IsNullOrWhiteSpace(licenseKeyOrName))
                 licenseKeyOrName = Environment.UserName;
 

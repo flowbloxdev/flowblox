@@ -35,7 +35,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "4",
@@ -93,7 +95,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "PossibleValues",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "10",
@@ -157,7 +161,9 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": true
       },
       {
         "$id": "17",
@@ -190,7 +196,10 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0"
+        "Version": "1.0.0.0",
+        "LoVType": "Suggestion",
+        "IsRequiredAtRuntimeStartup": false,
+        "ClearOnRuntimeStart": true
       }
     ]
   },

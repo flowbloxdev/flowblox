@@ -21,9 +21,11 @@
       <DependentUpon>DemoPromptsWindow.resx</DependentUpon>
     </Compile>
     <None Remove="Resources\Highlighting\SQL.xshd" />
+    <None Remove="Resources\Highlighting\JQL.xshd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Highlighting\SQL.xshd" />
+    <EmbeddedResource Include="Resources\Highlighting\JQL.xshd" />
     <Resource Include="Resources\Images\FlowBloxLogo.png" />
     <Resource Include="Resources\Images\FlowBloxStartup.gif" />
   </ItemGroup>

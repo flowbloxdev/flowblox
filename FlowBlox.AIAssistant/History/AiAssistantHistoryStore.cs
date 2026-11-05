@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Util;
 using Newtonsoft.Json;
@@ -9,7 +10,6 @@ namespace FlowBlox.AIAssistant.History
 {
     public sealed class AiAssistantHistoryStore
     {
-        private const string OptionName = "AI.AssistantHistoryDirectory";
         private const string HistorySearchPattern = "history_*.json*";
         private const string HistoryZipExtension = ".zip";
         private const string HistoryJsonEntryName = "history.json";
@@ -24,7 +24,7 @@ namespace FlowBlox.AIAssistant.History
         public string GetHistoryDirectory()
         {
             var options = FlowBloxOptions.GetOptionInstance();
-            var directory = options.GetOption(OptionName)?.Value;
+            var directory = options.GetOption(OptionsConstants.AIAssistantHistoryDirectory)?.Value;
             if (string.IsNullOrWhiteSpace(directory))
             {
                 directory = Path.Combine(

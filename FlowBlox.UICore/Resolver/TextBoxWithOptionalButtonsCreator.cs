@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Provider.Placeholders;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Provider.Placeholders;
 using FlowBlox.Core.Enums;
 using TextBoxWithOptionalButtonsCreatorResources = FlowBlox.UICore.Resources.ClassResources.TextBoxWithOptionalButtonsCreator;
 using FlowBlox.Core;
@@ -13,6 +14,7 @@ using FlowBlox.Core.Util.Resources;
 using FlowBlox.UICore.Factory.Adapter;
 using FlowBlox.UICore.Factory.PropertyView;
 using FlowBlox.UICore.Interfaces;
+using FlowBlox.UICore.Utilities;
 using MahApps.Metro.IconPacks;
 using System.Collections;
 using System.IO;
@@ -35,9 +37,35 @@ namespace FlowBlox.UICore.Resolver
 
         private const double IconSize = 10;
 
-        public FrameworkElement CreateTextBoxWithOptionalButtons(PropertyInfo property, object target, string displayName, FlowBloxUIAttribute uiAttribute, Binding binding, bool readOnly)
+        public FrameworkElement CreateTextBoxWithOptionalButtons(
+            PropertyInfo property,
+            object target,
+            string displayName,
+            FlowBloxUIAttribute uiAttribute,
+            Binding binding,
+            bool readOnly,
+            bool? passwordOverride = null)
         {
             var textAttribute = property.GetCustomAttribute<FlowBloxTextBoxAttribute>();
+            var isPassword = passwordOverride ?? (string.IsNullOrWhiteSpace(textAttribute?.IsPasswordMethod)
+                ? textAttribute?.IsPassword == true
+                : (bool)target.GetType().GetMethod(textAttribute.IsPasswordMethod).Invoke(target, null));
+            if (isPassword)
+            {
+                var passwordBox = new PasswordBox
+                {
+                    Password = property.GetValue(target) as string ?? string.Empty,
+                    IsEnabled = !readOnly
+                };
+                passwordBox.PasswordChanged += (_, _) =>
+                {
+                    if (readOnly)
+                        return;
+                    property.SetValue(target, passwordBox.Password);
+                    FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                };
+                return passwordBox;
+            }
             var fieldSelectionAttribute = property.GetCustomAttribute<FlowBloxFieldSelectionAttribute>();
             var openFromFileSystemAttribute = property.GetCustomAttribute<FlowBloxOpenFromFileSystemAttribute>();
             var buttonVerticalAlignment = textAttribute?.MultiLine == true
@@ -55,35 +83,18 @@ namespace FlowBlox.UICore.Resolver
                 var factory = new MultilineTextBoxFactory(property, target, readOnly);
                 baseTextBox = factory.Create();
             }
-            else if (textAttribute?.Suggestions == true &&
-                     !string.IsNullOrWhiteSpace(textAttribute.SuggestionMember) &&
-                     property.PropertyType == typeof(string))
-            {
-                var comboBox = new ComboBox
-                {
-                    IsEditable = true,
-                    IsTextSearchEnabled = true,
-                    IsReadOnly = readOnly,
-                    IsEnabled = !readOnly
-                };
-
-                var suggestions = ResolveSuggestions(target, textAttribute.SuggestionMember);
-                comboBox.ItemsSource = suggestions;
-                comboBox.SetBinding(ComboBox.TextProperty, binding);
-                comboBox.SelectionChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-                baseTextBox = comboBox;
-            }
             else
             {
                 var textBox = new TextBox
                 {
                     IsReadOnly = readOnly
                 };
-                textBox.TextChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
                 textBox.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.TextEditorStyle");
-                textBox.SetBinding(TextBox.TextProperty, binding);
+                PropertyEditorBinding.Bind(textBox, TextBox.TextProperty, binding, target, property.Name);
                 baseTextBox = textBox;
             }
+
+            var textBoxControl = GetTextboxFromFrameworkElement(baseTextBox);
 
             var grid = new System.Windows.Controls.Grid();
             grid.ColumnDefinitions.Add(
@@ -91,8 +102,6 @@ namespace FlowBlox.UICore.Resolver
                 {
                     Width = new GridLength(1, GridUnitType.Star)
                 });
-
-            var textBoxControl = GetTextboxFromFrameworkElement(baseTextBox);
 
             System.Windows.Controls.Grid.SetColumn(baseTextBox, 0);
             grid.Children.Add(baseTextBox);
@@ -317,25 +326,6 @@ namespace FlowBlox.UICore.Resolver
             throw new InvalidOperationException("TextBox-like element could not be found in the FrameworkElement.");
         }
 
-        private static IEnumerable<string> ResolveSuggestions(object target, string suggestionMember)
-        {
-            var method = target.GetType().GetMethod(suggestionMember, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (method == null || method.GetParameters().Length != 0)
-                return Array.Empty<string>();
-
-            var result = method.Invoke(target, null);
-            if (result is not IEnumerable enumerable)
-                return Array.Empty<string>();
-
-            return enumerable
-                .Cast<object>()
-                .Select(x => x?.ToString())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x!)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-        }
-
         private static string ResolveInitialDirectory(
             object target,
             FlowBloxOpenFromFileSystemAttribute attribute)
@@ -447,10 +437,10 @@ namespace FlowBlox.UICore.Resolver
             }
 
             var options = FlowBloxOptions.GetOptionInstance();
-            AddOptionPathCandidate("Paths.InputDir");
-            AddOptionPathCandidate("Paths.OutputDir");
-            AddOptionPathCandidate("AI.Onnx.QA.ModelRootDirectory");
-            AddOptionPathCandidate("AI.Onnx.GenAI.ModelRootDirectory");
+            AddOptionPathCandidate(OptionsConstants.PathsInputDir);
+            AddOptionPathCandidate(OptionsConstants.PathsOutputDir);
+            AddOptionPathCandidate(OptionsConstants.AIOnnxQAModelRootDirectory);
+            AddOptionPathCandidate(OptionsConstants.AIOnnxGenAIModelRootDirectory);
 
             void AddOptionPathCandidate(string optionName)
             {

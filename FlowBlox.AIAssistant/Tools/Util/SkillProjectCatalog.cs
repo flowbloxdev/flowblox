@@ -92,7 +92,21 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (metadata.InputFieldListOfValues.Count > 0)
                 result["inputFieldListOfValues"] = JObject.FromObject(metadata.InputFieldListOfValues);
 
+            result["inputFieldMetadata"] = ToFieldMetadataJson(metadata.InputFieldMetadata);
+            if (metadata.MemoryFieldMetadata.Count > 0)
+                result["memoryFieldMetadata"] = ToFieldMetadataJson(metadata.MemoryFieldMetadata);
+
             return result;
         }
+
+        private static JObject ToFieldMetadataJson(IReadOnlyDictionary<string, SkillFieldMetadata> fields) =>
+            new(fields.Select(field => new JProperty(field.Key, new JObject
+            {
+                ["isRequiredAtRuntimeStartup"] = field.Value.IsRequiredAtRuntimeStartup,
+                ["loVType"] = field.Value.LoVType.ToString(),
+                ["clearOnRuntimeStart"] = field.Value.ClearOnRuntimeStart,
+                ["isPassword"] = field.Value.IsPassword,
+                ["syntaxHighlighting"] = field.Value.SyntaxHighlighting
+            })));
     }
 }

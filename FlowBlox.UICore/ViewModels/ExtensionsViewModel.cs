@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Authentication;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
@@ -250,7 +251,7 @@ namespace FlowBlox.UICore.ViewModels
         }
 
         private static string ApiUrl => FlowBloxOptions.GetOptionInstance()
-            .OptionCollection["Api.ExtensionServiceBaseUrl"]
+            .OptionCollection[OptionsConstants.ApiExtensionServiceBaseUrl]
             .Value;
 
         private Lazy<FlowBloxWebApiService> _flowBloxWebApiService = new Lazy<FlowBloxWebApiService>(() =>

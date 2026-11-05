@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ListViewSplitModeFactoryResources = FlowBlox.UICore.Resources.ClassResources.ListViewSplitModeFactory;
+using PropertyWindowResources = FlowBlox.UICore.Resources.PropertyWindow;
 
 namespace FlowBlox.UICore.Factory.PropertyView
 {
@@ -20,6 +21,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
         private System.Windows.Controls.Grid _mainGrid;
         private TextBlock _noSelectionText;
         private Button _saveButton;
+        private Button _applyWithoutVerificationButton;
         private bool _restoringSelection;
         private object _selectedItem;
 
@@ -64,29 +66,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 Visibility = Visibility.Visible
             };
 
-            // Create Save button (toolbar style)
-            var saveButton = CreateSaveButton();
+            // Use the same commit actions as the Property Window, without dropdowns.
+            var saveButton = CreateApplyButton(withoutVerification: false);
             _saveButton = saveButton;
-            saveButton.Click += async (s, e) =>
-            {
-                if (_readOnly)
-                    return;
-
-                if (_window is MahApps.Metro.Controls.MetroWindow metro)
-                {
-                    if (await _propertyViewModel.SaveAsync(metro) == true)
-                    {
-                        _propertyViewModel.Open(
-                            _listView.SelectedItem,
-                            _target,
-                            deepCopy: true,
-                            readOnly: _readOnly,
-                            nestedTransaction: true);
-                        _propertyViewModel.IsDirty = false;
-                        UpdateSaveButtonState();
-                    }
-                }
-            };
+            _applyWithoutVerificationButton = CreateApplyButton(withoutVerification: true);
+            saveButton.Click += async (s, e) => await ApplyChangesAsync(withoutVerification: false);
+            _applyWithoutVerificationButton.Click += async (s, e) => await ApplyChangesAsync(withoutVerification: true);
 
             // Create a 2-row Grid for PropertyView and bottom toolbar.
             var rightGrid = new System.Windows.Controls.Grid()
@@ -96,10 +81,17 @@ namespace FlowBlox.UICore.Factory.PropertyView
             rightGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             rightGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            saveButton.HorizontalAlignment = HorizontalAlignment.Right;
-            saveButton.Margin = new Thickness(0, 8, 5, 8);
-            System.Windows.Controls.Grid.SetRow(saveButton, 1);
-            rightGrid.Children.Add(saveButton);
+            var applyButtons = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 8, 5, 8)
+            };
+            _applyWithoutVerificationButton.Margin = new Thickness(0, 0, 8, 0);
+            applyButtons.Children.Add(_applyWithoutVerificationButton);
+            applyButtons.Children.Add(saveButton);
+            System.Windows.Controls.Grid.SetRow(applyButtons, 1);
+            rightGrid.Children.Add(applyButtons);
 
             System.Windows.Controls.Grid.SetRow(_propertyView, 0);
             System.Windows.Controls.Grid.SetRow(_noSelectionText, 0);
@@ -211,8 +203,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 _propertyViewModel.Cancel(keepComponent: true);
                 _propertyView.Visibility = Visibility.Collapsed;
                 _noSelectionText.Visibility = Visibility.Visible;
-                if (_saveButton != null)
-                    _saveButton.IsEnabled = false;
+                UpdateSaveButtonState();
             }
         }
 
@@ -307,17 +298,31 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         private void UpdateSaveButtonState()
         {
-            if (_saveButton == null)
+            var enabled = _listView?.SelectedItem != null
+                && !_readOnly
+                && _propertyViewModel?.IsDirty == true;
+            if (_saveButton != null)
+                _saveButton.IsEnabled = enabled;
+            if (_applyWithoutVerificationButton != null)
+                _applyWithoutVerificationButton.IsEnabled = enabled;
+        }
+
+        private async Task ApplyChangesAsync(bool withoutVerification)
+        {
+            if (_readOnly || !HasPendingChanges || _window is not MahApps.Metro.Controls.MetroWindow metro)
                 return;
 
-            var hasSelection = _listView?.SelectedItem != null;
-            if (!hasSelection)
+            if (await _propertyViewModel.SaveAsync(metro, withoutVerification))
             {
-                _saveButton.IsEnabled = false;
-                return;
+                _propertyViewModel.Open(
+                    _listView.SelectedItem,
+                    _target,
+                    deepCopy: true,
+                    readOnly: _readOnly,
+                    nestedTransaction: true);
+                _propertyViewModel.IsDirty = false;
+                UpdateSaveButtonState();
             }
-
-            _saveButton.IsEnabled = !_readOnly && _propertyViewModel?.IsDirty == true;
         }
 
         protected override async void ExecuteCreate()
@@ -364,7 +369,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             Cancel();
         }
 
-        private Button CreateSaveButton()
+        private Button CreateApplyButton(bool withoutVerification)
         {
             var button = new Button
             {
@@ -379,13 +384,18 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     {
                         new PackIconMaterial
                         {
-                            Kind = PackIconMaterialKind.ContentSave,
-                            Style = _window.TryFindResource("FlowBlox.WindowActionIcon.Save") as Style,
+                            Kind = withoutVerification ? PackIconMaterialKind.ShieldOffOutline : PackIconMaterialKind.Check,
+                            Width = 14,
+                            Height = 14,
+                            Margin = new Thickness(0, 0, 8, 0),
+                            Foreground = (Brush)new BrushConverter().ConvertFromString(withoutVerification ? "#D97706" : "#2E8B57"),
                             VerticalAlignment = VerticalAlignment.Center
                         },
                         new TextBlock
                         {
-                            Text = FlowBloxResourceUtil.GetLocalizedString("Buttons_Apply", typeof(ListViewSplitModeFactoryResources)),
+                            Text = FlowBloxResourceUtil.GetLocalizedString(
+                                withoutVerification ? nameof(PropertyWindowResources.ApplyWithoutVerification) : nameof(PropertyWindowResources.Apply),
+                                typeof(PropertyWindowResources)),
                             VerticalAlignment = VerticalAlignment.Center
                         }
                     }

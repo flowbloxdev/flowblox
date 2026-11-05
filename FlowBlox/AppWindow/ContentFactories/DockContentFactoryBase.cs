@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Util;
+﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Util;
 using Newtonsoft.Json;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace FlowBlox.AppWindow.ContentFactories
 
         protected DockContentSettings LoadSettings(string key)
         {
-            var dockSettingsValue = FlowBloxOptions.GetOptionInstance().GetOption("MainPanel.DockSettings").Value;
+            var dockSettingsValue = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.MainPanelDockSettings).Value;
             if (!string.IsNullOrEmpty(dockSettingsValue))
             {
                 var dockSettings = JsonConvert.DeserializeObject<DockSettings>(dockSettingsValue);
@@ -54,7 +55,7 @@ namespace FlowBlox.AppWindow.ContentFactories
         {
             lock (_dockSettingsSaveLock)
             {
-                var dockSettingsOption = FlowBloxOptions.GetOptionInstance().GetOption("MainPanel.DockSettings");
+                var dockSettingsOption = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.MainPanelDockSettings);
                 var dockSettingsValue = dockSettingsOption.Value;
                 var dockSettings = !string.IsNullOrEmpty(dockSettingsValue)
                     ? JsonConvert.DeserializeObject<DockSettings>(dockSettingsValue)

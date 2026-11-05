@@ -30,6 +30,7 @@ Known root categories: {{ROOT_CATEGORIES}}
 - Connection model in project JSON: sequence edges are represented via ReferencedFlowBlocks on the target flow block (incoming references). This is expected; there is no separate connection collection required.
 - Kind info always includes base members. The first retrieval lists declarations; the second retrieval of a declaring type promotes its complete definition to a runtime system message. omitted=[{type,properties}] means promoted. A repeated requested type returns a promotion notice. Earlier type responses in the same tool round are rendered again without counting, so they omit declarations promoted by later calls. No location flags or history override arguments are needed.
 - Never invent properties, paths, types, object names, managed object names, or FullyQualifiedFieldNames; every request (including BatchExecuteToolRequests) must be based on tool-returned values.
+- Input and memory fields may be required at runtime startup (`IsRequiredAtRuntimeStartup`). A required memory field cannot also use `ClearOnRuntimeStart`. `ListOfValues` are suggestions by default (`LoVType=Suggestion`); only `PossibleValues` restricts non-empty startup values to listed entries.
 
 Discovery/write workflow (mandatory):
 1. Discover FlowBlock kinds with `SearchFlowBlock` or `GetCategoryChildren`; use only returned category paths/names.

@@ -9,52 +9,74 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.OpenApi
 {
     internal static class OpenApiDefinitionLoader
     {
-        private sealed record CacheEntry(DateTimeOffset Created, IReadOnlyList<OpenApiEndpointDescriptor> Endpoints);
+        internal sealed record Definition(IReadOnlyList<OpenApiEndpointDescriptor> Endpoints, string Warnings);
+        private sealed record CacheEntry(DateTimeOffset Created, Definition Definition);
         private static readonly ConcurrentDictionary<string, CacheEntry> UrlCache = new(StringComparer.OrdinalIgnoreCase);
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(15);
+        private static readonly HttpClient DefinitionClient = new();
 
-        public static IReadOnlyList<OpenApiEndpointDescriptor> Load(string source, bool forceRefresh = false)
+        public static Definition Load(string source, bool forceRefresh = false)
         {
-            if (string.IsNullOrWhiteSpace(source)) return [];
+            if (string.IsNullOrWhiteSpace(source)) return new Definition([], string.Empty);
             var resolved = source.Trim();
             var isUrl = Uri.TryCreate(resolved, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https";
             if (isUrl && !forceRefresh && UrlCache.TryGetValue(resolved, out var cached) &&
                 DateTimeOffset.UtcNow - cached.Created < CacheDuration)
-                return cached.Endpoints;
+                return cached.Definition;
 
             OpenApiDocument document;
+            string warnings;
             string sourceUrl = isUrl ? resolved : null;
-            if (isUrl || File.Exists(resolved))
+            if (isUrl)
+            {
+                // Some providers serve valid JSON as text/plain.
+                // Select the reader from the document content instead of treating the HTTP media subtype as its format.
+                var content = DefinitionClient.GetStringAsync(uri).GetAwaiter().GetResult();
+                var result = OpenApiDocument.Parse(
+                    content,
+                    GetFormat(content),
+                    new OpenApiReaderSettings { BaseUrl = uri });
+                document = result.Document;
+                warnings = ReadDiagnostics(result.Diagnostic?.Errors);
+            }
+            else if (File.Exists(resolved))
             {
                 var result = OpenApiDocument.LoadAsync(resolved, new OpenApiReaderSettings(), CancellationToken.None)
                     .GetAwaiter().GetResult();
                 document = result.Document;
-                ThrowOnErrors(result.Diagnostic?.Errors);
+                warnings = ReadDiagnostics(result.Diagnostic?.Errors);
             }
             else
             {
-                var format = resolved.TrimStart().StartsWith('{') ? "json" : "yaml";
-                var result = OpenApiDocument.Parse(resolved, format, new OpenApiReaderSettings());
+                var result = OpenApiDocument.Parse(resolved, GetFormat(resolved), new OpenApiReaderSettings());
                 document = result.Document;
-                ThrowOnErrors(result.Diagnostic?.Errors);
+                warnings = ReadDiagnostics(result.Diagnostic?.Errors);
             }
 
             if (document == null) throw new InvalidOperationException("The OpenAPI definition could not be parsed.");
-            var endpoints = CreateDescriptors(document, sourceUrl);
-            if (isUrl) UrlCache[resolved] = new CacheEntry(DateTimeOffset.UtcNow, endpoints);
-            return endpoints;
+            var definition = new Definition(CreateDescriptors(document, sourceUrl), warnings);
+            if (isUrl) UrlCache[resolved] = new CacheEntry(DateTimeOffset.UtcNow, definition);
+            return definition;
         }
 
-        private static void ThrowOnErrors(IEnumerable<OpenApiError> errors)
+        private static string GetFormat(string content)
+            => content.TrimStart().StartsWith('{') ? "json" : "yaml";
+
+        private static string ReadDiagnostics(IEnumerable<OpenApiError> errors)
         {
-            var messages = errors?.Select(x => x.Message).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray() ?? [];
+            var diagnostics = errors?.ToList() ?? [];
+            // Semantic validation can flag unrelated provider endpoints. Keep them visible,
+            // but reserve load failures for parser/reference errors that prevent interpretation.
+            var messages = diagnostics.Where(x => x is not OpenApiValidatorError)
+                .Select(x => x.Message).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             if (messages.Length > 0) throw new FormatException("Invalid OpenAPI definition: " + string.Join("; ", messages));
+            return string.Join(Environment.NewLine, diagnostics.OfType<OpenApiValidatorError>().Select(x => x.Message));
         }
 
         private static IReadOnlyList<OpenApiEndpointDescriptor> CreateDescriptors(OpenApiDocument document, string sourceUrl)
         {
             var result = new List<OpenApiEndpointDescriptor>();
-            var documentServer = document.Servers?.FirstOrDefault()?.Url;
+            var documentServer = document.Servers?.FirstOrDefault();
             foreach (var pathEntry in document.Paths ?? [])
             {
                 var pathItem = pathEntry.Value;
@@ -84,7 +106,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.OpenApi
                         Path = pathEntry.Key,
                         Summary = summary,
                         DisplayName = $"{group} | {method} {pathEntry.Key}" + (string.IsNullOrWhiteSpace(summary) ? string.Empty : $" - {summary}"),
-                        ServerUrl = ResolveServer(operation.Servers?.FirstOrDefault()?.Url ?? pathItem.Servers?.FirstOrDefault()?.Url ?? documentServer, sourceUrl),
+                        ServerUrl = ResolveServer(operation.Servers?.FirstOrDefault() ?? pathItem.Servers?.FirstOrDefault() ?? documentServer, sourceUrl),
                         ContentType = contentEntry?.Key ?? string.Empty,
                         PayloadExample = payload,
                         Parameters = parameters
@@ -158,8 +180,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.OpenApi
         private static string TrimJsonString(string value)
             => value?.Length >= 2 && value[0] == '"' && value[^1] == '"' ? value[1..^1] : value ?? string.Empty;
 
-        private static string ResolveServer(string server, string sourceUrl)
+        private static string ResolveServer(OpenApiServer definition, string sourceUrl)
         {
+            var server = definition?.Url;
+            if (definition?.Variables != null)
+            {
+                foreach (var variable in definition.Variables)
+                    server = server?.Replace("{" + variable.Key + "}", variable.Value.Default);
+            }
+
             if (string.IsNullOrWhiteSpace(server))
             {
                 if (!Uri.TryCreate(sourceUrl, UriKind.Absolute, out var sourceUri)) return string.Empty;

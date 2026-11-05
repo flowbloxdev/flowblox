@@ -28,6 +28,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         private List<string> _keyColumns;
         private IReadableTable _subscribedReadableTable;
         private Action _readableTableDataSourceChangedListener;
+        private BaseRuntime _deferredWriteRuntime;
 
         [Required()]
         [Display(Name = "TableWriterFlowBlock_ReferencedTable", ResourceType = typeof(FlowBloxTexts), Order = 0)]
@@ -45,6 +46,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         [Display(Name = "TableWriterFlowBlock_ClearOnRuntimeStart", Description = "TableWriterFlowBlock_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [FlowBloxUI(Factory = UIFactory.Default)]
         public bool ClearOnRuntimeStart { get; set; }
+
+        [Display(Name = "TableWriterFlowBlock_WriteOnRuntimeFinished", Description = "TableWriterFlowBlock_WriteOnRuntimeFinished_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        public bool WriteOnRuntimeFinished { get; set; }
 
         public List<IWritableTable> GetPossibleWritableTables()
         {
@@ -228,7 +232,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
             return this.Invoke(runtime, data, () => 
             {
                 var hasWritten = CreateOrUpdateDataRowFromCurrentSchemaDefinition(_currentTableData, this.TableColumnDefinitions);
-                if (hasWritten)
+                if (hasWritten && !WriteOnRuntimeFinished)
                     this.ReferencedTable.Write(_currentTableData);
 
                 if (hasWritten)
@@ -273,6 +277,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         public override void RuntimeStarted(BaseRuntime runtime)
         {
+            _deferredWriteRuntime = null;
             this._keyColumns = this.TableColumnDefinitions
                 .Where(x => x.IsKeyColumn)
                 .Select(x => x.ColumnName)
@@ -290,11 +295,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
                     OnReadableTableInitializedOrChanged(readableTable, runtime);
             }
             base.RuntimeStarted(runtime);
+            if (WriteOnRuntimeFinished)
+                _deferredWriteRuntime = runtime;
         }
 
         public override void RuntimeFinished(BaseRuntime runtime)
         {
             UnsubscribeReadableTableDataSourceChanged();
+            var shouldWrite = _deferredWriteRuntime != null && ReferenceEquals(_deferredWriteRuntime, runtime);
+            _deferredWriteRuntime = null;
+            if (shouldWrite && !runtime.Aborted && _currentTableData != null)
+                ReferencedTable.Write(SyncSchemaAndDataTable(_currentTableData, TableColumnDefinitions));
             base.RuntimeFinished(runtime);
         }
 

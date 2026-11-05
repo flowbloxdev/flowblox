@@ -21,6 +21,7 @@ namespace FlowBlox.Core.Models.Components
 {
     [Display(Name = "FieldElement_DisplayName", ResourceType = typeof(FlowBloxTexts))]
     [FlowBloxUIGroup("Global_Groups_Default", 0, ControlAlignment.Top)]
+    [FlowBloxUIGroup("FieldElement_Groups_Behavior", 5, ControlAlignment.Top)]
     [FlowBloxUIGroup("FieldElement_Groups_Conditions", 10, ControlAlignment.Fill)]
     [FlowBloxUIGroup("FieldElement_Groups_Modifiers", 20, ControlAlignment.Fill)]
     [Serializable()]
@@ -212,10 +213,16 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Values = [ UserFieldTypes.Input, UserFieldTypes.Memory])]
         [Display(Name = "FieldElement_StringValue", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection,
+            SelectionFilterMethod = nameof(GetPossibleValues),
+            SelectionFilterDependency = nameof(ListOfValues),
+            SelectionDisplayMember = nameof(ValueItem.DisplayName))]
+        [FlowBloxComboBox(DropDownModeMethod = nameof(GetValueDropDownMode), SelectionValueMember = nameof(ValueItem.Value))]
+        [RequiredIf(nameof(IsRequiredAtRuntimeStartup), true)]
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true, 
                         AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options)]
-        [FlowBloxTextBox(MultiLine = true)]
+        [FlowBloxTextBox(MultiLine = true, IsCodingMode = true,
+            IsPasswordMethod = nameof(ShouldMaskValue), SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
         public string StringValue
         {
             get
@@ -237,12 +244,23 @@ namespace FlowBlox.Core.Models.Components
 
         public string ShortStringValue => GetShortStringValue(this.StringValue);
 
+        public bool ShouldMaskValue() => IsPassword
+            && FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.UIPropertyViewMaskPasswordValues)?.GetValueBoolean() == true;
+
+        public DropDownMode GetValueDropDownMode() => LoVType == LoVType.PossibleValues && ListOfValues?.Count > 0
+            ? DropDownMode.SelectionOnly
+            : DropDownMode.Suggestion;
+
+        public IEnumerable<ValueItem> GetPossibleValues() => IsPassword
+            ? Enumerable.Empty<ValueItem>()
+            : ListOfValues ?? Enumerable.Empty<ValueItem>();
+
         public static string GetShortStringValue(string value) => TextHelper.ShortenString(value, 100, true);
 
         private bool? _storeValueLocally;
 
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
-        [Display(Name = "FieldElement_StoreValueLocally", Description = "FieldElement_StoreValueLocally_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [Display(Name = "FieldElement_StoreValueLocally", Description = "FieldElement_StoreValueLocally_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 3)]
         [FlowBloxUI(ReadOnlyMethod = nameof(IsStoreValueLocallyReadOnly))]
         public bool StoreValueLocally
         {
@@ -257,13 +275,26 @@ namespace FlowBlox.Core.Models.Components
         public bool IsStoreValueLocallyReadOnly() => IsPassword;
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Value = UserFieldTypes.Memory)]
-        [Display(Name = "FieldElement_ClearOnRuntimeStart", Description = "FieldElement_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 7)]
+        [Display(Name = "FieldElement_ClearOnRuntimeStart", Description = "FieldElement_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 1)]
+        [FlowBloxUI(ReadOnlyMethod = nameof(IsClearOnRuntimeStartReadOnly))]
+        [DependsOnProperty(MemberName = nameof(IsRequiredAtRuntimeStartup))]
         public bool ClearOnRuntimeStart { get; set; }
+
+        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
+        [Display(Name = "FieldElement_IsRequiredAtRuntimeStartup", Description = "FieldElement_IsRequiredAtRuntimeStartup_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 0)]
+        [FlowBloxUI(ReadOnlyMethod = nameof(IsStartupRequirementReadOnly))]
+        [DependsOnProperty(MemberNames = [nameof(ClearOnRuntimeStart), nameof(UserFieldType)])]
+        public bool IsRequiredAtRuntimeStartup { get; set; }
+
+        public bool IsClearOnRuntimeStartReadOnly() => IsRequiredAtRuntimeStartup && !ClearOnRuntimeStart;
+
+        public bool IsStartupRequirementReadOnly() => UserFieldType == UserFieldTypes.Memory
+            && ClearOnRuntimeStart && !IsRequiredAtRuntimeStartup;
 
         private bool _isPassword;
 
         [ActivationCondition(ActivationMethod = nameof(IsUserInputField))]
-        [Display(Name = "FieldElement_UsePasswordChar", Description = "FieldElement_UsePasswordChar_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [Display(Name = "FieldElement_UsePasswordChar", Description = "FieldElement_UsePasswordChar_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 2)]
         public bool IsPassword
         {
             get => _isPassword;
@@ -283,6 +314,16 @@ namespace FlowBlox.Core.Models.Components
                 OnPropertyChanged();
             }
         }
+
+        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
+        [Display(Name = "FieldElement_SyntaxHighlighting", Description = "FieldElement_SyntaxHighlighting_Tooltip",
+            ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetPossibleSyntaxHighlightings))]
+        [FlowBloxComboBox(DropDownMode = DropDownMode.SelectionOnly)]
+        public string? SyntaxHighlighting { get; set; } = "Text";
+
+        public IEnumerable<string> GetPossibleSyntaxHighlightings() =>
+            ["Text", "JQL", "SQL", "JSON", "XML", "HTML", "JavaScript", "C#"];
 
         public Type GetConfiguredType()
         {
@@ -326,7 +367,11 @@ namespace FlowBlox.Core.Models.Components
         }
 
 
-        [ActivationCondition(MemberName = nameof(UserFieldType), Value = UserFieldTypes.Input)]
+        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
+        [Display(Name = "FieldElement_LoVType", Description = "FieldElement_LoVType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        public LoVType LoVType { get; set; } = LoVType.Suggestion;
+
+        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_ListOfValues", ResourceType = typeof(FlowBloxTexts), Order = 6)]
         [FlowBloxUI(Factory = UIFactory.GridView)]
         public ObservableCollection<ValueItem> ListOfValues { get; set; }

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Models.FlowBlocks.AI;
 using FlowBlox.Core.Models.FlowBlocks.AI.TokenSelector;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
@@ -20,7 +21,7 @@ namespace FlowBloxTest.FlowBlocks.AI
     {
         private const string PublishedDownloadScriptName = "download_phi4_mini_instruct_onnx.py";
         private static string ModelRoot => FlowBloxOptions.GetOptionInstance()
-            .GetOption(OnnxGenAIFlowBlock.ModelRootDirectoryOptionName)?.Value
+            .GetOption(OptionsConstants.AIOnnxGenAIModelRootDirectory)?.Value
             ?? throw new InvalidOperationException("The ONNX GenAI model root option is unavailable.");
 
         private static string ModelFolder => Path.Combine(

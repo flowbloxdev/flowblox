@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Attributes;
@@ -124,8 +125,8 @@ namespace FlowBlox.Core.Models.Components.IO
         public override void RuntimeStarted(BaseRuntime runtime)
         {
             var options = FlowBloxOptions.GetOptionInstance().OptionCollection;
-            var licenseKeyOrName = options["EPPlus.LicenseKeyOrName"].Value;
-            var licenseType = options["EPPlus.LicenseType"].Value?.Trim()?.ToLowerInvariant();
+            var licenseKeyOrName = options[OptionsConstants.EPPlusLicenseKeyOrName].Value;
+            var licenseType = options[OptionsConstants.EPPlusLicenseType].Value?.Trim()?.ToLowerInvariant();
             switch (licenseType)
             {
                 case "noncommercialorganization":

@@ -12,6 +12,9 @@ using FlowBlox.Core.Models.FlowBlocks;
 using FlowBlox.Core.Models.FlowBlocks.Additions;
 using FlowBlox.Core.Models.Runtime.Debugging;
 using FlowBlox.Core.Validations;
+using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Util.Resources;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlowBlox.Core.Models.Runtime
 {
@@ -566,9 +569,52 @@ namespace FlowBlox.Core.Models.Runtime
             var managedObjects = registry.GetManagedObjects();
             var userFields = registry.GetUserFields();
 
+            if (ShouldValidateUserFieldsAtRuntimeStartup())
+                ValidateUserFieldsAtRuntimeStartup();
+
             this.OnBeforeRuntimeStarted(startFlowBlock, flowBlocks, managedObjects);
             this.IntegrityCheck(flowBlocks, userFields);
             this.ValidateFlowBlocks(startFlowBlock);
+        }
+
+        protected virtual bool ShouldValidateUserFieldsAtRuntimeStartup() => true;
+
+        /// <summary>
+        /// Checks effective user-field inputs before any flow or startup command runs.
+        /// Test execution calls this after applying its runtime-bound input values.
+        /// </summary>
+        public void ValidateUserFieldsAtRuntimeStartup()
+        {
+            var errors = new List<string>();
+            foreach (var field in Project.FlowBloxRegistry.GetUserFields()
+                .Where(x => x.UserFieldType is UserFieldTypes.Input || x.UserFieldType is UserFieldTypes.Memory))
+            {
+                var clearsValue = field.UserFieldType == UserFieldTypes.Memory && field.ClearOnRuntimeStart;
+                var value = clearsValue
+                    ? string.Empty
+                    : FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue);
+                if (field.IsRequiredAtRuntimeStartup && string.IsNullOrWhiteSpace(value))
+                {
+                    var key = clearsValue
+                        ? "FieldElement_RequiredAndClearedAtStartup"
+                        : "FieldElement_RequiredValueMissing";
+                    errors.Add(string.Format(
+                        FlowBloxResourceUtil.GetLocalizedString(key),
+                        field.FullyQualifiedName));
+                }
+                else if (!string.IsNullOrWhiteSpace(value)
+                    && field.LoVType == LoVType.PossibleValues
+                    && field.ListOfValues?.Count > 0
+                    && !field.ListOfValues.Any(x => string.Equals(x.Value, value, StringComparison.Ordinal)))
+                {
+                    errors.Add(string.Format(
+                        FlowBloxResourceUtil.GetLocalizedString("FieldElement_ValueNotAllowed"),
+                        field.FullyQualifiedName));
+                }
+            }
+
+            if (errors.Count > 0)
+                throw new ValidationException(string.Join(Environment.NewLine, errors));
         }
 
         protected virtual void OnBeforeRuntimeStarted()

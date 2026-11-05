@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Extensions;
@@ -57,7 +58,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 
         public override void OnAfterCreate()
         {
-            Separator = FlowBloxOptions.GetOptionInstance().OptionCollection["JoinFlowBlock.DefaultSeparator"].Value.ToString();
+            Separator = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.JoinFlowBlockDefaultSeparator].Value.ToString();
             base.OnAfterCreate();
         }
 

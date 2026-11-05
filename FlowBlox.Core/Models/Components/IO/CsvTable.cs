@@ -1,3 +1,4 @@
+using FlowBlox.Core.Constants;
 using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
 using System.Data;
@@ -33,7 +34,7 @@ namespace FlowBlox.Core.Models.Components.IO
         public override void OnAfterCreate()
         {
             // Separator
-            this.Separator = FlowBloxOptions.GetOptionInstance().OptionCollection["CsvTable.CellSeparator"].Value;
+            this.Separator = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.CsvTableCellSeparator].Value;
 
             base.OnAfterCreate();
         }
