@@ -4668,7 +4668,7 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="MediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>Media download provider</value></data>
   <data name="MediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>Media download providers</value></data>
   <data name="MediaDownloadProviderBase_TimeoutSeconds" xml:space="preserve"><value>Timeout (seconds)</value></data>
-  <data name="MediaDownloadProviderBase_TimeoutSeconds_Tooltip" xml:space="preserve"><value>Maximum duration of the complete download including conversion (1–86400 seconds).</value></data>
+  <data name="MediaDownloadProviderBase_TimeoutSeconds_Tooltip" xml:space="preserve"><value>Maximum duration of the complete download including playlist discovery, all entries and conversion (1–86400 seconds).</value></data>
   <data name="YtDlpMediaDownloadProvider_DisplayName" xml:space="preserve"><value>yt-dlp media download provider</value></data>
   <data name="YtDlpMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>yt-dlp media download providers</value></data>
   <data name="YtDlpMediaDownloadProvider_Description" xml:space="preserve"><value>Downloads media through YoutubeDLSharp and external yt-dlp. Install yt-dlp, FFmpeg/ffprobe and Deno manually. Open Quick Start for download links and setup instructions.</value></data>
@@ -4679,11 +4679,11 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="YtDlpMediaDownloadProvider_DenoPath" xml:space="preserve"><value>Deno executable</value></data>
   <data name="YtDlpMediaDownloadProvider_DenoPath_Tooltip" xml:space="preserve"><value>Optional path to deno.exe for YouTube JavaScript challenges. Empty uses yt-dlp runtime discovery. Official yt-dlp releases include EJS scripts.</value></data>
   <data name="MediaDownloadFlowBlock_DisplayName" xml:space="preserve"><value>Media download</value></data>
-  <data name="MediaDownloadFlowBlock_Description" xml:space="preserve"><value>Downloads one media URL through a linked provider, optionally converting audio. Returns success and the local output file path. Configure external tools on the provider; progress is reported at throttled intervals.</value></data>
+  <data name="MediaDownloadFlowBlock_Description" xml:space="preserve"><value>Downloads media through a linked provider, optionally converting audio. Returns one row per media entry with success, file path and source URL. Failed entries create a configurable warning. Enable playlist downloads on the yt-dlp provider.</value></data>
   <data name="MediaDownloadFlowBlock_Provider" xml:space="preserve"><value>Provider</value></data>
   <data name="MediaDownloadFlowBlock_Provider_Tooltip" xml:space="preserve"><value>Reusable download provider that supplies the download implementation and tool configuration.</value></data>
   <data name="MediaDownloadFlowBlock_Url" xml:space="preserve"><value>Media URL</value></data>
-  <data name="MediaDownloadFlowBlock_Url_Tooltip" xml:space="preserve"><value>HTTP or HTTPS media URL. yt-dlp accepts supported website URLs and selects the first playlist item. FFmpeg expects a direct media file or HLS/DASH manifest URL.</value></data>
+  <data name="MediaDownloadFlowBlock_Url_Tooltip" xml:space="preserve"><value>HTTP or HTTPS media URL. yt-dlp accepts supported website URLs. Playlists require Download playlist on its provider; detected playlists are rejected with a warning when disabled. FFmpeg expects a direct media file or HLS/DASH manifest URL.</value></data>
   <data name="MediaDownloadFlowBlock_OutputDirectory" xml:space="preserve"><value>Output directory</value></data>
   <data name="MediaDownloadFlowBlock_OutputDirectory_Tooltip" xml:space="preserve"><value>Local folder on the executing computer. Created if necessary. File names are determined by the selected provider.</value></data>
   <data name="MediaDownloadFlowBlock_Format" xml:space="preserve"><value>Output format</value></data>
@@ -4693,7 +4693,7 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="MediaDownloadFlowBlock_OverwriteFiles" xml:space="preserve"><value>Overwrite existing files</value></data>
   <data name="MediaDownloadFlowBlock_OverwriteFiles_Tooltip" xml:space="preserve"><value>Allow replacing existing output files. Disabled by default; the provider may reuse a completed existing file.</value></data>
   <data name="MediaDownloadFlowBlock_ResultFields" xml:space="preserve"><value>Result fields</value></data>
-  <data name="MediaDownloadNotifications_DownloadFailed" xml:space="preserve"><value>Media download failed. Check provider configuration and log.</value></data>
+  <data name="MediaDownloadNotifications_DownloadFailed" xml:space="preserve"><value>Media download failed.</value></data>
   <data name="MediaDownloadFormat_Video" xml:space="preserve"><value>Video (best available)</value></data>
   <data name="MediaDownloadFormat_Audio" xml:space="preserve"><value>Original audio</value></data>
   <data name="MediaDownloadFormat_Mp3" xml:space="preserve"><value>MP3</value></data>
@@ -4730,6 +4730,15 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="MediaToolBase_DisplayName_Plural" xml:space="preserve"><value>Media tools</value></data>
   <data name="MediaToolBase_BinaryDirectory" xml:space="preserve"><value>Binary directory</value></data>
   <data name="MediaToolBase_BinaryDirectory_Tooltip" xml:space="preserve"><value>Physical directory containing the tool executables. Empty uses PATH. Field references are resolved before use.</value></data>
+  <data name="YtDlpMediaDownloadProvider_DownloadPlaylist" xml:space="preserve"><value>Download playlist</value></data>
+  <data name="YtDlpMediaDownloadProvider_DownloadPlaylist_Tooltip" xml:space="preserve"><value>Download all entries of a playlist, including video URLs with a playlist parameter. Returns one result per entry in playlist order. Unavailable entries produce failed results and a FlowBlock warning; other downloads continue. Disabled by default: detected playlists are rejected with a warning. The timeout applies to the entire operation.</value></data>
+  <data name="MediaDownloadDestinations_ErrorMessage" xml:space="preserve"><value>Error message</value></data>
+  <data name="MediaDownloadNotifications_NoMediaFound" xml:space="preserve"><value>No media entries found.</value></data>
+  <data name="MediaDownloadDestinations_FailureReason" xml:space="preserve"><value>Failure reason</value></data>
+  <data name="MediaDownloadNotifications_PlaylistNotSupported" xml:space="preserve"><value>Playlist downloads are disabled.</value></data>
+  <data name="MediaDownloadNotifications_OutputFileMissing" xml:space="preserve"><value>Media output file missing.</value></data>
+  <data name="MediaDownloadNotifications_Timeout" xml:space="preserve"><value>Media download timed out.</value></data>
+  <data name="MediaDownloadProviderBase_UnsupportedFormat" xml:space="preserve"><value>The selected provider does not support the output format '{0}'.</value></data>
 </root>
 
 

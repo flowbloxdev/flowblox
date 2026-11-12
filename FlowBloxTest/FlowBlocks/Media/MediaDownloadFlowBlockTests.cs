@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.FlowBlocks.Media;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
@@ -25,7 +26,7 @@ namespace FlowBloxTest.FlowBlocks.Media
                 var block = CreateFlowBlock<MediaDownloadFlowBlock>(start);
                 var provider = new RecordingMediaDownloadProvider
                 {
-                    Handler = _ => Task.FromResult(temporaryFile)
+                    Handler = _ => SuccessfulDownloadAsync(temporaryFile)
                 };
                 block.Provider = provider;
                 block.Url = "https://example.test/video";
@@ -82,14 +83,16 @@ namespace FlowBloxTest.FlowBlocks.Media
             var messages = new List<string>();
             var provider = new RecordingMediaDownloadProvider
             {
-                Handler = _ => Task.FromResult(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".mp3"))
+                Handler = _ => SuccessfulDownloadAsync(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".mp3"))
             };
 
-            await Assert.ThrowsAsync<IOException>(() => provider.DownloadAsync(
+            var results = await provider.DownloadAsync(
                 CreateRequest(),
                 new TransferProgressReporter(messages.Add),
-                CancellationToken.None));
+                CancellationToken.None);
 
+            Assert.IsFalse(results.Single().Success);
+            Assert.AreEqual(string.Empty, results.Single().FilePath);
             CollectionAssert.DoesNotContain(messages, "Transfer completed.");
         }
 
@@ -108,10 +111,134 @@ namespace FlowBloxTest.FlowBlocks.Media
                 CancellationToken.None));
         }
 
-        private static async Task<string> WaitForCancellationAsync(CancellationToken cancellationToken)
+        [TestMethod]
+        [DataRow(NotificationType.Warning)]
+        [DataRow(NotificationType.Error)]
+        [DataRow(NotificationType.None)]
+        public void MixedResults_EmitAllRowsAndRespectNotificationOverride(NotificationType notificationType)
+        {
+            var filePath = Path.GetTempFileName();
+            try
+            {
+                var project = new FlowBloxProject();
+                FlowBloxProjectManager.Instance.ActiveProject = project;
+                var start = CreateFlowBlock<StartFlowBlock>();
+                var block = CreateFlowBlock<MediaDownloadFlowBlock>(start);
+                block.Url = "https://example.test/playlist";
+                block.OutputDirectory = Path.GetTempPath();
+                block.Provider = new RecordingMediaDownloadProvider
+                {
+                    Handler = _ => Task.FromResult<IReadOnlyList<MediaDownloadResult>>(
+                    [
+                        new MediaDownloadResult
+                        {
+                            Success = true,
+                            FilePath = filePath,
+                            SourceUrl = "https://example.test/first"
+                        },
+                        new MediaDownloadResult
+                        {
+                            SourceUrl = "https://example.test/private",
+                            FailureReason = MediaDownloadFailureReason.DownloadFailed,
+                            ErrorMessage = "Private video."
+                        },
+                        new MediaDownloadResult
+                        {
+                            Success = true,
+                            FilePath = filePath,
+                            SourceUrl = "https://example.test/last"
+                        }
+                    ])
+                };
+                block.OverrideNotificationType(MediaDownloadFlowBlock.MediaDownloadNotifications.DownloadFailed, notificationType);
+                var warnings = 0;
+                var errors = 0;
+                block.OnWarn += (_, _) => warnings++;
+                block.OnError += (_, _) => errors++;
+
+                block.Execute(new FlowBloxUnitTestRuntime(project), null);
+
+                Assert.HasCount(3, block.GridElementResult.Results);
+                var successField = block.ResultFields.Single(item => item.EnumValue == MediaDownloadDestinations.Success).ResultField;
+                var successValues = block.GridElementResult.Results
+                    .Select(row => row.FieldValueMappings.Single(mapping => ReferenceEquals(mapping.Field, successField)).Value)
+                    .ToArray();
+                CollectionAssert.AreEqual(new[] { "True", "False", "True" }, successValues);
+                Assert.AreEqual(notificationType == NotificationType.Warning ? 1 : 0, warnings);
+                Assert.AreEqual(notificationType == NotificationType.Error ? 1 : 0, errors);
+            }
+            finally
+            {
+                File.Delete(filePath);
+            }
+        }
+
+        [TestMethod]
+        public async Task MissingFileInBatch_PreservesOtherSuccessfulResults()
+        {
+            var filePath = Path.GetTempFileName();
+            try
+            {
+                var provider = new RecordingMediaDownloadProvider
+                {
+                    Handler = _ => Task.FromResult<IReadOnlyList<MediaDownloadResult>>(
+                    [
+                        new MediaDownloadResult { Success = true, FilePath = filePath },
+                        new MediaDownloadResult { Success = true, FilePath = filePath + ".missing" }
+                    ])
+                };
+
+                var results = await provider.DownloadAsync(CreateRequest(), new TransferProgressReporter(_ => { }), CancellationToken.None);
+
+                Assert.IsTrue(results[0].Success);
+                Assert.AreEqual(filePath, results[0].FilePath);
+                Assert.IsFalse(results[1].Success);
+                Assert.AreEqual(MediaDownloadFailureReason.OutputFileMissing, results[1].FailureReason);
+                Assert.AreEqual(string.Empty, results[1].FilePath);
+            }
+            finally
+            {
+                File.Delete(filePath);
+            }
+        }
+
+        [TestMethod]
+        public void EmptyPlaylist_EmitsEmptyResultAndCreatesWarning()
+        {
+            var project = new FlowBloxProject();
+            FlowBloxProjectManager.Instance.ActiveProject = project;
+            var start = CreateFlowBlock<StartFlowBlock>();
+            var block = CreateFlowBlock<MediaDownloadFlowBlock>(start);
+            block.Url = "https://example.test/empty";
+            block.OutputDirectory = Path.GetTempPath();
+            block.Provider = new RecordingMediaDownloadProvider
+            {
+                Handler = _ => Task.FromResult<IReadOnlyList<MediaDownloadResult>>([])
+            };
+            var warnings = 0;
+            block.OnWarn += (_, _) => warnings++;
+
+            block.Execute(new FlowBloxUnitTestRuntime(project), null);
+
+            Assert.HasCount(1, block.GridElementResult.Results);
+            Assert.IsTrue(block.GridElementResult.Results[0].FieldValueMappings.All(mapping => mapping.Value == null));
+            Assert.AreEqual(1, warnings);
+        }
+
+        private static Task<IReadOnlyList<MediaDownloadResult>> SuccessfulDownloadAsync(string filePath) =>
+            Task.FromResult<IReadOnlyList<MediaDownloadResult>>(
+            [
+                new MediaDownloadResult
+                {
+                    Success = true,
+                    FilePath = filePath
+                }
+            ]);
+
+        private static async Task<IReadOnlyList<MediaDownloadResult>> WaitForCancellationAsync(CancellationToken cancellationToken)
         {
             await Task.Delay(Timeout.Infinite, cancellationToken);
-            return string.Empty;
+            return [];
         }
 
         private static MediaDownloadRequest CreateRequest(string url = "https://example.test/video") =>

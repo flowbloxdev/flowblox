@@ -15975,7 +15975,7 @@ namespace FlowBlox.Core {
         }
 
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Maximum duration of the complete download including conversion (1–86400 seconds). ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Maximum duration of the complete download including playlist discovery, all entries and conversion (1–86400 seconds). ähnelt.
         /// </summary>
         public static string MediaDownloadProviderBase_TimeoutSeconds_Tooltip
         {
@@ -16096,7 +16096,7 @@ namespace FlowBlox.Core {
         }
 
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Downloads one media URL through a linked provider, optionally converting audio. Returns success and the local output file path. Configure external tools on the provider; progress is reported at throttled intervals. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Downloads media through a linked provider, optionally converting audio. Returns one row per media entry with success, file path and source URL. Failed entries create a configurable warning. Enable playlist downloads on the yt-dlp provider. ähnelt.
         /// </summary>
         public static string MediaDownloadFlowBlock_Description
         {
@@ -16140,7 +16140,7 @@ namespace FlowBlox.Core {
         }
 
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die HTTP or HTTPS media URL. yt-dlp accepts supported website URLs and selects the first playlist item. FFmpeg expects a direct media file or HLS/DASH manifest URL. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die HTTP or HTTPS media URL. yt-dlp accepts supported website URLs. Playlists require Download playlist on its provider; detected playlists are rejected with a warning when disabled. FFmpeg expects a direct media file or HLS/DASH manifest URL. ähnelt.
         /// </summary>
         public static string MediaDownloadFlowBlock_Url_Tooltip
         {
@@ -16250,7 +16250,7 @@ namespace FlowBlox.Core {
         }
 
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Media download failed. Check provider configuration and log. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media download failed. ähnelt.
         /// </summary>
         public static string MediaDownloadNotifications_DownloadFailed
         {
@@ -16656,5 +16656,103 @@ namespace FlowBlox.Core {
             }
         }
 
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Error message ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_ErrorMessage
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_ErrorMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Failure reason ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_FailureReason
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_FailureReason", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No media entries found. ähnelt.
+        /// </summary>
+        public static string MediaDownloadNotifications_NoMediaFound
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadNotifications_NoMediaFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media output file missing. ähnelt.
+        /// </summary>
+        public static string MediaDownloadNotifications_OutputFileMissing
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadNotifications_OutputFileMissing", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Playlist downloads are disabled. ähnelt.
+        /// </summary>
+        public static string MediaDownloadNotifications_PlaylistNotSupported
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadNotifications_PlaylistNotSupported", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media download timed out. ähnelt.
+        /// </summary>
+        public static string MediaDownloadNotifications_Timeout
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadNotifications_Timeout", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The selected provider does not support the output format &apos;{0}&apos;. ähnelt.
+        /// </summary>
+        public static string MediaDownloadProviderBase_UnsupportedFormat
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadProviderBase_UnsupportedFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Download playlist ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_DownloadPlaylist
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_DownloadPlaylist", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Download all entries of a playlist, including video URLs with a playlist parameter. Returns one result per entry in playlist order. Unavailable entries produce failed results and a FlowBlock warning; other downloads continue. Disabled by default: detected playlists are rejected with a warning. The timeout applies to the entire operation. ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_DownloadPlaylist_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_DownloadPlaylist_Tooltip", resourceCulture);
+            }
+        }
     }
 }

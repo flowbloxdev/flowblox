@@ -26,7 +26,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? RecordingDurationSeconds { get; set; }
 
-        protected override async Task<string> DownloadCoreAsync(
+        public override bool SupportsFormat(MediaDownloadFormat format) => format switch
+        {
+            MediaDownloadFormat.Video or
+            MediaDownloadFormat.Audio or
+            MediaDownloadFormat.Mp3 or
+            MediaDownloadFormat.M4a or
+            MediaDownloadFormat.Opus => true,
+            _ => false
+        };
+
+        protected override async Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
             CancellationToken cancellationToken)
@@ -42,7 +52,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             if (!request.OverwriteFiles && File.Exists(outputPath))
             {
                 progress.Report("Using existing media file");
-                return outputPath;
+                return CreateResult(outputPath, request.Url);
             }
 
             var temporaryPath = Path.Combine(outputDirectory,
@@ -65,7 +75,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
 
                 cancellationToken.ThrowIfCancellationRequested();
                 File.Move(temporaryPath, outputPath, request.OverwriteFiles);
-                return outputPath;
+                return CreateResult(outputPath, request.Url);
             }
             finally
             {
@@ -73,6 +83,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     File.Delete(temporaryPath);
             }
         }
+
+        private static IReadOnlyList<MediaDownloadResult> CreateResult(string filePath, string sourceUrl) =>
+        [
+            new MediaDownloadResult
+            {
+                Success = true,
+                FilePath = filePath,
+                SourceUrl = sourceUrl
+            }
+        ];
 
         internal static string CreateOutputPath(MediaDownloadRequest request, string outputDirectory, string outputName)
         {

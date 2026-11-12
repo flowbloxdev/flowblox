@@ -5,6 +5,7 @@ using FlowBlox.Core.Enums;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util.Downloads;
 using YoutubeDLSharp;
+using YoutubeDLSharp.Metadata;
 using YoutubeDLSharp.Options;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Media
@@ -32,12 +33,27 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
         public string DenoPath { get; set; } = string.Empty;
 
+        [Display(Name = "YtDlpMediaDownloadProvider_DownloadPlaylist", Description = "YtDlpMediaDownloadProvider_DownloadPlaylist_Tooltip",
+            ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
+        public bool DownloadPlaylist { get; set; }
+
+        public override bool SupportsFormat(MediaDownloadFormat format) => format switch
+        {
+            MediaDownloadFormat.Video or
+            MediaDownloadFormat.Audio or
+            MediaDownloadFormat.Mp3 or
+            MediaDownloadFormat.M4a or
+            MediaDownloadFormat.Opus => true,
+            _ => false
+        };
+
         private bool IsStandaloneFFmpegPathActive() => FFmpeg == null;
 
         protected override string ResolveFallbackFFmpegPath() =>
             this.Resolve(provider => provider.FFmpegPath, required: true);
 
-        protected override async Task<string> DownloadCoreAsync(
+        protected override async Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
             CancellationToken cancellationToken)
@@ -54,8 +70,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 IgnoreDownloadErrors = false
             };
 
+            var downloadPlaylist = this.Resolve(provider => provider.DownloadPlaylist);
             var options = new OptionSet
             {
+                // YoutubeDLSharp reads stdout as UTF-8; yt-dlp must use the same encoding for file paths.
+                Encoding = "utf-8",
                 NoPlaylist = true,
                 PlaylistItems = "1",
                 NoPart = false
@@ -64,6 +83,44 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             if (!string.IsNullOrWhiteSpace(denoPath))
                 options.AddCustomOption("--js-runtimes", "deno:" + denoPath);
 
+            var adapter = new YtDlpProgressAdapter(progress);
+            progress.Report("Preparing media download");
+            var discoveryOptions = new OptionSet
+            {
+                Encoding = "utf-8",
+                NoPlaylist = false,
+                PlaylistItems = downloadPlaylist ? null : "1"
+            };
+            discoveryOptions.AddCustomOption("--yes-playlist", true);
+            if (!string.IsNullOrWhiteSpace(denoPath))
+                discoveryOptions.AddCustomOption("--js-runtimes", "deno:" + denoPath);
+
+            var metadata = await downloader.RunVideoDataFetch(
+                request.Url,
+                ct: cancellationToken,
+                flat: true,
+                overrideOptions: discoveryOptions).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!metadata.Success || metadata.Data == null)
+                throw new IOException("yt-dlp media discovery failed: " + string.Join(Environment.NewLine, metadata.ErrorOutput));
+
+            return await DownloadDiscoveredMediaAsync(
+                metadata.Data,
+                downloadPlaylist,
+                request.Url,
+                (url, token) => DownloadSingleAsync(downloader, request, url, options, adapter, token),
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        private static async Task<string> DownloadSingleAsync(
+            YoutubeDL downloader,
+            MediaDownloadRequest request,
+            string url,
+            OptionSet options,
+            YtDlpProgressAdapter adapter,
+            CancellationToken cancellationToken)
+        {
+            options = (OptionSet)options.Clone();
             if (request.AudioBitrateKbps.HasValue &&
                 request.Format != MediaDownloadFormat.Video &&
                 request.Format != MediaDownloadFormat.Audio)
@@ -72,13 +129,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     request.AudioBitrateKbps.Value.ToString(CultureInfo.InvariantCulture) + "K");
             }
 
-            var adapter = new YtDlpProgressAdapter(progress);
-            progress.Report("Preparing media download");
             RunResult<string> result;
             if (request.Format == MediaDownloadFormat.Video || request.Format == MediaDownloadFormat.Audio)
             {
                 result = await downloader.RunVideoDownload(
-                    request.Url,
+                    url,
                     format: request.Format == MediaDownloadFormat.Audio ? "bestaudio" : "bestvideo+bestaudio/best",
                     ct: cancellationToken,
                     progress: adapter,
@@ -94,7 +149,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     _ => throw new ValidationException("The media output format is unsupported.")
                 };
                 result = await downloader.RunAudioDownload(
-                    request.Url,
+                    url,
                     audioFormat,
                     ct: cancellationToken,
                     progress: adapter,
@@ -106,6 +161,91 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 throw new IOException("yt-dlp media download failed: " + string.Join(Environment.NewLine, result.ErrorOutput));
 
             return result.Data;
+        }
+
+        internal static Task<IReadOnlyList<MediaDownloadResult>> DownloadDiscoveredMediaAsync(
+            VideoData metadata,
+            bool downloadPlaylist,
+            string sourceUrl,
+            Func<string, CancellationToken, Task<string>> download,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (metadata.Entries != null && !downloadPlaylist)
+            {
+                return Task.FromResult<IReadOnlyList<MediaDownloadResult>>(
+                [
+                    new MediaDownloadResult
+                    {
+                        SourceUrl = sourceUrl,
+                        FailureReason = MediaDownloadFailureReason.PlaylistNotSupported,
+                        ErrorMessage = "yt-dlp identified a playlist, but playlist downloads are disabled on the provider."
+                    }
+                ]);
+            }
+
+            var entries = metadata.Entries ?? [new VideoData { WebpageUrl = sourceUrl }];
+            return DownloadPlaylistEntriesAsync(entries, sourceUrl, download, cancellationToken);
+        }
+
+        private static async Task<IReadOnlyList<MediaDownloadResult>> DownloadPlaylistEntriesAsync(
+            IEnumerable<VideoData?> entries,
+            string playlistUrl,
+            Func<string, CancellationToken, Task<string>> download,
+            CancellationToken cancellationToken)
+        {
+            var results = new List<MediaDownloadResult>();
+            foreach (var entry in entries)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (entry?.Entries != null)
+                {
+                    results.AddRange(await DownloadPlaylistEntriesAsync(
+                        entry.Entries,
+                        playlistUrl,
+                        download,
+                        cancellationToken).ConfigureAwait(false));
+                    continue;
+                }
+
+                var sourceUrl = entry?.WebpageUrl;
+                // Generic HTML playlists can give every entry the playlist page as its webpage URL.
+                // In that case use the entry's own media URL rather than downloading the first item repeatedly.
+                if (string.IsNullOrWhiteSpace(sourceUrl) ||
+                    (string.Equals(sourceUrl, playlistUrl, StringComparison.Ordinal) && !string.IsNullOrWhiteSpace(entry?.Url)))
+                    sourceUrl = entry?.Url;
+
+                try
+                {
+                    if (!Uri.TryCreate(sourceUrl, UriKind.Absolute, out var uri) ||
+                        (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+                        throw new IOException("yt-dlp returned a playlist entry without a valid media URL.");
+
+                    var filePath = await download(sourceUrl, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    results.Add(new MediaDownloadResult
+                    {
+                        Success = true,
+                        SourceUrl = sourceUrl,
+                        FilePath = filePath
+                    });
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception exception)
+                {
+                    results.Add(new MediaDownloadResult
+                    {
+                        SourceUrl = string.IsNullOrWhiteSpace(sourceUrl) ? playlistUrl : sourceUrl,
+                        FailureReason = MediaDownloadFailureReason.DownloadFailed,
+                        ErrorMessage = exception.Message
+                    });
+                }
+            }
+
+            return results;
         }
     }
 }

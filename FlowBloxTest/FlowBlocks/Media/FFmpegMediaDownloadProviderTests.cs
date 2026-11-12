@@ -69,7 +69,9 @@ namespace FlowBloxTest.FlowBlocks.Media
                     new TransferProgressReporter(_ => { }),
                     CancellationToken.None);
 
-                Assert.AreEqual(path, result);
+                Assert.HasCount(1, result);
+                Assert.IsTrue(result[0].Success);
+                Assert.AreEqual(path, result[0].FilePath);
                 Assert.AreEqual("existing media", File.ReadAllText(path));
             }
             finally

@@ -22,7 +22,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.download, 16, SKColors.SteelBlue);
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.download, 32, SKColors.SteelBlue);
 
-        public async Task<string> DownloadAsync(
+        public abstract bool SupportsFormat(MediaDownloadFormat format);
+
+        internal string GetUnsupportedFormatMessage(MediaDownloadFormat format) => string.Format(
+            FlowBloxResourceUtil.GetLocalizedString("MediaDownloadProviderBase_UnsupportedFormat", typeof(FlowBloxTexts)),
+            Enum.IsDefined(format) ? format.GetDisplayName() : format.ToString());
+
+        public async Task<IReadOnlyList<MediaDownloadResult>> DownloadAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
             CancellationToken cancellationToken)
@@ -37,6 +43,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 throw new ValidationException("A download output directory is required.");
             if (!Enum.IsDefined(request.Format))
                 throw new ValidationException("The media output format is invalid.");
+            if (!SupportsFormat(request.Format))
+                throw new ValidationException(GetUnsupportedFormatMessage(request.Format));
+
             if (request.AudioBitrateKbps.HasValue &&
                 (request.AudioBitrateKbps.Value < 32 || request.AudioBitrateKbps.Value > 320))
                 throw new ValidationException("The audio bitrate must be between 32 and 320 kbps.");
@@ -51,13 +60,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
 
             try
             {
-                var path = await DownloadCoreAsync(request, progress, timeout.Token).ConfigureAwait(false);
+                var results = await DownloadCoreAsync(request, progress, timeout.Token).ConfigureAwait(false);
                 timeout.Token.ThrowIfCancellationRequested();
-                if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-                    throw new IOException("The media provider did not produce an output file.");
+                var validatedResults = results
+                    .Select(result => ValidateResult(result, request.Url))
+                    .ToArray();
 
-                progress.Complete();
-                return Path.GetFullPath(path);
+                if (validatedResults.Length > 0 && validatedResults.All(result => result.Success))
+                    progress.Complete();
+
+                return validatedResults;
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested && timeout.IsCancellationRequested)
             {
@@ -65,7 +77,38 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             }
         }
 
-        protected abstract Task<string> DownloadCoreAsync(
+        private static MediaDownloadResult ValidateResult(MediaDownloadResult result, string sourceUrl)
+        {
+            var success = result.Success && !string.IsNullOrWhiteSpace(result.FilePath) && File.Exists(result.FilePath);
+            var failureReason = result.FailureReason;
+            var errorMessage = result.ErrorMessage;
+            if (success)
+            {
+                failureReason = MediaDownloadFailureReason.None;
+                errorMessage = string.Empty;
+            }
+            else
+            {
+                if (result.Success)
+                    failureReason = MediaDownloadFailureReason.OutputFileMissing;
+                else if (failureReason == MediaDownloadFailureReason.None)
+                    failureReason = MediaDownloadFailureReason.DownloadFailed;
+
+                if (string.IsNullOrWhiteSpace(errorMessage))
+                    errorMessage = "The media provider did not produce an output file.";
+            }
+
+            return new MediaDownloadResult
+            {
+                Success = success,
+                FilePath = success ? Path.GetFullPath(result.FilePath) : string.Empty,
+                SourceUrl = string.IsNullOrWhiteSpace(result.SourceUrl) ? sourceUrl : result.SourceUrl,
+                FailureReason = failureReason,
+                ErrorMessage = errorMessage
+            };
+        }
+
+        protected abstract Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
             CancellationToken cancellationToken);

@@ -16,5 +16,5 @@ FlowBlox.Installer/Generated/
 FlowBloxResources/data/README.txt
 FlowBloxResources/data/onnxruntimes/
 FlowBloxResources/data/onnxruntimesgenai/
-FlowBloxResources/temp/history.json
+FlowBloxResources/temp/
 TestResults/

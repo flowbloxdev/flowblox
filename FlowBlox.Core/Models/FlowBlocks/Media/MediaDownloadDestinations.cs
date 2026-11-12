@@ -13,6 +13,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [Display(Name = "MediaDownloadDestinations_FileSize", ResourceType = typeof(FlowBloxTexts))]
         FileSize,
         [Display(Name = "MediaDownloadDestinations_SourceUrl", ResourceType = typeof(FlowBloxTexts))]
-        SourceUrl
+        SourceUrl,
+        [Display(Name = "MediaDownloadDestinations_ErrorMessage", ResourceType = typeof(FlowBloxTexts))]
+        ErrorMessage,
+        [Display(Name = "MediaDownloadDestinations_FailureReason", ResourceType = typeof(FlowBloxTexts))]
+        FailureReason
     }
 }

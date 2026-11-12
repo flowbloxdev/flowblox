@@ -42,6 +42,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [Display(Name = "MediaDownloadFlowBlock_Format", Description = "MediaDownloadFlowBlock_Format_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
+        [DependsOnProperty(MemberName = nameof(Provider))]
+        [CustomValidation(typeof(MediaDownloadFlowBlock), nameof(ValidateFormat))]
         public MediaDownloadFormat Format { get; set; } = MediaDownloadFormat.Video;
 
         [Range(32, 320)]
@@ -73,6 +75,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
 
         public IEnumerable<MediaDownloadProviderBase> GetPossibleProviders() =>
             FlowBloxRegistryProvider.GetRegistry().GetManagedObjects<MediaDownloadProviderBase>();
+
+        public static ValidationResult? ValidateFormat(MediaDownloadFormat format, ValidationContext validationContext)
+        {
+            var block = (MediaDownloadFlowBlock)validationContext.ObjectInstance;
+            var provider = block.Provider;
+            if (provider == null)
+                return ValidationResult.Success;
+
+            if (!string.IsNullOrWhiteSpace(block.GetPropertySelectedFieldName(nameof(Format))))
+                format = block.Resolve(owner => owner.Format);
+            return provider.SupportsFormat(format)
+                ? ValidationResult.Success
+                : new ValidationResult(provider.GetUnsupportedFormatMessage(format), [nameof(Format)]);
+        }
 
         private bool IsAudioBitrateActive()
         {
@@ -108,10 +124,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             return Invoke(runtime, data, () =>
             {
                 var url = this.Resolve(block => block.Url).Trim();
-                string filePath = string.Empty;
-                string fileName = string.Empty;
-                string fileSize = string.Empty;
-                var success = false;
+                IReadOnlyList<MediaDownloadResult> results;
                 try
                 {
                     if (Provider == null)
@@ -126,10 +139,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                         OverwriteFiles = this.Resolve(block => block.OverwriteFiles)
                     };
                     var progress = new TransferProgressReporter(message => runtime.Report(message, FlowBloxLogLevel.Info));
-                    filePath = Provider.DownloadAsync(request, progress, runtime.GetCancellationToken()).GetAwaiter().GetResult();
-                    fileName = Path.GetFileName(filePath);
-                    fileSize = new FileInfo(filePath).Length.ToString(CultureInfo.InvariantCulture);
-                    success = true;
+                    results = Provider.DownloadAsync(request, progress, runtime.GetCancellationToken()).GetAwaiter().GetResult();
                 }
                 catch (OperationCanceledException)
                 {
@@ -137,20 +147,59 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 }
                 catch (Exception exception)
                 {
-                    runtime.Report("Media download failed.", FlowBloxLogLevel.Error, exception);
-                    CreateNotification(runtime, MediaDownloadNotifications.DownloadFailed);
+                    runtime.Report("Media download failed.", FlowBloxLogLevel.Warning, exception);
+                    results =
+                    [
+                        new MediaDownloadResult
+                        {
+                            SourceUrl = url,
+                            FailureReason = exception is TimeoutException
+                                ? MediaDownloadFailureReason.Timeout
+                                : MediaDownloadFailureReason.DownloadFailed,
+                            ErrorMessage = exception.Message
+                        }
+                    ];
                 }
 
-                var row = new ResultFieldByEnumValueResultBuilder<MediaDownloadDestinations>()
-                    .For(MediaDownloadDestinations.Success, success.ToString(CultureInfo.InvariantCulture))
-                    .For(MediaDownloadDestinations.FilePath, filePath)
-                    .For(MediaDownloadDestinations.FileName, fileName)
-                    .For(MediaDownloadDestinations.FileSize, fileSize)
-                    .For(MediaDownloadDestinations.SourceUrl, url)
-                    .Build(ResultFields);
-                GenerateResult(runtime, [row]);
+                foreach (var result in results.Where(result => !result.Success))
+                    runtime.Report("Media download entry failed: " + result.SourceUrl + ". " + result.ErrorMessage, FlowBloxLogLevel.Warning);
+
+                foreach (var reason in results.Where(result => !result.Success).Select(result => result.FailureReason).Distinct())
+                    CreateNotification(runtime, GetFailureNotification(reason));
+
+                if (results.Count == 0)
+                    CreateNotification(runtime, MediaDownloadNotifications.NoMediaFound);
+
+                var rows = results.Select(CreateResultRow).ToArray();
+                GenerateResult(runtime, rows);
             });
         }
+
+        private Dictionary<FieldElement, string> CreateResultRow(MediaDownloadResult result)
+        {
+            var filePath = result.Success ? result.FilePath : string.Empty;
+            var fileSize = result.Success
+                ? new FileInfo(filePath).Length.ToString(CultureInfo.InvariantCulture)
+                : string.Empty;
+
+            return new ResultFieldByEnumValueResultBuilder<MediaDownloadDestinations>()
+                .For(MediaDownloadDestinations.Success, result.Success.ToString(CultureInfo.InvariantCulture))
+                .For(MediaDownloadDestinations.FilePath, filePath)
+                .For(MediaDownloadDestinations.FileName, Path.GetFileName(filePath))
+                .For(MediaDownloadDestinations.FileSize, fileSize)
+                .For(MediaDownloadDestinations.SourceUrl, result.SourceUrl)
+                .For(MediaDownloadDestinations.ErrorMessage, result.ErrorMessage)
+                .For(MediaDownloadDestinations.FailureReason, result.FailureReason.ToString())
+                .Build(ResultFields);
+        }
+
+        private static MediaDownloadNotifications GetFailureNotification(MediaDownloadFailureReason reason) => reason switch
+        {
+            MediaDownloadFailureReason.PlaylistNotSupported => MediaDownloadNotifications.PlaylistNotSupported,
+            MediaDownloadFailureReason.OutputFileMissing => MediaDownloadNotifications.OutputFileMissing,
+            MediaDownloadFailureReason.Timeout => MediaDownloadNotifications.Timeout,
+            _ => MediaDownloadNotifications.DownloadFailed
+        };
 
         public override List<Type> NotificationTypes
         {
@@ -166,7 +215,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         {
             [FlowBloxNotification(NotificationType = NotificationType.Warning)]
             [Display(Name = "MediaDownloadNotifications_DownloadFailed", ResourceType = typeof(FlowBloxTexts))]
-            DownloadFailed
+            DownloadFailed,
+            [FlowBloxNotification(NotificationType = NotificationType.Warning)]
+            [Display(Name = "MediaDownloadNotifications_NoMediaFound", ResourceType = typeof(FlowBloxTexts))]
+            NoMediaFound,
+            [FlowBloxNotification(NotificationType = NotificationType.Warning)]
+            [Display(Name = "MediaDownloadNotifications_PlaylistNotSupported", ResourceType = typeof(FlowBloxTexts))]
+            PlaylistNotSupported,
+            [FlowBloxNotification(NotificationType = NotificationType.Warning)]
+            [Display(Name = "MediaDownloadNotifications_OutputFileMissing", ResourceType = typeof(FlowBloxTexts))]
+            OutputFileMissing,
+            [FlowBloxNotification(NotificationType = NotificationType.Warning)]
+            [Display(Name = "MediaDownloadNotifications_Timeout", ResourceType = typeof(FlowBloxTexts))]
+            Timeout
         }
     }
 }

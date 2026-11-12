@@ -4670,7 +4670,7 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="MediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>Mediendownload-Anbieter</value></data>
   <data name="MediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>Mediendownload-Anbieter</value></data>
   <data name="MediaDownloadProviderBase_TimeoutSeconds" xml:space="preserve"><value>Zeitlimit (Sekunden)</value></data>
-  <data name="MediaDownloadProviderBase_TimeoutSeconds_Tooltip" xml:space="preserve"><value>Maximale Dauer des gesamten Downloads einschließlich Konvertierung (1–86400 Sekunden).</value></data>
+  <data name="MediaDownloadProviderBase_TimeoutSeconds_Tooltip" xml:space="preserve"><value>Maximale Dauer des gesamten Downloads einschließlich Playlist-Ermittlung, aller Einträge und Konvertierung (1–86400 Sekunden).</value></data>
   <data name="YtDlpMediaDownloadProvider_DisplayName" xml:space="preserve"><value>yt-dlp-Mediendownload-Anbieter</value></data>
   <data name="YtDlpMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>yt-dlp-Mediendownload-Anbieter</value></data>
   <data name="YtDlpMediaDownloadProvider_Description" xml:space="preserve"><value>Lädt Medien über YoutubeDLSharp und externes yt-dlp herunter. yt-dlp, FFmpeg/ffprobe und Deno manuell bereitstellen. Download-Links und Einrichtung stehen im QuickStart.</value></data>
@@ -4681,11 +4681,11 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="YtDlpMediaDownloadProvider_DenoPath" xml:space="preserve"><value>Deno-Programmdatei</value></data>
   <data name="YtDlpMediaDownloadProvider_DenoPath_Tooltip" xml:space="preserve"><value>Optionaler Pfad zu deno.exe für YouTube-JavaScript-Challenges. Leer verwendet die Laufzeiterkennung von yt-dlp. Offizielle yt-dlp-Releases enthalten EJS-Skripte.</value></data>
   <data name="MediaDownloadFlowBlock_DisplayName" xml:space="preserve"><value>Mediendownload</value></data>
-  <data name="MediaDownloadFlowBlock_Description" xml:space="preserve"><value>Lädt eine Medien-URL über einen verknüpften Anbieter herunter und konvertiert optional Audio. Liefert Erfolg und lokalen Dateipfad. Externe Werkzeuge beim Anbieter konfigurieren; Fortschritt wird gedrosselt gemeldet.</value></data>
+  <data name="MediaDownloadFlowBlock_Description" xml:space="preserve"><value>Lädt Medien über einen verknüpften Anbieter herunter und konvertiert optional Audio. Liefert je Medieneintrag einen Datensatz mit Erfolg, Dateipfad und Quell-URL. Fehlgeschlagene Einträge erzeugen eine konfigurierbare Warnung. Playlist-Downloads beim yt-dlp-Anbieter aktivieren.</value></data>
   <data name="MediaDownloadFlowBlock_Provider" xml:space="preserve"><value>Anbieter</value></data>
   <data name="MediaDownloadFlowBlock_Provider_Tooltip" xml:space="preserve"><value>Wiederverwendbarer Download-Anbieter mit Implementierung und Werkzeugkonfiguration.</value></data>
   <data name="MediaDownloadFlowBlock_Url" xml:space="preserve"><value>Medien-URL</value></data>
-  <data name="MediaDownloadFlowBlock_Url_Tooltip" xml:space="preserve"><value>HTTP- oder HTTPS-Medien-URL. yt-dlp akzeptiert unterstützte Webseiten-URLs und wählt den ersten Playlist-Eintrag. FFmpeg erwartet eine direkte Mediendatei- oder HLS-/DASH-Manifest-URL.</value></data>
+  <data name="MediaDownloadFlowBlock_Url_Tooltip" xml:space="preserve"><value>HTTP- oder HTTPS-Medien-URL. yt-dlp akzeptiert unterstützte Webseiten-URLs. Playlists erfordern „Playlist herunterladen“ beim Anbieter; deaktiviert werden erkannte Playlists mit einer Warnung abgewiesen. FFmpeg erwartet eine direkte Mediendatei- oder HLS-/DASH-Manifest-URL.</value></data>
   <data name="MediaDownloadFlowBlock_OutputDirectory" xml:space="preserve"><value>Zielordner</value></data>
   <data name="MediaDownloadFlowBlock_OutputDirectory_Tooltip" xml:space="preserve"><value>Lokaler Ordner auf dem ausführenden Rechner. Wird bei Bedarf erstellt. Dateinamen werden vom gewählten Anbieter bestimmt.</value></data>
   <data name="MediaDownloadFlowBlock_Format" xml:space="preserve"><value>Ausgabeformat</value></data>
@@ -4695,7 +4695,7 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="MediaDownloadFlowBlock_OverwriteFiles" xml:space="preserve"><value>Vorhandene Dateien überschreiben</value></data>
   <data name="MediaDownloadFlowBlock_OverwriteFiles_Tooltip" xml:space="preserve"><value>Erlaubt das Ersetzen vorhandener Zieldateien. Standardmäßig deaktiviert; der Anbieter kann eine bereits vollständig vorhandene Datei wiederverwenden.</value></data>
   <data name="MediaDownloadFlowBlock_ResultFields" xml:space="preserve"><value>Ergebnisfelder</value></data>
-  <data name="MediaDownloadNotifications_DownloadFailed" xml:space="preserve"><value>Mediendownload fehlgeschlagen. Anbieterkonfiguration und Protokoll prüfen.</value></data>
+  <data name="MediaDownloadNotifications_DownloadFailed" xml:space="preserve"><value>Mediendownload fehlgeschlagen.</value></data>
   <data name="MediaDownloadFormat_Video" xml:space="preserve"><value>Video (beste verfügbare Qualität)</value></data>
   <data name="MediaDownloadFormat_Audio" xml:space="preserve"><value>Ursprüngliches Audio</value></data>
   <data name="MediaDownloadFormat_Mp3" xml:space="preserve"><value>MP3</value></data>
@@ -4732,6 +4732,15 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="MediaToolBase_DisplayName_Plural" xml:space="preserve"><value>Medienwerkzeuge</value></data>
   <data name="MediaToolBase_BinaryDirectory" xml:space="preserve"><value>Programmordner</value></data>
   <data name="MediaToolBase_BinaryDirectory_Tooltip" xml:space="preserve"><value>Physischer Ordner mit den Programmdateien des Werkzeugs. Leer verwendet PATH. Feldreferenzen werden vor der Verwendung aufgelöst.</value></data>
+  <data name="YtDlpMediaDownloadProvider_DownloadPlaylist" xml:space="preserve"><value>Playlist herunterladen</value></data>
+  <data name="YtDlpMediaDownloadProvider_DownloadPlaylist_Tooltip" xml:space="preserve"><value>Alle Einträge einer Playlist herunterladen, auch bei Video-URLs mit Playlist-Parameter. Liefert je Eintrag ein Ergebnis in Playlist-Reihenfolge. Nicht verfügbare Einträge erzeugen Fehlerergebnisse und eine FlowBlock-Warnung; weitere Downloads werden fortgesetzt. Standardmäßig deaktiviert: Erkannte Playlists werden mit einer Warnung abgewiesen. Das Zeitlimit gilt für den gesamten Vorgang.</value></data>
+  <data name="MediaDownloadDestinations_ErrorMessage" xml:space="preserve"><value>Fehlermeldung</value></data>
+  <data name="MediaDownloadNotifications_NoMediaFound" xml:space="preserve"><value>Keine Medieneinträge gefunden.</value></data>
+  <data name="MediaDownloadDestinations_FailureReason" xml:space="preserve"><value>Fehlergrund</value></data>
+  <data name="MediaDownloadNotifications_PlaylistNotSupported" xml:space="preserve"><value>Playlist-Downloads sind deaktiviert.</value></data>
+  <data name="MediaDownloadNotifications_OutputFileMissing" xml:space="preserve"><value>Medien-Ausgabedatei fehlt.</value></data>
+  <data name="MediaDownloadNotifications_Timeout" xml:space="preserve"><value>Zeitlimit beim Mediendownload überschritten.</value></data>
+  <data name="MediaDownloadProviderBase_UnsupportedFormat" xml:space="preserve"><value>Der gewählte Anbieter unterstützt das Ausgabeformat „{0}“ nicht.</value></data>
 </root>
 
 
