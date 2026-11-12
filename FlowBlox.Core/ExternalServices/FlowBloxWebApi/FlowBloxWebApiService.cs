@@ -312,9 +312,18 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             }
         }
 
-        public async Task<ApiResponse<FbUserData>> GetUserInfoAsync(string token)
+        public async Task<ApiResponse<FbUserData>> GetUserInfoAsync(string token = null, int? id = null)
         {
-            string url = UriHelper.ConcatUri(_baseUrl, "userinfo.php?token=" + token);
+            var parameters = new List<string>();
+            
+            if (!string.IsNullOrWhiteSpace(token))
+                parameters.Add("token=" + Uri.EscapeDataString(token));
+
+            if (id.HasValue)
+                parameters.Add("id=" + id.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            
+            var query = parameters.Count == 0 ? string.Empty : "?" + string.Join("&", parameters);
+            var url = UriHelper.ConcatUri(_baseUrl, "userinfo.php" + query);
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(url);

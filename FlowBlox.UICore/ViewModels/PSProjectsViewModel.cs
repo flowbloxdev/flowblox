@@ -26,6 +26,10 @@ namespace FlowBlox.UICore.ViewModels
 
         private FbProjectResult _selectedProject;
         private List<FbProjectResult> _searchResults;
+        private readonly ProjectSpaceUserNameCache _creatorNameCache = new();
+        private IReadOnlyDictionary<int, string> _creatorNames = new Dictionary<int, string>();
+
+        public IReadOnlyDictionary<int, string> CreatorNames => _creatorNames;
 
         private FbProjectVersionResult _selectedVersion;
 
@@ -71,7 +75,13 @@ namespace FlowBlox.UICore.ViewModels
         public List<FbProjectResult> SearchResults
         {
             get => _searchResults;
-            set { _searchResults = value; OnPropertyChanged(); }
+            set
+            {
+                _searchResults = value;
+                _creatorNames = new Dictionary<int, string>();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CreatorNames));
+            }
         }
 
         public FbProjectResult SelectedProject
@@ -323,6 +333,7 @@ namespace FlowBlox.UICore.ViewModels
         private async void ExecuteSearch()
         {
             var token = IsMine ? UserToken : "";
+            var endpoint = _flowBloxWebApiService.Value.BaseUrl;
 
             var resp = await _flowBloxWebApiService.Value.GetProjectsAsync(
                 userToken: token,
@@ -346,6 +357,31 @@ namespace FlowBlox.UICore.ViewModels
             {
                 SearchResults = resp.ResultObject;
                 SelectedProject = null;
+                _ = LoadCreatorNamesAsync(resp.ResultObject, endpoint);
+            }
+        }
+
+        private async Task LoadCreatorNamesAsync(List<FbProjectResult> projects, string endpoint)
+        {
+            var names = new Dictionary<int, string>();
+            var userIds = projects
+                .Where(project => project.CreatedBy.HasValue)
+                .Select(project => project.CreatedBy.Value)
+                .Distinct();
+            foreach (var userId in userIds)
+            {
+                var name = await _creatorNameCache.GetDisplayNameAsync(endpoint, userId);
+                if (!ReferenceEquals(SearchResults, projects)
+                    || FlowBloxApiUrlNomalizer.Normalize(endpoint) != FlowBloxApiUrlNomalizer.Normalize(ApiUrl))
+                {
+                    return;
+                }
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    names[userId] = name;
+                    _creatorNames = new Dictionary<int, string>(names);
+                    OnPropertyChanged(nameof(CreatorNames));
+                }
             }
         }
 

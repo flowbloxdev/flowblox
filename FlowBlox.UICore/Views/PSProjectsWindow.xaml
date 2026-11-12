@@ -28,6 +28,7 @@
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/MahAppMetroResources.xaml" />
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:ProjectCreatorNameConverter x:Key="ProjectCreatorNameConverter" />
 
             <Style x:Key="FlowBlox.CopyIconButton"
                    TargetType="{x:Type Button}">
@@ -324,8 +325,14 @@
                                                         ToolTip="{x:Static resources:PSProjectsWindow.Tooltip_CreatedBy}">
                                                 <iconPacks:PackIconMaterial Kind="AccountOutline" Width="12" Height="12"
                                                     VerticalAlignment="Center" Foreground="#78909C" Margin="0,0,5,0"/>
-                                                <TextBlock Text="{Binding CreatedBy, StringFormat={x:Static resources:PSProjectsWindow.Format_CreatedBy}}"
-                                                           FontSize="11" Foreground="#78909C"/>
+                                                <TextBlock FontSize="11" Foreground="#78909C">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource ProjectCreatorNameConverter}">
+                                                            <Binding Path="CreatedBy" />
+                                                            <Binding Path="DataContext.CreatorNames" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal"
                                                         ToolTip="{x:Static resources:PSProjectsWindow.Header_UpdatedAt}">
@@ -607,8 +614,14 @@
                                                     ToolTip="{x:Static resources:PSProjectsWindow.Tooltip_CreatedBy}">
                                             <Label Content="{x:Static resources:PSProjectsWindow.Label_CreatedBy}"
                                                    FontWeight="DemiBold" Margin="0,5,0,5"/>
-                                            <TextBlock Text="{Binding SelectedProject.CreatedBy, StringFormat={x:Static resources:PSProjectsWindow.Format_CreatedBy}}"
-                                                       Margin="5,0,0,8"/>
+                                            <TextBlock Margin="5,0,0,8">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource ProjectCreatorNameConverter}">
+                                                        <Binding Path="SelectedProject.CreatedBy" />
+                                                        <Binding Path="CreatorNames" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
                                         </StackPanel>
 
                                         <Label Content="{x:Static resources:PSProjectsWindow.Label_VersionCreatedAt}"
