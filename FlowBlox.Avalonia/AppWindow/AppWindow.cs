@@ -74,6 +74,9 @@ namespace FlowBlox.AppWindow
             {
                 assemblyPreloader.PreloadReferencedAssemblies();
             }
+
+            // Include services from assemblies loaded by the preloaders.
+            FlowBloxServiceLocator.Instance.RegisterServicesFromCurrentAppDomain();
         }
 
         private ProjectPanel _dockContentProjectPanel;
