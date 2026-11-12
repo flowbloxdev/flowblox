@@ -19,6 +19,8 @@ namespace FlowBlox.Core.Models.Runtime.Debugging
         public List<RuntimeGeneratedResultDetails> GeneratedResults { get; set; } = new();
         public List<RuntimeDebugProblemEntry> Warnings { get; set; } = new();
         public List<RuntimeDebugProblemEntry> Errors { get; set; } = new();
+        public List<RuntimeDebugProblemEntry> WarningNotifications { get; set; } = new();
+        public List<RuntimeDebugProblemEntry> ErrorNotifications { get; set; } = new();
         public List<RuntimeDebugPreconditionFailureEntry> PreconditionFailures { get; set; } = new();
     }
 }

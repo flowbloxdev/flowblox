@@ -21,7 +21,11 @@
         "UserFieldType": "Input",
         "StringValue": null,
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -35,9 +39,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "4",
@@ -56,7 +58,11 @@
         "UserFieldType": "Input",
         "StringValue": "Text",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "PossibleValues",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": [
@@ -95,9 +101,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "PossibleValues",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "10",
@@ -116,7 +120,11 @@
         "UserFieldType": "Input",
         "StringValue": "UTF8",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": [
@@ -161,9 +169,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "17",
@@ -182,7 +188,11 @@
         "UserFieldType": "Memory",
         "StringValue": null,
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": true,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -196,10 +206,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": false,
-        "ClearOnRuntimeStart": true
+        "Version": "1.0.0.0"
       }
     ]
   },
@@ -207,31 +214,11 @@
     "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Interfaces.IManagedObject, FlowBlox.Core]], System.Private.CoreLib",
     "$values": [
       {
-        "$ref": "2"
-      },
-      {
-        "$ref": "4"
-      },
-      {
-        "$ref": "10"
-      },
-      {
         "$id": "19",
-        "$type": "FlowBlox.Core.Models.Components.IO.FileObject, FlowBlox.Core",
-        "FilePath": "$User::FilePath",
-        "Name": "FileObject0",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": []
-        },
-        "Version": "1.0.0.0"
-      },
-      {
-        "$id": "20",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Field0",
         "FieldType": {
-          "$id": "21",
+          "$id": "20",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "ByteArray",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -242,19 +229,30 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "22",
+          "$id": "21",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.FileReaderFlowBlock, FlowBlox.Core",
           "DataSource": {
-            "$ref": "19"
+            "$id": "22",
+            "$type": "FlowBlox.Core.Models.Components.IO.FileObject, FlowBlox.Core",
+            "FilePath": "$User::FilePath",
+            "Name": "FileObject0",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": []
+            },
+            "Version": "1.0.0.0"
           },
           "EncodingName": "Default",
-          "EncodingName_SelectedField": null,
           "Name": "ReadBinary",
           "ResultField": {
-            "$ref": "20"
+            "$ref": "19"
           },
           "ResultFieldFieldType": "ByteArray",
           "OutputIgnoreDuplicates": false,
@@ -266,7 +264,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "350, 250",
+          "Location": "458, 279",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -368,7 +366,7 @@
         "$id": "25",
         "$type": "FlowBlox.Core.Models.Components.IO.MemoryObject, FlowBlox.Core",
         "Field": {
-          "$ref": "20"
+          "$ref": "19"
         },
         "FileName": "document",
         "EncodingName": "Default",
@@ -377,7 +375,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
           "$values": [
             {
-              "$ref": "20"
+              "$ref": "19"
             }
           ]
         },
@@ -398,6 +396,9 @@
         "Version": "1.0.0.0"
       },
       {
+        "$ref": "22"
+      },
+      {
         "$id": "27",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Field0",
@@ -413,7 +414,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "29",
@@ -435,7 +440,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "650, 100",
+          "Location": "866, 85",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -443,7 +448,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$ref": "22"
+                "$ref": "21"
               }
             ]
           },
@@ -510,7 +515,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "33",
@@ -539,7 +548,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "950, 100",
+          "Location": "1274, 109",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -612,13 +621,17 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "37",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.OpenXml2TextFlowBlock, FlowBlox.Core",
           "WordDocumentField": {
-            "$ref": "20"
+            "$ref": "19"
           },
           "HeaderMode": "IncludeWithTags",
           "BodyMode": "IncludeWithTags",
@@ -638,7 +651,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "650, 350",
+          "Location": "866, 279",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -646,7 +659,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$ref": "22"
+                "$ref": "21"
               }
             ]
           },
@@ -685,7 +698,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$ref": "20"
+                "$ref": "19"
               }
             ]
           },
@@ -717,7 +730,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "41",
@@ -746,7 +763,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "950, 350",
+          "Location": "1274, 303",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -804,45 +821,11 @@
         "Version": "1.0.0.0"
       },
       {
-        "$ref": "17"
-      },
-      {
         "$id": "43",
-        "$type": "FlowBlox.Core.Models.Components.IO.MemoryObject, FlowBlox.Core",
-        "Field": {
-          "$ref": "17"
-        },
-        "FileName": "content.csv",
-        "EncodingName": "UTF8",
-        "Name": "CsvContent",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": []
-        },
-        "Version": "1.0.0.0"
-      },
-      {
-        "$id": "44",
-        "$type": "FlowBlox.Core.Models.Components.IO.CsvTable, FlowBlox.Core",
-        "EncodingName": "UTF8",
-        "Separator": ",",
-        "DataSource": {
-          "$ref": "43"
-        },
-        "FirstRowHeader": true,
-        "Name": "CsvTable0",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": []
-        },
-        "Version": "1.0.0.0"
-      },
-      {
-        "$id": "45",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "46",
+          "$id": "44",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -853,20 +836,49 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "47",
+          "$id": "45",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableConverterFlowBlock, FlowBlox.Core",
           "SourceTable": {
             "$ref": "26"
           },
           "TargetTable": {
-            "$ref": "44"
+            "$id": "46",
+            "$type": "FlowBlox.Core.Models.Components.IO.CsvTable, FlowBlox.Core",
+            "EncodingName": "UTF8",
+            "Separator": ",",
+            "DataSource": {
+              "$id": "47",
+              "$type": "FlowBlox.Core.Models.Components.IO.MemoryObject, FlowBlox.Core",
+              "Field": {
+                "$ref": "17"
+              },
+              "FileName": "content.csv",
+              "EncodingName": "UTF8",
+              "Name": "CsvContent",
+              "RequiredFields": {
+                "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+                "$values": []
+              },
+              "Version": "1.0.0.0"
+            },
+            "FirstRowHeader": true,
+            "Name": "CsvTable0",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": []
+            },
+            "Version": "1.0.0.0"
           },
           "Name": "TableConverter_0",
           "ResultField": {
-            "$ref": "45"
+            "$ref": "43"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -878,7 +890,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "650, 600",
+          "Location": "866, 473",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -886,7 +898,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$ref": "22"
+                "$ref": "21"
               }
             ]
           },
@@ -953,18 +965,19 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "51",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.FileReaderFlowBlock, FlowBlox.Core",
           "DataSource": {
-            "$ref": "19"
+            "$ref": "22"
           },
           "EncodingName": "UTF8",
-          "EncodingName_SelectedField": {
-            "$ref": "10"
-          },
           "Name": "ReadText",
           "ResultField": {
             "$ref": "49"
@@ -979,7 +992,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "350, 900",
+          "Location": "458, 643",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -1026,7 +1039,12 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Version": "1.0.0.0"
+          "Version": "1.0.0.0",
+          "PropertySelectedFieldMap": {
+            "$id": "53",
+            "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.String, System.Private.CoreLib]], System.Private.CoreLib",
+            "EncodingName": "$User::Encoding"
+          }
         },
         "Conditions": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
@@ -1039,11 +1057,11 @@
         "Version": "1.0.0.0"
       },
       {
-        "$id": "53",
+        "$id": "54",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Field0",
         "FieldType": {
-          "$id": "54",
+          "$id": "55",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Text",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -1054,16 +1072,20 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "55",
+          "$id": "56",
           "$type": "FlowBlox.Core.Models.FlowBlocks.Logic.DecisionFlowBlock, FlowBlox.Core",
           "Decisions": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.FieldComparisonCondition, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "56",
+                "$id": "57",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Additions.FieldComparisonCondition, FlowBlox.Core",
                 "FieldElement": {
                   "$ref": "4"
@@ -1073,7 +1095,7 @@
                 "Value": "Pdf"
               },
               {
-                "$id": "57",
+                "$id": "58",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Additions.FieldComparisonCondition, FlowBlox.Core",
                 "FieldElement": {
                   "$ref": "4"
@@ -1083,7 +1105,7 @@
                 "Value": "Docx"
               },
               {
-                "$id": "58",
+                "$id": "59",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Additions.FieldComparisonCondition, FlowBlox.Core",
                 "FieldElement": {
                   "$ref": "4"
@@ -1093,7 +1115,7 @@
                 "Value": "Xlsx"
               },
               {
-                "$id": "59",
+                "$id": "60",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Additions.FieldComparisonCondition, FlowBlox.Core",
                 "FieldElement": {
                   "$ref": "4"
@@ -1107,7 +1129,7 @@
           "FallbackValue": null,
           "Name": "FileContent",
           "ResultField": {
-            "$ref": "53"
+            "$ref": "54"
           },
           "ResultFieldFieldType": "Text",
           "OutputIgnoreDuplicates": false,
@@ -1119,7 +1141,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "1250, 400",
+          "Location": "1682, 400",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -1133,7 +1155,7 @@
                 "$ref": "41"
               },
               {
-                "$ref": "47"
+                "$ref": "45"
               },
               {
                 "$ref": "51"
@@ -1147,7 +1169,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "60",
+                "$id": "61",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                 "FlowBlock": {
                   "$ref": "33"
@@ -1155,7 +1177,7 @@
                 "Behavior": "First"
               },
               {
-                "$id": "61",
+                "$id": "62",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                 "FlowBlock": {
                   "$ref": "41"
@@ -1163,15 +1185,15 @@
                 "Behavior": "First"
               },
               {
-                "$id": "62",
+                "$id": "63",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                 "FlowBlock": {
-                  "$ref": "47"
+                  "$ref": "45"
                 },
                 "Behavior": "First"
               },
               {
-                "$id": "63",
+                "$id": "64",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                 "FlowBlock": {
                   "$ref": "51"
@@ -1210,11 +1232,11 @@
         "Version": "1.0.0.0"
       },
       {
-        "$id": "64",
+        "$id": "65",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "65",
+          "$id": "66",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -1225,19 +1247,23 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "66",
+          "$id": "67",
           "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputFlowBlock, FlowBlox.Core",
           "MappingEntries": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "67",
+                "$id": "68",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "53"
+                  "$ref": "54"
                 },
                 "IsRequired": false,
                 "OutputPropertyName": "FileContent"
@@ -1246,7 +1272,7 @@
           },
           "Name": "Output",
           "ResultField": {
-            "$ref": "64"
+            "$ref": "65"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -1258,7 +1284,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "1550, 400",
+          "Location": "2090, 352",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -1266,7 +1292,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$ref": "55"
+                "$ref": "56"
               }
             ]
           },
@@ -1305,6 +1331,24 @@
           "$values": []
         },
         "Version": "1.0.0.0"
+      },
+      {
+        "$ref": "2"
+      },
+      {
+        "$ref": "4"
+      },
+      {
+        "$ref": "10"
+      },
+      {
+        "$ref": "17"
+      },
+      {
+        "$ref": "47"
+      },
+      {
+        "$ref": "46"
       }
     ]
   },
@@ -1315,7 +1359,7 @@
         "$ref": "23"
       },
       {
-        "$ref": "22"
+        "$ref": "21"
       },
       {
         "$ref": "29"
@@ -1330,28 +1374,30 @@
         "$ref": "41"
       },
       {
-        "$ref": "47"
+        "$ref": "45"
       },
       {
         "$ref": "51"
       },
       {
-        "$ref": "55"
+        "$ref": "56"
       },
       {
-        "$ref": "66"
+        "$ref": "67"
       }
     ]
   },
-  "ProjectGuid": "83f92f1f-3f26-4669-89ca-0c355f0e1989",
+  "ProjectGuid": "2dd5717d-456d-4720-9508-8a5b54ed32a8",
   "ProjectName": "GetFileContent",
   "Author": null,
   "ProjectDescription": "Reads FilePath and returns FileContent as text. InputFileType must be Pdf, Xlsx, Docx or Text (default Text). Encoding defaults to UTF8 and applies only to Text. PDF and DOCX pages are joined with newlines. XLSX uses the first worksheet, treats its first row as column headers and returns CSV with comma separators. Binary documents are read as bytes and passed to the existing PDF/Open XML/table converters.",
   "AssistantMetadata": {
+    "$id": "69",
+    "$type": "FlowBlox.Core.Models.Project.AssistantMetadata, FlowBlox.Core",
     "ShortDescription": "Read PDF, DOCX, XLSX or text files as text."
   },
   "Notice": null,
-  "GridSizeX": 2500,
+  "GridSizeX": 2878,
   "GridSizeY": 2000,
   "AutoIncreaseGridSize": true,
   "ProjectDependendDataObjects": {

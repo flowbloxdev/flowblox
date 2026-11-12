@@ -98,6 +98,45 @@ internal sealed partial class WorkspaceIntegrationChecks
         if (failure != null) throw failure;
         check(DialogNative.IsWindowEnabled(_window.Handle), "Closing WPF restores AppWindow input");
 
+        // Open the actual Vault view with isolated sample data; merely selecting a card must not dirty it.
+        var options = FlowBlox.Core.Util.FlowBloxOptions.GetOptionInstance();
+        var originalVault = options.GetOption(FlowBlox.Core.Constants.OptionsConstants.VaultValues);
+        try
+        {
+            var sampleVault = new FlowBlox.Core.Models.Components.OptionElement(
+                FlowBlox.Core.Constants.OptionsConstants.VaultValues, "", "", FlowBlox.Core.Models.Components.OptionElement.OptionType.Password);
+            sampleVault.PersistentValue = "[{\"Name\":\"JiraPassword\",\"Value\":\"sample-password\",\"IsPassword\":true}]";
+            options.OptionCollection[FlowBlox.Core.Constants.OptionsConstants.VaultValues] = sampleVault;
+            var vault = new FlowBlox.UICore.Views.VaultWindow();
+            vault.ContentRendered += (_, _) =>
+            {
+                try
+                {
+                    var cards = (System.Windows.Controls.ListBox)vault.FindName("EntriesList");
+                    var editor = (System.Windows.FrameworkElement)vault.FindName("EntryEditor");
+                    var emptyHint = (System.Windows.FrameworkElement)vault.FindName("NoSelectionHint");
+                    check(!vault.HasSelection && !editor.IsVisible && emptyHint.IsVisible,
+                        "Vault shows a hint instead of the editor when no card is selected");
+                    cards.SelectedIndex = 0;
+                    vault.UpdateLayout();
+                    check(vault.HasSelection && !vault.IsDirty, "Selecting a Vault card leaves the view unchanged");
+                    check(editor.IsVisible && !emptyHint.IsVisible,
+                        "Selecting a Vault card reveals the editor and hides the hint");
+                    check(((System.Windows.Controls.TextBox)vault.FindName("ValueEditor")).Visibility == System.Windows.Visibility.Collapsed,
+                        "Vault password card uses the masked editor");
+                    cards.SelectedIndex = -1;
+                    vault.UpdateLayout();
+                    check(!editor.IsVisible && emptyHint.IsVisible && !vault.IsDirty,
+                        "Clearing the Vault selection restores the hint without changing entries");
+                }
+                catch (Exception exception) { failure = exception; }
+                finally { vault.Close(); }
+            };
+            WpfDialogHost.ShowDialog(vault, _window);
+            if (failure != null) throw failure;
+        }
+        finally { options.OptionCollection[FlowBlox.Core.Constants.OptionsConstants.VaultValues] = originalVault; }
+
         // A modeless WPF window must still accept characters without ElementHost.
         var text = new System.Windows.Controls.TextBox();
         var modeless = new System.Windows.Window { Width = 300, Height = 150, Content = text };

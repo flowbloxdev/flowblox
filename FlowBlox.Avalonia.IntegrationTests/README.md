@@ -35,6 +35,17 @@ isolated workspace and a copy of the supplied project, skips interactive startup
 and online services, and returns a nonzero exit code if a check or startup fails.
 A second run reuses the isolated saved layout to exercise restoration at startup.
 
+For focused property editor checks, append `--field-selection-only` to the direct
+runner command. This runs the real desktop lifecycle and checks explicitly enabled field
+buttons, scalar selection/unlink, password and combobox editors, grid cells and Project Space project cards
+without running unrelated authentication and workspace checks.
+
+`ProjectSpaceCardsChecks.cs` uses prepared projects without remote API calls to verify card selection, version details,
+mouse-wheel scrolling and opening with Enter. It writes `project-space-cards.png` alongside the desktop report.
+
+`ConnectionPreviewChecks.cs` checks toolbar and temporary Ctrl+Shift connection gestures during a real rejection message box.
+The gesture must release mouse capture and hide its preview before the message appears, including subsequent mouse movement.
+
 The reference to `FlowBlox.Avalonia` is one-way. `InternalsVisibleTo` permits the
 runner to inspect internal application state without introducing public test APIs.
 The shared desktop startup path accepts hosted-session settings; the normal

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using FlowBlox.AIAssistant.Models;
@@ -8,6 +9,7 @@ using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Util.Compression;
 using FlowBlox.Core.Util.FlowBlocks;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.Resources;
 using Newtonsoft.Json.Linq;
 
@@ -283,17 +285,6 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (explanations.Count > 0)
                 result["specialExplanations"] = explanations;
 
-            if (properties.Length > 0)
-            {
-                result["rules"] = new JObject
-                {
-                    ["fieldPlaceholderSyntax"] = "$FlowBlock::FieldName",
-                    ["placeholderLookupTool"] = "GetPlaceholders",
-                    ["referenceComponentKinds"] = "FlowBlock, ManagedObject (including FieldElement).",
-                    ["reactiveObjectOnlyKind"] = "FlowBloxReactiveObject-only (non-reference component) values exist only in their parent context."
-                };
-            }
-
             return result;
         }
 
@@ -323,6 +314,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             var isFlowBlockReference = typeof(BaseFlowBlock).IsAssignableFrom(nonNullableType);
             var isEnum = nonNullableType.IsEnum;
             var isSimple = IsSimpleType(nonNullableType);
+            var isImmutable = IsImmutableProperty(property);
             var nullable = IsNullable(property);
             var majorTypeDescriptor = GetMajorTypeDescriptor(nonNullableType, "SimpleProperty");
 
@@ -333,17 +325,20 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 ["name"] = property.Name,
                 ["displayName"] = string.IsNullOrWhiteSpace(displayName) ? property.Name : displayName,
                 ["type"] = AiAssistantGenericTypeNameHelper.GetCompactTypeName(propertyType),
-                ["flags"] = BuildPropertyFlags(nullable, property.CanWrite, isSimple, isEnum, isCollection),
+                ["flags"] = BuildPropertyFlags(nullable, property.CanWrite && !isImmutable, isSimple, isEnum, isCollection),
                 ["majorTypeDescriptor"] = majorTypeDescriptor,
-                ["canUpdateViaParentPath"] = !isManagedObject
+                ["canUpdateViaParentPath"] = !isManagedObject && !isImmutable
             };
+
+            if (isImmutable)
+                propertyInfo["readOnly"] = true;
 
             if (!string.IsNullOrWhiteSpace(description))
                 propertyInfo["description"] = description;
 
             if (flowBlockUi != null)
             {
-                var uiFlags = BuildUiFlags(flowBlockUi.Operations, flowBlockUi.UiOptions);
+                var uiFlags = BuildUiFlags(flowBlockUi.Operations, flowBlockUi.UiOptions, FlowBloxFieldSelection.Supports(property));
                 if (!string.IsNullOrEmpty(uiFlags))
                     propertyInfo["uiFlags"] = uiFlags;
 
@@ -374,31 +369,6 @@ namespace FlowBlox.AIAssistant.Tools.Util
             {
                 propertyInfo["enumMembers"] = new JArray(Enum.GetNames(nonNullableType));
                 AddUsedEnumType(usedTypes, nonNullableType);
-            }
-
-            if (nonNullableType == typeof(string)
-                && flowBlockUi?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true)
-            {
-                propertyInfo["fieldPlaceholderSyntax"] = "$FlowBlock::FieldName";
-                propertyInfo["placeholderLookupTool"] = "GetPlaceholders";
-                propertyInfo["placeholderKinds"] = new JArray("Field", "Project", "Options");
-            }
-
-            if (isManagedObject)
-            {
-                propertyInfo["resolverHints"] = new JArray
-                {
-                    "resolveManagedObjectByName",
-                    "resolveFieldElementByFQName"
-                };
-            }
-
-            if (isFlowBlockReference)
-            {
-                propertyInfo["resolverHints"] = new JArray
-                {
-                    "resolveFlowBlockByName"
-                };
             }
 
             if ((propertyType.IsInterface || propertyType.IsAbstract || isManagedObject || isFlowBlockReference)
@@ -453,7 +423,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             return flags;
         }
 
-        internal static string BuildUiFlags(UIOperations operations, UIOptions options)
+        internal static string BuildUiFlags(UIOperations operations, UIOptions options, bool supportsFields = false)
         {
             var flags = string.Empty;
 
@@ -468,7 +438,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (operations.HasFlag(UIOperations.Delete))
                 flags += "D";
 
-            if (options.HasFlag(UIOptions.EnableFieldSelection))
+            if (supportsFields)
                 flags += "[FLD]";
             if (options.HasFlag(UIOptions.EnableFileSelection))
                 flags += "[FL]";

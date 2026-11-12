@@ -35,7 +35,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         [ActivationCondition(MemberName = nameof(InputField), ActivationMethod = nameof(IsEncodingNameActive))]
         [ConditionallyRequired()]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         private bool IsEncodingNameActive()

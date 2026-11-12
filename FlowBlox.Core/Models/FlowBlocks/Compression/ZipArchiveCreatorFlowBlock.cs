@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -32,7 +33,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
         }
 
         [Display(Name = "ZipArchiveCreatorFlowBlock_CompressionStrength", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public ZipCompressionStrength CompressionStrength { get; set; }
 
         [Display(Name = "ZipArchiveCreatorFlowBlock_Password", ResourceType = typeof(FlowBloxTexts), Order = 2)]
@@ -70,7 +71,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
 
                 try
                 {
-                    var password = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty);
+                    var password = this.Resolve(owner => owner.Password);
                     ZipArchiveObject.CreateNewArchive(CompressionStrength, password);
                     GenerateResult(runtime, bool.TrueString.ToLowerInvariant());
                 }

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
@@ -20,10 +21,11 @@ namespace FlowBlox.Core.Models.Components.IO
         public string Host { get; set; }
 
         [Display(Name = "SftpConnectionProvider_Port", Description = "SftpConnectionProvider_Port_Tooltip", GroupName = "SftpConnectionProvider_Groups_Connection", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Port { get; set; } = 22;
 
         [Display(Name = "SftpConnectionProvider_AuthenticationMethod", Description = "SftpConnectionProvider_AuthenticationMethod_Tooltip", GroupName = "SftpConnectionProvider_Groups_Authentication", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public SftpAuthenticationMethod AuthenticationMethod { get; set; } = SftpAuthenticationMethod.Password;
 
         [Required]
@@ -52,6 +54,7 @@ namespace FlowBlox.Core.Models.Components.IO
         public string HostKeyFingerprint { get; set; }
 
         [Display(Name = "SftpConnectionProvider_TrustAnyHostKey", Description = "SftpConnectionProvider_TrustAnyHostKey_Tooltip", GroupName = "SftpConnectionProvider_Groups_HostKeyVerification", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool TrustAnyHostKey { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cube_outline, 16, SKColors.Teal);
@@ -59,13 +62,16 @@ namespace FlowBlox.Core.Models.Components.IO
 
         public SftpClient CreateClient()
         {
-            var host = FlowBloxFieldHelper.ReplaceFieldsInString(Host ?? string.Empty)?.Trim();
-            var userName = FlowBloxFieldHelper.ReplaceFieldsInString(UserName ?? string.Empty)?.Trim();
-            var usePassword = AuthenticationMethod is SftpAuthenticationMethod.Password or SftpAuthenticationMethod.PasswordAndPrivateKey;
-            var usePrivateKey = AuthenticationMethod is SftpAuthenticationMethod.PrivateKey or SftpAuthenticationMethod.PasswordAndPrivateKey;
-            var password = usePassword ? FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty) : string.Empty;
-            var keySource = usePrivateKey ? FlowBloxFieldHelper.ReplaceFieldsInString(PrivateKey ?? string.Empty) : string.Empty;
-            var passphrase = usePrivateKey ? FlowBloxFieldHelper.ReplaceFieldsInString(PrivateKeyPassphrase ?? string.Empty) : string.Empty;
+            var host = this.Resolve(owner => owner.Host).Trim();
+            var userName = this.Resolve(owner => owner.UserName).Trim();
+            var authenticationMethod = this.Resolve(provider => provider.AuthenticationMethod);
+            var port = this.Resolve(provider => provider.Port);
+            var trustAnyHostKey = this.Resolve(provider => provider.TrustAnyHostKey);
+            var usePassword = authenticationMethod is SftpAuthenticationMethod.Password or SftpAuthenticationMethod.PasswordAndPrivateKey;
+            var usePrivateKey = authenticationMethod is SftpAuthenticationMethod.PrivateKey or SftpAuthenticationMethod.PasswordAndPrivateKey;
+            var password = usePassword ? this.Resolve(owner => owner.Password) : string.Empty;
+            var keySource = usePrivateKey ? this.Resolve(owner => owner.PrivateKey) : string.Empty;
+            var passphrase = usePrivateKey ? this.Resolve(owner => owner.PrivateKeyPassphrase) : string.Empty;
 
             if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(userName))
                 throw new ValidationException("SFTP host and user name are required.");
@@ -88,13 +94,13 @@ namespace FlowBlox.Core.Models.Components.IO
                 methods.Add(new PrivateKeyAuthenticationMethod(userName, keyFile));
             }
 
-            var client = new SftpClient(new ConnectionInfo(host, Port, userName, methods.ToArray()));
+            var client = new SftpClient(new ConnectionInfo(host, port, userName, methods.ToArray()));
             var expectedFingerprint = NormalizeFingerprint(
-                FlowBloxFieldHelper.ReplaceFieldsInString(HostKeyFingerprint ?? string.Empty));
+                this.Resolve(owner => owner.HostKeyFingerprint));
 
             client.HostKeyReceived += (_, args) =>
             {
-                args.CanTrust = TrustAnyHostKey ||
+                args.CanTrust = trustAnyHostKey ||
                     (!string.IsNullOrWhiteSpace(expectedFingerprint) &&
                      string.Equals(NormalizeFingerprint(args.FingerPrintSHA256), expectedFingerprint, StringComparison.Ordinal));
             };

@@ -19,20 +19,23 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     {
         [Display(Name = "JoinFlowBlock_Separator", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [CustomValidation(typeof(JoinFlowBlock), nameof(ValidateSeparators))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         [Display(Name = "JoinFlowBlock_SpecialSeparator", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(JoinFlowBlock), nameof(ValidateSeparators))]
         public SpecialSeparator? SpecialSeparator { get; set; }
 
-        public static ValidationResult ValidateSeparators(object separator, ValidationContext validationContext)
+        public static ValidationResult ValidateSeparators(object value, ValidationContext validationContext)
         {
             var joinFlowBlock = (JoinFlowBlock)validationContext.ObjectInstance;
+            var separator = joinFlowBlock.Resolve(owner => owner.Separator);
+            var specialSeparator = joinFlowBlock.Resolve(block => block.SpecialSeparator);
 
-            if (string.IsNullOrEmpty(joinFlowBlock.Separator) && !joinFlowBlock.SpecialSeparator.HasValue)
+            if (string.IsNullOrEmpty(separator) && !specialSeparator.HasValue)
                 return new ValidationResult(FlowBloxResourceUtil.GetLocalizedString("JoinFlowBlock_Validation_NoSeparatorDefined"), [validationContext.MemberName]);
-            if (!string.IsNullOrEmpty(joinFlowBlock.Separator) && joinFlowBlock.SpecialSeparator.HasValue)
+            if (!string.IsNullOrEmpty(separator) && specialSeparator.HasValue)
                 return new ValidationResult(FlowBloxResourceUtil.GetLocalizedString("JoinFlowBlock_Validation_ManySeparatorsDefined"), [validationContext.MemberName]);
             return ValidationResult.Success;
         }
@@ -78,10 +81,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
             return Invoke(runtime, data, () =>
             {
 
-                string separator = Separator;
-                if (SpecialSeparator == Enums.SpecialSeparator.Tab)
+                string separator = this.Resolve(owner => owner.Separator);
+                var specialSeparator = this.Resolve(block => block.SpecialSeparator);
+                if (specialSeparator == Enums.SpecialSeparator.Tab)
                     separator = "\t";
-                else if (SpecialSeparator == Enums.SpecialSeparator.NewLine)
+                else if (specialSeparator == Enums.SpecialSeparator.NewLine)
                     separator = Environment.NewLine;
 
                 if (string.IsNullOrEmpty(separator))

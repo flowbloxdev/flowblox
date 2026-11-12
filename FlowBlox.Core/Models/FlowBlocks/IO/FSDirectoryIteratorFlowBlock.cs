@@ -22,13 +22,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     {
         [Required]
         [Display(Name = "FSDirectoryIteratorFlowBlock_DirectoryPath", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFolderSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
         public string DirectoryPath { get; set; }
 
         [Display(Name = "FSDirectoryIteratorFlowBlock_Recursive", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Recursive { get; set; }
-        public FieldElement Recursive_SelectedField { get; set; }
 
         [Display(Name = "FSDirectoryIteratorFlowBlock_FilterExpression", Description = "FSDirectoryIteratorFlowBlock_FilterExpression_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
@@ -133,11 +132,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         private bool IsMatch(string relativePath, string fileName)
         {
-            var resolvedFilter = FlowBloxFieldHelper.ReplaceFieldsInString(FilterExpression ?? string.Empty);
-            if (string.IsNullOrWhiteSpace(resolvedFilter))
+            var filterExpression = this.Resolve(owner => owner.FilterExpression);
+            if (string.IsNullOrWhiteSpace(filterExpression))
                 return true;
 
-            var tokens = resolvedFilter
+            var tokens = filterExpression
                 .Split(';', StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Trim())
                 .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -172,13 +171,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
                 if (!ResultFields.Any())
                     throw new InvalidOperationException("No result fields have been configured.");
 
-                var directoryPath = FlowBloxFieldHelper.ReplaceFieldsInString(DirectoryPath ?? string.Empty);
-                if (string.IsNullOrWhiteSpace(directoryPath))
-                {
-                    CreateNotification(runtime, FSDirectoryIteratorNotifications.DirectoryPathIsEmpty);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    owner => owner.DirectoryPath,
+                    out var directoryPath,
+                    runtime,
+                    FSDirectoryIteratorNotifications.DirectoryPathIsEmpty))
                     return;
-                }
 
                 if (!Directory.Exists(directoryPath))
                 {
@@ -189,7 +187,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
                 var options = new EnumerationOptions
                 {
-                    RecurseSubdirectories = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.Recursive),
+                    RecurseSubdirectories = this.Resolve(x => x.Recursive),
                     IgnoreInaccessible = true,
                     ReturnSpecialDirectories = false
                 };

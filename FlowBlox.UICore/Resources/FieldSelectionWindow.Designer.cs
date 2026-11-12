@@ -92,6 +92,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Connected ähnelt.
+        /// </summary>
+        public static string Col_Connected
+        {
+            get
+            {
+                return ResourceManager.GetString("Col_Connected", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Field ähnelt.
         /// </summary>
         public static string Col_Field
@@ -201,6 +212,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reference ähnelt.
+        /// </summary>
+        public static string Col_VaultReference
+        {
+            get
+            {
+                return ResourceManager.GetString("Col_VaultReference", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Select one or multiple entries and confirm with OK. ähnelt.
         /// </summary>

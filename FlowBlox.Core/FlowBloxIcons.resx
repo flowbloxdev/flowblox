@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -379,5 +379,25 @@
   <data name="creation" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\creation.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/creation/ (Apache-2.0).</comment>
+  </data>
+  <data name="safe_square_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\safe-square-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/safe-square-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="database_plus_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\database-plus-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/database-plus-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="cog_play_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\cog-play-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/cog-play-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="file_eye_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\file-eye-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/file-eye-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="file_import_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\file-import-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/file-import-outline/ (Apache-2.0).</comment>
   </data>
 </root>

@@ -25,7 +25,6 @@
 
         public const string PropertyNameDisplayName = "DisplayName";
 
-        public const string SimplePropertySelectedFieldSuffix = "_SelectedField";
 
         public const string HiddenSensitiveValue = "<<hidden>>";
     }

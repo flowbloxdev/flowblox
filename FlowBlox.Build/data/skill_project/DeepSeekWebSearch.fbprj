@@ -20,7 +20,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": null,
         "Conditions": {
@@ -31,9 +35,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "4",
@@ -51,7 +53,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": true,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": null,
         "Conditions": {
@@ -62,9 +68,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       }
     ]
   },
@@ -87,7 +91,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "8",
@@ -140,7 +148,11 @@
                   "UserField": false,
                   "UserFieldType": "None",
                   "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
                   "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
                   "ListOfValues": null,
                   "Source": {
                     "$ref": "8"
@@ -176,7 +188,11 @@
                   "UserField": false,
                   "UserFieldType": "None",
                   "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
                   "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
                   "ListOfValues": null,
                   "Source": {
                     "$ref": "8"
@@ -195,6 +211,7 @@
               }
             ]
           },
+          "OutputIgnoreDuplicates": false,
           "OutputBehavior": "All",
           "StartValue": null,
           "StartIndex": null,
@@ -229,6 +246,7 @@
                 },
                 "AssociatedIterationContext": null,
                 "InputIgnoreDuplicates": false,
+                "AutomaticInputBehaviorAssignment": true,
                 "InputBehaviorAssignments": {
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
                   "$values": []
@@ -256,6 +274,7 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
@@ -336,7 +355,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "21",
@@ -378,6 +401,7 @@
             "$ref": "19"
           },
           "ResultFieldFieldType": "Boolean",
+          "OutputIgnoreDuplicates": false,
           "OutputBehavior": "All",
           "StartValue": null,
           "StartIndex": null,
@@ -400,6 +424,7 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
@@ -462,11 +487,13 @@
       }
     ]
   },
-  "ProjectGuid": "3bf578a8-d326-45c7-b263-df14a1189807",
+  "ProjectGuid": "94c419c5-1722-4702-82a3-da059cf7f302",
   "ProjectName": "DeepSeekWebSearch",
   "Author": "",
   "ProjectDescription": "Searches the web through DeepSeek Search and returns title, URL, and description for each result.",
   "AssistantMetadata": {
+    "$id": "26",
+    "$type": "FlowBlox.Core.Models.Project.AssistantMetadata, FlowBlox.Core",
     "ShortDescription": "Search the public web via DeepSeek and return titles, URLs, and summaries; requires a DeepSeek API key."
   },
   "Notice": "",

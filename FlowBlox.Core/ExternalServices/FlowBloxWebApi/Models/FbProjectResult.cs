@@ -13,6 +13,7 @@
         public FbProjectVisibility Visibility { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public int? CreatedBy { get; set; }
         public List<FbProjectVersionResult> Versions { get; set; }
 
     }

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -30,12 +31,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
         }
 
         [Display(Name = "XmlDocumentXPathSelector_XPath", Description = "XmlDocumentXPathSelector_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath), UiOptions = UIOptions.EnableFieldSelection)]
         [Required]
         public string XPath { get; set; }
 
         [Display(Name = "XmlDocumentXPathSelector_ResultMode", Description = "XmlDocumentXPathSelector_ResultMode_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public XPathResultMode ResultMode { get; set; } = XPathResultMode.InnerXml;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.magnify_scan, 16, SKColors.MediumSeaGreen);
@@ -75,15 +76,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
                 if (xmlDoc == null)
                     throw new InvalidOperationException("The XML document in the source flow block is null or has not been initialized.");
 
-                var resolvedXPath = FlowBloxFieldHelper.ReplaceFieldsInString(XPath);
-                if (string.IsNullOrWhiteSpace(resolvedXPath))
-                {
-                    CreateNotification(runtime, XmlDocumentXPathSelectorNotifications.XPathExpressionIsEmpty);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    owner => owner.XPath,
+                    out var xPath,
+                    runtime,
+                    XmlDocumentXPathSelectorNotifications.XPathExpressionIsEmpty))
                     return;
-                }
 
-                var contents = XPathSelector.SelectValues(xmlDoc, resolvedXPath, ResultMode);
+                var contents = XPathSelector.SelectValues(xmlDoc, xPath, ResultMode);
                 if (contents.Count == 0)
                 {
                     CreateNotification(runtime, XmlDocumentXPathSelectorNotifications.NoMatchingNodesFound);

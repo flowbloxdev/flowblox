@@ -6,6 +6,11 @@ public enum FlowBloxSourceId
     /// <summary>Properties and paths of the active project, including legacy property aliases.</summary>
     Project,
 
+    /// <summary>
+    /// Local protected environment values, available through project input fields.
+    /// </summary>
+    Vault,
+
     /// <summary>Application options explicitly enabled for use as placeholders.</summary>
     Options,
 

@@ -50,7 +50,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         }
 
         [Display(Name = "AsposeWordToPdfFlowBlock_Compliance", Description = "AsposeWordToPdfFlowBlock_Compliance_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public AsposePdfCompliance Compliance { get; set; } = AsposePdfCompliance.Pdf;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_pdf_box, 16, SKColors.Firebrick);

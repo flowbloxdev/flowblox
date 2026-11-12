@@ -6,7 +6,7 @@ using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Enums;
-using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util.Resources;
 using SkiaSharp;
 using FlowBloxSampleExtension.Models.Components;
@@ -134,16 +134,13 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
             return Invoke(runtime, data, () =>
             {
 
-                // Resolve all field placeholders in the output template first
-                // (for example "$user::..." or mapped field references).
-                var outputText = FlowBloxFieldHelper.ReplaceFieldsInString(OutputText);
-
-                if (string.IsNullOrWhiteSpace(outputText))
-                {
-                    CreateNotification(runtime, SampleExtensionFlowBlockNotifications.OutputTextIsEmpty);
-                    GenerateResult(runtime);
+                // On failure, create the notification and emit an empty result.
+                if (!this.ResolveOrCreateNotification(
+                    x => x.OutputText,
+                    out var outputText,
+                    runtime,
+                    SampleExtensionFlowBlockNotifications.OutputTextIsEmpty))
                     return;
-                }
 
                 // Apply configured replacement entries in their current list order.
                 // Each mapping entry is also field-aware (SourceValue/ReplacementValue).
@@ -152,11 +149,10 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
                     if (mapping == null)
                         continue;
 
-                    var sourceValue = FlowBloxFieldHelper.ReplaceFieldsInString(mapping.SourceValue ?? string.Empty);
-                    if (string.IsNullOrWhiteSpace(sourceValue))
+                    if (!mapping.TryResolve(x => x.SourceValue, out var sourceValue))
                         continue;
 
-                    var replacementValue = FlowBloxFieldHelper.ReplaceFieldsInString(mapping.ReplacementValue ?? string.Empty) ?? string.Empty;
+                    var replacementValue = mapping.Resolve(x => x.ReplacementValue);
                     outputText = outputText.Replace(sourceValue, replacementValue, StringComparison.Ordinal);
                 }
 

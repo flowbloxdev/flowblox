@@ -53,6 +53,7 @@ namespace FlowBlox.AvaloniaDesktop.Persistence.RecentProjects
                     ProjectName = project?.ProjectName ?? string.Empty,
                     ProjectFilePath = normalizedFilePath,
                     ProjectSpaceGuid = normalizedGuid,
+                    ApiEndpoint = project?.ProjectSpaceEndpointUri,
                     LastOpenedUtc = DateTime.UtcNow
                 });
 

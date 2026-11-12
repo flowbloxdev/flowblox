@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using System.ComponentModel.DataAnnotations;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
@@ -29,6 +30,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
 
         [Range(1, 300)]
         [Display(Name = "WebSearchProviderBase_TimeoutSeconds", Description = "WebSearchProviderBase_TimeoutSeconds_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TimeoutSeconds { get; set; } = 30;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.web, 16, SKColors.SteelBlue);
@@ -45,17 +47,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
 
         protected string ResolveApiKey()
         {
-            var value = FlowBloxFieldHelper.ReplaceFieldsInString(ApiKey ?? string.Empty)?.Trim();
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ValidationException("The web search API key is empty after field resolution.");
+            var value = this.Resolve(owner => owner.ApiKey, required: true).Trim();
             return value;
         }
 
         protected string ResolveBaseUrl()
         {
-            var value = FlowBloxFieldHelper.ReplaceFieldsInString(BaseUrl ?? string.Empty)?.Trim().TrimEnd('/');
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ValidationException("The web search base URL is empty after field resolution.");
+            var value = this.Resolve(owner => owner.BaseUrl, required: true).Trim().TrimEnd('/');
             return value;
         }
 

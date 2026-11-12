@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -61,12 +62,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
             if (!string.IsNullOrEmpty(CSSSelector))
             {
                 mode = WebEventSelectionMode.CssSelector;
-                selector = FlowBloxFieldHelper.ReplaceFieldsInString(CSSSelector);
+                selector = this.Resolve(owner => owner.CSSSelector);
             }
             else if (!string.IsNullOrEmpty(XPath))
             {
                 mode = WebEventSelectionMode.XPath;
-                selector = FlowBloxFieldHelper.ReplaceFieldsInString(XPath);
+                selector = this.Resolve(owner => owner.XPath);
             }
             else
             {

@@ -1,3 +1,5 @@
+using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
@@ -10,22 +12,24 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     {
         [Display(Name = "SplitSeparatorDefinition_Separator", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [CustomValidation(typeof(SplitSeparatorDefinition), nameof(ValidateSeparator))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         [Display(Name = "SplitSeparatorDefinition_SpecialSeparator", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(SplitSeparatorDefinition), nameof(ValidateSeparator))]
         public SpecialSeparator? SpecialSeparator { get; set; }
 
         public string ResolveSeparator()
         {
-            if (SpecialSeparator == Enums.SpecialSeparator.Tab)
+            var specialSeparator = this.Resolve(definition => definition.SpecialSeparator);
+            if (specialSeparator == Enums.SpecialSeparator.Tab)
                 return "\t";
 
-            if (SpecialSeparator == Enums.SpecialSeparator.NewLine)
+            if (specialSeparator == Enums.SpecialSeparator.NewLine)
                 return Environment.NewLine;
 
-            return Separator;
+            return this.Resolve(owner => owner.Separator);
         }
 
         public override string ToString() =>
@@ -34,11 +38,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public static ValidationResult ValidateSeparator(object value, ValidationContext validationContext)
         {
             var separatorDefinition = (SplitSeparatorDefinition)validationContext.ObjectInstance;
+            var separator = separatorDefinition.Resolve(owner => owner.Separator);
+            var specialSeparator = separatorDefinition.Resolve(definition => definition.SpecialSeparator);
 
-            if (string.IsNullOrEmpty(separatorDefinition.Separator) && !separatorDefinition.SpecialSeparator.HasValue)
+            if (string.IsNullOrEmpty(separator) && !specialSeparator.HasValue)
                 return new ValidationResult(FlowBloxResourceUtil.GetLocalizedString("SplitSeparatorDefinition_Validation_NoSeparatorDefined"), [validationContext.MemberName]);
 
-            if (!string.IsNullOrEmpty(separatorDefinition.Separator) && separatorDefinition.SpecialSeparator.HasValue)
+            if (!string.IsNullOrEmpty(separator) && specialSeparator.HasValue)
                 return new ValidationResult(FlowBloxResourceUtil.GetLocalizedString("SplitSeparatorDefinition_Validation_ManySeparatorsDefined"), [validationContext.MemberName]);
 
             return ValidationResult.Success;

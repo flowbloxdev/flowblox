@@ -6,11 +6,21 @@ FlowBlox naming conventions for AI-generated changes:
 - Keep descriptors short, domain-specific, and stable.
 
 2) BaseSingleResultFlowBlock naming
-- For BaseSingleResultFlowBlock descendants, prefer descriptors that naturally map to the auto-created result field name.
-- Example intent: JsonPathSelector_FirstName should lead to a result field descriptor like FirstName.
+- For BaseSingleResultFlowBlock descendants, prefer descriptors that naturally
+  map to the auto-created result field name.
+- Example intent: JsonPathSelector_FirstName should lead to a result field
+  descriptor like FirstName.
 - Placeholder pattern for result fields always follows $<FlowBlockName>::<FieldName>.
 
 3) Placeholder-aware updates
-- If type metadata marks a string property with EnableFieldSelection, placeholders are allowed.
-- Use GetPlaceholders to discover currently available placeholders before writing values.
-- Never invent placeholder names that are not present in GetPlaceholders results.
+- Properties enabled with EnableFieldSelection have [FLD] in their uiFlags.
+  Enabled strings accept fully qualified field names inline, e.g. "Output: $FlowBlock::FieldName";
+  enabled scalars accept one field reference. Other properties remain literal configuration.
+- Link the scalar property through /Property/Link with the resolver:
+  {"resolveFieldElementByFQName":"$FlowBlock::FieldName"}
+  A literal clears the reference; /Property/Unlink restores the configured literal.
+- PropertySelectedFieldMap is the read-only source of truth for scalar references
+  in snapshots. Use the scalar property's Link/Unlink paths; direct map and child writes are blocked.
+- Use GetPlaceholders before assigning references; never invent placeholder names.
+- Scalars link project fields; strings can embed field, project and option placeholders.
+  Respect selection restrictions in attributes, including FlowBloxFieldSelection and its allowed modes or selection methods.

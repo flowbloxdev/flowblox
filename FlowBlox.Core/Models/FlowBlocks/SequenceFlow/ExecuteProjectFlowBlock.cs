@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Attributes.FlowBlox.Core.Attributes;
@@ -41,7 +42,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Project",
             Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFileSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
         [FlowBloxUIFileSelection("FlowBlox project (*.fbprj)|*.fbprj|All files (*.*)|*.*")]
         public string ProjectFile { get; set; }
 
@@ -192,7 +193,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
                 if (string.IsNullOrWhiteSpace(entry.TargetValue))
                     throw new ValidationException($"TargetValue must not be empty in parameter mappings for '{entry.TargetKey}'.");
 
-                var value = FlowBloxFieldHelper.ReplaceFieldsInString(entry.TargetValue);
+                var value = entry.Resolve(owner => owner.TargetValue);
 
                 if (entry.TargetType == ExecuteProjectTargetType.UserField)
                     userFields[entry.TargetKey] = value;
@@ -202,12 +203,12 @@ namespace FlowBlox.Core.Models.FlowBlocks
 
             return new FlowBlox.Core.Runner.Contracts.RunnerRequest
             {
-                ProjectFile = FlowBloxFieldHelper.ReplaceFieldsInString(ProjectFile),
+                ProjectFile = this.Resolve(owner => owner.ProjectFile),
 
                 // ProjectSpace support
                 ProjectSpaceGuid = string.IsNullOrWhiteSpace(ProjectSpaceGuid)
                     ? null
-                    : FlowBloxFieldHelper.ReplaceFieldsInString(ProjectSpaceGuid),
+                    : this.Resolve(owner => owner.ProjectSpaceGuid),
 
                 ProjectSpaceVersion = ProjectSpaceVersion,
 
@@ -313,27 +314,27 @@ namespace FlowBlox.Core.Models.FlowBlocks
 
         private string BuildProjectCacheKey()
         {
-            var resolvedProjectFile = FlowBloxFieldHelper.ReplaceFieldsInString(ProjectFile);
-            var resolvedProjectSpaceGuid = FlowBloxFieldHelper.ReplaceFieldsInString(ProjectSpaceGuid);
+            var projectFile = this.Resolve(owner => owner.ProjectFile);
+            var projectSpaceGuid = this.Resolve(owner => owner.ProjectSpaceGuid);
             var versionPart = ProjectSpaceVersion?.ToString();
 
-            if (!string.IsNullOrWhiteSpace(resolvedProjectFile))
-                return $"FILE|{resolvedProjectFile}";
+            if (!string.IsNullOrWhiteSpace(projectFile))
+                return $"FILE|{projectFile}";
 
-            if (!string.IsNullOrWhiteSpace(resolvedProjectSpaceGuid))
-                return $"SPACE|{resolvedProjectSpaceGuid}|{versionPart}";
+            if (!string.IsNullOrWhiteSpace(projectSpaceGuid))
+                return $"SPACE|{projectSpaceGuid}|{versionPart}";
 
             return string.Empty;
         }
 
         private FlowBloxProject LoadProjectForSuggestions()
         {
-            var resolvedProjectFile = FlowBloxFieldHelper.ReplaceFieldsInString(ProjectFile);
-            if (!string.IsNullOrWhiteSpace(resolvedProjectFile) && File.Exists(resolvedProjectFile))
-                return FlowBloxProject.FromFile(resolvedProjectFile);
+            var projectFile = this.Resolve(owner => owner.ProjectFile);
+            if (!string.IsNullOrWhiteSpace(projectFile) && File.Exists(projectFile))
+                return FlowBloxProject.FromFile(projectFile);
 
-            var resolvedProjectSpaceGuid = FlowBloxFieldHelper.ReplaceFieldsInString(ProjectSpaceGuid);
-            if (!string.IsNullOrWhiteSpace(resolvedProjectSpaceGuid))
+            var projectSpaceGuid = this.Resolve(owner => owner.ProjectSpaceGuid);
+            if (!string.IsNullOrWhiteSpace(projectSpaceGuid))
             {
                 var baseUrl = FlowBloxOptions.GetOptionInstance()
                     .OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl]
@@ -344,7 +345,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
 
                 return Task.Run(async () => await FlowBloxProject
                     .FromProjectSpaceGuidAsync(
-                        resolvedProjectSpaceGuid,
+                        projectSpaceGuid,
                         ProjectSpaceVersion,
                         token,
                         webApi))

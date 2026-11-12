@@ -50,7 +50,8 @@ namespace FlowBlox.Core.Util.Deletion
                     continue;
                 }
 
-                if (value == null)
+                var selectionOwner = instance as FlowBloxReactiveObject;
+                if (value == null && selectionOwner?.GetPropertySelectedFieldName(property.Name) == null)
                     continue;
 
                 var rootProperty = componentProperty ?? property;

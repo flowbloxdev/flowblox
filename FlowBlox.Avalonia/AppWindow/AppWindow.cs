@@ -40,6 +40,7 @@ using FlowBlox.Core.Util.DistributedData;
 using FlowBlox.Core.Services.Notifications;
 using Key = Avalonia.Input.Key;
 using KeyModifiers = Avalonia.Input.KeyModifiers;
+using Avalonia.Controls;
 
 namespace FlowBlox.AppWindow
 {
@@ -120,6 +121,7 @@ namespace FlowBlox.AppWindow
             FlowBloxProjectManager.Instance.ProjectChanged += ProjectManager_ProjectChanged;
 
             RefreshRecentProjectsMenu();
+            InitializeShortcuts();
             SubscribeCurrentChangelist();
             SubscribeCurrentProjectGuidChanges();
             this.UpdateUI();
@@ -128,6 +130,7 @@ namespace FlowBlox.AppWindow
 
         protected override void OnClosed(EventArgs e)
         {
+            DisposeShortcuts();
             FlowBloxProjectManager.Instance.ProjectChanged -= ProjectManager_ProjectChanged;
             UnsubscribeCurrentChangelist();
             UnsubscribeCurrentProjectGuidChanges();
@@ -437,9 +440,12 @@ namespace FlowBlox.AppWindow
                 && !_isProjectLoading
                 && !_isProjectUnloading;
             Welcome.IsVisible = !Workspace.IsVisible;
+            this.FindControl<Avalonia.Controls.ScrollViewer>("Shortcuts").IsVisible = !Workspace.IsVisible;
 
             if (wasWorkspaceVisible != Workspace.IsVisible)
             {
+                if (!Workspace.IsVisible)
+                    _ = RefreshShortcutsAsync();
                 // NativeControlHost normally applies ancestor visibility after rendering.
                 // Hide its HWNDs before project teardown can clear their WPF content.
                 if (!Workspace.IsVisible)
@@ -817,6 +823,11 @@ namespace FlowBlox.AppWindow
                 this.OnAfterProjectOpened(project);
                 openedSuccessfully = true;
             }
+            catch (ProjectSpaceLoginRequiredException)
+            {
+                await ShowProjectSpaceLoginHintAsync();
+                return false;
+            }
             catch (Exception e)
             {
                 var logger = FlowBloxLogManager.Instance.GetLogger();
@@ -860,6 +871,12 @@ namespace FlowBlox.AppWindow
             UpdateUI_ProjectName();
             return true;
         }
+
+        private Task ShowProjectSpaceLoginHintAsync() => DesktopDialogs.Messages.ShowAsync(
+            FlowBloxResourceUtil.GetLocalizedString("AppWindow_ProjectSpaceLoginRequired_Message", typeof(FlowBloxMainUITexts)),
+            FlowBloxResourceUtil.GetLocalizedString("AppWindow_ProjectSpaceLoginRequired_Title", typeof(FlowBloxMainUITexts)),
+            MessageBoxButtons.Ok,
+            MessageBoxIcon.Information);
 
         private void OnAfterProjectOpened(FlowBloxProject project)
         {
@@ -1255,6 +1272,7 @@ private void itmUndo_Click(object sender, EventArgs e)
             NotificationMessage.Text = notification?.Message ?? string.Empty;
             NotificationAction.Content = notification?.ActionText;
             NotificationAction.IsVisible = !string.IsNullOrEmpty(notification?.ActionText);
+            ApplyNotificationAppearance(notification);
         }
 
         private async void lblNotificationAction_Click(object sender, EventArgs e)
@@ -1406,12 +1424,14 @@ private void itmUndo_Click(object sender, EventArgs e)
             });
         }
 
-        private async Task OpenProjectFromProjectSpaceAsync(string projectGuid, int? projectSpaceVersion = null)
+        private async Task OpenProjectFromProjectSpaceAsync(string projectGuid, int? projectSpaceVersion = null, string apiEndpoint = null)
         {
             _recentProjectPath = string.Empty;
             _recentProjectSpaceGuid = projectGuid;
 
-            var baseUrl = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl].Value;
+            var baseUrl = string.IsNullOrWhiteSpace(apiEndpoint)
+                ? FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl].Value
+                : apiEndpoint;
             var webApi = new FlowBloxWebApiService(baseUrl);
             var token = FlowBloxAccountManager.Instance.GetUserToken(baseUrl);
 
@@ -1638,6 +1658,11 @@ private void itmUndo_Click(object sender, EventArgs e)
             if (menuItem.Tag is not RecentProjectEntry recentProject)
                 return;
 
+            await OpenRecentProjectAsync(recentProject);
+        }
+
+        private async Task OpenRecentProjectAsync(RecentProjectEntry recentProject)
+        {
             await OpenProjectWithConfirmationAsync(async () =>
             {
                 if (!string.IsNullOrWhiteSpace(recentProject.ProjectFilePath))
@@ -1664,7 +1689,7 @@ private void itmUndo_Click(object sender, EventArgs e)
                     _recentProjectPath = string.Empty;
                     _recentProjectSpaceGuid = recentProject.ProjectSpaceGuid;
                     UnloadProject();
-                    await OpenProjectFromProjectSpaceAsync(recentProject.ProjectSpaceGuid);
+                    await OpenProjectFromProjectSpaceAsync(recentProject.ProjectSpaceGuid, apiEndpoint: recentProject.ApiEndpoint);
                 }
             });
         }

@@ -1,4 +1,5 @@
 using FlowBlox.Core.Provider.Placeholders;
+using FlowBlox.Core.Models.Base;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -14,15 +15,36 @@ namespace FlowBlox.Core.Util.Fields
 {
     public static class FlowBloxFieldHelper
     {
-        private static readonly HashSet<Type> SupportedSimplePropertyTypes = new HashSet<Type>
+        private static readonly Regex FieldReferencePattern = new(@"\$[A-Za-z0-9öäüÖÄÜ_-]+::[A-Za-z0-9öäüÖÄÜ_.-]+", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Finds possible unresolved field references for warnings only.
+        /// Matches may be intentional literal values and must never block validation or execution.
+        /// </summary>
+        public static IEnumerable<string> GetUnresolvedFieldReferences(string value)
         {
-            typeof(int),
-            typeof(long),
-            typeof(float),
-            typeof(double),
-            typeof(bool),
-            typeof(DateTime)
-        };
+            return FieldReferencePattern.Matches(value ?? string.Empty)
+                .Select(match => match.Value)
+                .Distinct();
+        }
+            
+
+        public static string ResolveFieldValue(FieldElement field)
+        {
+            ArgumentNullException.ThrowIfNull(field);
+
+            return ReplaceFieldsInString(field.StringValue, resolveVaultReferences: field.IsUserInputField());
+        }
+
+        public static bool IsResolvedFieldValueEmpty(FieldElement field)
+        {
+            if (field == null)
+                return true;
+
+            var resolvedValue = ResolveFieldValue(field);
+
+            return string.IsNullOrWhiteSpace(resolvedValue);
+        }
 
         public static List<FieldElement> GetFieldElementsFromString(string value)
         {
@@ -49,7 +71,17 @@ namespace FlowBlox.Core.Util.Fields
                 y => ReplaceFieldsInString(y.Value));
         }
 
-        public static string ReplaceFieldsInString(string value)
+        /// <summary>
+        /// Resolves placeholders in arbitrary text. For configuration properties, prefer
+        /// the null-safe Resolve extension so string and scalar reads follow the same convention.
+        /// </summary>
+        public static string ReplaceFieldsInString(string value) => ReplaceFieldsInString(value, resolveVaultReferences: true);
+
+        /// <summary>
+        /// Resolves arbitrary text and, when enabled, vault references after all other substitutions; preserves a null input.
+        /// Use the Resolve extension for normal business configuration property access.
+        /// </summary>
+        public static string ReplaceFieldsInString(string value, bool resolveVaultReferences)
         {
             if (value == null)
                 return null;
@@ -58,8 +90,10 @@ namespace FlowBlox.Core.Util.Fields
             var registry = FlowBloxRegistryProvider.GetRegistry();
             foreach (FieldElement fieldElement in registry?.GetFieldElements() ?? Enumerable.Empty<FieldElement>())
             {
-                if (value.Contains(fieldElement.FullyQualifiedName))
-                    value = value.Replace(fieldElement.FullyQualifiedName, fieldElement.StringValue ?? "");
+                if (!value.Contains(fieldElement.FullyQualifiedName))
+                    continue;
+
+                value = value.Replace(fieldElement.FullyQualifiedName, fieldElement.StringValue ?? string.Empty);
             }
 
             // Project property elements
@@ -98,7 +132,9 @@ namespace FlowBlox.Core.Util.Fields
                     value = value.Replace(optionPlaceholder, optionElement.Value?.ToString() ?? "");
             };
 
-            return value;
+            return resolveVaultReferences 
+                ? Vault.FlowBloxVault.Resolve(value) 
+                : value;
         }
 
         private static string GetParameterPrefixForDbType(DbTypes dbType)
@@ -145,6 +181,11 @@ namespace FlowBlox.Core.Util.Fields
                 value = value.Replace(fqOld, fqNew);
             return value;
         }
+        /// <summary>
+        /// Resolves a scalar selection or returns its configured literal without mutating it.
+        /// Low-level implementation for Resolve; prefer that extension at configuration consumption sites,
+        /// including inside FlowBlock invocations, modifiers and initialization callbacks.
+        /// </summary>
         public static TValue GetSimplePropertyOrFieldValue<TTarget, TValue>(
             TTarget target,
             Expression<Func<TTarget, TValue>> expression)
@@ -160,20 +201,14 @@ namespace FlowBlox.Core.Util.Fields
 
             var directValue = (TValue)propertyInfo.GetValue(target);
 
-            var selectedFieldProperty = target.GetType().GetProperty(
-                propertyInfo.Name + GlobalConstants.SimplePropertySelectedFieldSuffix);
-
-            if (selectedFieldProperty == null)
-                return directValue;
-
-            if (selectedFieldProperty.GetValue(target) is not FieldElement selectedField)
+            if (GetPropertyValueOrSelectedField(target, propertyInfo) is not FieldElement selectedField)
                 return directValue;
 
             var resolvedValue = ResolveSimpleFieldValue(typeof(TValue), selectedField.Value);
             return (TValue)resolvedValue;
         }
 
-        private static object ResolveSimpleFieldValue(Type targetType, object fieldValue)
+        internal static object ResolveSimpleFieldValue(Type targetType, object fieldValue)
         {
             var underlyingTargetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
             var targetIsNullable = Nullable.GetUnderlyingType(targetType) != null || !underlyingTargetType.IsValueType;
@@ -260,23 +295,13 @@ namespace FlowBlox.Core.Util.Fields
                 throw new ArgumentNullException(nameof(propertyInfo));
 
             var directValue = propertyInfo.GetValue(target);
-            if (!IsSupportedSimplePropertyType(propertyInfo.PropertyType) &&
-                !EnumHelper.IsEnumType(propertyInfo))
+            if (!FlowBloxFieldSelection.Supports(propertyInfo) || !FlowBloxFieldSelection.SupportsScalar(propertyInfo.PropertyType))
                 return directValue;
 
-            var selectedFieldProperty = target.GetType().GetProperty(
-                propertyInfo.Name + GlobalConstants.SimplePropertySelectedFieldSuffix);
-
-            if (selectedFieldProperty?.GetValue(target) is FieldElement selectedField)
-                return selectedField;
+            if (target is FlowBloxReactiveObject reactiveObject)
+                return reactiveObject.GetPropertySelectedField(propertyInfo.Name) ?? directValue;
 
             return directValue;
-        }
-
-        private static bool IsSupportedSimplePropertyType(Type propertyType)
-        {
-            var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-            return SupportedSimplePropertyTypes.Contains(underlyingType);
         }
 
     }

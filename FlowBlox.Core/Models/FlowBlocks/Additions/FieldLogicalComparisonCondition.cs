@@ -39,7 +39,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
             }
         }
 
-        public override bool Check() => Compare(FieldElement?.Value, FieldElement?.FieldType?.GetSpecialParsingStrategy());
+        public override bool Check() => ComparisonCore.CheckField(Operator, Value, FieldElement);
 
         public override string DisplayName => GetDisplayName(f => f?.FullyQualifiedName);
 

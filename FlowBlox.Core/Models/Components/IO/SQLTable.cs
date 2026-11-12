@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using FlowBlox.Core.Extensions;
+using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
@@ -29,14 +30,14 @@ namespace FlowBlox.Core.Models.Components.IO
         [Display(Name = "SQLTable_DbType",
                  Description = "SQLTable_DbType_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DbTypes DbType { get; set; }
 
         [Required()]
         [Display(Name = "SQLTable_SQLConnectionstring",
                  Description = "SQLTable_SQLConnectionstring_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.DBConnection))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.DBConnection), UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true)]
         public string SQLConnectionstring { get; set; }
 
@@ -98,14 +99,15 @@ namespace FlowBlox.Core.Models.Components.IO
 
         public DataTable Read()
         {
-            var resolvedConnectionString = FlowBloxFieldHelper.ReplaceFieldsInString(SQLConnectionstring);
-            var dbConnection = DbConnectionProvider.Instance.GetOrCreateDbConnection(DbType, resolvedConnectionString);
+            var sqlConnectionstring = this.Resolve(owner => owner.SQLConnectionstring);
+            var dbType = this.Resolve(table => table.DbType);
+            var dbConnection = DbConnectionProvider.Instance.GetOrCreateDbConnection(dbType, sqlConnectionstring);
             if (dbConnection != null)
             {
                 Dictionary<string, object> parameters;
                 var sqlStatement = FlowBloxFieldHelper.ReplaceFieldsInSQL(
                     SQLStatement,
-                    DbType,
+                    dbType,
                     out parameters,
                     useFieldValuesAsParameters: UseFieldValuesAsParameters);
                 return DbConnectionUtil.GetOutputAsDataTable(sqlStatement, parameters, dbConnection);

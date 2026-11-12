@@ -6,6 +6,8 @@ namespace FlowBlox.Core.Constants
     /// </summary>
     public static class OptionsConstants
     {
+        public const string VaultValues = "Vault.Values";
+
         public const string AIApprovedSkillProjects = "AI.ApprovedSkillProjects";
         public const string AIAssistantConfiguration = "AI.AssistantConfiguration";
         public const string AIAssistantHistoryDirectory = "AI.AssistantHistoryDirectory";

@@ -132,8 +132,8 @@
   <data name="Button_PublishVersion" xml:space="preserve">
     <value>Veröffentlichen</value>
   </data>
-  <data name="Button_SaveChanges" xml:space="preserve">
-    <value>Änderungen speichern</value>
+  <data name="Button_Apply" xml:space="preserve">
+    <value>Übernehmen</value>
   </data>
   <data name="CheckBox_ExtensionVersion_Active" xml:space="preserve">
     <value>Version ist aktiv</value>
@@ -201,8 +201,8 @@
   <data name="Button_PublishVersion_Tooltip" xml:space="preserve">
     <value>Eine Version kann erst veröffentlicht werden, wenn der Version ein gültiger Inhalt zugewiesen wurde.</value>
   </data>
-  <data name="Button_SaveChanges_Tooltip" xml:space="preserve">
-    <value>Hiermit werden die ausstehenden Änderungen auf der Erweiterungsplattform gespeichert.</value>
+  <data name="Button_Apply_Tooltip" xml:space="preserve">
+    <value>Speichert die Änderungen, ohne den Dialog zu schließen.</value>
   </data>
   <data name="VersionView_Expander_Notes_Header" xml:space="preserve">
     <value>Was ist beim Hochladen einer Version zu beachten?</value>
@@ -251,5 +251,8 @@ Sie können Erweiterungen hinzufügen, bearbeiten, deaktivieren oder entfernen s
   </data>
   <data name="Loading_SaveInProgress" xml:space="preserve">
     <value>Aenderungen werden gespeichert und Erweiterungsinhalt hochgeladen. Bitte warten...</value>
+  </data>
+  <data name="Button_Back" xml:space="preserve">
+    <value>Zurück</value>
   </data>
 </root>

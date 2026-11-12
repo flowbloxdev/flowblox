@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -43,6 +44,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
         public string S3ServiceUrl { get; set; }
 
         [Display(Name = "AmazonWebServicesProvider_S3ForcePathStyle", Description = "AmazonWebServicesProvider_S3ForcePathStyle_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool S3ForcePathStyle { get; set; }
 
         public TClient CreateClient<TClient>()
@@ -63,16 +65,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         public AWSCredentials CreateCredentials()
         {
-            var resolvedApiKey = FlowBloxFieldHelper.ReplaceFieldsInString(ApiKey ?? string.Empty);
-            var resolvedSecretKey = FlowBloxFieldHelper.ReplaceFieldsInString(SecretKey ?? string.Empty);
+            var apiKey = this.Resolve(owner => owner.ApiKey);
+            var secretKey = this.Resolve(owner => owner.SecretKey);
 
-            if (string.IsNullOrWhiteSpace(resolvedApiKey))
+            if (string.IsNullOrWhiteSpace(apiKey))
                 throw new InvalidOperationException("AWS API key is empty after field resolution.");
 
-            if (string.IsNullOrWhiteSpace(resolvedSecretKey))
+            if (string.IsNullOrWhiteSpace(secretKey))
                 throw new InvalidOperationException("AWS secret key is empty after field resolution.");
 
-            return new BasicAWSCredentials(resolvedApiKey, resolvedSecretKey);
+            return new BasicAWSCredentials(apiKey, secretKey);
         }
 
         public AmazonS3Client CreateS3Client()
@@ -80,21 +82,21 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         public AmazonS3Config CreateS3Configuration()
         {
-            var resolvedRegion = ResolveRegionEndpoint();
-            var resolvedServiceUrl = FlowBloxFieldHelper.ReplaceFieldsInString(S3ServiceUrl ?? string.Empty)?.Trim();
+            var region = ResolveRegionEndpoint();
+            var s3ServiceUrl = this.Resolve(owner => owner.S3ServiceUrl).Trim();
             var configuration = new AmazonS3Config
             {
-                ForcePathStyle = S3ForcePathStyle
+                ForcePathStyle = this.Resolve(provider => provider.S3ForcePathStyle)
             };
 
-            if (string.IsNullOrWhiteSpace(resolvedServiceUrl))
+            if (string.IsNullOrWhiteSpace(s3ServiceUrl))
             {
-                configuration.RegionEndpoint = resolvedRegion;
+                configuration.RegionEndpoint = region;
             }
             else
             {
-                configuration.ServiceURL = resolvedServiceUrl;
-                configuration.AuthenticationRegion = resolvedRegion.SystemName;
+                configuration.ServiceURL = s3ServiceUrl;
+                configuration.AuthenticationRegion = region.SystemName;
             }
 
             return configuration;
@@ -102,11 +104,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         public RegionEndpoint ResolveRegionEndpoint()
         {
-            var resolvedRegion = FlowBloxFieldHelper.ReplaceFieldsInString(Region ?? string.Empty)?.Trim();
-            if (string.IsNullOrWhiteSpace(resolvedRegion))
-                throw new InvalidOperationException("AWS region is empty after field resolution.");
+            var region = this.Resolve(owner => owner.Region, required: true).Trim();
 
-            return RegionEndpoint.GetBySystemName(resolvedRegion);
+            return RegionEndpoint.GetBySystemName(region);
         }
     }
 }

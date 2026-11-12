@@ -33,9 +33,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
         public FieldElement EndDate { get; set; }
 
         [Display(Name = "DateTimeDifferenceFlowBlock_Unit", Description = "DateTimeDifferenceFlowBlock_Unit_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeOperationUnit Unit { get; set; } = DateTimeOperationUnit.Days;
 
         [Display(Name = "DateTimeDifferenceFlowBlock_AbsoluteValue", Description = "DateTimeDifferenceFlowBlock_AbsoluteValue_Description", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AbsoluteValue { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.timeline_clock, 16, SKColors.SteelBlue);

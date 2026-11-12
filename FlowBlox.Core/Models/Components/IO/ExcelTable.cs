@@ -1,9 +1,11 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Util;
+using FlowBlox.Core.Util.Fields;
 using OfficeOpenXml;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -42,12 +44,13 @@ namespace FlowBlox.Core.Models.Components.IO
                     if (dimension == null)
                         return dataTable;
 
+                    var firstRowHeader = this.Resolve(table => table.FirstRowHeader);
                     foreach (var firstRowCell in worksheet.Cells[1, 1, 1, dimension.End.Column])
                     {
-                        dataTable.Columns.Add(FirstRowHeader ? firstRowCell.Text : $"Column {firstRowCell.Start.Column}");
+                        dataTable.Columns.Add(firstRowHeader ? firstRowCell.Text : $"Column {firstRowCell.Start.Column}");
                     }
 
-                    var startRow = FirstRowHeader ? 2 : 1;
+                    var startRow = firstRowHeader ? 2 : 1;
                     for (int rowNum = startRow; rowNum <= dimension.End.Row; rowNum++)
                     {
                         var wsRow = worksheet.Cells[rowNum, 1, rowNum, dimension.End.Column];

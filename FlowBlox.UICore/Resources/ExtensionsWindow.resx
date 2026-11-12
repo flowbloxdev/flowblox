@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -204,8 +204,8 @@
   <data name="Button_Update" xml:space="preserve">
     <value>Update</value>
   </data>
-  <data name="Button_Close" xml:space="preserve">
-    <value>Close</value>
+  <data name="Button_Back" xml:space="preserve">
+    <value>Back</value>
   </data>
   <data name="Label_Changes" xml:space="preserve">
     <value>Changes</value>

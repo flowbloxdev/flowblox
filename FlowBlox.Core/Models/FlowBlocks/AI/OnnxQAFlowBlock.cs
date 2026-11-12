@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
@@ -36,7 +37,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [Required]
         [Display(Name = "OnnxQAFlowBlock_ModelFolder", Description = "OnnxQAFlowBlock_ModelFolder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFolderSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
         [FlowBloxFieldSelection(AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties)]
         [FlowBloxOpenFromFileSystem(InitialDirectoryMethod = nameof(GetInitialModelDirectory))]
         public string ModelFolder { get; set; }
@@ -77,25 +78,30 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         [Range(16, 4096)]
         [Display(Name = "OnnxQAFlowBlock_MaxSequenceLength", Description = "OnnxQAFlowBlock_MaxSequenceLength_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxSequenceLength { get; set; }
 
         [Range(0, 4095)]
         [Display(Name = "OnnxQAFlowBlock_DocumentStride", Description = "OnnxQAFlowBlock_DocumentStride_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int DocumentStride { get; set; }
 
         [Range(1, 512)]
         [Display(Name = "OnnxQAFlowBlock_MaxAnswerLength", Description = "OnnxQAFlowBlock_MaxAnswerLength_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxAnswerLength { get; set; }
 
         [Display(Name = "OnnxQAFlowBlock_AllowNoAnswer", Description = "OnnxQAFlowBlock_AllowNoAnswer_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AllowNoAnswer { get; set; }
 
         [ActivationCondition(MemberName = nameof(AllowNoAnswer), Value = true)]
         [Display(Name = "OnnxQAFlowBlock_NoAnswerThreshold", Description = "OnnxQAFlowBlock_NoAnswerThreshold_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public float NoAnswerThreshold { get; set; }
 
         #endregion
@@ -173,8 +179,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                     return;
                 }
 
-                var question = FlowBloxFieldHelper.ReplaceFieldsInString(Question ?? string.Empty);
-                var context = FlowBloxFieldHelper.ReplaceFieldsInString(Context ?? string.Empty);
+                var question = this.Resolve(owner => owner.Question);
+                var context = this.Resolve(owner => owner.Context);
                 if (string.IsNullOrWhiteSpace(question) || string.IsNullOrWhiteSpace(context))
                 {
                     CreateNotification(runtime, OnnxQANotifications.QuestionOrContextMissing);
@@ -379,7 +385,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                 : throw new FileNotFoundException("The model folder must contain model.onnx or exactly one ONNX file.");
         }
 
-        private string ResolveModelFolder() => FlowBloxFieldHelper.ReplaceFieldsInString(ModelFolder);
+        private string ResolveModelFolder() => this.Resolve(owner => owner.ModelFolder);
 
         private string GetInitialModelDirectory()
         {

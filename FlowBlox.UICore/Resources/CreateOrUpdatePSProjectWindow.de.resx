@@ -156,8 +156,8 @@
   <data name="Label_UpdatedAt" xml:space="preserve">
 		<value>Zuletzt aktualisiert am</value>
 	</data>
-  <data name="Button_Cancel" xml:space="preserve">
-		<value>Abbrechen</value>
+  <data name="Button_Back" xml:space="preserve">
+		<value>Zurück</value>
 	</data>
   <data name="Button_Save" xml:space="preserve">
 		<value>Speichern</value>
@@ -193,7 +193,7 @@
 		<value>Leert die aktuelle ProjectSpace-GUID. Beim Speichern wird ein neues ProjectSpace-Projekt mit einer neuen GUID erstellt.</value>
 	</data>
   <data name="CreateOrUpdatePSProjectWindow_Message_LoginRequired" xml:space="preserve">
-		<value>Sie sind nicht eingeloggt. Bitte loggen Sie sich zuerst ein: Gehen Sie zu "Extras", "View projects" und klicken Sie dort auf "Login".</value>
+		<value>Sie sind nicht angemeldet. Öffnen Sie "Extras" → "Projekte verwalten" und klicken Sie dort auf "Anmelden".</value>
 	</data>
   <data name="Tab_CreateNewProject" xml:space="preserve">
 		<value>Neues Projekt anlegen</value>

@@ -22,7 +22,7 @@ Standard test-driven + generator workflow (mandatory when the user requests this
 Preconditions:
 - Suitable test cases exist for the target flow block.
 - A compatible generation strategy exists in the target flow block's `GenerationStrategies`.
-- `AIPropertyValueGenerationStrategy` automatically uses every field referenced by the target FlowBlock, including field placeholders in field-enabled string properties and nested reactive objects. Password field values remain hidden.
+- `AIPropertyValueGenerationStrategy` automatically uses every field referenced by the target FlowBlock, including placeholders in all string properties, scalar field selections and nested reactive objects. Password field values remain hidden.
 - `SequenceDetectionGenerationStrategy` still has a required `InputField`; for its `SequenceDetectionFlowBlock` source this value is copied from the source and kept synchronized.
 - Expectations describe the intended generator output and are explicit generation evidence, not only pass/fail assertions. Configure meaningful expected values/counts on each suitable target entry; AI property generation includes them in its generation prompt. Sequence Detection specifically requires an expected extracted value plus a `NumberOfDatasets` expectation.
 

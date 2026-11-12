@@ -22,6 +22,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public ObservableCollection<SplitSeparatorDefinition> Separators { get; set; } = new();
 
         [Display(Name = "SplitFlowBlock_RemoveEmptyEntries", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool RemoveEmptyEntries { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.call_split, 16, SKColors.SeaGreen);

@@ -755,7 +755,7 @@ Die Anwendung wird jetzt neu gestartet, um eine saubere Umgebung wiederherzustel
 		<value>Erweiterungen verwalten</value>
 	</data>
   <data name="AppWindow_itmFbProjects_Text" xml:space="preserve">
-		<value>Projekte einsehen (Project-Space)</value>
+		<value>Projekte verwalten</value>
 	</data>
   <data name="AppWindow_itmOpenFromProjectSpace_Text" xml:space="preserve">
 		<value>Aus Project-Space öffnen</value>
@@ -835,4 +835,10 @@ Der RecursiveCall-Flow-Block ruft den verbundenen, früheren Ziel-Flow-Block ern
   <data name="AppWindow_Notifications_SaveError_Title" xml:space="preserve"><value>Benachrichtigungen konnten nicht gespeichert werden</value></data>
   <data name="AppWindow_itmOpenExampleProject_Text" xml:space="preserve"><value>Beispielprojekt öffnen...</value></data>
   <data name="AppWindow_Notification_ProjectGuidChanged_Message" xml:space="preserve"><value>Eine neue interne Projekt-GUID wurde erzeugt: {0}</value></data>
+  <data name="AppWindow_ProjectSpaceLoginRequired_Title" xml:space="preserve">
+    <value>Hinweis</value>
+  </data>
+  <data name="AppWindow_ProjectSpaceLoginRequired_Message" xml:space="preserve">
+    <value>Sie sind nicht angemeldet. Öffnen Sie "Extras" → "Projekte verwalten" und klicken Sie dort auf "Anmelden".</value>
+  </data>
 </root>

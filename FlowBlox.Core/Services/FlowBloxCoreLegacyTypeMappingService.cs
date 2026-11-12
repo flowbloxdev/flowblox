@@ -8,6 +8,7 @@ using FlowBlox.Core.Models.FlowBlocks.Selection;
 using FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest;
 using FlowBlox.Core.Models.FlowBlocks.IO;
 using FlowBlox.Core.Models.FlowBlocks.Json;
+using FlowBlox.Core.Models.FlowBlocks.Logic;
 
 namespace FlowBlox.Core.Services
 {
@@ -17,6 +18,11 @@ namespace FlowBlox.Core.Services
         {
             return
             [
+                new FlowBloxLegacyTypeMapping(
+                    typeof(FieldCopyFlowBlock),
+                    [
+                        "FlowBlox.Core.Models.FlowBlocks.Logic.DistributorFlowBlock, FlowBlox.Core"
+                    ]),
                 new FlowBloxLegacyTypeMapping(
                     typeof(ComparisonCondition),
                     [

@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -39,10 +40,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Authorization
         public string Audience { get; set; }
 
         [Display(Name = "OAuthFlowBlock_GrantType", Description = "OAuthFlowBlock_GrantType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public OAuthGrantType GrantType { get; set; } = OAuthGrantType.ClientCredentials;
 
         [Display(Name = "OAuthFlowBlock_SendClientCredentialsInBody", Description = "OAuthFlowBlock_SendClientCredentialsInBody_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool SendClientCredentialsInBody { get; set; } = true;
 
         [ActivationCondition(MemberName = nameof(GrantType), Value = OAuthGrantType.Password)]
@@ -84,30 +86,30 @@ namespace FlowBlox.Core.Models.FlowBlocks.Authorization
             return Invoke(runtime, data, () =>
             {
 
-                var resolvedEndpoint = FlowBloxFieldHelper.ReplaceFieldsInString(TokenEndpoint ?? string.Empty)?.Trim();
-                var resolvedClientId = FlowBloxFieldHelper.ReplaceFieldsInString(ClientId ?? string.Empty)?.Trim();
-                var resolvedClientSecret = FlowBloxFieldHelper.ReplaceFieldsInString(ClientSecret ?? string.Empty);
-                var resolvedScope = FlowBloxFieldHelper.ReplaceFieldsInString(Scope ?? string.Empty)?.Trim();
-                var resolvedAudience = FlowBloxFieldHelper.ReplaceFieldsInString(Audience ?? string.Empty)?.Trim();
-                var resolvedUserName = FlowBloxFieldHelper.ReplaceFieldsInString(UserName ?? string.Empty)?.Trim();
-                var resolvedPassword = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty);
+                var tokenEndpoint = this.Resolve(owner => owner.TokenEndpoint).Trim();
+                var clientId = this.Resolve(owner => owner.ClientId).Trim();
+                var clientSecret = this.Resolve(owner => owner.ClientSecret);
+                var scope = this.Resolve(owner => owner.Scope).Trim();
+                var audience = this.Resolve(owner => owner.Audience).Trim();
+                var userName = this.Resolve(owner => owner.UserName).Trim();
+                var password = this.Resolve(owner => owner.Password);
 
-                if (string.IsNullOrWhiteSpace(resolvedEndpoint))
+                if (string.IsNullOrWhiteSpace(tokenEndpoint))
                     throw new ValidationException("OAuth token endpoint is empty.");
 
-                if (string.IsNullOrWhiteSpace(resolvedClientId))
+                if (string.IsNullOrWhiteSpace(clientId))
                     throw new ValidationException("OAuth client id is empty.");
 
-                if (GrantType == OAuthGrantType.Password && string.IsNullOrWhiteSpace(resolvedUserName))
+                if (GrantType == OAuthGrantType.Password && string.IsNullOrWhiteSpace(userName))
                     throw new ValidationException("OAuth user name is empty for the password grant.");
-                if (GrantType == OAuthGrantType.Password && string.IsNullOrEmpty(resolvedPassword))
+                if (GrantType == OAuthGrantType.Password && string.IsNullOrEmpty(password))
                     throw new ValidationException("OAuth password is empty for the password grant.");
 
                 string token;
                 try
                 {
-                    token = RequestToken(resolvedEndpoint, resolvedClientId, resolvedClientSecret, resolvedScope,
-                        resolvedAudience, GrantType, resolvedUserName, resolvedPassword).GetAwaiter().GetResult();
+                    token = RequestToken(tokenEndpoint, clientId, clientSecret, scope,
+                        audience, GrantType, userName, password).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {

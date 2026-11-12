@@ -32,16 +32,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
         [Required]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         [Display(Name = "XmlDocumentOutputFlowBlock_Indent", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Indent { get; set; }
 
         [Display(Name = "XmlDocumentOutputFlowBlock_NewLineOnAttributes", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool NewLineOnAttributes { get; set; }
 
         [Display(Name = "XmlDocumentOutputFlowBlock_OmitXmlDeclaration", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool OmitXmlDeclaration { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.code_braces, 16, SKColors.Peru);

@@ -106,10 +106,18 @@
                                 VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button x:Name="AllowOnceButton" Content="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_Execute}"
-                    Style="{StaticResource FlowBlox.WindowActionButton.Save}"
+            <Button x:Name="AllowOnceButton"
+                    mah:ControlsHelper.ContentCharacterCasing="Normal"
+                    Style="{StaticResource FlowBlox.WindowActionButton}"
                     IsDefault="True"
-                    Click="ExecuteButton_Click" />
+                    Click="ExecuteButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="PlayCircleOutline"
+                                                Style="{StaticResource FlowBlox.WindowActionIcon.Apply}" />
+                    <AccessText Text="{x:Static resources:AiAssistantChatView.Message_ExternalProjectExecution_Execute}"
+                                VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 </mah:MetroWindow>

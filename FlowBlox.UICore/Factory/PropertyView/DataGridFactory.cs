@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Interfaces;
@@ -26,6 +26,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using FlowBlox.Core.Models.Base;
+using FlowBlox.Core.Util;
+using FlowBlox.UICore.Resolver;
 
 namespace FlowBlox.UICore.Factory.PropertyView
 {
@@ -52,6 +54,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
         private void SetCellStyle(DataGrid dataGrid)
         {
             var cellStyle = new Style(typeof(DataGridCell));
+            cellStyle.Setters.Add(new Setter(Control.VerticalContentAlignmentProperty, VerticalAlignment.Center));
             var trigger = new Trigger
             {
                 Property = Validation.HasErrorProperty,
@@ -132,9 +135,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 }, DispatcherPriority.ApplicationIdle);
             }
 
-            // Merken, welche Column welches FlowBlockUIAttribute hat
-            Dictionary<DataGridColumn, FieldSelectionDialogContext> columnAttributeMap = new();
-
             // Spalten aus der Listenelement-Type erstellen
             Type listItemType = _property.PropertyType.GetGenericArguments()[0];
             foreach (var childProperty in GetDataGridProperties(listItemType))
@@ -144,7 +144,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     continue;
 
                 var uiAttribute = childProperty.GetCustomAttribute<FlowBloxUIAttribute>();
-                var fieldSelectionAttribute = childProperty.GetCustomAttribute<FlowBloxFieldSelectionAttribute>();
 
                 // Wenn die Grid-Columms automatisch ermittelt wurden, werden nicht sichtbare Member nicht als Spalten angezeigt:
                 if (_dataGridAttribute?.GridColumnMemberNames == null ||
@@ -156,85 +155,13 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
                 string headerText = FlowBloxResourceUtil.GetDisplayName(displayAttr);
 
-                // Standard-Datentypen (inklusive Nullable<int>, Nullable<long>, etc.)
-                var underlyingType = Nullable.GetUnderlyingType(childProperty.PropertyType);
-                var propertyType = underlyingType ?? childProperty.PropertyType;
-                var activationCondition = childProperty.GetCustomAttribute<ActivationConditionAttribute>();
-
-                var useDefaultEnumEditor = propertyType.IsEnum
-                    && string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterMethod)
-                    && childProperty.GetCustomAttribute<FlowBloxComboBoxAttribute>() == null;
-                if (uiAttribute?.Factory == UIFactory.ComboBox && !useDefaultEnumEditor)
+                if (PropertyTypeHelper.IsSimpleType(childProperty.PropertyType) || uiAttribute?.Factory == UIFactory.ComboBox)
                 {
-                    dataGrid.Columns.Add(CreateSelectionColumn(headerText, childProperty, uiAttribute));
+                    dataGrid.Columns.Add(CreateScalarColumn(headerText, childProperty, uiAttribute));
                     continue;
                 }
-
-                if (propertyType == typeof(int) ||
-                    propertyType == typeof(long) ||
-                    propertyType == typeof(float) ||
-                    propertyType == typeof(double) ||
-                    propertyType == typeof(string))
-                {
-                    var hasFieldSelection = uiAttribute?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true;
-                    if (hasFieldSelection)
-                    {
-                        var templateColumn = CreateFieldSelectableTextColumn(
-                            headerText,
-                            childProperty.Name,
-                            IsPropertyReadOnly(childProperty, uiAttribute),
-                            uiAttribute,
-                            fieldSelectionAttribute);
-                        dataGrid.Columns.Add(templateColumn);
-                        columnAttributeMap[templateColumn] = new FieldSelectionDialogContext
-                        {
-                            UiAttribute = uiAttribute,
-                            FieldSelectionAttribute = fieldSelectionAttribute
-                        };
-                    }
-                    else
-                    {
-                        if (activationCondition != null)
-                        {
-                            dataGrid.Columns.Add(ActivationConditionAwareTextboxColumnFactory.Create(
-                                headerText,
-                                childProperty,
-                                activationCondition,
-                                IsPropertyReadOnly(childProperty, uiAttribute)));
-                        }
-                        else
-                        {
-                            var column = new DataGridTextColumn
-                            {
-                                Header = headerText,
-                                MinWidth = DefaultTextColumnMinWidth,
-                                Binding = new Binding(childProperty.Name)
-                                {
-                                    Mode = IsPropertyReadOnly(childProperty, uiAttribute) ? BindingMode.OneWay : BindingMode.TwoWay,
-                                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                                    TargetNullValue = string.Empty
-                                },
-                                IsReadOnly = IsPropertyReadOnly(childProperty, uiAttribute)
-                            };
-                            ApplyCenteredTextColumnStyles(column);
-                            dataGrid.Columns.Add(column);
-                            columnAttributeMap[column] = new FieldSelectionDialogContext
-                            {
-                                UiAttribute = uiAttribute,
-                                FieldSelectionAttribute = fieldSelectionAttribute
-                            };
-                        }
-                    }
-                }
-                else if (propertyType.IsEnum)
-                {
-                    var isReadOnly = IsPropertyReadOnly(childProperty, uiAttribute);
-                    var itemSource = EnumerationDropDown.CreateItems(propertyType, underlyingType != null);
-                    var column = EnumerationDropDown.CreateColumn(headerText, itemSource, childProperty.Name, isReadOnly);
-                    dataGrid.Columns.Add(column);
-                }
                 // Association (Create/Edit Button)
-                else if (uiAttribute?.Factory == UIFactory.Association)
+                if (uiAttribute?.Factory == UIFactory.Association)
                 {
                     var buttonColumn = new DataGridTemplateColumn
                     {
@@ -248,26 +175,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     dataGrid.Columns.Add(buttonColumn);
                 }
 
-                // Checkbox
-                else if (propertyType == typeof(bool))
-                {
-                    var column = new DataGridCheckBoxColumn
-                    {
-                        Header = headerText,
-                        Binding = new Binding(childProperty.Name)
-                        {
-                            Mode = IsPropertyReadOnly(childProperty, uiAttribute) ? BindingMode.OneWay : BindingMode.TwoWay,
-                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                        },
-                        IsReadOnly = IsPropertyReadOnly(childProperty, uiAttribute)
-                    };
-                    dataGrid.Columns.Add(column);
-                    columnAttributeMap[column] = new FieldSelectionDialogContext
-                    {
-                        UiAttribute = uiAttribute,
-                        FieldSelectionAttribute = fieldSelectionAttribute
-                    };
-                }
             }
 
             // Commands für die Buttons
@@ -388,24 +295,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 _moveDownCommand.Invalidate();
             };
 
-            // Event for field selection
-            dataGrid.PreparingCellForEdit += (s, e) =>
-            {
-                if (e.EditingElement is TextBox textBox)
-                {
-                    // MahApps.Metro.Controls.TextBoxHelper.SetClearTextButton(textBox, false);
-
-                    if (columnAttributeMap.TryGetValue(e.Column, out var context) &&
-                        context?.UiAttribute?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true)
-                    {
-                        textBox.Tag = context;
-
-                        textBox.PreviewKeyDown -= OnPreviewKeyDownForFieldSelection;
-                        textBox.PreviewKeyDown += OnPreviewKeyDownForFieldSelection;
-                    }
-                }
-            };
-
             // Fire Property-Change Event when the cell value has changed
             dataGrid.CellEditEnding += (s, e) =>
             {
@@ -417,162 +306,39 @@ namespace FlowBlox.UICore.Factory.PropertyView
             return ResizableControlContainer.Create(stackPanel, minHeight: 150);
         }
 
-        private DataGridColumn CreateSelectionColumn(
+        private DataGridColumn CreateScalarColumn(
             string header,
             PropertyInfo property,
             FlowBloxUIAttribute attribute)
         {
             var readOnly = IsPropertyReadOnly(property, attribute);
-            var display = new FrameworkElementFactory(typeof(TextBlock));
-            var displayPath = property.Name;
-            if (!FlowBlox.Core.Util.PropertyTypeHelper.IsSimpleType(property.PropertyType)
-                && !string.IsNullOrWhiteSpace(attribute.SelectionDisplayMember))
-                displayPath += "." + attribute.SelectionDisplayMember;
-            display.SetBinding(TextBlock.TextProperty, new Binding(displayPath));
-            display.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center);
-
             var editor = new FrameworkElementFactory(typeof(ContentControl));
             editor.SetValue(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch);
             editor.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler((sender, _) =>
             {
                 var host = (ContentControl)sender;
-                if (host.Content == null && host.DataContext != null)
-                {
-                    host.Content = new ComboBoxControlFactory(
-                        _window, property, host.DataContext, _target, readOnly).Create();
-                }
+                if (host.DataContext == null)
+                    return;
+
+                var resolver = new PropertyControlResolver(_window, _target, isGridCell: true);
+                host.Content = resolver.CreateControl(
+                    property, host.DataContext, header, attribute, readOnly, null).FrameworkElement;
             }));
+            var activation = property.GetCustomAttribute<ActivationConditionAttribute>();
+            if (activation != null)
+                return ActivationConditionAwareTextboxColumnFactory.Create(header, property, activation, readOnly, editor);
+
+            var template = new DataTemplate { VisualTree = editor };
             return new DataGridTemplateColumn
             {
                 Header = header,
+                SortMemberPath = property.Name,
                 MinWidth = DefaultTextColumnMinWidth,
                 IsReadOnly = readOnly,
-                CellTemplate = new DataTemplate { VisualTree = display },
-                CellEditingTemplate = new DataTemplate { VisualTree = editor }
+                CellTemplate = template,
+                CellEditingTemplate = template
             };
         }
-
-        private void ApplyCenteredTextColumnStyles(DataGridTextColumn column)
-        {
-            var elementStyle = new Style(typeof(TextBlock));
-            elementStyle.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center));
-            column.ElementStyle = elementStyle;
-        }
-
-        private void OnPreviewKeyDownForFieldSelection(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
-            {
-                if (sender is TextBox textBox && textBox.Tag is FieldSelectionDialogContext context)
-                {
-                    var textBoxAdapter = new WpfTextBoxAdapter(textBox);
-                    TextBoxHelper.ShowFieldSelectionDialog(_target, context.UiAttribute, context.FieldSelectionAttribute, textBoxAdapter, _window);
-                    e.Handled = true;
-                }
-            }
-        }
-
-        private DataGridTemplateColumn CreateFieldSelectableTextColumn(
-            string headerText,
-            string propertyName,
-            bool isReadOnly,
-            FlowBloxUIAttribute attribute,
-            FlowBloxFieldSelectionAttribute fieldSelectionAttribute)
-        {
-            var cellTextFactory = new FrameworkElementFactory(typeof(TextBlock));
-            cellTextFactory.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
-            cellTextFactory.SetBinding(TextBlock.TextProperty, new Binding(propertyName)
-            {
-                Mode = BindingMode.OneWay,
-                TargetNullValue = string.Empty
-            });
-
-            var editPanelFactory = new FrameworkElementFactory(typeof(DockPanel));
-            editPanelFactory.SetValue(DockPanel.LastChildFillProperty, true);
-
-            var buttonFactory = new FrameworkElementFactory(typeof(Button));
-            buttonFactory.SetValue(DockPanel.DockProperty, Dock.Right);
-            buttonFactory.SetValue(FrameworkElement.WidthProperty, 24d);
-            buttonFactory.SetValue(FrameworkElement.HeightProperty, 24d);
-            buttonFactory.SetValue(FrameworkElement.MarginProperty, new Thickness(6, 0, 0, 0));
-            buttonFactory.SetValue(Control.PaddingProperty, new Thickness(0));
-            buttonFactory.SetValue(Control.ToolTipProperty, FlowBloxResourceUtil.GetLocalizedString("EnableFieldSelection_Tooltip", typeof(DataGridFactoryResources)));
-            buttonFactory.SetValue(UIElement.IsEnabledProperty, !isReadOnly);
-            buttonFactory.SetValue(FrameworkElement.TagProperty, new FieldSelectionDialogContext
-            {
-                UiAttribute = attribute,
-                FieldSelectionAttribute = fieldSelectionAttribute
-            });
-            buttonFactory.AddHandler(Button.ClickEvent, new RoutedEventHandler(OnFieldSelectionButtonClick));
-
-            var buttonIconFactory = new FrameworkElementFactory(typeof(PackIconMaterial));
-            buttonIconFactory.SetValue(PackIconMaterial.KindProperty, PackIconMaterialKind.Variable);
-            buttonIconFactory.SetValue(FrameworkElement.WidthProperty, 12d);
-            buttonIconFactory.SetValue(FrameworkElement.HeightProperty, 12d);
-            buttonIconFactory.SetValue(Control.ForegroundProperty, (Brush)new BrushConverter().ConvertFromString("#2F6DB3"));
-            buttonFactory.AppendChild(buttonIconFactory);
-
-            var textBoxFactory = new FrameworkElementFactory(typeof(TextBox));
-            textBoxFactory.SetValue(Control.VerticalContentAlignmentProperty, VerticalAlignment.Center);
-            textBoxFactory.SetValue(TextBox.IsReadOnlyProperty, isReadOnly);
-            textBoxFactory.SetValue(MahApps.Metro.Controls.TextBoxHelper.ClearTextButtonProperty, false);
-            textBoxFactory.SetBinding(TextBox.TextProperty, new Binding(propertyName)
-            {
-                Mode = isReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                TargetNullValue = string.Empty
-            });
-
-            editPanelFactory.AppendChild(buttonFactory);
-            editPanelFactory.AppendChild(textBoxFactory);
-
-            return new DataGridTemplateColumn
-            {
-                Header = headerText,
-                MinWidth = DefaultTextColumnMinWidth,
-                IsReadOnly = isReadOnly,
-                CellTemplate = new DataTemplate { VisualTree = cellTextFactory },
-                CellEditingTemplate = new DataTemplate { VisualTree = editPanelFactory }
-            };
-        }
-
-        private void OnFieldSelectionButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Button button || button.Tag is not FieldSelectionDialogContext context)
-                return;
-
-            TextBox textBox = null;
-            if (button.Parent is DependencyObject parent)
-                textBox = FindVisualChild<TextBox>(parent);
-
-            if (textBox == null)
-                return;
-
-            var textBoxAdapter = new WpfTextBoxAdapter(textBox);
-            TextBoxHelper.ShowFieldSelectionDialog(_target, context.UiAttribute, context.FieldSelectionAttribute, textBoxAdapter, _window);
-            e.Handled = true;
-        }
-
-        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
-        {
-            if (parent == null)
-                return null;
-
-            var count = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < count; i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T match)
-                    return match;
-
-                var nested = FindVisualChild<T>(child);
-                if (nested != null)
-                    return nested;
-            }
-
-            return null;
-        }
-
         private Button CreateButton(PackIconMaterialKind iconKind, string tooltip, RelayCommand command, Brush color)
         {
             var button = new Button

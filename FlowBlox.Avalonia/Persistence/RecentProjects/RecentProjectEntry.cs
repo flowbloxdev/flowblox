@@ -11,6 +11,7 @@ namespace FlowBlox.AvaloniaDesktop.Persistence.RecentProjects
         public string ProjectName { get; set; }
         public string ProjectFilePath { get; set; }
         public string ProjectSpaceGuid { get; set; }
+        public string ApiEndpoint { get; set; }
         public DateTime LastOpenedUtc { get; set; }
     }
 }

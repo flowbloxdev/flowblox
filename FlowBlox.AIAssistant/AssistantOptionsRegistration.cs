@@ -2,6 +2,7 @@
 using FlowBlox.AIAssistant.Services;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
+using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
 
 namespace FlowBlox.AIAssistant
 {
@@ -10,6 +11,7 @@ namespace FlowBlox.AIAssistant
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
             var defaultConfiguration = new AssistantConfiguration();
+            defaultConfiguration.Providers.Add(new OpenAIProvider { Name = "OpenAI" });
             defaults.Add(new OptionElement(
                 "AI.AssistantConfiguration",
                 AssistantConfigurationJson.Serialize(defaultConfiguration),

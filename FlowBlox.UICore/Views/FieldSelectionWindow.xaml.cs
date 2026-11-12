@@ -37,12 +37,23 @@ namespace FlowBlox.UICore.Views
             InputFilesListView.SelectionChanged += (_, __) => RefreshOkEnabled();
             GenerationStrategyDataListView.SelectionChanged += (_, __) => RefreshOkEnabled();
 
+            VaultListView.SelectionMode = _args.MultiSelect ? SelectionMode.Extended : SelectionMode.Single;
+            VaultListView.SelectionChanged += (_, __) => RefreshOkEnabled();
+            _vm.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(_vm.SelectionMode))
+                    RefreshOkEnabled();
+            };
             RefreshOkEnabled();
         }
 
         private void RefreshOkEnabled()
         {
-            if (_vm.IsFieldsMode)
+            if (_vm.IsVaultMode)
+            {
+                OkButton.IsEnabled = VaultListView.SelectedItems.Count > 0;
+            }
+            else if (_vm.IsFieldsMode)
             {
                 OkButton.IsEnabled = FieldsListView.SelectedItems != null && FieldsListView.SelectedItems.Count > 0;
             }
@@ -77,7 +88,13 @@ namespace FlowBlox.UICore.Views
                 IsRequired = _vm.IsRequired
             };
 
-            if (_vm.IsFieldsMode)
+            if (_vm.IsVaultMode)
+            {
+                res.SelectedVaultReferences = VaultListView.SelectedItems.Cast<FlowBlox.Core.Util.Vault.VaultReference>()
+                    .Select(item => item.Reference).ToList();
+                res.IsRequired = false;
+            }
+            else if (_vm.IsFieldsMode)
             {
                 var selected = FieldsListView.SelectedItems.Cast<object>()
                     .Select(x => x as FieldRowViewModel)

@@ -145,7 +145,7 @@
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <iconPacks:PackIconMaterial Kind="Account"
-                                            Margin="0,0,5,0"/>
+                                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.WindowActionIcon.Execute}"/>
                                         <TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Login}"/>
                                     </StackPanel>
                                 </Button.Content>
@@ -157,7 +157,7 @@
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <iconPacks:PackIconMaterial Kind="AccountPlus"
-                                            Margin="0,0,5,0"/>
+                                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.WindowActionIcon.Execute}"/>
                                         <TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Register}"/>
                                     </StackPanel>
                                 </Button.Content>
@@ -169,7 +169,7 @@
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <iconPacks:PackIconMaterial Kind="Logout"
-                                            Margin="0,0,5,0"/>
+                                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                                         <TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Logout}"/>
                                     </StackPanel>
                                 </Button.Content>
@@ -180,7 +180,7 @@
 								<Button.Content>
 									<StackPanel Orientation="Horizontal">
 										<iconPacks:PackIconMaterial Kind="FileCogOutline"
-										                            Margin="0,0,5,0"/>
+										                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 										<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_ManageOwnExtensions}"/>
 									</StackPanel>
 								</Button.Content>
@@ -223,7 +223,7 @@
 											<Button.Content>
 												<StackPanel Orientation="Horizontal">
 													<iconPacks:PackIconMaterial Kind="Magnify"
-													                            Margin="0,0,5,0"/>
+													                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 													<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Search}"/>
 												</StackPanel>
 											</Button.Content>
@@ -310,7 +310,7 @@
 											<Button.Content>
 												<StackPanel Orientation="Horizontal">
 													<iconPacks:PackIconMaterial Kind="Plus"
-													                            Margin="0,0,5,0"/>
+													                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 													<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Add}"/>
 												</StackPanel>
 											</Button.Content>
@@ -320,7 +320,7 @@
 											<Button.Content>
 												<StackPanel Orientation="Horizontal">
 													<iconPacks:PackIconMaterial Kind="Refresh"
-													                            Margin="0,0,5,0"/>
+													                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 													<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Update}"/>
 												</StackPanel>
 											</Button.Content>
@@ -330,7 +330,7 @@
 											<Button.Content>
 												<StackPanel Orientation="Horizontal">
 													<iconPacks:PackIconMaterial Kind="Minus"
-													                            Margin="0,0,5,0"/>
+													                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 													<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Remove}"/>
 												</StackPanel>
 											</Button.Content>
@@ -374,7 +374,7 @@
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<iconPacks:PackIconMaterial Kind="Plus"
-									                            Margin="0,0,5,0"/>
+									                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 									<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Add}"/>
 								</StackPanel>
 							</Button.Content>
@@ -384,7 +384,7 @@
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<iconPacks:PackIconMaterial Kind="Minus"
-									                            Margin="0,0,5,0"/>
+									                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 									<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Remove}"/>
 								</StackPanel>
 							</Button.Content>
@@ -394,7 +394,7 @@
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<iconPacks:PackIconMaterial Kind="Folder"
-									                            Margin="0,0,5,0"/>
+									                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 									<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_SelectFilePath}"/>
 								</StackPanel>
 							</Button.Content>
@@ -447,7 +447,7 @@
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<iconPacks:PackIconMaterial Kind="Delete"
-									                            Margin="0,0,5,0"/>
+									                            Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
 									<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Uninstall}"/>
 								</StackPanel>
 							</Button.Content>
@@ -476,38 +476,23 @@
 			</TabItem>
 		</TabControl>
 		<!-- Footer buttons -->
-		<Grid Grid.Row="4"
-		      Margin="10">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
-			<Button Grid.Column="0"
-					Command="{Binding CloseCommand}"
-					IsCancel="True">
-				<Button.Content>
-					<StackPanel Orientation="Horizontal">
-						<iconPacks:PackIconMaterial Kind="Close"
-													Margin="0,0,5,0"/>
-						<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_Close}"/>
-					</StackPanel>
-				</Button.Content>
-			</Button>
-			<StackPanel Grid.Column="2"
-			            Orientation="Horizontal"
-			            HorizontalAlignment="Right"
-                        Visibility="{Binding HasProjectReference, Converter={StaticResource BoolToVisibilityConverter}}">
-				<Button Command="{Binding ReloadExtensionsCommand}">
-					<Button.Content>
-						<StackPanel Orientation="Horizontal">
-							<iconPacks:PackIconMaterial Kind="ContentSave"
-							                            Margin="0,0,5,0"/>
-							<TextBlock Text="{x:Static resources:ExtensionsWindow.Button_ReloadExtensions}"/>
-						</StackPanel>
-					</Button.Content>
-				</Button>
-			</StackPanel>
-		</Grid>
+		<StackPanel Grid.Row="4"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Margin="10">
+            <Button Content="{x:Static resources:ExtensionsWindow.Button_Back}"
+                    Style="{StaticResource FlowBlox.WindowActionButton.Back}"
+                    Command="{Binding CloseCommand}"
+                    IsCancel="True"/>
+            <Button Style="{StaticResource FlowBlox.WindowActionButton}"
+                    Command="{Binding ReloadExtensionsCommand}"
+                    IsDefault="True"
+                    Visibility="{Binding HasProjectReference, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Reload" Style="{StaticResource FlowBlox.WindowActionIcon.Execute}"/>
+                    <TextBlock Text="{x:Static resources:ExtensionsWindow.Button_ReloadExtensions}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
 	</Grid>
 </mah:MetroWindow>

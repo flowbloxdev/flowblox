@@ -172,4 +172,6 @@
 	<data name="Col_ProjectPropertyValue" xml:space="preserve">
 		<value>Wert</value>
 	</data>
+  <data name="Col_VaultReference" xml:space="preserve"><value>Referenz</value></data>
+  <data name="Col_Connected" xml:space="preserve"><value>Verbunden</value></data>
 </root>

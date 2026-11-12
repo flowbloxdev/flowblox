@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -50,7 +51,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
             return Invoke(runtime, data, () =>
             {
 
-                string content = FlowBloxFieldHelper.ReplaceFieldsInString(XmlContent);
+                string content = this.Resolve(owner => owner.XmlContent);
                 InternalXmlDocument = new XmlDocument();
                 InternalXmlDocument.LoadXml(content);
 

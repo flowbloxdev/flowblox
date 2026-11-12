@@ -1,3 +1,4 @@
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Constants;
 using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
@@ -19,11 +20,12 @@ namespace FlowBlox.Core.Models.Components.IO
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_delimited_outline, 32, new SKColor(37, 99, 235));
         [Required()]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         [Required()]
         [Display(Name = "CsvTable_Separator", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         public CsvTable() : base()
@@ -44,10 +46,13 @@ namespace FlowBlox.Core.Models.Components.IO
             if (DataSource == null || !DataSource.CanRead())
                 throw new InvalidOperationException("The data source is not ready for reading.");
 
-            var dataTableConverter = new DataTableConverter(Separator, EncodingName.ToEncoding());
+            var separator = this.Resolve(owner => owner.Separator);
+            var encoding = this.Resolve(table => table.EncodingName);
+            var dataTableConverter = new DataTableConverter(separator, encoding.ToEncoding());
             using (var memoryStream = new MemoryStream(DataSource.Content))
             {
-                return dataTableConverter.GetDataTableFromCsv(memoryStream, FirstRowHeader);
+                var firstRowHeader = this.Resolve(table => table.FirstRowHeader);
+                return dataTableConverter.GetDataTableFromCsv(memoryStream, firstRowHeader);
             }
         }
 
@@ -56,7 +61,9 @@ namespace FlowBlox.Core.Models.Components.IO
             if (DataSource == null)
                 throw new InvalidOperationException("The data source is not ready for writing.");
 
-            var dataTableConverter = new DataTableConverter(Separator, EncodingName.ToEncoding());
+            var separator = this.Resolve(owner => owner.Separator);
+            var encoding = this.Resolve(table => table.EncodingName);
+            var dataTableConverter = new DataTableConverter(separator, encoding.ToEncoding());
             using (var memoryStream = new MemoryStream())
             {
                 dataTableConverter.DataTableToCsv(memoryStream, dataTable);

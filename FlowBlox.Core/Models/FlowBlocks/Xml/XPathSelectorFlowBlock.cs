@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -21,12 +22,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
         public string XmlContent { get; set; }
 
         [Display(Name = "XPathSelectorFlowBlock_XPath", Description = "XPathSelectorFlowBlock_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath), UiOptions = UIOptions.EnableFieldSelection)]
         [Required]
         public string XPath { get; set; }
 
         [Display(Name = "XPathSelectorFlowBlock_ResultMode", Description = "XPathSelectorFlowBlock_ResultMode_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public XPathResultMode ResultMode { get; set; } = XPathResultMode.InnerXml;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_search, 16, SKColors.MediumSeaGreen);
@@ -58,21 +59,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
             return Invoke(runtime, data, () =>
             {
 
-                var xmlContent = FlowBloxFieldHelper.ReplaceFieldsInString(XmlContent);
-                if (string.IsNullOrWhiteSpace(xmlContent))
-                {
-                    CreateNotification(runtime, XPathSelectorNotifications.XmlContentIsEmpty);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    owner => owner.XmlContent,
+                    out var xmlContent,
+                    runtime,
+                    XPathSelectorNotifications.XmlContentIsEmpty))
                     return;
-                }
 
-                var xpath = FlowBloxFieldHelper.ReplaceFieldsInString(XPath);
-                if (string.IsNullOrWhiteSpace(xpath))
-                {
-                    CreateNotification(runtime, XPathSelectorNotifications.XPathExpressionIsEmpty);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    owner => owner.XPath,
+                    out var xpath,
+                    runtime,
+                    XPathSelectorNotifications.XPathExpressionIsEmpty))
                     return;
-                }
 
                 var xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(xmlContent);

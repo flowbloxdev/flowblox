@@ -3,7 +3,7 @@ using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
-using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util.Resources;
 using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
@@ -14,36 +14,39 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     public class CopyMoveFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "CopyMoveFlowBlock_Mode", Description = "CopyMoveFlowBlock_Mode_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CopyMoveMode Mode { get; set; } 
 
         [ActivationCondition(MemberName = nameof(Mode), Values = new object[] { CopyMoveMode.CopyFile, CopyMoveMode.MoveFile })]
         [ConditionallyRequired]
         [Display(Name = "CopyMoveFlowBlock_SourceFile", Description = "CopyMoveFlowBlock_SourceFile_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFileSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
         public string SourceFile { get; set; }
 
         [ActivationCondition(MemberName = nameof(Mode), Values = new object[] { CopyMoveMode.CopyDirectory, CopyMoveMode.MoveDirectory })]
         [ConditionallyRequired]
         [Display(Name = "CopyMoveFlowBlock_SourceFolder", Description = "CopyMoveFlowBlock_SourceFolder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFolderSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
         public string SourceFolder { get; set; }
 
         [Display(Name = "CopyMoveFlowBlock_DestinationPath", Description = "CopyMoveFlowBlock_DestinationPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFileSelection | UIOptions.EnableFolderSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection | UIOptions.EnableFolderSelection)]
         [Required]
         public string DestinationPath { get; set; }
 
         [ActivationCondition(MemberName = nameof(Mode), Values = new object[] { CopyMoveMode.CopyDirectory })]
         [Display(Name = "CopyMoveFlowBlock_Recursive", Description = "CopyMoveFlowBlock_Recursive_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Recursive { get; set; }
 
         [ActivationCondition(MemberName = nameof(Mode), Values = new object[] { CopyMoveMode.CopyFile, CopyMoveMode.MoveFile })]
         [Display(Name = "CopyMoveFlowBlock_FileOverwrite", Description = "CopyMoveFlowBlock_FileOverwrite_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool FileOverwrite { get; set; }
 
         [ActivationCondition(MemberName = nameof(Mode), Values = new object[] { CopyMoveMode.CopyDirectory, CopyMoveMode.MoveDirectory })]
         [Display(Name = "CopyMoveFlowBlock_DirectoryOverwrite", Description = "CopyMoveFlowBlock_DirectoryOverwrite_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool DirectoryOverwrite { get; set; }
 
         public CopyMoveFlowBlock()
@@ -78,33 +81,33 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
             return Invoke(runtime, data, () =>
             {
 
-                var resolvedDestination = ResolveRequiredPath(DestinationPath, nameof(DestinationPath));
+                var destinationPath = NormalizePath(this.Resolve(x => x.DestinationPath, required: true));
                 string finalDestination;
 
                 switch (Mode)
                 {
                     case CopyMoveMode.CopyFile:
                     {
-                        var sourceFile = ResolveRequiredPath(SourceFile, nameof(SourceFile));
-                        finalDestination = CopyFile(sourceFile, resolvedDestination, FileOverwrite);
+                        var sourceFile = NormalizePath(this.Resolve(x => x.SourceFile, required: true));
+                        finalDestination = CopyFile(sourceFile, destinationPath, FileOverwrite);
                         break;
                     }
                     case CopyMoveMode.MoveFile:
                     {
-                        var sourceFile = ResolveRequiredPath(SourceFile, nameof(SourceFile));
-                        finalDestination = MoveFile(sourceFile, resolvedDestination, FileOverwrite);
+                        var sourceFile = NormalizePath(this.Resolve(x => x.SourceFile, required: true));
+                        finalDestination = MoveFile(sourceFile, destinationPath, FileOverwrite);
                         break;
                     }
                     case CopyMoveMode.CopyDirectory:
                     {
-                        var sourceDirectory = ResolveRequiredPath(SourceFolder, nameof(SourceFolder));
-                        finalDestination = CopyDirectory(sourceDirectory, resolvedDestination, Recursive, FileOverwrite, DirectoryOverwrite);
+                        var sourceFolder = NormalizePath(this.Resolve(x => x.SourceFolder, required: true));
+                        finalDestination = CopyDirectory(sourceFolder, destinationPath, Recursive, FileOverwrite, DirectoryOverwrite);
                         break;
                     }
                     case CopyMoveMode.MoveDirectory:
                     {
-                        var sourceDirectory = ResolveRequiredPath(SourceFolder, nameof(SourceFolder));
-                        finalDestination = MoveDirectory(sourceDirectory, resolvedDestination, FileOverwrite, DirectoryOverwrite);
+                        var sourceFolder = NormalizePath(this.Resolve(x => x.SourceFolder, required: true));
+                        finalDestination = MoveDirectory(sourceFolder, destinationPath, FileOverwrite, DirectoryOverwrite);
                         break;
                     }
                     default:
@@ -115,13 +118,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
             });
         }
 
-        private static string ResolveRequiredPath(string value, string propertyName)
+        private static string NormalizePath(string value)
         {
-            var resolved = FlowBloxFieldHelper.ReplaceFieldsInString(value ?? string.Empty);
-            if (string.IsNullOrWhiteSpace(resolved))
-                throw new InvalidOperationException($"No path was provided for '{propertyName}'.");
-
-            return Path.GetFullPath(Environment.ExpandEnvironmentVariables(resolved).Trim());
+            return Path.GetFullPath(Environment.ExpandEnvironmentVariables(value).Trim());
         }
 
         private static string CopyFile(string sourceFile, string destinationPath, bool overwrite)

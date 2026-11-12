@@ -16,7 +16,9 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Returns available placeholders for EnableFieldSelection-capable string properties. Includes field placeholders ($FlowBlock::FieldName / $User::FieldName), $Project:: / $Options:: placeholders, $InputFile::Path / $InputFile::RelativePath and $GenerationStrategy:: placeholders.",
+            "Returns available placeholders for string properties and field references for supported scalar properties. " +
+            "Includes field placeholders ($FlowBlock::FieldName / $User::FieldName), $Project:: / $Options:: placeholders, " +
+            "user-managed $Vault:: references (metadata only, never stored values), $InputFile::Path / $InputFile::RelativePath and $GenerationStrategy:: placeholders.",
             new JObject());
 
         public override Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
@@ -60,6 +62,13 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
             return Task.FromResult(ToolHandlerUtilities.Ok(new JObject
             {
+                ["vaultPlaceholders"] = new JArray(FlowBlox.Core.Util.Vault.FlowBloxVault.GetReferences().Select(entry => new JObject
+                {
+                    ["name"] = entry.Name,
+                    ["description"] = entry.Description,
+                    ["placeholder"] = entry.Reference,
+                    ["isPassword"] = entry.IsPassword
+                })),
                 ["fieldPlaceholders"] = new JArray(fieldPlaceholders),
                 ["projectPlaceholders"] = new JArray(projectPlaceholders),
                 ["optionPlaceholders"] = new JArray(optionPlaceholders),
@@ -75,7 +84,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     ["inputFilePlaceholderCount"] = inputFilePlaceholders.Count,
                     ["generationStrategyPlaceholderCount"] = generationStrategyPlaceholders.Count
                 },
-                ["hint"] = "Use these placeholders only in properties whose type metadata indicates EnableFieldSelection."
+                ["hint"] = "Use placeholders in string properties or Skill inputParameters; use field references for supported scalar properties. Vault references are allowed only in project Input field values and Skill inputParameters; never in Memory fields or directly in FlowBlock properties."
             }));
         }
 

@@ -8,6 +8,7 @@ namespace FlowBlox.Core.Enums
         ProjectProperties = 2,
         Options = 4,
         InputFiles = 8,
-        GenerationStrategyData = 16
+        GenerationStrategyData = 16,
+        Vault = 32
     }
 }

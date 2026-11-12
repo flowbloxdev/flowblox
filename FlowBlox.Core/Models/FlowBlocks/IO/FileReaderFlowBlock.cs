@@ -28,7 +28,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
-        public FieldElement EncodingName_SelectedField { get; set; }
 
         private bool IsEncodingNameActive()
         {
@@ -84,7 +83,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
                     else
                     {
                         // String
-                        var encoding = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.EncodingName).ToEncoding();
+                        var encoding = this.Resolve(x => x.EncodingName).ToEncoding();
                         fileContent = encoding.GetString(content);
                     }
 

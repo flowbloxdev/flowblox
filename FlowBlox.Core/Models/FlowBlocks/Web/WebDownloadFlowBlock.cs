@@ -36,11 +36,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         }
 
         [Display(Name = "WebDownloadFlowBlock_DownloadMode", Description = "WebDownloadFlowBlock_DownloadMode_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebDownloadFlowBlock_Groups_Download", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebDownloadMode DownloadMode { get; set; } = WebDownloadMode.Auto;
 
         [Display(Name = "WebDownloadFlowBlock_XPath", Description = "WebDownloadFlowBlock_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath), UiOptions = UIOptions.EnableFieldSelection)]
         public string XPath { get; set; }
 
         [Display(Name = "WebDownloadFlowBlock_CSSSelector", Description = "WebDownloadFlowBlock_CSSSelector_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
@@ -60,7 +60,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public string DownloadDirectory { get; set; }
 
         [Display(Name = "WebDownloadFlowBlock_TimeoutSeconds", Description = "WebDownloadFlowBlock_TimeoutSeconds_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebDownloadFlowBlock_Groups_Download", Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public int TimeoutSeconds { get; set; } = 120;
 
         [Display(Name = "WebDownloadFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 4)]
@@ -136,12 +136,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (!TryRequireAndGetSelector(runtime, out var mode, out var selector))
                     return;
 
-                var resolvedDownloadPath = FlowBloxFieldHelper.ReplaceFieldsInString(DownloadPath ?? string.Empty);
-                var resolvedDownloadDirectory = FlowBloxFieldHelper.ReplaceFieldsInString(DownloadDirectory ?? string.Empty);
+                var downloadPath = this.Resolve(owner => owner.DownloadPath);
+                var downloadDirectory = this.Resolve(owner => owner.DownloadDirectory);
                 if (TimeoutSeconds < 0)
                     throw new ArgumentException("TimeoutSeconds must be greater than or equal to 0.", nameof(TimeoutSeconds));
 
-                var result = webBrowser.DownloadFile(selector, mode, DownloadMode, resolvedDownloadPath, resolvedDownloadDirectory, TimeoutSeconds);
+                var result = webBrowser.DownloadFile(selector, mode, DownloadMode, downloadPath, downloadDirectory, TimeoutSeconds);
 
                 if (!result.Success)
                 {

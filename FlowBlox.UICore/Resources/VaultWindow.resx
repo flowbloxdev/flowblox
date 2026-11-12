@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Vault</value></data>
+  <data name="Description" xml:space="preserve"><value>Local environment values, shared across projects and protected for your Windows account. Use references in input fields or pass them to Skills. The AI Assistant can discover references, but cannot read stored values.</value></data>
+  <data name="Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Add" xml:space="preserve"><value>Add value</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="NameHint" xml:space="preserve"><value>Unique reference name: letters, numbers, underscores and hyphens. Example: LocalMySQLServerUrl.</value></data>
+  <data name="Label" xml:space="preserve"><value>Description</value></data>
+  <data name="Password" xml:space="preserve"><value>Mask value as password</value></data>
+  <data name="ShowValue" xml:space="preserve"><value>Show value</value></data>
+  <data name="Value" xml:space="preserve"><value>Value</value></data>
+  <data name="ProtectionHint" xml:space="preserve"><value>All values are encrypted locally, including URLs and other environment settings. Password masking only controls their display here. Other environments need their own Vault entries with matching names.</value></data>
+  <data name="InvalidNames" xml:space="preserve"><value>Each entry needs a unique name containing only letters, numbers, underscores or hyphens.</value></data>
+  <data name="SaveError" xml:space="preserve"><value>The Vault could not be saved. See the application log files for details.</value></data>
+  <data name="DiscardChanges" xml:space="preserve"><value>Discard unsaved Vault changes and close?</value></data>
+  <data name="NoSelection" xml:space="preserve">
+    <value>No entry selected. Select a card to view or edit its details.</value>
+  </data>
+</root>

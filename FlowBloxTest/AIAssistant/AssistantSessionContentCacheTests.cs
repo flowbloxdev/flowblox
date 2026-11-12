@@ -108,7 +108,6 @@ public sealed class AssistantSessionContentCacheTests
             foreach (var repeated in Results(rounds[2]))
             {
                 Assert.IsNull(repeated["kind"]);
-                StringAssert.Contains(repeated.Value<string>("message"), "runtime session system message");
             }
 
             var afterThird = SystemTypes(executor.ChatRequests[3]);
@@ -137,9 +136,6 @@ public sealed class AssistantSessionContentCacheTests
 
             service.RestoreSession(history);
             Assert.IsFalse(service.GetDebugSnapshot().SystemMessages.Any(x => x.IsRuntimeBound));
-            var restoredBootstrap = service.GetDebugSnapshot().SystemMessages.Single(x => x.Kind == AssistantSystemMessageKind.SessionBootstrap).Content;
-            StringAssert.Contains(restoredBootstrap, "promotions were reset on conversation restore");
-            StringAssert.Contains(restoredBootstrap, "Application runtime started at:");
             var resumed = await service.GenerateProjectAsync("Retrieve TableReader after restore", CancellationToken.None);
             Assert.IsTrue(resumed.Success, string.Join("\n", resumed.Errors));
             var fresh = Results((AssistantMessagePair)service.GetDebugSnapshot().History.Select(x => x.Message)

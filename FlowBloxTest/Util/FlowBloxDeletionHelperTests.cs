@@ -303,7 +303,7 @@ namespace FlowBloxTest.Util
         }
 
         [TestMethod]
-        public void FlowBloxUIAttribute_RejectsMissingField_WithoutChangingExpression()
+        public void FlowBloxUIAttribute_PreservesMissingReferenceForRuntimeDiagnostics()
         {
             var project = new FlowBloxProject();
             using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
@@ -314,9 +314,9 @@ namespace FlowBloxTest.Util
 
             var valid = Validator.TryValidateProperty(owner.FormatExpression, context, results);
 
-            Assert.IsFalse(valid);
+            Assert.IsTrue(valid);
             Assert.AreEqual(original, owner.FormatExpression);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(results.Single().ErrorMessage));
+            Assert.IsEmpty(results);
         }
 
         [TestMethod]

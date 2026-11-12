@@ -35,7 +35,7 @@ internal sealed partial class WorkspaceIntegrationChecks
     public WorkspaceIntegrationChecks(MainWindow window) => _window = window;
 
     // Runs inside the real desktop lifecycle, with an isolated workspace and project copy.
-    public async Task<bool> RunAsync(string directory, string sourceProjectPath)
+    public async Task<bool> RunAsync(string directory, string sourceProjectPath, bool fieldSelectionOnly = false, bool launcherOnly = false)
     {
         var results = new List<string>();
         string error = null;
@@ -49,6 +49,11 @@ internal sealed partial class WorkspaceIntegrationChecks
         try
         {
             Directory.CreateDirectory(directory);
+            if (launcherOnly)
+            {
+                await CheckProjectLauncherAsync(Check, directory, sourceProjectPath);
+                return true;
+            }
             // Use a Windows-supplied, already installed family to exercise the
             // bootstrap's early exit without installing a font on the test machine.
             var systemFont = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "segoeui.ttf");
@@ -70,6 +75,16 @@ internal sealed partial class WorkspaceIntegrationChecks
             Check(texts.GetString("AppWindow_CloseProjectConfirm_Title", System.Globalization.CultureInfo.GetCultureInfo("de")) !=
                   texts.GetString("AppWindow_CloseProjectConfirm_Title", System.Globalization.CultureInfo.GetCultureInfo("en")),
                 "Application-owned German satellite resources resolve after namespace migration");
+            CheckSimplePropertyFieldSelection(Check);
+            await CheckEnabledFieldSelectionEditorsAsync(Check);
+            await CheckLiteralGridRenderingAsync(Check);
+            await CheckAssistantProviderSelectionAsync(Check);
+            CheckProjectSpaceCards(Check, directory);
+            CheckFieldSelectionDialogScrolling(Check, directory);
+            CheckFieldSelectionDialogContext(Check);
+            await CaptureNotificationBarPreviewAsync(directory);
+            if (fieldSelectionOnly)
+                return true;
             await CheckDesktopDialogsAsync(Check, directory);
             Check(!_window.itmSaveProject.Enabled && !_window.itmCloseProject.Enabled, "Commands disabled without project");
             CheckWorkspaceObserver(Check);
@@ -109,6 +124,7 @@ internal sealed partial class WorkspaceIntegrationChecks
                 using var file = File.Create(Path.Combine(directory, panel.GetType().Name + ".png"));
                 encoder.Save(file);
             }
+            await CheckConnectionPreviewBeforeMessageAsync(Check);
             await CheckHostedFocusAsync(Check);
             await CheckEditorPopupsAsync(directory, Check);
             await CheckContextMenusAsync(directory, Check);

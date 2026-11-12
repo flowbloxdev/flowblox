@@ -4,6 +4,7 @@ using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Enums;
 
 namespace FlowBlox.Core.Models.Components.Modifier
@@ -31,17 +32,18 @@ namespace FlowBlox.Core.Models.Components.Modifier
     {
         [Required]
         [Display(Name = "HttpEncodeDecodeModifier_Mode", Order = 0, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public HttpEncodeMode Mode { get; set; }
 
         [Required]
         [Display(Name = "HttpEncodeDecodeModifier_Direction", Order = 1, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public Direction Direction { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
         {
-            switch (Mode)
+            var mode = this.Resolve(modifier => modifier.Mode);
+            switch (mode)
             {
                 case HttpEncodeMode.HTML:
                     return ModifyHtml(value);
@@ -50,13 +52,13 @@ namespace FlowBlox.Core.Models.Components.Modifier
                 case HttpEncodeMode.JavaScript:
                     return ModifyJavaScript(runtime, value);
                 default:
-                    throw new NotImplementedException($"Unsupported mode: {Mode}");
+                    throw new NotImplementedException($"Unsupported mode: {mode}");
             }
         }
 
         private string ModifyHtml(string value)
         {
-            if (Direction == Direction.Encode)
+            if (this.Resolve(modifier => modifier.Direction) == Direction.Encode)
                 return HttpUtility.HtmlEncode(value);
             else
                 return HttpUtility.HtmlDecode(value);
@@ -64,7 +66,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
 
         private string ModifyUrl(string value)
         {
-            if (Direction == Direction.Encode)
+            if (this.Resolve(modifier => modifier.Direction) == Direction.Encode)
                 return HttpUtility.UrlEncode(value);
             else
                 return HttpUtility.UrlDecode(value);
@@ -72,7 +74,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
 
         private string ModifyJavaScript(BaseRuntime runtime, string value)
         {
-            if (Direction == Direction.Encode)
+            if (this.Resolve(modifier => modifier.Direction) == Direction.Encode)
                 return HttpUtility.JavaScriptStringEncode(value);
             else
             {

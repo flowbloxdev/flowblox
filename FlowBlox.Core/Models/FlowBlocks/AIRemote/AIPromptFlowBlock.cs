@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Models.Base;
@@ -34,12 +35,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote
 
         [Required]
         [Display(Name = "AIPromptFlowBlock_PromptTemplate", Description = "AIPromptFlowBlock_PromptTemplate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPromptFlowBlock_Groups_Request", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true)]
         public string PromptTemplate { get; set; }
 
         [Display(Name = "AIPromptFlowBlock_SystemInstruction", Description = "AIPromptFlowBlock_SystemInstruction_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPromptFlowBlock_Groups_Request", Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string SystemInstruction { get; set; }
 
@@ -48,12 +49,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote
         public string ModelOverride { get; set; }
 
         [Display(Name = "AIPromptFlowBlock_Temperature", Description = "AIPromptFlowBlock_Temperature_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPromptFlowBlock_Groups_Request", Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public double? Temperature { get; set; }
 
         [Display(Name = "AIPromptFlowBlock_MaxTokens", Description = "AIPromptFlowBlock_MaxTokens_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPromptFlowBlock_Groups_Request", Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? MaxTokens { get; set; }
 
         [Display(Name = "AIPromptFlowBlock_TimeoutSecondsOverride", Description = "AIPromptFlowBlock_TimeoutSecondsOverride_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPromptFlowBlock_Groups_Request", Order = 6)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? TimeoutSecondsOverride { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.robot, 16, SKColors.DeepSkyBlue);
@@ -90,18 +94,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote
             return Invoke(runtime, data, () =>
             {
 
-                var promptResolved = FlowBloxFieldHelper.ReplaceFieldsInString(this.PromptTemplate);
-                if (string.IsNullOrWhiteSpace(promptResolved))
-                {
-                    CreateNotification(runtime, AIPromptNotifications.PromptMissing);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    owner => owner.PromptTemplate,
+                    out var promptResolved,
+                    runtime,
+                    AIPromptNotifications.PromptMissing))
                     return;
-                }
 
                 var req = new AIRequest
                 {
                     Prompt = promptResolved,
-                    SystemInstruction = this.SystemInstruction,
+                    SystemInstruction = this.Resolve(owner => owner.SystemInstruction),
                     Model = string.IsNullOrWhiteSpace(this.ModelOverride) ? null : this.ModelOverride,
                     Temperature = this.Temperature,
                     MaxTokens = this.MaxTokens,

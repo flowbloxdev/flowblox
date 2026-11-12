@@ -25,6 +25,7 @@ using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using FlowBlox.Core.Util.Fields;
 using System.Transactions;
 using System.Collections.Generic;
@@ -85,6 +86,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             runtime.TaskRunner.EnqueueBatchInExecutionOrder(cache);
             cache.Clear();
         }
+
+        /// <summary>
+        /// Completes a failed property resolution without interrupting the flow contract.
+        /// </summary>
+        internal virtual void CompleteFailedResolution(BaseRuntime runtime) => ExecuteNextFlowBlocks(runtime);
 
         public void CreateNotification(BaseRuntime runtime, Enum notificationEnumValue, Exception e = null)
         {
@@ -788,7 +794,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [Display(Name = "BaseFlowBlock_ActivationConditions", Description = "BaseFlowBlock_ActivationConditions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Requirements", Order = 2)]
         [FlowBloxUI(
             Factory = UIFactory.GridView,
-            UiOptions = UIOptions.EnableFieldSelection,
             CreatableTypes = new[] { 
                 typeof(FieldLogicalComparisonCondition), 
                 typeof(LogicalGroupCondition) })]
@@ -1204,11 +1209,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
             // Check RequiredFields
             var missingRequiredFields = GetRequiredFields()
-                .Where(field => field?.Value == null || (field.Value is string s && string.IsNullOrWhiteSpace(s)));
+                .Where(FlowBloxFieldHelper.IsResolvedFieldValueEmpty);
 
             foreach (var field in missingRequiredFields)
             {
-                messages.Add($"Required field \"{field.FullyQualifiedName}\" is not set.");
+                messages.Add($"Required field \"{field?.FullyQualifiedName}\" is not set.");
             }
 
             return messages.Count == 0;
@@ -1267,6 +1272,25 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         {
             ResetNotifications(runtime);
 
+            try
+            {
+                using var selectedProperties = runtime.ResolveSelectedFieldProperties(this);
+                return InvokeWithResolvedProperties(runtime, executor);
+            }
+            catch (RuntimeCancellationException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                CreateNotification(runtime, BaseFlowBlockNotifications.UnexpectedError, exception);
+                return false;
+            }
+        }
+
+        private bool InvokeWithResolvedProperties(BaseRuntime runtime, Action executor)
+        {
+
             runtime.NotifyBeforeFlowBlockValidation(this);
             if (runtime.Aborted)
                 return false;
@@ -1291,6 +1315,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                 return false;
             }
 
+            ReportUnresolvedFields(runtime);
+
             runtime.NotifyInvocationStarted(this);
             try
             {
@@ -1314,6 +1340,38 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             finally
             {
                 runtime.NotifyInvocationFinished(this);
+            }
+        }
+
+        // Cache associations per runtime, never values; completed runtimes are not retained.
+        private readonly ConditionalWeakTable<BaseRuntime, FieldElement[]> _associatedFieldsByRuntime = new();
+
+        private IReadOnlyList<FieldElement> GetAssociatedFieldsForRuntime(BaseRuntime runtime)
+        {
+            lock (_associatedFieldsByRuntime)
+            {
+                if (!_associatedFieldsByRuntime.TryGetValue(runtime, out var fields))
+                {
+                    fields = GetAssociatedFields().ToArray();
+                    _associatedFieldsByRuntime.Add(runtime, fields);
+                }
+
+                return fields;
+            }
+        }
+
+        private void ReportUnresolvedFields(BaseRuntime runtime)
+        {
+            foreach (var field in GetAssociatedFieldsForRuntime(runtime))
+            {
+                var resolvedValue = FlowBloxFieldHelper.ResolveFieldValue(field);
+
+                foreach (var reference in FlowBloxFieldHelper.GetUnresolvedFieldReferences(resolvedValue))
+                {
+                    runtime.Report(
+                        $"Possible unresolved field reference '{reference}' detected in flow block '{Name}'.",
+                        FlowBloxLogLevel.Warning);
+                }
             }
         }
 

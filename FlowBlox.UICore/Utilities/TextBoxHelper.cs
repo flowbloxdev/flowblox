@@ -7,6 +7,7 @@ using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Views;
+using FlowBlox.UICore.PropertyView.Resolver;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.UICore.Interfaces;
 using FlowBlox.UICore.Models.DialogService;
@@ -23,11 +24,12 @@ namespace FlowBlox.UICore.Utilities
     {
         public static FieldSelectionWindowArgs CreateFieldSelectionWindowArgs(
             object target,
-            FlowBloxFieldSelectionAttribute fieldSelection)
+            FlowBloxFieldSelectionAttribute fieldSelection,
+            object parent = null)
         {
             var args = new FieldSelectionWindowArgs
             {
-                FlowBlock = target as BaseFlowBlock,
+                FlowBlock = target as BaseFlowBlock ?? parent as BaseFlowBlock,
                 SelectionMode = FieldSelectionMode.Fields
             };
 
@@ -36,7 +38,23 @@ namespace FlowBlox.UICore.Utilities
                 args.IsRequired = fieldSelection.DefaultRequiredValue;
                 args.HideRequired = fieldSelection.HideRequiredCheckbox;
 
-                var allowedModes = ConvertAllowedModes(fieldSelection.AllowedFieldSelectionModes);
+                var modes = fieldSelection.AllowedFieldSelectionModes;
+                if (!string.IsNullOrWhiteSpace(fieldSelection.AllowedFieldSelectionModesMethod))
+                {
+                    var resolution = SelectionMethodResolver.ResolveSelectionFilterMethodFromTargetOrParent(
+                        target, null, fieldSelection.AllowedFieldSelectionModesMethod);
+                    
+                    if (resolution?.Method == null || 
+                        resolution.Method.GetParameters().Length != 0 || 
+                        resolution.Method.Invoke(resolution.InvocationTarget, null) is not FieldSelectionModes dynamicModes)
+                    {
+                        throw new InvalidOperationException($"Field selection method '{fieldSelection.AllowedFieldSelectionModesMethod}' must be parameterless and return FieldSelectionModes.");
+                    }
+                        
+                    modes = dynamicModes;
+                }
+
+                var allowedModes = ConvertAllowedModes(modes);
                 if (allowedModes != null)
                     args.AllowedFieldSelectionModes = allowedModes;
             }
@@ -106,7 +124,9 @@ namespace FlowBlox.UICore.Utilities
             }
             else
             {
-                if (result.SelectionMode == FieldSelectionMode.Options)
+                if (result.SelectionMode == FieldSelectionMode.Vault)
+                    ApplyFieldDefinitionsToTextBox(result.SelectedVaultReferences, textBox);
+                else if (result.SelectionMode == FieldSelectionMode.Options)
                     ApplyOptionElementsToTextBox(result.SelectedOptions, textBox);
                 else if (result.SelectionMode == FieldSelectionMode.InputFiles)
                     ApplyInputFileElementsToTextBox(result.SelectedInputFiles, textBox);
@@ -131,6 +151,9 @@ namespace FlowBlox.UICore.Utilities
                 list.Add(FieldSelectionMode.InputFiles);
             if (allowedModes.HasFlag(FieldSelectionModes.GenerationStrategyData))
                 list.Add(FieldSelectionMode.GenerationStrategyData);
+
+            if (allowedModes.HasFlag(FieldSelectionModes.Vault))
+                list.Add(FieldSelectionMode.Vault);
 
             return list.ToArray();
         }

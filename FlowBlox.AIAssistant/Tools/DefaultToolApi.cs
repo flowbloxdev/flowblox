@@ -13,6 +13,7 @@ namespace FlowBlox.AIAssistant.Tools
         private const string RunProjectDebugTestToolName = "RunProjectDebugTest";
         private const string ExecuteExternalProjectToolName = "ExecuteExternalProject";
         private readonly Dictionary<string, IToolHandler> _handlers;
+        private readonly ToolNameResolver _toolNameResolver;
         private readonly List<ToolDefinition> _definitions;
         public Func<ToolRequest, bool>? ToolExecutionConfirmationCallback { get; set; }
 
@@ -26,6 +27,8 @@ namespace FlowBlox.AIAssistant.Tools
                 handler => handler,
                 StringComparer.OrdinalIgnoreCase);
 
+            _toolNameResolver = new ToolNameResolver(_handlers.Keys);
+
             _definitions = handlers
                 .Select(handler => handler.Definition)
                 .ToList();
@@ -38,17 +41,43 @@ namespace FlowBlox.AIAssistant.Tools
 
         public Task<ToolResponse> ExecuteAsync(ToolRequest request, CancellationToken ct)
         {
+            return ExecuteAsync(request, ct, allowBatch: true);
+        }
+
+        private Task<ToolResponse> ExecuteBatchRequestAsync(ToolRequest request, CancellationToken ct)
+        {
+            return ExecuteAsync(request, ct, allowBatch: false);
+        }
+
+        private Task<ToolResponse> ExecuteAsync(ToolRequest request, CancellationToken ct, bool allowBatch)
+        {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             if (string.IsNullOrWhiteSpace(request.ToolName))
                 return Task.FromResult(ToolHandlerUtilities.Fail("ToolName is required."));
 
-            if (!_handlers.TryGetValue(request.ToolName, out var handler))
-                return Task.FromResult(ToolHandlerUtilities.Fail($"Tool '{request.ToolName}' is not registered."));
-
+            IToolHandler handler;
             try
             {
+                var resolvedName = _toolNameResolver.Resolve(request.ToolName);
+                if (resolvedName == null)
+                    return Task.FromResult(ToolHandlerUtilities.Fail($"Tool '{request.ToolName}' is not registered."));
+
+                handler = _handlers[resolvedName];
+                if (!allowBatch && handler is BatchExecuteToolRequestsHandler)
+                    return Task.FromResult(ToolHandlerUtilities.Fail("Nested batch not supported."));
+
+                // All execution policies must see the canonical name, including approval handling.
+                request = new ToolRequest
+                {
+                    ToolName = resolvedName,
+                    Arguments = request.Arguments,
+                    CorrelationId = request.CorrelationId,
+                    ConfirmationInputParameters = request.ConfirmationInputParameters,
+                    RememberProjectApproval = request.RememberProjectApproval
+                };
+
                 if (RequiresUserConfirmation(request))
                 {
                     request = CreateConfirmationRequest(request);
@@ -183,7 +212,7 @@ namespace FlowBlox.AIAssistant.Tools
                     field => field.Name,
                     field => inputs.TryGetValue(field.Name, out var value)
                         ? value
-                        : FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue ?? string.Empty),
+                        : FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue, resolveVaultReferences: false),
                     StringComparer.OrdinalIgnoreCase);
 
             var inputSnapshot = JObject.FromObject(effectiveInputs);
@@ -250,7 +279,7 @@ namespace FlowBlox.AIAssistant.Tools
                 new GetLatestTestExecutionArtifactHandler(),
                 new InspectExecutedTestFieldValueHandler(),
                 new InspectOutputFieldValueHandler(),
-                new BatchExecuteToolRequestsHandler(ExecuteAsync)
+                new BatchExecuteToolRequestsHandler(ExecuteBatchRequestAsync)
             ];
         }
     }

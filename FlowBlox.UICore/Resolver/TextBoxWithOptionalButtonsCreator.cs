@@ -29,10 +29,12 @@ namespace FlowBlox.UICore.Resolver
     public class TextBoxWithOptionalButtonsCreator
     {
         private Window _window;
+        private readonly object _parent;
 
-        public TextBoxWithOptionalButtonsCreator(Window window)
+        public TextBoxWithOptionalButtonsCreator(Window window, object parent = null)
         {
             this._window = window;
+            _parent = parent;
         }
 
         private const double IconSize = 10;
@@ -44,13 +46,15 @@ namespace FlowBlox.UICore.Resolver
             FlowBloxUIAttribute uiAttribute,
             Binding binding,
             bool readOnly,
-            bool? passwordOverride = null)
+            bool? passwordOverride = null,
+            FrameworkElement inputControl = null)
         {
             var textAttribute = property.GetCustomAttribute<FlowBloxTextBoxAttribute>();
             var isPassword = passwordOverride ?? (string.IsNullOrWhiteSpace(textAttribute?.IsPasswordMethod)
                 ? textAttribute?.IsPassword == true
                 : (bool)target.GetType().GetMethod(textAttribute.IsPasswordMethod).Invoke(target, null));
-            if (isPassword)
+            FrameworkElement baseTextBox = inputControl;
+            if (isPassword && baseTextBox == null)
             {
                 var passwordBox = new PasswordBox
                 {
@@ -64,26 +68,24 @@ namespace FlowBlox.UICore.Resolver
                     property.SetValue(target, passwordBox.Password);
                     FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
                 };
-                return passwordBox;
+                baseTextBox = passwordBox;
             }
             var fieldSelectionAttribute = property.GetCustomAttribute<FlowBloxFieldSelectionAttribute>();
             var openFromFileSystemAttribute = property.GetCustomAttribute<FlowBloxOpenFromFileSystemAttribute>();
             var buttonVerticalAlignment = textAttribute?.MultiLine == true
                 ? VerticalAlignment.Top
                 : VerticalAlignment.Center;
-            FrameworkElement baseTextBox;
-
-            if (textAttribute?.IsCodingMode == true)
+            if (baseTextBox == null && textAttribute?.IsCodingMode == true)
             {
                 var factory = new AvalonEditTextBoxFactory(property, target, readOnly);
                 baseTextBox = factory.Create(textAttribute);
             }
-            else if (textAttribute?.MultiLine == true)
+            else if (baseTextBox == null && textAttribute?.MultiLine == true)
             {
                 var factory = new MultilineTextBoxFactory(property, target, readOnly);
                 baseTextBox = factory.Create();
             }
-            else
+            else if (baseTextBox == null)
             {
                 var textBox = new TextBox
                 {
@@ -94,7 +96,9 @@ namespace FlowBlox.UICore.Resolver
                 baseTextBox = textBox;
             }
 
-            var textBoxControl = GetTextboxFromFrameworkElement(baseTextBox);
+            var textBoxControl = inputControl != null || isPassword
+                ? new PropertyTextBoxAdapter(target, property, baseTextBox)
+                : GetTextboxFromFrameworkElement(baseTextBox);
 
             var grid = new System.Windows.Controls.Grid();
             grid.ColumnDefinitions.Add(
@@ -215,7 +219,7 @@ namespace FlowBlox.UICore.Resolver
             }
 
             // Field Selection
-            if (uiAttribute?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true)
+            if (property.PropertyType == typeof(string) && FlowBloxFieldSelection.Supports(property))
             {
                 var fieldButton = new Button
                 {
@@ -235,7 +239,8 @@ namespace FlowBlox.UICore.Resolver
                 ((PackIconMaterial)fieldButton.Content).SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.FieldSelectionIconStyle");
                 fieldButton.Click += (s, e) =>
                 {
-                    Utilities.TextBoxHelper.ShowFieldSelectionDialog(target, uiAttribute, fieldSelectionAttribute, textBoxControl, _window);
+                    var args = Utilities.TextBoxHelper.CreateFieldSelectionWindowArgs(target, fieldSelectionAttribute, _parent);
+                    Utilities.TextBoxHelper.ShowFieldSelectionDialog(target, args, textBoxControl, _window);
                 };
 
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -272,7 +277,7 @@ namespace FlowBlox.UICore.Resolver
                     {
                         Utilities.TextBoxHelper.RegisterRegexOnParameterSelectedAction(textBoxControl, _window);
                     }
-                    else if (uiAttribute.UiOptions.HasFlag(UIOptions.EnableFieldSelection))
+                    else if (FlowBloxFieldSelection.Supports(property))
                     {
                         Utilities.TextBoxHelper.RegisterOnParameterSelectedAction(target, textBoxControl, _window);
                     }

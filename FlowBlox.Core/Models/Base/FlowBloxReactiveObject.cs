@@ -14,7 +14,7 @@ namespace FlowBlox.Core.Models.Base
     /// and validation error notifications (INotifyDataErrorInfo).
     /// Designed for use in data-bound components that support validation via DataAnnotations.
     /// </summary>
-    public class FlowBloxReactiveObject : INotifyPropertyChanged, INotifyDataErrorInfo
+    public partial class FlowBloxReactiveObject : INotifyPropertyChanged, INotifyDataErrorInfo
     {
         [ThreadStatic]
         private static HashSet<FlowBloxReactiveObject> _afterLoadVisitedObjects;

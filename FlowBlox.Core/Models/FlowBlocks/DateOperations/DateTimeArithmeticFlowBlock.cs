@@ -24,9 +24,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
         public FieldElement SourceDate { get; set; }
 
         [Display(Name = "DateTimeArithmeticFlowBlock_Unit", Description = "DateTimeArithmeticFlowBlock_Unit_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeOperationUnit Unit { get; set; } = DateTimeOperationUnit.Days;
 
         [Display(Name = "DateTimeArithmeticFlowBlock_Offset", Description = "DateTimeArithmeticFlowBlock_Offset_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Offset { get; set; } = 1;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.calendar_plus, 16, SKColors.DarkOrange);

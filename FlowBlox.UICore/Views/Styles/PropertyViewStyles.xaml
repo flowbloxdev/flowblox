@@ -12,6 +12,17 @@
         <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.EditorBackground}" />
         <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.Text}" />
         <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.Border}" />
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsLoaded, RelativeSource={RelativeSource AncestorType=DataGridCell}}" Value="True" />
+                    <Condition Binding="{Binding AcceptsReturn, RelativeSource={RelativeSource Self}}" Value="False" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="MinHeight" Value="24" />
+                <Setter Property="Padding" Value="4,0" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </MultiDataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="PropertyView.CodeEditorStyle" TargetType="avalonedit:TextEditor">

@@ -128,15 +128,15 @@
                         HorizontalAlignment="Right"
                         Margin="0,12,0,0">
 
-                <Button Content="{x:Static resources:EditProjectVersionMetadataWindow.Button_Cancel}"
-                        Style="{StaticResource FlowBlox.WindowActionButton}"
+                <Button Content="{x:Static resources:EditProjectVersionMetadataWindow.Button_Back}"
+                        Style="{StaticResource FlowBlox.WindowActionButton.Back}"
                         Command="{Binding CloseCommand}"
                         IsCancel="True"/>
 
                 <Button Content="{x:Static resources:EditProjectVersionMetadataWindow.Button_Save}"
                         Style="{StaticResource FlowBlox.WindowActionButton.Save}"
                         Command="{Binding SaveCommand}"
-                        IsEnabled="{Binding CanSave}" 
+                        IsEnabled="{Binding CanSave}"
                         IsDefault="True"/>
             </StackPanel>
 

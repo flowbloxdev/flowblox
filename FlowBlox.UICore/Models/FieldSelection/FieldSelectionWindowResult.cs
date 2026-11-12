@@ -18,6 +18,8 @@ namespace FlowBlox.UICore.Models.FieldSelection
 
         public List<FlowBloxGenerationStrategyPlaceholderElement> SelectedGenerationStrategyData { get; set; } = new List<FlowBloxGenerationStrategyPlaceholderElement>();
 
+        public List<string> SelectedVaultReferences { get; set; } = new();
+
         public bool IsRequired { get; set; }
     }
 }

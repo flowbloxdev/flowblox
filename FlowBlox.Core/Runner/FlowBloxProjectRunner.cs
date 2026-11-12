@@ -132,6 +132,12 @@ namespace FlowBlox.Core.Runner
 
                 runtime.LogEntryCreated += (rt, msg, level, exception) =>
                 {
+                    if (level == FlowBloxLogLevel.Warning)
+                    {
+                        lock (response.Warnings)
+                            response.Warnings.Add(msg);
+                    }
+
                     if (abortReason == null)
                     {
                         if (request.AbortOnError && level == FlowBloxLogLevel.Error)

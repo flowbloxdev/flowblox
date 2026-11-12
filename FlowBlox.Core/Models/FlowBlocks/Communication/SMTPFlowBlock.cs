@@ -29,17 +29,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         [Display(Name = "SMTPFlowBlock_Port", Description = "SMTPFlowBlock_Port_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Port { get; set; } = 25;
-        public FieldElement Port_SelectedField { get; set; }
 
         [Display(Name = "SMTPFlowBlock_UseSsl", Description = "SMTPFlowBlock_UseSsl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseSsl { get; set; }
-        public FieldElement UseSsl_SelectedField { get; set; }
 
         [Display(Name = "SMTPFlowBlock_AcceptInvalidCertificates", Description = "SMTPFlowBlock_AcceptInvalidCertificates_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AcceptInvalidCertificates { get; set; } = true;
 
         [Display(Name = "SMTPFlowBlock_UseAuthentication", Description = "SMTPFlowBlock_UseAuthentication_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseAuthentication { get; set; }
 
         [Display(Name = "SMTPFlowBlock_UserName", Description = "SMTPFlowBlock_UserName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
@@ -79,6 +79,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         public string Body { get; set; }
 
         [Display(Name = "SMTPFlowBlock_IsBodyHtml", Description = "SMTPFlowBlock_IsBodyHtml_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 12)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool IsBodyHtml { get; set; }
 
         [Display(Name = "SMTPFlowBlock_Attachments", Description = "SMTPFlowBlock_Attachments_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 13)]
@@ -113,32 +114,32 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
             return Invoke(runtime, data, () =>
             {
 
-                var port = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.Port);
-                var useSsl = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.UseSsl);
+                var port = this.Resolve(x => x.Port);
+                var useSsl = this.Resolve(x => x.UseSsl);
 
-                var resolvedHost = FlowBloxFieldHelper.ReplaceFieldsInString(Host ?? string.Empty)?.Trim();
-                var resolvedFrom = FlowBloxFieldHelper.ReplaceFieldsInString(FromAddress ?? string.Empty)?.Trim();
-                var resolvedTo = FlowBloxFieldHelper.ReplaceFieldsInString(ToAddresses ?? string.Empty);
-                var resolvedCc = FlowBloxFieldHelper.ReplaceFieldsInString(CcAddresses ?? string.Empty);
-                var resolvedBcc = FlowBloxFieldHelper.ReplaceFieldsInString(BccAddresses ?? string.Empty);
-                var resolvedSubject = FlowBloxFieldHelper.ReplaceFieldsInString(Subject ?? string.Empty) ?? string.Empty;
-                var resolvedBody = FlowBloxFieldHelper.ReplaceFieldsInString(Body ?? string.Empty) ?? string.Empty;
+                var host = this.Resolve(owner => owner.Host).Trim();
+                var fromAddress = this.Resolve(owner => owner.FromAddress).Trim();
+                var toAddresses = this.Resolve(owner => owner.ToAddresses);
+                var ccAddresses = this.Resolve(owner => owner.CcAddresses);
+                var bccAddresses = this.Resolve(owner => owner.BccAddresses);
+                var subject = this.Resolve(owner => owner.Subject);
+                var body = this.Resolve(owner => owner.Body);
 
-                if (string.IsNullOrWhiteSpace(resolvedHost))
+                if (string.IsNullOrWhiteSpace(host))
                 {
                     CreateNotification(runtime, SMTPNotifications.HostIsEmpty);
                     GenerateResult(runtime);
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(resolvedFrom))
+                if (string.IsNullOrWhiteSpace(fromAddress))
                 {
                     CreateNotification(runtime, SMTPNotifications.FromAddressIsEmpty);
                     GenerateResult(runtime);
                     return;
                 }
 
-                if (SmtpMailSender.ParseAddresses(resolvedTo).Count == 0)
+                if (SmtpMailSender.ParseAddresses(toAddresses).Count == 0)
                 {
                     CreateNotification(runtime, SMTPNotifications.ToAddressesAreEmpty);
                     GenerateResult(runtime);
@@ -147,30 +148,30 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 var sendSucceeded = true;
                 try
                 {
-                    var resolvedUser = FlowBloxFieldHelper.ReplaceFieldsInString(UserName ?? string.Empty);
-                    var resolvedPassword = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty);
+                    var userName = this.Resolve(owner => owner.UserName);
+                    var password = this.Resolve(owner => owner.Password);
                     var sender = new SmtpMailSender();
                     sender.Send(new SmtpMailSettings
                     {
-                        Host = resolvedHost,
+                        Host = host,
                         Port = port,
                         UseSsl = useSsl,
                         AcceptInvalidCertificates = AcceptInvalidCertificates,
                         UseAuthentication = UseAuthentication,
-                        UserName = resolvedUser ?? string.Empty,
-                        Password = resolvedPassword ?? string.Empty
+                        UserName = userName ?? string.Empty,
+                        Password = password ?? string.Empty
                     }, new SmtpMailRequest
                     {
-                        FromAddress = resolvedFrom,
-                        ToAddresses = resolvedTo,
-                        CcAddresses = resolvedCc,
-                        BccAddresses = resolvedBcc,
-                        Subject = resolvedSubject,
-                        Body = resolvedBody,
+                        FromAddress = fromAddress,
+                        ToAddresses = toAddresses,
+                        CcAddresses = ccAddresses,
+                        BccAddresses = bccAddresses,
+                        Subject = subject,
+                        Body = body,
                         IsBodyHtml = IsBodyHtml,
                         Attachments = BuildAttachments()
                     });
-                    runtime.Report($"SMTP mail sent successfully via '{resolvedHost}:{port}'.");
+                    runtime.Report($"SMTP mail sent successfully via '{host}:{port}'.");
                 }
                 catch (Exception ex)
                 {
@@ -194,7 +195,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 if (mapping == null || mapping.Field == null)
                     continue;
 
-                var fileName = FlowBloxFieldHelper.ReplaceFieldsInString(mapping.FileName ?? string.Empty)?.Trim();
+                var fileName = mapping.Resolve(owner => owner.FileName).Trim();
                 if (string.IsNullOrWhiteSpace(fileName))
                     continue;
 
@@ -220,12 +221,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
 
             if (configuredType == typeof(string))
             {
-                var encoding = mapping.EncodingName.ToEncoding();
+                var encoding = mapping.Resolve(entry => entry.EncodingName).ToEncoding();
                 return encoding.GetBytes(value?.ToString() ?? string.Empty);
             }
 
             var fallback = value?.ToString() ?? string.Empty;
-            return mapping.EncodingName.ToEncoding().GetBytes(fallback);
+            return mapping.Resolve(entry => entry.EncodingName).ToEncoding().GetBytes(fallback);
         }
 
         public override List<Type> NotificationTypes

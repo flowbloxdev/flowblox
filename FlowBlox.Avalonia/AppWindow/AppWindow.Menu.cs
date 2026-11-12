@@ -1,6 +1,8 @@
 using FlowBlox.AvaloniaDesktop.Resources;
 using System;
 using FlowBlox.AvaloniaDesktop.ViewModels;
+using Avalonia;
+using Avalonia.Media;
 namespace FlowBlox.AppWindow;
 public partial class AppWindow {
 private readonly MenuEntry mnItmMisc = new();
@@ -44,6 +46,7 @@ private readonly MenuEntry mnItmWindows = new();
 private readonly MenuEntry itmDockablePanels = new();
 private readonly MenuEntry itmResetDockablePanels = new();
 private readonly MenuEntry itmToolbox = new();
+private readonly MenuEntry itmVault = new();
 private readonly MenuEntry mnItmDirectories = new();
 private readonly MenuEntry mnItmHelp = new();
 private readonly MenuEntry itmVisitOnline = new();
@@ -143,6 +146,8 @@ itmPaste.Click += itmPaste_Click;
 itmDockablePanels.Click += itmDockablePanels_Click;
 itmResetDockablePanels.Click += itmResetDockablePanels_Click;
 itmToolbox.Click += itmToolbox_Click;
+itmVault.Text = "Vault";
+itmVault.Click += (_, _) => FlowBlox.AvaloniaDesktop.Interop.Wpf.WpfDialogHost.ShowDialog(new FlowBlox.UICore.Views.VaultWindow(), this);
 itmVisitOnline.Click += itmVisitOnline_Click;
 itmGitHub.Click += itmGitHub_Click;
 itmCheckForNewVersion.Click += itmCheckForNewVersion_Click;
@@ -166,6 +171,7 @@ itmPaste.Gesture = global::Avalonia.Input.KeyGesture.Parse("Ctrl+V");
 itmToolbox.Gesture = global::Avalonia.Input.KeyGesture.Parse("Ctrl+T");
 mnItmMisc.DropDownItems.Add(itmManageInputFiles);
 mnItmMisc.DropDownItems.Add(itmUserFields);
+mnItmMisc.DropDownItems.Add(itmVault);
 mnItmMisc.DropDownItems.Add(toolStripSeparator5);
 mnItmMisc.DropDownItems.Add(itmAutomation);
 mnItmMisc.DropDownItems.Add(itmNotifications);
@@ -224,7 +230,7 @@ mnItmHelp.DropDownItems.Add(toolStripSeparator15);
 mnItmHelp.DropDownItems.Add(itmAbout);
 itmManageInputFiles.Icon = LoadAsset("itmManageInputFiles.png");
 itmUserFields.Icon = LoadAsset("itmUserFields.png");
-itmFbProjects.Icon = LoadAsset("itmFbProjects.png");
+itmFbProjects.Icon = LoadAsset("project-space-16.png");
 itmFbExtensions.Icon = LoadAsset("itmFbExtensions.png");
 itmOptions.Icon = LoadAsset("itmOptions.png");
 itmOpenInputDir.Icon = LoadAsset("itmOpenInputDir.png");
@@ -235,11 +241,11 @@ itmOpenProjectOutputDir.Icon = LoadAsset("itmOpenProjectOutputDir.png");
 itmOpenRuntimeLogDirectory.Icon = LoadAsset("itmOpenRuntimeLogDirectory.png");
 itmOpenApplicationLogDirectory.Icon = LoadAsset("itmOpenApplicationLogDirectory.png");
 itmCreateProject.Icon = LoadAsset("itmCreateProject.png");
-itmOpenProject.Icon = LoadAsset("itmOpenProject.png");
-itmOpenFromProjectSpace.Icon = LoadAsset("itmOpenFromProjectSpace.png");
+itmOpenProject.Icon = FlowBlox.AvaloniaDesktop.Services.ProjectShortcutIcons.OpenProject;
+itmOpenFromProjectSpace.Icon = LoadAsset("project-space-16.png");
 itmEditProject.Icon = LoadAsset("itmEditProject.png");
 itmSaveProject.Icon = LoadAsset("itmSaveProject.png");
-itmSaveToProjectSpace.Icon = LoadAsset("itmSaveToProjectSpace.png");
+itmSaveToProjectSpace.Icon = CreateProjectSpaceSaveIcon();
 itmSaveAs.Icon = LoadAsset("itmSaveAs.png");
 itmCloseProject.Icon = LoadAsset("itmCloseProject.png");
 itmQuitApplication.Icon = LoadAsset("itmQuitApplication.png");
@@ -250,10 +256,31 @@ itmPaste.Icon = LoadAsset("itmPaste.png");
 itmFlowBloxTaskManagement.Icon = LoadAsset("itmFlowBloxTaskManagement.png");
 itmResetDockablePanels.Icon = LoadAsset("itmResetDockablePanels.png");
 itmToolbox.Icon = LoadAsset("itmToolbox.png");
+var vaultIcon = FlowBlox.Core.Util.Resources.FlowBloxIconUtil.CreateFromSVG(FlowBlox.Core.FlowBloxIcons.safe_square_outline, 16, new SkiaSharp.SKColor(0x22, 0xB8, 0xCF));
+using (var iconData = vaultIcon.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
+using (var iconStream = iconData.AsStream())
+    itmVault.Icon = new global::Avalonia.Media.Imaging.Bitmap(iconStream);
 itmVisitOnline.Icon = LoadAsset("itmVisitOnline.png");
 itmGitHub.Icon = LoadAsset("itmGitHub.png");
 itmCheckForNewVersion.Icon = LoadAsset("itmCheckForNewVersion.png");
 itmReportProblem.Icon = LoadAsset("itmReportProblem.png");
 itmAbout.Icon = LoadAsset("itmAbout.png");
 itmOpenExampleProject.Icon = LoadAsset("itmOpenExampleProject.png");
-}}
+}
+
+    private static IImage CreateProjectSpaceSaveIcon()
+    {
+        var drawing = new DrawingGroup();
+        drawing.Children.Add(new ImageDrawing
+        {
+            ImageSource = LoadAsset("project-space-16.png"),
+            Rect = new Rect(0, 0, 16, 16)
+        });
+        drawing.Children.Add(new ImageDrawing
+        {
+            ImageSource = LoadAsset("itmSaveProject.png"),
+            Rect = new Rect(8, 8, 8, 8)
+        });
+        return new DrawingImage { Drawing = drawing };
+    }
+}

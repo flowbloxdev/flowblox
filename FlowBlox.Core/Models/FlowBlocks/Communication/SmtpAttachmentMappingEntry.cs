@@ -23,7 +23,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         public FieldElement Field { get; set; }
 
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; } = DotNetEncodingNames.Default;
 
         public override string ToString() =>

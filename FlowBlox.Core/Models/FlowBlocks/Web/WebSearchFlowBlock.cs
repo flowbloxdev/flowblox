@@ -30,6 +30,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         [Range(1, 20)]
         [Display(Name = "WebSearchFlowBlock_MaxResults", Description = "WebSearchFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxResults { get; set; } = 10;
 
         [ActivationCondition(ActivationMethod = nameof(IsCountryActive))]
@@ -44,6 +45,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         [ActivationCondition(ActivationMethod = nameof(IsSafeSearchActive))]
         [Display(Name = "WebSearchFlowBlock_SafeSearch", Description = "WebSearchFlowBlock_SafeSearch_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public WebSearchSafeSearch SafeSearch { get; set; } = WebSearchSafeSearch.Moderate;
 
         [Display(Name = "WebSearchFlowBlock_ResultFields", Description = "WebSearchFlowBlock_ResultFields_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
@@ -99,7 +101,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (!ResultFields.Any())
                     throw new InvalidOperationException("No result fields have been configured.");
 
-                var query = FlowBloxFieldHelper.ReplaceFieldsInString(Query ?? string.Empty)?.Trim();
+                var query = this.Resolve(owner => owner.Query).Trim();
                 if (string.IsNullOrWhiteSpace(query))
                 {
                     GenerateResult(runtime);
@@ -111,8 +113,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                     {
                         Query = query,
                         MaxResults = Math.Clamp(MaxResults, 1, 20),
-                        Country = FlowBloxFieldHelper.ReplaceFieldsInString(Country ?? string.Empty)?.Trim() ?? string.Empty,
-                        SearchLanguage = FlowBloxFieldHelper.ReplaceFieldsInString(SearchLanguage ?? string.Empty)?.Trim() ?? string.Empty,
+                        Country = this.Resolve(owner => owner.Country).Trim(),
+                        SearchLanguage = this.Resolve(owner => owner.SearchLanguage).Trim(),
                         SafeSearch = SafeSearch
                     },
                     runtime.GetCancellationToken());

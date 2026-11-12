@@ -51,12 +51,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
     public class DateTimeComponentAdjustmentEntry : FlowBloxReactiveObject
     {
         [Display(Name = "DateTimeComponentAdjustmentEntry_Target", Description = "DateTimeComponentAdjustmentEntry_Target_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeComponentAdjustmentTarget Target { get; set; } = DateTimeComponentAdjustmentTarget.Day;
 
         [Display(Name = "DateTimeComponentAdjustmentEntry_Mode", Description = "DateTimeComponentAdjustmentEntry_Mode_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeComponentAdjustmentMode Mode { get; set; } = DateTimeComponentAdjustmentMode.Add;
 
         [Display(Name = "DateTimeComponentAdjustmentEntry_Value", Description = "DateTimeComponentAdjustmentEntry_Value_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Value { get; set; } = 1;
 
         public override string ToString() => $"{Mode} {Value} {Target}";
@@ -142,10 +145,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
 
         private static DateTime ApplyAdjustment(DateTime source, DateTimeComponentAdjustmentEntry adjustment)
         {
-            return adjustment.Mode switch
+            var mode = adjustment.Resolve(entry => entry.Mode);
+            var target = adjustment.Resolve(entry => entry.Target);
+            var value = adjustment.Resolve(entry => entry.Value);
+            return mode switch
             {
-                DateTimeComponentAdjustmentMode.Add => ApplyAdd(source, adjustment.Target, adjustment.Value),
-                DateTimeComponentAdjustmentMode.Set => ApplySet(source, adjustment.Target, adjustment.Value),
+                DateTimeComponentAdjustmentMode.Add => ApplyAdd(source, target, value),
+                DateTimeComponentAdjustmentMode.Set => ApplySet(source, target, value),
                 _ => source
             };
         }

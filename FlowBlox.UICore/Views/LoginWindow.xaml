@@ -112,9 +112,13 @@
                         Style="{StaticResource FlowBlox.WindowActionButton.Back}"
                         IsCancel="True"/>
                 <Button Command="{Binding LoginCommand}"
-                        Content="{x:Static resources:LoginWindow.Button_Login}"
                         Style="{StaticResource FlowBlox.WindowActionButton}"
-                        IsDefault="True"/>
+                        IsDefault="True">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="Login" Style="{StaticResource FlowBlox.WindowActionIcon.Execute}"/>
+                        <TextBlock Text="{x:Static resources:LoginWindow.Button_Login}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
     </DockPanel>

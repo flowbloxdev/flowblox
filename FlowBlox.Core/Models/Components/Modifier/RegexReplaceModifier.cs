@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FlowBlox.Core.Extensions;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Runtime;
@@ -16,8 +17,8 @@ namespace FlowBlox.Core.Models.Components.Modifier
 
         public override string Modify(BaseRuntime runtime, string value)
         {
-            string search = FlowBloxFieldHelper.ReplaceFieldsInString(this.Search);
-            string replace = FlowBloxFieldHelper.ReplaceFieldsInString(this.Replace);
+            string search = this.Resolve(owner => owner.Search);
+            string replace = this.Resolve(owner => owner.Replace);
             Regex regex = new Regex(search);
             var result = regex.Replace(value, replace ?? string.Empty);
             return result;

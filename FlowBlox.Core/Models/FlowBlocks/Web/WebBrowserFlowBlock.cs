@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
@@ -123,10 +124,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         [Display(Name = "WebBrowserFlowBlock_RetryLimit", Description = "WebBrowserFlowBlock_RetryLimit_Tooltip", ResourceType = typeof(FlowBloxTexts),
             GroupName = "WebBrowserFlowBlock_Groups_Advanced", Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int RetryLimit { get; set; }
 
         [Display(Name = "WebBrowserFlowBlock_RetryTimeunit", Description = "WebBrowserFlowBlock_RetryTimeunit_Tooltip", ResourceType = typeof(FlowBloxTexts),
             GroupName = "WebBrowserFlowBlock_Groups_Advanced", Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int RetryTimeunit { get; set; }
 
         public List<WebBrowserFlowBlock> GetPossibleWebBrowsers()
@@ -161,7 +164,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             {
 
                 // Determine URL first; empty URL means "no navigation".
-                string url = FlowBloxFieldHelper.ReplaceFieldsInString(Url);
+                string url = this.Resolve(owner => owner.Url);
                 if (string.IsNullOrWhiteSpace(url))
                 {
                     CreateNotification(runtime, WebBrowserNotifications.RequestedUrlIsEmpty);

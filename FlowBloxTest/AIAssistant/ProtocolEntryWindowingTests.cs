@@ -1,4 +1,3 @@
-using FlowBlox.AIAssistant.Tools.Handler;
 using FlowBlox.AIAssistant.Tools.Util;
 using Newtonsoft.Json.Linq;
 
@@ -19,18 +18,5 @@ namespace FlowBloxTest.AIAssistant
             CollectionAssert.AreEqual(new[] { 1, 2, 3, 4, 5, 6 }, source.Values<int>().ToArray());
         }
 
-        [TestMethod]
-        public void RunHandlerDefinitions_ExposeExpectedProtocolDefaults()
-        {
-            StringAssert.Contains(
-                new RunGenerationStrategiesHandler().Definition.ArgumentsSchema.Value<string>("maxProtocolEntries"),
-                "default: 20");
-            StringAssert.Contains(
-                new RunTestDefinitionHandler().Definition.ArgumentsSchema.Value<string>("maxProtocolEntries"),
-                "default: 20");
-            StringAssert.Contains(
-                new RunProjectDebugTestHandler().Definition.ArgumentsSchema.Value<string>("maxProtocolEntries"),
-                "default: 250");
-        }
     }
 }

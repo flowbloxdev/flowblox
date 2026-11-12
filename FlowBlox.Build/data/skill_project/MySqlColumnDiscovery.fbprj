@@ -20,7 +20,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": true,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -34,9 +38,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": false
+        "Version": "1.0.0.0"
       },
       {
         "$id": "4",
@@ -54,7 +56,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -68,9 +74,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "6",
@@ -88,7 +92,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -102,9 +110,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "8",
@@ -122,7 +128,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -136,9 +146,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       }
     ]
   },
@@ -161,7 +169,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "12",
@@ -182,11 +194,11 @@
                 "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
                 "ColumnName": "DataType",
                 "Field": {
-                  "$id": "1001",
+                  "$id": "15",
                   "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
                   "Name": "DataType",
                   "FieldType": {
-                    "$id": "1002",
+                    "$id": "16",
                     "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
                     "FieldType": "Text",
                     "DateFormat": "M/d/yyyy h:mm:ss tt",
@@ -197,79 +209,11 @@
                   "UserField": false,
                   "UserFieldType": "None",
                   "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
                   "IsPassword": false,
-                  "ListOfValues": null,
-                  "Source": {
-                    "$ref": "12"
-                  },
-                  "Conditions": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Modifiers": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Version": "1.0.0.0"
-                }
-              },
-              {
-                "$id": "15",
-                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "TypeSpecification",
-                "Field": {
-                  "$id": "1003",
-                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "TypeSpecification",
-                  "FieldType": {
-                    "$id": "1004",
-                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
-                    "FieldType": "Text",
-                    "DateFormat": "M/d/yyyy h:mm:ss tt",
-                    "DecimalSeparator": ".",
-                    "GroupSeparator": ",",
-                    "IsNullable": true
-                  },
-                  "UserField": false,
-                  "UserFieldType": "None",
-                  "StoreValueLocally": false,
-                  "IsPassword": false,
-                  "ListOfValues": null,
-                  "Source": {
-                    "$ref": "12"
-                  },
-                  "Conditions": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Modifiers": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Version": "1.0.0.0"
-                }
-              },
-              {
-                "$id": "16",
-                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "IsNullable",
-                "Field": {
-                  "$id": "1005",
-                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "IsNullable",
-                  "FieldType": {
-                    "$id": "1006",
-                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
-                    "FieldType": "Text",
-                    "DateFormat": "M/d/yyyy h:mm:ss tt",
-                    "DecimalSeparator": ".",
-                    "GroupSeparator": ",",
-                    "IsNullable": true
-                  },
-                  "UserField": false,
-                  "UserFieldType": "None",
-                  "StoreValueLocally": false,
-                  "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
                   "ListOfValues": null,
                   "Source": {
                     "$ref": "12"
@@ -288,13 +232,13 @@
               {
                 "$id": "17",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "DefaultValue",
+                "ColumnName": "TypeSpecification",
                 "Field": {
-                  "$id": "1007",
+                  "$id": "18",
                   "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "DefaultValue",
+                  "Name": "TypeSpecification",
                   "FieldType": {
-                    "$id": "1008",
+                    "$id": "19",
                     "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
                     "FieldType": "Text",
                     "DateFormat": "M/d/yyyy h:mm:ss tt",
@@ -305,79 +249,11 @@
                   "UserField": false,
                   "UserFieldType": "None",
                   "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
                   "IsPassword": false,
-                  "ListOfValues": null,
-                  "Source": {
-                    "$ref": "12"
-                  },
-                  "Conditions": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Modifiers": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Version": "1.0.0.0"
-                }
-              },
-              {
-                "$id": "18",
-                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "IsPrimaryKey",
-                "Field": {
-                  "$id": "1009",
-                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "IsPrimaryKey",
-                  "FieldType": {
-                    "$id": "1010",
-                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
-                    "FieldType": "Text",
-                    "DateFormat": "M/d/yyyy h:mm:ss tt",
-                    "DecimalSeparator": ".",
-                    "GroupSeparator": ",",
-                    "IsNullable": true
-                  },
-                  "UserField": false,
-                  "UserFieldType": "None",
-                  "StoreValueLocally": false,
-                  "IsPassword": false,
-                  "ListOfValues": null,
-                  "Source": {
-                    "$ref": "12"
-                  },
-                  "Conditions": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Modifiers": {
-                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
-                    "$values": []
-                  },
-                  "Version": "1.0.0.0"
-                }
-              },
-              {
-                "$id": "19",
-                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "IsUnique",
-                "Field": {
-                  "$id": "1011",
-                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "IsUnique",
-                  "FieldType": {
-                    "$id": "1012",
-                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
-                    "FieldType": "Text",
-                    "DateFormat": "M/d/yyyy h:mm:ss tt",
-                    "DecimalSeparator": ".",
-                    "GroupSeparator": ",",
-                    "IsNullable": true
-                  },
-                  "UserField": false,
-                  "UserFieldType": "None",
-                  "StoreValueLocally": false,
-                  "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
                   "ListOfValues": null,
                   "Source": {
                     "$ref": "12"
@@ -396,13 +272,13 @@
               {
                 "$id": "20",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "IsAutoIncrement",
+                "ColumnName": "IsNullable",
                 "Field": {
-                  "$id": "1013",
+                  "$id": "21",
                   "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "IsAutoIncrement",
+                  "Name": "IsNullable",
                   "FieldType": {
-                    "$id": "1014",
+                    "$id": "22",
                     "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
                     "FieldType": "Text",
                     "DateFormat": "M/d/yyyy h:mm:ss tt",
@@ -413,7 +289,11 @@
                   "UserField": false,
                   "UserFieldType": "None",
                   "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
                   "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
                   "ListOfValues": null,
                   "Source": {
                     "$ref": "12"
@@ -430,15 +310,15 @@
                 }
               },
               {
-                "$id": "21",
+                "$id": "23",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
-                "ColumnName": "OrdinalPosition",
+                "ColumnName": "DefaultValue",
                 "Field": {
-                  "$id": "1015",
+                  "$id": "24",
                   "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
-                  "Name": "OrdinalPosition",
+                  "Name": "DefaultValue",
                   "FieldType": {
-                    "$id": "1016",
+                    "$id": "25",
                     "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
                     "FieldType": "Text",
                     "DateFormat": "M/d/yyyy h:mm:ss tt",
@@ -449,7 +329,171 @@
                   "UserField": false,
                   "UserFieldType": "None",
                   "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
                   "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
+                  "ListOfValues": null,
+                  "Source": {
+                    "$ref": "12"
+                  },
+                  "Conditions": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Modifiers": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Version": "1.0.0.0"
+                }
+              },
+              {
+                "$id": "26",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
+                "ColumnName": "IsPrimaryKey",
+                "Field": {
+                  "$id": "27",
+                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+                  "Name": "IsPrimaryKey",
+                  "FieldType": {
+                    "$id": "28",
+                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+                    "FieldType": "Text",
+                    "DateFormat": "M/d/yyyy h:mm:ss tt",
+                    "DecimalSeparator": ".",
+                    "GroupSeparator": ",",
+                    "IsNullable": true
+                  },
+                  "UserField": false,
+                  "UserFieldType": "None",
+                  "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
+                  "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
+                  "ListOfValues": null,
+                  "Source": {
+                    "$ref": "12"
+                  },
+                  "Conditions": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Modifiers": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Version": "1.0.0.0"
+                }
+              },
+              {
+                "$id": "29",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
+                "ColumnName": "IsUnique",
+                "Field": {
+                  "$id": "30",
+                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+                  "Name": "IsUnique",
+                  "FieldType": {
+                    "$id": "31",
+                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+                    "FieldType": "Text",
+                    "DateFormat": "M/d/yyyy h:mm:ss tt",
+                    "DecimalSeparator": ".",
+                    "GroupSeparator": ",",
+                    "IsNullable": true
+                  },
+                  "UserField": false,
+                  "UserFieldType": "None",
+                  "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
+                  "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
+                  "ListOfValues": null,
+                  "Source": {
+                    "$ref": "12"
+                  },
+                  "Conditions": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Modifiers": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Version": "1.0.0.0"
+                }
+              },
+              {
+                "$id": "32",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
+                "ColumnName": "IsAutoIncrement",
+                "Field": {
+                  "$id": "33",
+                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+                  "Name": "IsAutoIncrement",
+                  "FieldType": {
+                    "$id": "34",
+                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+                    "FieldType": "Text",
+                    "DateFormat": "M/d/yyyy h:mm:ss tt",
+                    "DecimalSeparator": ".",
+                    "GroupSeparator": ",",
+                    "IsNullable": true
+                  },
+                  "UserField": false,
+                  "UserFieldType": "None",
+                  "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
+                  "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
+                  "ListOfValues": null,
+                  "Source": {
+                    "$ref": "12"
+                  },
+                  "Conditions": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Additions.ComparisonCondition, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Modifiers": {
+                    "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
+                    "$values": []
+                  },
+                  "Version": "1.0.0.0"
+                }
+              },
+              {
+                "$id": "35",
+                "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableSelectorMappingEntry, FlowBlox.Core",
+                "ColumnName": "OrdinalPosition",
+                "Field": {
+                  "$id": "36",
+                  "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
+                  "Name": "OrdinalPosition",
+                  "FieldType": {
+                    "$id": "37",
+                    "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
+                    "FieldType": "Text",
+                    "DateFormat": "M/d/yyyy h:mm:ss tt",
+                    "DecimalSeparator": ".",
+                    "GroupSeparator": ",",
+                    "IsNullable": true
+                  },
+                  "UserField": false,
+                  "UserFieldType": "None",
+                  "StoreValueLocally": false,
+                  "ClearOnRuntimeStart": false,
+                  "IsRequiredAtRuntimeStartup": false,
+                  "IsPassword": false,
+                  "SyntaxHighlighting": "Text",
+                  "LoVType": "Suggestion",
                   "ListOfValues": null,
                   "Source": {
                     "$ref": "12"
@@ -472,11 +516,12 @@
             "$values": []
           },
           "ReferencedTable": {
-            "$id": "22",
+            "$id": "38",
             "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
             "DbType": "MySQL",
             "SQLConnectionstring": "Server=localhost;User ID=$User::Input_MySqlUser;Password=$User::Input_MySqlPassword;Database=$User::Input_MySqlDatabase;",
             "SQLStatement": "SELECT\n    c.COLUMN_NAME AS ColumnName,\n    c.DATA_TYPE AS DataType,\n    c.COLUMN_TYPE AS TypeSpecification,\n    CASE WHEN c.IS_NULLABLE = 'YES' THEN 'true' ELSE 'false' END AS IsNullable,\n    c.COLUMN_DEFAULT AS DefaultValue,\n    CASE WHEN c.COLUMN_KEY = 'PRI' THEN 'true' ELSE 'false' END AS IsPrimaryKey,\n    CASE WHEN c.COLUMN_KEY IN ('PRI', 'UNI') THEN 'true' ELSE 'false' END AS IsUnique,\n    CASE WHEN c.EXTRA LIKE '%auto_increment%' THEN 'true' ELSE 'false' END AS IsAutoIncrement,\n    c.ORDINAL_POSITION AS OrdinalPosition\nFROM information_schema.COLUMNS c\nWHERE c.TABLE_SCHEMA = DATABASE()\n    AND c.TABLE_NAME = $User::Input_TableName\nORDER BY c.ORDINAL_POSITION;",
+            "UseFieldValuesAsParameters": true,
             "Name": "SQLTable_MySqlColumns",
             "RequiredFields": {
               "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
@@ -503,7 +548,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "458, 340",
+          "Location": "458, 279",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -512,7 +557,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "23",
+                "$id": "39",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.StartFlowBlock, FlowBlox.Core",
                 "OverriddenNotificationEntries": {
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
@@ -529,6 +574,7 @@
                 },
                 "AssociatedIterationContext": null,
                 "InputIgnoreDuplicates": false,
+                "AutomaticInputBehaviorAssignment": true,
                 "InputBehaviorAssignments": {
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
                   "$values": []
@@ -556,14 +602,15 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "24",
+                "$id": "40",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                 "FlowBlock": {
-                  "$ref": "23"
+                  "$ref": "39"
                 },
                 "Behavior": "First"
               }
@@ -599,38 +646,38 @@
         "Version": "1.0.0.0"
       },
       {
-        "$ref": "1001"
+        "$ref": "15"
       },
       {
-        "$ref": "1003"
+        "$ref": "18"
       },
       {
-        "$ref": "1005"
+        "$ref": "21"
       },
       {
-        "$ref": "1007"
+        "$ref": "24"
       },
       {
-        "$ref": "1009"
+        "$ref": "27"
       },
       {
-        "$ref": "1011"
+        "$ref": "30"
       },
       {
-        "$ref": "1013"
+        "$ref": "33"
       },
       {
-        "$ref": "1015"
+        "$ref": "36"
       },
       {
-        "$ref": "22"
+        "$ref": "38"
       },
       {
-        "$id": "25",
+        "$id": "41",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "26",
+          "$id": "42",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "M/d/yyyy h:mm:ss tt",
@@ -641,16 +688,20 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "27",
+          "$id": "43",
           "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputFlowBlock, FlowBlox.Core",
           "MappingEntries": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "28",
+                "$id": "44",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
                   "$ref": "10"
@@ -659,73 +710,73 @@
                 "OutputPropertyName": "ColumnName"
               },
               {
-                "$id": "29",
+                "$id": "45",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1001"
+                  "$ref": "15"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "DataType"
               },
               {
-                "$id": "30",
+                "$id": "46",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1003"
+                  "$ref": "18"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "TypeSpecification"
               },
               {
-                "$id": "31",
+                "$id": "47",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1005"
+                  "$ref": "21"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "IsNullable"
               },
               {
-                "$id": "32",
+                "$id": "48",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1007"
+                  "$ref": "24"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "DefaultValue"
               },
               {
-                "$id": "33",
+                "$id": "49",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1009"
+                  "$ref": "27"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "IsPrimaryKey"
               },
               {
-                "$id": "34",
+                "$id": "50",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1011"
+                  "$ref": "30"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "IsUnique"
               },
               {
-                "$id": "35",
+                "$id": "51",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1013"
+                  "$ref": "33"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "IsAutoIncrement"
               },
               {
-                "$id": "36",
+                "$id": "52",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ProjectOutputMappingEntry, FlowBlox.Core",
                 "Field": {
-                  "$ref": "1015"
+                  "$ref": "36"
                 },
                 "IsRequired": true,
                 "OutputPropertyName": "OrdinalPosition"
@@ -734,7 +785,7 @@
           },
           "Name": "ProjectOutput_Columns",
           "ResultField": {
-            "$ref": "25"
+            "$ref": "41"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -760,11 +811,12 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
               {
-                "$id": "37",
+                "$id": "53",
                 "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                 "FlowBlock": {
                   "$ref": "12"
@@ -824,21 +876,23 @@
     "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.Private.CoreLib",
     "$values": [
       {
-        "$ref": "23"
+        "$ref": "39"
       },
       {
         "$ref": "12"
       },
       {
-        "$ref": "27"
+        "$ref": "43"
       }
     ]
   },
-  "ProjectGuid": "9359780a-1db1-4872-b791-eb9a881450c2",
+  "ProjectGuid": "566a4f5f-1fbf-4610-ad69-1f79df4c1773",
   "ProjectName": "MySqlColumnDiscovery",
   "Author": "",
   "ProjectDescription": "Reads core column specifications for one MySQL table and returns them as project output.",
   "AssistantMetadata": {
+    "$id": "54",
+    "$type": "FlowBlox.Core.Models.Project.AssistantMetadata, FlowBlox.Core",
     "ShortDescription": "Discover columns and core types for a MySQL table."
   },
   "Notice": "",

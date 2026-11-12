@@ -1,7 +1,6 @@
 using ActivationConditionAwareTextboxColumnFactoryResources = FlowBlox.UICore.Resources.ClassResources.ActivationConditionAwareTextboxColumnFactory;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Util.Resources;
-using FlowBlox.UICore.Converters.PropertyView;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -19,62 +18,26 @@ namespace FlowBlox.UICore.Factory.PropertyView
             string headerText,
             PropertyInfo property,
             ActivationConditionAttribute activationCondition,
-            bool isReadOnly)
+            bool isReadOnly,
+            FrameworkElementFactory editor)
         {
-            ArgumentNullException.ThrowIfNull(property);
-            ArgumentNullException.ThrowIfNull(activationCondition);
-
-            EnsureSupportedPropertyType(property.PropertyType);
-
-            var displayText = new FrameworkElementFactory(typeof(TextBlock));
-            displayText.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center);
-            displayText.SetBinding(TextBlock.TextProperty, CreateValueBinding(property, isReadOnly: true));
-            displayText.SetBinding(
+            editor.SetBinding(
                 UIElement.VisibilityProperty,
                 CreateActivationBinding(property, activationCondition, showWhenActive: true));
-
-            var editText = new FrameworkElementFactory(typeof(TextBox));
-            editText.SetValue(Control.VerticalContentAlignmentProperty, VerticalAlignment.Center);
-            editText.SetValue(TextBox.IsReadOnlyProperty, isReadOnly);
-            editText.SetBinding(TextBox.TextProperty, CreateValueBinding(property, isReadOnly));
-            editText.SetBinding(
-                UIElement.VisibilityProperty,
-                CreateActivationBinding(property, activationCondition, showWhenActive: true));
-
-            var displayGrid = new FrameworkElementFactory(typeof(System.Windows.Controls.Grid));
-            displayGrid.AppendChild(displayText);
-            displayGrid.AppendChild(CreateInactiveCellText(property, activationCondition));
-
-            var editGrid = new FrameworkElementFactory(typeof(System.Windows.Controls.Grid));
-            editGrid.AppendChild(editText);
-            editGrid.AppendChild(CreateInactiveCellText(property, activationCondition));
-
+            var grid = new FrameworkElementFactory(typeof(System.Windows.Controls.Grid));
+            grid.AppendChild(editor);
+            grid.AppendChild(CreateInactiveCellText(property, activationCondition));
+            var template = new DataTemplate { VisualTree = grid };
             return new DataGridTemplateColumn
             {
                 Header = headerText,
                 MinWidth = DefaultMinWidth,
                 SortMemberPath = property.Name,
                 IsReadOnly = isReadOnly,
-                CellTemplate = new DataTemplate { VisualTree = displayGrid },
-                CellEditingTemplate = new DataTemplate { VisualTree = editGrid }
+                CellTemplate = template,
+                CellEditingTemplate = template
             };
         }
-
-        private static Binding CreateValueBinding(PropertyInfo property, bool isReadOnly)
-        {
-            var binding = new Binding(property.Name)
-            {
-                Mode = isReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                TargetNullValue = string.Empty
-            };
-
-            if (IsNumericType(property.PropertyType))
-                binding.Converter = new NumericTextValueConverter(property.PropertyType);
-
-            return binding;
-        }
-
         private static FrameworkElementFactory CreateInactiveCellText(
             PropertyInfo property,
             ActivationConditionAttribute activationCondition)
@@ -113,24 +76,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 binding.Bindings.Add(new Binding(memberName));
 
             return binding;
-        }
-
-        private static void EnsureSupportedPropertyType(Type propertyType)
-        {
-            if (propertyType == typeof(string) || IsNumericType(propertyType))
-                return;
-
-            throw new NotSupportedException(
-                $"Activation-aware textbox columns do not support properties of type '{propertyType.Name}'.");
-        }
-
-        private static bool IsNumericType(Type propertyType)
-        {
-            var type = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-            return type == typeof(int) ||
-                   type == typeof(long) ||
-                   type == typeof(float) ||
-                   type == typeof(double);
         }
 
         private sealed class ActivationConditionVisibilityConverter : IMultiValueConverter

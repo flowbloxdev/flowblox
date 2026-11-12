@@ -70,16 +70,16 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
-        public static string Button_Close
+        public static string Button_Back
         {
             get
             {
-                return ResourceManager.GetString("Button_Close", resourceCulture);
+                return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create stable version ähnelt.
         /// </summary>
@@ -224,6 +224,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die User #{0} ähnelt.
+        /// </summary>
+        public static string Format_CreatedBy
+        {
+            get
+            {
+                return ResourceManager.GetString("Format_CreatedBy", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Comment ähnelt.
         /// </summary>
         public static string Header_Comment
@@ -322,6 +333,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Created by ähnelt.
+        /// </summary>
+        public static string Label_CreatedBy
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_CreatedBy", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Description ähnelt.
         /// </summary>
@@ -498,6 +520,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Project creator (user ID supplied by the API). ähnelt.
+        /// </summary>
+        public static string Tooltip_CreatedBy
+        {
+            get
+            {
+                return ResourceManager.GetString("Tooltip_CreatedBy", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create stable version ähnelt.
         /// </summary>

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using FlowBlox.AIAssistant.History;
 using FlowBlox.AIAssistant.Models;
@@ -963,9 +964,9 @@ namespace FlowBlox.UICore.ViewModels
         public void RefreshProviderConfigurationState()
         {
             var configuration = _service.GetConfiguration(out _);
-            var provider = configuration?.Provider;
+            var provider = configuration?.SelectedProvider;
             var isConfigured = provider != null &&
-                !string.IsNullOrWhiteSpace(FlowBloxFieldHelper.ReplaceFieldsInString(provider.ApiKey));
+                !string.IsNullOrWhiteSpace(provider.Resolve(owner => owner.ApiKey));
 
             if (_isProviderConfigured == isConfigured)
                 return;

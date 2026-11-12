@@ -6,6 +6,7 @@ using FlowBlox.Core.Provider.Placeholders.GenerationStrategy;
 using FlowBlox.Core.Provider.Project;
 using FlowBlox.Core.Provider.Registry;
 using FlowBlox.Core.Util;
+using FlowBlox.Core.Util.Vault;
 using FlowBlox.UICore.Commands;
 using FlowBlox.UICore.Enums;
 using FlowBlox.UICore.Models.FieldSelection;
@@ -45,6 +46,7 @@ namespace FlowBlox.UICore.ViewModels
                 OnPropertyChanged(nameof(IsOptionsMode));
                 OnPropertyChanged(nameof(IsInputFilesMode));
                 OnPropertyChanged(nameof(IsGenerationStrategyDataMode));
+                OnPropertyChanged(nameof(IsVaultMode));
                 OnPropertyChanged(nameof(ShowRequired));
             }
         }
@@ -70,6 +72,10 @@ namespace FlowBlox.UICore.ViewModels
         public bool IsInputFilesMode => SelectionMode == FieldSelectionMode.InputFiles;
         public bool IsGenerationStrategyDataMode => SelectionMode == FieldSelectionMode.GenerationStrategyData;
 
+        public bool IsVaultMode => SelectionMode == FieldSelectionMode.Vault;
+        public bool CanSelectVault => IsModeAllowed(FieldSelectionMode.Vault);
+        public IReadOnlyList<VaultReference> VaultRows { get; private set; } = Array.Empty<VaultReference>();
+
         public bool ShowRequired => IsFieldsMode && !HideRequired;
 
         public int SelectedTabIndex
@@ -89,6 +95,7 @@ namespace FlowBlox.UICore.ViewModels
                     2 => FieldSelectionMode.Options,
                     3 => FieldSelectionMode.InputFiles,
                     4 => FieldSelectionMode.GenerationStrategyData,
+                    5 => FieldSelectionMode.Vault,
                     _ => FieldSelectionMode.Fields
                 };
             }
@@ -124,7 +131,7 @@ namespace FlowBlox.UICore.ViewModels
                 _args.SelectionMode == FieldSelectionMode.ProjectProperties ? 1 :
                 _args.SelectionMode == FieldSelectionMode.Options ? 2 :
                 _args.SelectionMode == FieldSelectionMode.InputFiles ? 3 :
-                4;
+                _args.SelectionMode == FieldSelectionMode.Vault ? 5 : 4;
 
             // Normalize tab selection based on allowed modes.
             NormalizeSelectedTabIndex();
@@ -152,7 +159,8 @@ namespace FlowBlox.UICore.ViewModels
                 (SelectedTabIndex == 1 && CanSelectProjectProperties) ||
                 (SelectedTabIndex == 2 && CanSelectOptions) ||
                 (SelectedTabIndex == 3 && CanSelectInputFiles) ||
-                (SelectedTabIndex == 4 && CanSelectGenerationStrategyData);
+                (SelectedTabIndex == 4 && CanSelectGenerationStrategyData) ||
+                (SelectedTabIndex == 5 && CanSelectVault);
 
             if (tabAllowed)
                 return;
@@ -162,10 +170,14 @@ namespace FlowBlox.UICore.ViewModels
             else if (CanSelectOptions) SelectedTabIndex = 2;
             else if (CanSelectInputFiles) SelectedTabIndex = 3;
             else if (CanSelectGenerationStrategyData) SelectedTabIndex = 4;
+            else if (CanSelectVault) SelectedTabIndex = 5;
         }
 
         private bool IsModeAllowed(FieldSelectionMode mode)
         {
+            if (_registry == null && mode != FieldSelectionMode.Vault && mode != FieldSelectionMode.Options)
+                return false;
+
             var allowedModes = _args.AllowedFieldSelectionModes;
             if (allowedModes == null)
                 return DefaultAllowedModes.Contains(mode);
@@ -175,9 +187,24 @@ namespace FlowBlox.UICore.ViewModels
 
         private void LoadRows()
         {
+            LoadOptionRows();
+            LoadVaultRows();
+            LoadRegistryBasedRows();
+        }
+
+        private void LoadVaultRows()
+        {
+            VaultRows = FlowBloxVault.GetReferences();
+            OnPropertyChanged(nameof(VaultRows));
+        }
+
+        private void LoadRegistryBasedRows()
+        {
+            if (_registry == null)
+                return;
+
             LoadFieldRows();
             LoadProjectPropertyRows();
-            LoadOptionRows();
             LoadInputFileRows();
             LoadGenerationStrategyDataRows();
         }

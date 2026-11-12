@@ -83,6 +83,12 @@ namespace FlowBlox.Core.Util
 
             var defaultOptions = new List<OptionElement>
             {
+                new OptionElement(
+                    "Vault.Values",
+                    "",
+                    FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_VaultValues_Description", typeof(FlowBloxTexts)),
+                    OptionElement.OptionType.Password,
+                    FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_VaultValues_DisplayName", typeof(FlowBloxTexts))),
                 new OptionElement("Account.LoginData", "", "The encrypted login data for the user account. This option stores the login token securely using encryption.", OptionElement.OptionType.Password),
                 new OptionElement("Account.LicenseToken", "", "The encrypted license token for the user account. This option stores the license token securely using encryption.", OptionElement.OptionType.Text),
                 new OptionElement("Editor.DefaultPath", GetDefaultEditorPath(), "Path to the default editor for directly editing or viewing data from FlowBlox. We recommend the free software Notepad++: https://notepad-plus-plus.org/", OptionElement.OptionType.Text),
@@ -188,7 +194,9 @@ namespace FlowBlox.Core.Util
 
         private readonly object _saveLock = new object();
 
-        public void Save()
+        public void Save() => Save(throwOnError: false);
+
+        public void Save(bool throwOnError)
         {
             lock (_saveLock)
             {
@@ -216,6 +224,8 @@ namespace FlowBlox.Core.Util
                 catch (IOException e)
                 {
                     FlowBloxLogManager.Instance.GetLogger().Exception(e);
+                    if (throwOnError)
+                        throw;
                 }
             }
         }

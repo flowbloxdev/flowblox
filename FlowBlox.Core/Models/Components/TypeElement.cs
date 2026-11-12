@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Provider;
@@ -6,6 +6,7 @@ using FlowBlox.Core.Models.Base;
 using System.Globalization;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util.Parsing;
+using FlowBlox.Core.Util.Fields;
 using Newtonsoft.Json;
 
 namespace FlowBlox.Core.Models.Components
@@ -74,10 +75,13 @@ namespace FlowBlox.Core.Models.Components
                 .FirstOrDefault(x => x.FieldType == this);
         }
 
-        private bool IsFieldElementSet(out FieldElement fieldElement)
+        private bool IsFieldElementSet(out string value)
         {
-            fieldElement = GetReferencedField();
-            if (fieldElement == null || string.IsNullOrWhiteSpace(fieldElement.StringValue))
+            var fieldElement = GetReferencedField();
+            value = FlowBloxFieldHelper.ReplaceFieldsInString(
+                fieldElement?.StringValue,
+                resolveVaultReferences: fieldElement?.IsUserInputField() == true);
+            if (string.IsNullOrWhiteSpace(value))
             {
                 if (HasNullableInfo && !IsNullable)
                     throw new InvalidOperationException(
@@ -94,16 +98,16 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return default;
 
                 if (FieldType != FieldTypes.Boolean)
                     return default;
 
-                if (bool.TryParse(fieldElement.StringValue.Trim(), out bool result))
+                if (bool.TryParse(value.Trim(), out bool result))
                     return result;
 
-                throw new FormatException($"Failed to convert value '{fieldElement.StringValue}' to boolean.");
+                throw new FormatException($"Failed to convert value '{value}' to boolean.");
             }
         }
 
@@ -141,16 +145,16 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return default;
 
                 if (FieldType != FieldTypes.Integer)
                     return default;
 
-                if (int.TryParse(fieldElement.StringValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
+                if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
                     return result;
 
-                throw new FormatException($"Failed to convert value '{fieldElement.StringValue}' to integer.");
+                throw new FormatException($"Failed to convert value '{value}' to integer.");
             }
         }
 
@@ -159,16 +163,16 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return default;
 
                 if (FieldType != FieldTypes.Long)
                     return default;
 
-                if (long.TryParse(fieldElement.StringValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out long result))
+                if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long result))
                     return result;
 
-                throw new FormatException($"Failed to convert value '{fieldElement.StringValue}' to long.");
+                throw new FormatException($"Failed to convert value '{value}' to long.");
             }
         }
 
@@ -177,13 +181,13 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return default;
 
                 if (FieldType != FieldTypes.Float)
                     return default;
 
-                return new FloatParsingStrategy(GetNumberFormat()).Parse(fieldElement.StringValue);
+                return new FloatParsingStrategy(GetNumberFormat()).Parse(value);
             }
         }
 
@@ -192,13 +196,13 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return default;
 
                 if (FieldType != FieldTypes.Double)
                     return default;
 
-                return new DoubleParsingStrategy(GetNumberFormat()).Parse(fieldElement.StringValue);
+                return new DoubleParsingStrategy(GetNumberFormat()).Parse(value);
             }
         }
 
@@ -207,13 +211,13 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return default;
 
                 if (FieldType != FieldTypes.DateTime)
                     return default;
 
-                return new DateTimeParsingStrategy(DateFormat).Parse(fieldElement.StringValue);
+                return new DateTimeParsingStrategy(DateFormat).Parse(value);
             }
         }
 
@@ -222,7 +226,7 @@ namespace FlowBlox.Core.Models.Components
         {
             get
             {
-                if (!IsFieldElementSet(out FieldElement fieldElement))
+                if (!IsFieldElementSet(out string value))
                     return [];
 
                 if (FieldType != FieldTypes.ByteArray)
@@ -230,11 +234,11 @@ namespace FlowBlox.Core.Models.Components
 
                 try
                 {
-                    return Convert.FromBase64String(fieldElement.StringValue);
+                    return Convert.FromBase64String(value);
                 }
                 catch (FormatException)
                 {
-                    throw new FormatException($"Failed to convert value '{fieldElement.StringValue}' to byte array (Base64 expected).");
+                    throw new FormatException($"Failed to convert value '{value}' to byte array (Base64 expected).");
                 }
             }
         }

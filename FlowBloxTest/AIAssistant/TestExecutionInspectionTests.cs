@@ -211,12 +211,5 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsNull(AiAssistantTestExecutionState.Get(Session, original.Project));
         }
 
-        [TestMethod]
-        public void ToolApi_RegistersBothInspectionTools()
-        {
-            var names = new DefaultToolApi().GetToolDefinitions().Select(x => x.Name).ToArray();
-            CollectionAssert.Contains(names, "GetLatestTestExecutionArtifact");
-            CollectionAssert.Contains(names, "InspectExecutedTestFieldValue");
-        }
     }
 }

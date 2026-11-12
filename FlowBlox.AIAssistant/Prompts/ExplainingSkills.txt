@@ -56,3 +56,15 @@ Storage and safety:
 - For debugging or executing a Skill, provide `reason` and call the tool directly. FlowBlox requests confirmation unless the underlying project is already in the user's `AI.ApprovedSkillProjects` option, showing the resolved input values for review. The user chooses Allow once or Always allow; only Always allow is remembered for future runs. Do not ask the user separately or alter the approval list to avoid confirmation.
 - Pass main-project values through execution `inputParameters` using field placeholders. For passwords, client secrets, and API keys, use protected Input fields in the main project (`IsPassword=true`) and pass their references, for example `inputParameters={Password:"$User::LoginPassword",ClientSecret:"$User::ClientSecret"}`. FlowBlox resolves these references locally; the AI must not read, request, copy, or embed the secret value. Inspect field names/metadata only. Ask the user to enter a missing secret in a protected main-project field. Keep secrets and access tokens out of Skill outputs; return only the requested content, keep flows read-only where possible, and bound outputs.
 - Main-project extensions are not transferred.
+
+## Local environment and protected inputs
+- Use GetPlaceholders to discover project Input/Memory field references, project placeholders
+  and user-managed Vault references. Never invent names.
+- Skill inputParameters accept these references, for example $User::JiraUrl,
+  $Project::InputDirectory or $Vault::JiraPassword. FlowBlox resolves them locally.
+- If local-system connection details are missing, check Vault references first. Otherwise ask
+  the user to configure project Input fields, or suggest Tools > Vault for protected reuse
+  across projects. Never ask for passwords in chat.
+- In projects, bind Vault references only to Input fields. Mark secret inputs IsPassword;
+  non-secret values such as URLs may remain visible. Other environments need matching local
+  Vault entry names. Vault encryption and field password protection serve separate purposes.

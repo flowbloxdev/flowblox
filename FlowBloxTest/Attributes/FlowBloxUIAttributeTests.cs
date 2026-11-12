@@ -12,12 +12,9 @@ namespace FlowBloxTest.Attributes;
 [TestCategory(FlowBloxTestCategories.UnitTest)]
 public sealed class FlowBloxUIAttributeTests
 {
-    private static ValidationResult? Validate(object? value, bool fieldSelectionEnabled = true)
+    private static ValidationResult? Validate(object? value)
     {
-        var attribute = new FlowBloxUIAttribute
-        {
-            UiOptions = fieldSelectionEnabled ? UIOptions.EnableFieldSelection : 0
-        };
+        var attribute = new FlowBloxUIAttribute();
         return attribute.GetValidationResult(value, new ValidationContext(new object()) { MemberName = "Prompt" });
     }
 
@@ -50,12 +47,11 @@ public sealed class FlowBloxUIAttributeTests
     [DataRow("$MissingBlock::Value")]
     [DataRow("$GenerationStrategyy::TestExpectations")]
     [DataRow("$GenerationStrategy::TestExpectations $MissingBlock::Value")]
-    public void MissingFlowBlockField_IsStillRejected(string text)
+    public void PossibleUnresolvedField_IsNotBlockedByUiMetadata(string text)
     {
         using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(new FlowBloxProject().FlowBloxRegistry);
         var result = Validate(text);
-        Assert.IsNotNull(result);
-        CollectionAssert.AreEqual(new[] { "Prompt" }, result.MemberNames.ToArray());
+        Assert.AreEqual(ValidationResult.Success, result);
     }
 
     [TestMethod]
@@ -73,10 +69,9 @@ public sealed class FlowBloxUIAttributeTests
     }
 
     [TestMethod]
-    public void WithoutFieldSelection_FieldReferencesAreNotValidated()
+    public void NonStringValues_DoNotRequireReferenceValidation()
     {
         using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(new FlowBloxProject().FlowBloxRegistry);
-        Assert.AreEqual(ValidationResult.Success, Validate("$MissingBlock::Value", fieldSelectionEnabled: false));
         Assert.AreEqual(ValidationResult.Success, Validate(null));
         Assert.AreEqual(ValidationResult.Success, Validate(42));
     }

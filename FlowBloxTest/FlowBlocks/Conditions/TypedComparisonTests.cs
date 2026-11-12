@@ -85,43 +85,121 @@ namespace FlowBloxTest.FlowBlocks.Conditions
         }
 
         [TestMethod]
-        public void ByteArrayComparison_IsRejectedAtRuntime()
+        [DataRow("AQI=", true)]
+        [DataRow("AgE=", false)]
+        [DataRow("AQID", false)]
+        public void ByteArrayComparison_UsesContentEquality(string right, bool equal)
         {
-            foreach (var op in Enum.GetValues<ComparisonOperator>())
-                Assert.ThrowsExactly<NotSupportedException>(() =>
-                    new ComparisonCondition { Operator = op, Value = "AQI=" }.Compare(new byte[] { 1, 2 }));
+            Assert.AreEqual(equal, new ComparisonCondition { Operator = ComparisonOperator.Equals, Value = right }.Compare(new byte[] { 1, 2 }));
+            Assert.AreEqual(!equal, new ComparisonCondition { Operator = ComparisonOperator.NotEquals, Value = right }.Compare(new byte[] { 1, 2 }));
         }
 
         [TestMethod]
-        [DataRow("en")]
-        [DataRow("de")]
-        public void ByteArrayField_ProducesLocalizedCustomValidation(string language)
+        [DataRow(null, null, true)]
+        [DataRow(null, "", true)]
+        [DataRow("", null, true)]
+        [DataRow("", "", true)]
+        [DataRow("", " \t", true)]
+        [DataRow("", "AQI=", false)]
+        [DataRow("AQI=", null, false)]
+        [DataRow("AQI=", "AQI=", true)]
+        [DataRow("AQI=", "AgE=", false)]
+        public void BinaryFieldConditions_ResolveReferencesAndTreatEmptyAsMissing(string? left, string? right, bool equal)
         {
-            var previousCulture = CultureInfo.CurrentUICulture;
-            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(language);
-            try
-            {
-                var field = new FieldElement(FieldTypes.ByteArray) { Name = "Bytes", StringValue = "AQI=" };
-                var condition = new FieldComparisonCondition { FieldElement = field };
-                var context = new ValidationContext(condition) { MemberName = nameof(FieldComparisonCondition.FieldElement) };
-                var results = new List<ValidationResult>();
-                Assert.IsFalse(Validator.TryValidateProperty(field, context, results));
-                Assert.AreEqual(1, results.Count);
-                Assert.IsTrue(results[0].MemberNames.Contains(nameof(FieldComparisonCondition.FieldElement)));
-                Assert.IsTrue(results[0].ErrorMessage?.StartsWith(language == "de" ? "Felder" : "Fields"));
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var first = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, FieldTypes.ByteArray, "First");
+            first.StringValue = left;
+            var second = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, FieldTypes.ByteArray, "Second");
+            second.StringValue = right;
+            var condition = new FieldComparisonCondition { FieldElement = first, Operator = ComparisonOperator.Equals, Value = second.FullyQualifiedName };
+            var logical = new FieldLogicalComparisonCondition { FieldElement = first, Operator = ComparisonOperator.Equals, Value = second.FullyQualifiedName };
 
-                // Logical conditions share the same core and must reject the same field.
-                var logical = new FieldLogicalComparisonCondition { FieldElement = field };
-                var logicalContext = new ValidationContext(logical) { MemberName = nameof(FieldLogicalComparisonCondition.FieldElement) };
-                Assert.IsFalse(Validator.TryValidateProperty(field, logicalContext, new List<ValidationResult>()));
+            Assert.AreEqual(equal, condition.Compare());
+            Assert.AreEqual(equal, logical.Check());
+            condition.Operator = ComparisonOperator.NotEquals;
+            logical.Operator = ComparisonOperator.NotEquals;
+            Assert.AreEqual(!equal, condition.Compare());
+            Assert.AreEqual(!equal, logical.Check());
+        }
 
-                var supported = new FieldElement(FieldTypes.Long) { Name = "Number", StringValue = "3000000000" };
-                Assert.IsTrue(Validator.TryValidateProperty(supported, context, new List<ValidationResult>()));
-            }
-            finally
-            {
-                CultureInfo.CurrentUICulture = previousCulture;
-            }
+        [TestMethod]
+        [DataRow(null, true)]
+        [DataRow("", true)]
+        [DataRow(" \t", true)]
+        [DataRow("AQI=", false)]
+        public void MissingBinaryField_EqualsOnlyMissingLiteralValues(string? right, bool equal)
+        {
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, FieldTypes.ByteArray, "Input");
+            field.StringValue = null;
+            var condition = new FieldComparisonCondition { FieldElement = field, Operator = ComparisonOperator.Equals, Value = right };
+            Assert.AreEqual(equal, condition.Compare());
+            condition.Operator = ComparisonOperator.NotEquals;
+            Assert.AreEqual(!equal, condition.Compare());
+        }
+
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow(" \t")]
+        public void EmptyByteArray_EqualsMissingLiteralValues(string? right)
+        {
+            Assert.IsTrue(new ComparisonCondition { Operator = ComparisonOperator.Equals, Value = right }.Compare(Array.Empty<byte>()));
+            Assert.IsFalse(new ComparisonCondition { Operator = ComparisonOperator.NotEquals, Value = right }.Compare(Array.Empty<byte>()));
+        }
+
+        [TestMethod]
+        [DataRow(null, false)]
+        [DataRow("", false)]
+        [DataRow(" \t", false)]
+        [DataRow("AQI=", true)]
+        public void BinaryPresence_TreatsNullAndEmptyAsMissing(string? content, bool present)
+        {
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, FieldTypes.ByteArray, "Input");
+            field.StringValue = content;
+            var condition = new FieldComparisonCondition { FieldElement = field, Operator = ComparisonOperator.HasValue };
+            Assert.AreEqual(present, condition.Compare());
+            condition.Operator = ComparisonOperator.HasNoValue;
+            Assert.AreEqual(!present, condition.Compare());
+        }
+
+        [TestMethod]
+        public void ByteArrayComparison_RejectsInvalidBase64()
+        {
+            Assert.ThrowsExactly<InvalidOperationException>(() =>
+                new ComparisonCondition { Operator = ComparisonOperator.Equals, Value = "invalid" }.Compare(new byte[] { 1, 2 }));
+        }
+
+        [TestMethod]
+        [DataRow(ComparisonOperator.Contains)]
+        [DataRow(ComparisonOperator.GreaterThan)]
+        public void ByteArrayComparison_RejectsUnsupportedOperators(ComparisonOperator op)
+        {
+            Assert.ThrowsExactly<NotSupportedException>(() =>
+                new ComparisonCondition { Operator = op, Value = "AQI=" }.Compare(new byte[] { 1, 2 }));
+        }
+
+        [TestMethod]
+        [DataRow(FieldTypes.ByteArray, false, true)]
+        [DataRow(FieldTypes.ByteArray, true, true)]
+        [DataRow(FieldTypes.Long, false, true)]
+        [DataRow(FieldTypes.Long, true, true)]
+        public void FieldValidation_AcceptsEqualityForComparableTypes(FieldTypes type, bool logical, bool expected)
+        {
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, type, "Input");
+            field.StringValue = type == FieldTypes.ByteArray ? "AQI=" : "3000000000";
+            object condition = logical
+                ? new FieldLogicalComparisonCondition { FieldElement = field }
+                : new FieldComparisonCondition { FieldElement = field };
+            var context = new ValidationContext(condition) { MemberName = nameof(FieldComparisonCondition.FieldElement) };
+
+            Assert.AreEqual(expected, Validator.TryValidateProperty(field, context, new List<ValidationResult>()));
         }
 
         [TestMethod]
@@ -131,7 +209,7 @@ namespace FlowBloxTest.FlowBlocks.Conditions
         {
             var project = new FlowBloxProject();
             using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
-            foreach (var type in new[] { FieldTypes.Integer, FieldTypes.Long, FieldTypes.Float, FieldTypes.Double, FieldTypes.Boolean, FieldTypes.DateTime })
+            foreach (var type in new[] { FieldTypes.Integer, FieldTypes.Long, FieldTypes.Float, FieldTypes.Double, FieldTypes.Boolean, FieldTypes.DateTime, FieldTypes.ByteArray })
             {
                 var field = project.FlowBloxRegistry.CreateUserField(UserFieldTypes.Memory, type);
                 var condition = new FieldComparisonCondition { FieldElement = field, Operator = op };

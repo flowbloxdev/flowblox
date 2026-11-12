@@ -43,7 +43,7 @@
                     ToolTip="{x:Static resources:CreateExtensionWindow.Toolbar_ExtractMetadata_Tooltip}">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="FolderSearchOutline" Margin="0,0,5,0"/>
+                        <iconPacks:PackIconMaterial Kind="FolderSearchOutline" Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                         <TextBlock Text="{x:Static resources:CreateExtensionWindow.Toolbar_ExtractMetadata}"/>
                     </StackPanel>
                 </Button.Content>
@@ -94,14 +94,19 @@
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="0,20,0,0">
-                <Button Content="{x:Static resources:CreateExtensionWindow.Button_Cancel}"
+                <Button Content="{x:Static resources:CreateExtensionWindow.Button_Back}"
                         Command="{Binding CancelCommand}"
-                        Margin="0,0,10,0"
-                        IsCancel="True"/>
-                <Button Content="{x:Static resources:CreateExtensionWindow.Button_Create}"
-                        Command="{Binding CreateCommand}"
+                        IsCancel="True"
+                        Style="{StaticResource FlowBlox.WindowActionButton.Back}"/>
+                <Button Command="{Binding CreateCommand}"
                         IsEnabled="{Binding CanCreate}"
-                        IsDefault="True"/>
+                        IsDefault="True"
+                        Style="{StaticResource FlowBlox.WindowActionButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="PlusBoxOutline" Style="{StaticResource FlowBlox.WindowActionIcon.Save}"/>
+                        <TextBlock Text="{x:Static resources:CreateExtensionWindow.Button_Create}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
     </DockPanel>

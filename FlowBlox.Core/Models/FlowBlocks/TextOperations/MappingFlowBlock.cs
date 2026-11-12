@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
@@ -17,10 +18,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     public sealed class MappingFlowBlockEntry : FlowBloxReactiveObject, IValidatableObject
     {
         [Display(Name = "MappingFlowBlockEntry_Key", Description = "MappingFlowBlockEntry_Key_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Key { get; set; } = string.Empty;
 
         [Display(Name = "MappingFlowBlockEntry_RegularExpression", Description = "MappingFlowBlockEntry_RegularExpression_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxTextBox(IsCodingMode = true, SyntaxHighlighting = "FlowBlox.UICore.Resources.Highlighting.Regex.xshd")]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex), UiOptions = UIOptions.EnableFieldSelection)]
         public string RegularExpression { get; set; } = string.Empty;
 
         [Display(Name = "MappingFlowBlockEntry_Value", Description = "MappingFlowBlockEntry_Value_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
@@ -32,8 +35,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var hasKey = !string.IsNullOrWhiteSpace(Key);
-            var hasRegularExpression = !string.IsNullOrWhiteSpace(RegularExpression);
+            var key = this.Resolve(owner => owner.Key);
+            var regularExpression = this.Resolve(owner => owner.RegularExpression);
+            var hasKey = !string.IsNullOrWhiteSpace(key);
+            var hasRegularExpression = !string.IsNullOrWhiteSpace(regularExpression);
 
             if (hasKey == hasRegularExpression)
             {
@@ -48,7 +53,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 
                 try
                 {
-                    _ = new Regex(RegularExpression);
+                    _ = new Regex(regularExpression);
                 }
                 catch (ArgumentException)
                 {
@@ -112,11 +117,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 
                 if (mappingEntry != null)
                 {
-                    GenerateResult(runtime, FlowBloxFieldHelper.ReplaceFieldsInString(mappingEntry.Value ?? string.Empty));
+                    GenerateResult(runtime, mappingEntry.Resolve(owner => owner.Value));
                     return;
                 }
 
-                var defaultValue = FlowBloxFieldHelper.ReplaceFieldsInString(DefaultValue ?? string.Empty);
+                var defaultValue = this.Resolve(owner => owner.DefaultValue);
                 if (string.IsNullOrEmpty(defaultValue))
                     CreateNotification(runtime, MappingFlowBlockNotifications.NoMappingFound);
 
@@ -141,14 +146,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
                 if (mappingEntry == null)
                     continue;
 
-                if (!string.IsNullOrWhiteSpace(mappingEntry.Key) &&
-                    string.Equals(inputValue, mappingEntry.Key, StringComparison.Ordinal))
+                var key = mappingEntry.Resolve(owner => owner.Key);
+                var regularExpression = mappingEntry.Resolve(owner => owner.RegularExpression);
+
+                if (!string.IsNullOrWhiteSpace(key) &&
+                    string.Equals(inputValue, key, StringComparison.Ordinal))
                 {
                     return mappingEntry;
                 }
 
-                if (!string.IsNullOrWhiteSpace(mappingEntry.RegularExpression) &&
-                    TryIsRegexMatch(inputValue, mappingEntry.RegularExpression))
+                if (!string.IsNullOrWhiteSpace(regularExpression) &&
+                    TryIsRegexMatch(inputValue, regularExpression))
                 {
                     return mappingEntry;
                 }

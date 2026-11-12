@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Constants;
+﻿using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Models.Runtime;
@@ -14,29 +15,34 @@ namespace FlowBlox.Core.Models.Components.Modifier
     public class RegexMatchModifier : RegexModifierBase
     {
         [Display(Name = "RegexMatchModifier_Behavior", Order = 1, ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public RegexMatchModifierBehavior Behavior { get; set; }
 
         [Display(Name = "RegexMatchModifier_Separator", Order = 2, ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
         {
-            string search = FlowBloxFieldHelper.ReplaceFieldsInString(this.Search);
+            string search = this.Resolve(owner => owner.Search);
             Regex regex = new Regex(search);
             MatchCollection matches = regex.Matches(value);
+            var behavior = this.Resolve(modifier => modifier.Behavior);
             if (matches.Count > 0)
             {
-                string separator = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ModifierDefaultSeparator].Value.ToString();
+                var separator = Separator == null
+                    ? FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.ModifierDefaultSeparator].Value
+                    : this.Resolve(owner => owner.Separator);
                 Dictionary<string, bool> valueMap = new Dictionary<string, bool>();
                 StringBuilder valueBuilder = new StringBuilder();
                 foreach (Match match in matches)
                 {
-                    if ((Behavior != RegexMatchModifierBehavior.Distinct) || !valueMap.ContainsKey(match.Value))
+                    if ((behavior != RegexMatchModifierBehavior.Distinct) || !valueMap.ContainsKey(match.Value))
                     {
                         valueBuilder.Append(match.Value);
                         valueBuilder.Append(separator);
                         valueMap[match.Value] = true;
-                        if (Behavior == RegexMatchModifierBehavior.First)
+                        if (behavior == RegexMatchModifierBehavior.First)
                         {
                             break;
                         }

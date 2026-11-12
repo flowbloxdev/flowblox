@@ -168,8 +168,8 @@
 	<data name="Button_Open" xml:space="preserve">
 		<value>Öffnen</value>
 	</data>
-	<data name="Button_Close" xml:space="preserve">
-		<value>Schließen</value>
+	<data name="Button_Back" xml:space="preserve">
+		<value>Zurück</value>
 	</data>
 	<data name="Error_SearchProjectsFailed" xml:space="preserve">
 		<value>Die Projekte konnten nicht vom Server geladen werden.</value>
@@ -248,5 +248,14 @@
 	</data>
   <data name="Tooltip_CopyToClipboard" xml:space="preserve">
     <value>In die Zwischenablage kopieren</value>
+  </data>
+  <data name="Label_CreatedBy" xml:space="preserve">
+    <value>Erstellt von</value>
+  </data>
+  <data name="Format_CreatedBy" xml:space="preserve">
+    <value>Benutzer #{0}</value>
+  </data>
+  <data name="Tooltip_CreatedBy" xml:space="preserve">
+    <value>Ersteller des Projekts (von der API gelieferte Benutzer-ID).</value>
   </data>
 </root>

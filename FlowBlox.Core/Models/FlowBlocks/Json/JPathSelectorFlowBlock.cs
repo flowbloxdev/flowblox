@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -26,12 +27,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         public string JsonContent { get; set; }
 
         [Display(Name = "JPathSelectorFlowBlock_Path", Description = "JPathSelectorFlowBlock_Path_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
         [Required]
         public string Path { get; set; }
 
         [Display(Name = "JPathSelectorFlowBlock_RowPath", Description = "JPathSelectorFlowBlock_RowPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(JPathRowPathValidator), nameof(JPathRowPathValidator.ValidateRowPath))]
         [DependsOnProperty(MemberName = nameof(FallbackValue))]
         public string RowPath
@@ -90,8 +91,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
             return Invoke(runtime, data, () =>
             {
 
-                var jsonText = FlowBloxFieldHelper.ReplaceFieldsInString(JsonContent);
-                var path = FlowBloxFieldHelper.ReplaceFieldsInString(Path);
+                var jsonText = this.Resolve(owner => owner.JsonContent);
+                var path = this.Resolve(owner => owner.Path);
                 if (string.IsNullOrWhiteSpace(jsonText))
                 {
                     CreateNotification(runtime, JPathSelectorNotifications.JsonContentIsEmpty);
@@ -107,10 +108,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
                 }
 
                 var rootToken = JToken.Parse(jsonText);
-                var rowPath = FlowBloxFieldHelper.ReplaceFieldsInString(RowPath)?.Trim();
+                var rowPath = this.Resolve(owner => owner.RowPath).Trim();
                 if (!string.IsNullOrWhiteSpace(rowPath))
                 {
-                    var fallbackValue = FlowBloxFieldHelper.ReplaceFieldsInString(FallbackValue) ?? string.Empty;
+                    var fallbackValue = this.Resolve(owner => owner.FallbackValue);
                     if (!JPathRowValueResolver.TryResolve(rootToken, path, rowPath, fallbackValue, out var rowValues))
                     {
                         CreateNotification(runtime, JPathSelectorNotifications.JsonTokenCouldNotBeResolved);

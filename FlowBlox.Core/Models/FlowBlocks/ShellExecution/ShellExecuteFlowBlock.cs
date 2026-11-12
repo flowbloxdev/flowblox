@@ -21,14 +21,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.ShellExecution
     {
         [Required]
         [Display(Name = "ShellExecuteFlowBlock_Command", Description = "ShellExecuteFlowBlock_Command_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.ShellExecution))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.ShellExecution), UiOptions = UIOptions.EnableFieldSelection)]
         public string Command { get; set; }
 
         [Display(Name = "ShellExecuteFlowBlock_WorkingDirectory", Description = "ShellExecuteFlowBlock_WorkingDirectory_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFolderSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
         public string WorkingDirectory { get; set; }
 
         [Display(Name = "ShellExecuteFlowBlock_TimeoutMilliseconds", Description = "ShellExecuteFlowBlock_TimeoutMilliseconds_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? TimeoutMilliseconds { get; set; }
 
         [Display(Name = "ShellExecuteFlowBlock_FailOnNonZeroExitCode", Description = "ShellExecuteFlowBlock_FailOnNonZeroExitCode_Description", ResourceType = typeof(FlowBloxTexts), Order = 3)]
@@ -89,16 +90,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.ShellExecution
                 if (!ResultFields.Any())
                     throw new InvalidOperationException("No result fields have been configured.");
 
-                var resolvedCommand = FlowBloxFieldHelper.ReplaceFieldsInString(Command ?? string.Empty);
-                if (string.IsNullOrWhiteSpace(resolvedCommand))
-                    throw new ValidationException("The command must not be empty.");
+                var command = this.Resolve(owner => owner.Command, required: true);
 
-                var resolvedWorkingDirectory = FlowBloxFieldHelper.ReplaceFieldsInString(WorkingDirectory ?? string.Empty);
+                var workingDirectory = this.Resolve(owner => owner.WorkingDirectory);
 
                 var executionResult = FlowBloxShellExecutor.Execute(new FlowBloxShellExecutionRequest
                 {
-                    Command = resolvedCommand,
-                    WorkingDirectory = resolvedWorkingDirectory,
+                    Command = command,
+                    WorkingDirectory = workingDirectory,
                     TimeoutMilliseconds = TimeoutMilliseconds,
                     CancellationToken = runtime.GetCancellationToken(),
                     OnStandardOutputLine = line =>
@@ -114,7 +113,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.ShellExecution
                 });
 
                 var resultRow = new ResultFieldByEnumValueResultBuilder<ShellExecuteDestinations>()
-                    .For(ShellExecuteDestinations.Command, resolvedCommand)
+                    .For(ShellExecuteDestinations.Command, command)
                     .For(ShellExecuteDestinations.Success, executionResult.Success.ToString(CultureInfo.InvariantCulture))
                     .For(ShellExecuteDestinations.ExitCode, executionResult.ExitCode.ToString(CultureInfo.InvariantCulture))
                     .For(ShellExecuteDestinations.StandardOutput, executionResult.StandardOutput)

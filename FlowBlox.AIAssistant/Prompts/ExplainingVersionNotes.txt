@@ -1,10 +1,8 @@
 Version notes (FlowBlox v{{FLOWBLOX_VERSION}})
 
-Current release limitations:
-- Simple-type field linking is not yet supported via AI Assistant updates for plain property types (`int`, `float`, `bool`).
-- Example: `IMAPMailFetchFlowBlock.Port` cannot currently be set as a field-selected placeholder by AI tools.
-- Fallback: use concrete values for these properties.
-- Status: planned for a follow-up release.
+Field-reference support:
+- Scalar properties with [FLD] in uiFlags support field linking through AI Assistant updates.
+  Follow the Link/Unlink rules in the edit/delete explanation.
 
 Rule:
 - If a requested setup depends on unsupported behavior, state the limitation clearly and continue with the best supported fallback.

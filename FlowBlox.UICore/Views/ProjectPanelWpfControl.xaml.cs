@@ -771,9 +771,10 @@ namespace FlowBlox.UICore.Views
 
         private void FinishConnection(Point endPoint)
         {
+            var startNode = _connectionStartNode;
             var endNode = ViewModel.GetNodeAt(endPoint);
-            ViewModel.ConnectNodes(_connectionStartNode, endNode);
             EndConnectionPreview();
+            ViewModel.ConnectNodes(startNode, endNode);
         }
 
         private void EndConnectionPreview()

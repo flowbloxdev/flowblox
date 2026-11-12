@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Enums;
 using FlowBlox.Core.Util.Fields;
@@ -25,8 +26,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
 
         protected override async Task<AIResponse> ExecuteChatCoreAsync(AIChatRequest request, CancellationToken ct)
         {
-            var resolvedApiKey = FlowBloxFieldHelper.ReplaceFieldsInString(ApiKey);
-            if (string.IsNullOrWhiteSpace(resolvedApiKey))
+            var apiKey = this.Resolve(owner => owner.ApiKey);
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
                 return new AIResponse
                 {
@@ -35,15 +36,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
                 };
             }
 
-            var resolvedModel = FlowBloxFieldHelper.ReplaceFieldsInString(request.Model);
-            if (string.IsNullOrWhiteSpace(resolvedModel))
-                resolvedModel = FlowBloxFieldHelper.ReplaceFieldsInString(DefaultModel);
+            var model = FlowBloxFieldHelper.ReplaceFieldsInString(request.Model);
+            if (string.IsNullOrWhiteSpace(model))
+                model = this.Resolve(owner => owner.DefaultModel);
 
-            var resolvedBaseUrl = FlowBloxFieldHelper.ReplaceFieldsInString(BaseUrl);
-            if (string.IsNullOrWhiteSpace(resolvedBaseUrl))
-                throw new InvalidOperationException($"{ProviderDisplayName} base URL is empty after field resolution.");
+            var baseUrl = this.Resolve(owner => owner.BaseUrl, required: true);
 
-            var resolvedOrganizationId = FlowBloxFieldHelper.ReplaceFieldsInString(OrganizationIdForRequest);
+            var organizationId = this.Resolve(x => x.OrganizationIdForRequest);
             var timeoutSeconds = ResolveTimeoutSeconds(request);
             using var httpClient = new HttpClient
             {
@@ -51,9 +50,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
             };
 
 #pragma warning disable SKEXP0010
-            var chatService = string.Equals(resolvedBaseUrl.TrimEnd('/'), "https://api.openai.com/v1", StringComparison.OrdinalIgnoreCase)
-                ? new OpenAIChatCompletionService(resolvedModel, resolvedApiKey, resolvedOrganizationId, httpClient, loggerFactory: null)
-                : new OpenAIChatCompletionService(resolvedModel, new Uri(resolvedBaseUrl.TrimEnd('/')), resolvedApiKey, resolvedOrganizationId, httpClient, loggerFactory: null);
+            var chatService = string.Equals(baseUrl.TrimEnd('/'), "https://api.openai.com/v1", StringComparison.OrdinalIgnoreCase)
+                ? new OpenAIChatCompletionService(model, apiKey, organizationId, httpClient, loggerFactory: null)
+                : new OpenAIChatCompletionService(model, new Uri(baseUrl.TrimEnd('/')), apiKey, organizationId, httpClient, loggerFactory: null);
 #pragma warning restore SKEXP0010
 
             var response = await SendChatMessageContentAsync(
@@ -83,7 +82,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
             if (request.MaxTokens is > 0)
                 settings.MaxTokens = request.MaxTokens;
 
-            if (ReasoningEffort != AIReasoningEffort.None)
+            if (GetRuntimeReasoningEffort() != AIReasoningEffort.None)
                 settings.ReasoningEffort = GetReasoningEffortValue();
 
             ConfigureExecutionSettings(settings, request);
@@ -93,7 +92,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
 
         protected virtual string GetReasoningEffortValue()
         {
-            return ToReasoningEffortValue(ReasoningEffort);
+            return ToReasoningEffortValue(GetRuntimeReasoningEffort());
         }
 
         protected virtual void ConfigureExecutionSettings(OpenAIPromptExecutionSettings settings, AIChatRequest request)

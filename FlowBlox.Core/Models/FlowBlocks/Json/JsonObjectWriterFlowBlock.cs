@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -56,10 +57,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
 
         [Display(Name = "JsonObjectWriterFlowBlock_Path", Description = "JsonObjectWriterFlowBlock_Path_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
         public string Path { get; set; }
 
         [Display(Name = "JsonObjectWriterFlowBlock_IsArray", Description = "JsonObjectWriterFlowBlock_IsArray_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool IsArray { get; set; }
 
         [JsonIgnore]
@@ -103,8 +105,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
                     root = AssociatedJsonObjectWriter.CreatedOrUpdatedObject;
                 }
 
-                var resolvedPath = FlowBloxFieldHelper.ReplaceFieldsInString(Path);
-                var effectivePath = string.IsNullOrWhiteSpace(resolvedPath) ? "$" : resolvedPath.Trim();
+                var path = this.Resolve(owner => owner.Path);
+                var effectivePath = string.IsNullOrWhiteSpace(path) ? "$" : path.Trim();
                 var createdOrUpdatedObject = JPathEnsurer.EnsureObject(root, effectivePath, IsArray);
 
                 CreatedOrUpdatedObject = createdOrUpdatedObject;
@@ -120,10 +122,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
             foreach (var a in Assignments)
             {
-                var propertyName = FlowBloxFieldHelper.ReplaceFieldsInString(a.PropertyName);
+                var propertyName = a.Resolve(owner => owner.PropertyName);
                 var valueObj = a.FieldValue != null
                     ? a.FieldValue.Value
-                    : FlowBloxFieldHelper.ReplaceFieldsInString(a.Value);
+                    : a.Resolve(owner => owner.Value);
 
                 if (a.IsArray)
                 {

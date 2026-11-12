@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
 using FlowBlox.Core.Attributes;
@@ -27,8 +28,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         protected override async Task<AIResponse> ExecuteChatCoreAsync(AIChatRequest request, CancellationToken ct)
         {
-            var resolvedApiKey = FlowBloxFieldHelper.ReplaceFieldsInString(ApiKey);
-            if (string.IsNullOrWhiteSpace(resolvedApiKey))
+            var apiKey = this.Resolve(owner => owner.ApiKey);
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
                 return new AIResponse
                 {
@@ -37,26 +38,24 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                 };
             }
 
-            var resolvedBaseUrl = FlowBloxFieldHelper.ReplaceFieldsInString(BaseUrl);
-            if (string.IsNullOrWhiteSpace(resolvedBaseUrl))
-                throw new InvalidOperationException("Anthropic base URL is empty after field resolution.");
+            var baseUrl = this.Resolve(owner => owner.BaseUrl, required: true);
 
-            var resolvedModel = FlowBloxFieldHelper.ReplaceFieldsInString(request.Model);
-            if (string.IsNullOrWhiteSpace(resolvedModel))
-                resolvedModel = FlowBloxFieldHelper.ReplaceFieldsInString(DefaultModel);
+            var model = FlowBloxFieldHelper.ReplaceFieldsInString(request.Model);
+            if (string.IsNullOrWhiteSpace(model))
+                model = this.Resolve(owner => owner.DefaultModel);
 
             var timeoutSeconds = ResolveTimeoutSeconds(request);
             using var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(timeoutSeconds)
             };
-            var apiUrlFormat = BuildApiUrlFormat(resolvedBaseUrl);
-            using var client = new AnthropicClient(new APIAuthentication(resolvedApiKey), httpClient, requestInterceptor: null)
+            var apiUrlFormat = BuildApiUrlFormat(baseUrl);
+            using var client = new AnthropicClient(new APIAuthentication(apiKey), httpClient, requestInterceptor: null)
             {
                 ApiUrlFormat = apiUrlFormat
             };
 
-            var messageParameters = BuildMessageParameters(request, resolvedModel);
+            var messageParameters = BuildMessageParameters(request, model);
 
             MessageResponse response;
             try
@@ -69,7 +68,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             catch (HttpRequestException ex)
             {
                 throw new HttpRequestException(
-                    $"Anthropic request failed. Model: '{resolvedModel}', BaseUrl: '{resolvedBaseUrl}', ApiUrlFormat: '{apiUrlFormat}'. Details: {ex.Message}",
+                    $"Anthropic request failed. Model: '{model}', BaseUrl: '{baseUrl}', ApiUrlFormat: '{apiUrlFormat}'. Details: {ex.Message}",
                     ex,
                     ex.StatusCode);
             }
@@ -99,9 +98,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             };
         }
 
-        private static string BuildApiUrlFormat(string resolvedBaseUrl)
+        private static string BuildApiUrlFormat(string baseUrl)
         {
-            var trimmedBaseUrl = resolvedBaseUrl.Trim().TrimEnd('/');
+            var trimmedBaseUrl = baseUrl.Trim().TrimEnd('/');
 
             if (trimmedBaseUrl.Contains("{0}", StringComparison.Ordinal) &&
                 trimmedBaseUrl.Contains("{1}", StringComparison.Ordinal))
@@ -117,11 +116,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             return trimmedBaseUrl + "/{0}/{1}";
         }
 
-        private static MessageParameters BuildMessageParameters(AIChatRequest request, string resolvedModel)
+        private static MessageParameters BuildMessageParameters(AIChatRequest request, string model)
         {
             var parameters = new MessageParameters
             {
-                Model = resolvedModel,
+                Model = model,
                 MaxTokens = request.MaxTokens.GetValueOrDefault(AiProviderDefaults.Anthropic.DefaultMaxTokens),
                 Stream = false,
                 System = BuildSystemMessages(request),
@@ -130,7 +129,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             };
 
             // Opus 5.5 rejects sampling parameters; preserve temperature for older models.
-            if (!resolvedModel.StartsWith("claude-opus-5-5", StringComparison.OrdinalIgnoreCase) &&
+            if (!model.StartsWith("claude-opus-5-5", StringComparison.OrdinalIgnoreCase) &&
                 request.Temperature is >= 0 and <= 1)
                 parameters.Temperature = (decimal)request.Temperature.Value;
 

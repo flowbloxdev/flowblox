@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
+using System.Net;
 using System.Runtime.Loader;
 using System.Text;
 using static FlowBlox.Core.ExternalServices.FlowBloxWebApi.FlowBloxWebApiService;
@@ -780,7 +781,10 @@ namespace FlowBlox.Core.Models.Project
                 // Fetch metadata (usually still "project by guid"; ok for both latest and stable)
                 var remoteResp = await webApi.GetProjectAsync(new FbProjectRequest { Guid = projectSpaceGuid }, userToken);
                 if (!remoteResp.Success || remoteResp.ResultObject == null)
+                {
+                    ThrowIfProjectSpaceLoginRequired(remoteResp, userToken);
                     throw new InvalidOperationException("Project not found in Project Space.");
+                }
 
                 // Fetch project content
                 ApiResponse<string> contentResp;
@@ -802,8 +806,11 @@ namespace FlowBlox.Core.Models.Project
                 }
 
                 if (contentResp == null || !contentResp.Success)
+                {
+                    ThrowIfProjectSpaceLoginRequired(contentResp, userToken);
                     throw new InvalidOperationException(
                         $"Failed to retrieve project content from Project Space. Version={versionText}. {contentResp?.ErrorMessage}");
+                }
 
                 if (string.IsNullOrWhiteSpace(contentResp.ResultObject))
                     throw new Exception($"Project content is missing in Project Space response. Version={versionText}.");
@@ -825,10 +832,27 @@ namespace FlowBlox.Core.Models.Project
                 _logger.Info($"Project loaded successfully from Project Space. Guid={projectSpaceGuid}, Version={versionText}");
                 return project;
             }
+            catch (ProjectSpaceLoginRequiredException)
+            {
+                _logger.Info($"Signing in is required to access the Project Space project. Guid={projectSpaceGuid}");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.Error($"Failed to load project from Project Space. Guid={projectSpaceGuid}, Version={versionText}", ex);
                 throw;
+            }
+        }
+
+        private static void ThrowIfProjectSpaceLoginRequired(ApiResponse response, string userToken)
+        {
+            if (response == null || !string.IsNullOrWhiteSpace(userToken))
+                return;
+
+            if (response.Success || response.StatusCode is HttpStatusCode.Unauthorized
+                or HttpStatusCode.Forbidden or HttpStatusCode.NotFound)
+            {
+                throw new ProjectSpaceLoginRequiredException();
             }
         }
 

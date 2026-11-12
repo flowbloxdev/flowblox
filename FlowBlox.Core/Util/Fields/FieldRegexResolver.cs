@@ -1,5 +1,6 @@
 ﻿using FlowBlox.Core.Provider;
 using FlowBlox.Core.Utilities;
+using FlowBlox.Core.Models.Components;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -18,7 +19,7 @@ namespace FlowBlox.Core.Util.Fields
         public Regex ResolveFieldRegex()
         {
             var registry = FlowBloxRegistryProvider.GetRegistry();
-            var fields = registry?.GetFieldElements();
+            var fields = registry?.GetFieldElements() ?? Enumerable.Empty<FieldElement>();
 
             var fullyQualifiedFieldNames = fields
                 .Select(f => f?.FullyQualifiedName)

@@ -20,7 +20,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": true,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -34,9 +38,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": false
+        "Version": "1.0.0.0"
       },
       {
         "$id": "4",
@@ -54,7 +56,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -68,9 +74,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "6",
@@ -88,7 +92,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -102,9 +110,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       }
     ]
   },
@@ -127,7 +133,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "10",
@@ -155,6 +165,7 @@
             "DbType": "MySQL",
             "SQLConnectionstring": "Server=localhost;User ID=$User::Input_MySqlUser;Password=$User::Input_MySqlPassword;Database=$User::Input_MySqlDatabase;",
             "SQLStatement": "SELECT TABLE_NAME AS TableName\r\nFROM information_schema.TABLES\r\nWHERE TABLE_SCHEMA = DATABASE()\r\nORDER BY TABLE_NAME;",
+            "UseFieldValuesAsParameters": true,
             "Name": "SQLTable_MySqlTables",
             "RequiredFields": {
               "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
@@ -169,6 +180,7 @@
             },
             "Version": "1.0.0.0"
           },
+          "OutputIgnoreDuplicates": false,
           "OutputBehavior": "All",
           "StartValue": null,
           "StartIndex": null,
@@ -203,6 +215,7 @@
                 },
                 "AssociatedIterationContext": null,
                 "InputIgnoreDuplicates": false,
+                "AutomaticInputBehaviorAssignment": true,
                 "InputBehaviorAssignments": {
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
                   "$values": []
@@ -230,6 +243,7 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
@@ -291,7 +305,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "17",
@@ -315,6 +333,7 @@
             "$ref": "15"
           },
           "ResultFieldFieldType": "Boolean",
+          "OutputIgnoreDuplicates": false,
           "OutputBehavior": "All",
           "StartValue": null,
           "StartIndex": null,
@@ -337,6 +356,7 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
@@ -408,11 +428,13 @@
       }
     ]
   },
-  "ProjectGuid": "c37731c7-1bbc-44bf-ae89-d55b217df3a0",
+  "ProjectGuid": "40f4a53f-aa10-4e99-ae1b-ef9d17d40ef6",
   "ProjectName": "MySqlTableDiscovery",
   "Author": "",
   "ProjectDescription": "Reads table names from a local MySQL instance via `information_schema` and returns them as project output.",
   "AssistantMetadata": {
+    "$id": "20",
+    "$type": "FlowBlox.Core.Models.Project.AssistantMetadata, FlowBlox.Core",
     "ShortDescription": "Discover table names in a MySQL database."
   },
   "Notice": "",

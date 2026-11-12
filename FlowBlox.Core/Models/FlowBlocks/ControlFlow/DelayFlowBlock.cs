@@ -1,3 +1,4 @@
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -13,6 +14,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.ControlFlow
     {
         [Range(0, int.MaxValue)]
         [Display(Name = "DelayFlowBlock_DelayMilliseconds", Description = "DelayFlowBlock_DelayMilliseconds_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int DelayMilliseconds { get; set; } = 1000;
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.calendar_clock, 16, SKColors.SteelBlue);
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.calendar_clock, 32, SKColors.SteelBlue);

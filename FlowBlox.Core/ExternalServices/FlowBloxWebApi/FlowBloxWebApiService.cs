@@ -3,6 +3,7 @@ using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using Newtonsoft.Json;
 using System.Text;
+using System.Net;
 
 namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
 {
@@ -45,6 +46,8 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
         public class ApiResponse
         {
             public bool Success { get; set; }
+
+            public HttpStatusCode? StatusCode { get; set; }
 
             public string ErrorMessage { get; set; }
 
@@ -134,6 +137,7 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             {
                 Success = false,
                 ErrorCode = error?.ErrorCode,
+                StatusCode = response.StatusCode,
                 ErrorMessage = userMessage
             };
         }
@@ -146,6 +150,7 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             {
                 Success = false,
                 ErrorCode = errorResponse.ErrorCode,
+                StatusCode = errorResponse.StatusCode,
                 ErrorMessage = errorResponse.ErrorMessage,
                 ResultObject = default
             };

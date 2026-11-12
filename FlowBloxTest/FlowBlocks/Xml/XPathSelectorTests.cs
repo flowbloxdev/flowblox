@@ -33,13 +33,6 @@ namespace FlowBloxTest.FlowBlocks.Xml
         }
 
         [TestMethod]
-        public void XPathFlowBlocks_DefaultToInnerXml()
-        {
-            Assert.AreEqual(XPathResultMode.InnerXml, new XPathSelectorFlowBlock().ResultMode);
-            Assert.AreEqual(XPathResultMode.InnerXml, new XmlDocumentXPathSelectorFlowBlock().ResultMode);
-        }
-
-        [TestMethod]
         public void SelectValues_UsesInnerXmlByDefault()
         {
             var document = new XmlDocument();

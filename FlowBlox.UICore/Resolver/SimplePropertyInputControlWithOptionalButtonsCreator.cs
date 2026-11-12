@@ -1,7 +1,8 @@
 using SimplePropertyInputControlWithOptionalButtonsCreatorResources = FlowBlox.UICore.Resources.ClassResources.SimplePropertyInputControlWithOptionalButtonsCreator;
 using FlowBlox.Core;
 using FlowBlox.Core.Attributes;
-using FlowBlox.Core.Constants;
+using FlowBlox.Core.Models.Base;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Util.FlowBlocks;
@@ -25,11 +26,14 @@ namespace FlowBlox.UICore.Resolver
     {
         private const double IconSize = 10;
         private readonly Window _window;
-        private readonly FlowBloxComponentIcon16Converter _iconConverter = new();
+        private readonly object _parent;
+        private readonly bool _isGridCell;
 
-        public SimplePropertyInputControlWithOptionalButtonsCreator(Window window)
+        public SimplePropertyInputControlWithOptionalButtonsCreator(Window window, object parent = null, bool isGridCell = false)
         {
             _window = window;
+            _parent = parent;
+            _isGridCell = isGridCell;
         }
 
         public FrameworkElement CreateSimplePropertyInputControlWithOptionalButtons(
@@ -37,11 +41,13 @@ namespace FlowBlox.UICore.Resolver
             object target,
             FlowBloxUIAttribute uiAttribute,
             Binding binding,
-            bool readOnly)
+            bool readOnly,
+            FrameworkElement inputControl = null)
         {
-            var hasFieldSelection = uiAttribute?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true;
-            var selectedFieldProperty = ResolveSelectedFieldProperty(target, property);
-            var inputControl = CreateInputControl(property, target, binding, readOnly);
+            var hasFieldSelection = FlowBloxFieldSelection.SupportsScalar(property.PropertyType)
+                && FlowBloxFieldSelection.Supports(property)
+                && target is FlowBloxReactiveObject;
+            inputControl ??= CreateInputControl(property, target, binding, readOnly);
 
             if (!hasFieldSelection && EnumHelper.IsEnumType(property))
             {
@@ -56,18 +62,18 @@ namespace FlowBlox.UICore.Resolver
             var contentHost = new System.Windows.Controls.Grid();
             contentHost.Children.Add(inputControl);
 
-            if (hasFieldSelection && selectedFieldProperty != null)
+            if (hasFieldSelection)
             {
-                var selectedFieldPanel = CreateSelectedFieldPanel(selectedFieldProperty, target);
+                var selectedFieldPanel = CreateSelectedFieldPanel(property, target);
                 contentHost.Children.Add(selectedFieldPanel);
 
                 inputControl.SetBinding(
                     UIElement.VisibilityProperty,
-                    CreateSelectedFieldVisibilityBinding(target, selectedFieldProperty.Name, visibleWhenNull: true));
+                    CreateSelectedFieldVisibilityBinding(target, property.Name, visibleWhenNull: true));
 
                 selectedFieldPanel.SetBinding(
                     UIElement.VisibilityProperty,
-                    CreateSelectedFieldVisibilityBinding(target, selectedFieldProperty.Name, visibleWhenNull: false));
+                    CreateSelectedFieldVisibilityBinding(target, property.Name, visibleWhenNull: false));
             }
 
             System.Windows.Controls.Grid.SetColumn(contentHost, 0);
@@ -76,12 +82,12 @@ namespace FlowBlox.UICore.Resolver
             var columnIndex = 1;
             if (hasFieldSelection)
             {
-                var selectButton = CreateSelectFieldButton(property, target, selectedFieldProperty, readOnly);
+                var selectButton = CreateSelectFieldButton(property, (FlowBloxReactiveObject)target, readOnly);
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 System.Windows.Controls.Grid.SetColumn(selectButton, columnIndex++);
                 grid.Children.Add(selectButton);
 
-                var unlinkButton = CreateUnlinkButton(property, target, selectedFieldProperty, readOnly);
+                var unlinkButton = CreateUnlinkButton(property, (FlowBloxReactiveObject)target, readOnly);
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 System.Windows.Controls.Grid.SetColumn(unlinkButton, columnIndex);
                 grid.Children.Add(unlinkButton);
@@ -112,12 +118,17 @@ namespace FlowBlox.UICore.Resolver
                 {
                     IsEnabled = !readOnly,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(0, 4, 0, 4),
+                    Margin = _isGridCell ? new Thickness(0) : new Thickness(0, 4, 0, 4),
                     MinWidth = 80,
                     OnContent = FlowBloxResourceUtil.GetLocalizedString("ToggleSwitch_OnContent", typeof(SimplePropertyInputControlWithOptionalButtonsCreatorResources)),
                     OffContent = FlowBloxResourceUtil.GetLocalizedString("ToggleSwitch_OffContent", typeof(SimplePropertyInputControlWithOptionalButtonsCreatorResources))
                 };
 
+                if (_isGridCell)
+                {
+                    toggle.MinHeight = 24;
+                    toggle.Padding = new Thickness(0);
+                }
                 PropertyEditorBinding.Bind(toggle, ToggleSwitch.IsOnProperty, binding, target, property.Name);
                 return toggle;
             }
@@ -155,7 +166,7 @@ namespace FlowBlox.UICore.Resolver
             throw new InvalidOperationException($"Unsupported simple property type '{property.PropertyType.Name}'.");
         }
 
-        private FrameworkElement CreateSelectedFieldPanel(PropertyInfo selectedFieldProperty, object target)
+        private FrameworkElement CreateSelectedFieldPanel(PropertyInfo property, object target)
         {
             var panel = new StackPanel
             {
@@ -163,26 +174,24 @@ namespace FlowBlox.UICore.Resolver
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            var icon = new Image
+            var icon = new PackIconMaterial
             {
+                Kind = PackIconMaterialKind.Variable,
                 Width = 16,
                 Height = 16,
                 Margin = new Thickness(0, 0, 6, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            icon.SetBinding(Image.SourceProperty, new Binding(selectedFieldProperty.Name)
-            {
-                Source = target,
-                Converter = _iconConverter
-            });
 
             var text = new TextBlock
             {
                 VerticalAlignment = VerticalAlignment.Center
             };
-            text.SetBinding(TextBlock.TextProperty, new Binding($"{selectedFieldProperty.Name}.FullyQualifiedName")
+            text.SetBinding(TextBlock.TextProperty, new Binding(nameof(FlowBloxReactiveObject.PropertySelectedFieldMap))
             {
-                Source = target
+                Source = target,
+                Converter = new SelectedFieldNameConverter(),
+                ConverterParameter = property.Name
             });
 
             panel.Children.Add(icon);
@@ -193,8 +202,7 @@ namespace FlowBlox.UICore.Resolver
 
         private Button CreateSelectFieldButton(
             PropertyInfo property,
-            object target,
-            PropertyInfo selectedFieldProperty,
+            FlowBloxReactiveObject target,
             bool readOnly)
         {
             var fieldSelectionAttribute = property.GetCustomAttribute<FlowBloxFieldSelectionAttribute>();
@@ -220,11 +228,7 @@ namespace FlowBlox.UICore.Resolver
             {
                 try
                 {
-                    if (selectedFieldProperty == null)
-                        throw new InvalidOperationException(
-                            $"Selected field property '{property.Name}{GlobalConstants.SimplePropertySelectedFieldSuffix}' was not found on '{target.GetType().Name}'.");
-
-                    var args = Utilities.TextBoxHelper.CreateFieldSelectionWindowArgs(target, fieldSelectionAttribute);
+                    var args = Utilities.TextBoxHelper.CreateFieldSelectionWindowArgs(target, fieldSelectionAttribute, _parent);
                     args.SelectionMode = FieldSelectionMode.Fields;
                     args.MultiSelect = false;
                     var result = Utilities.TextBoxHelper.ShowFieldSelectionDialog(args, _window);
@@ -232,10 +236,8 @@ namespace FlowBlox.UICore.Resolver
                     if (selectedField == null)
                         return;
 
-                    selectedFieldProperty.SetValue(target, selectedField);
+                    target.SetPropertySelectedField(property.Name, selectedField);
                     FlowBlockHelper.ApplyFieldSelectionRequiredOption(target, [selectedField], result.IsRequired);
-                    FlowBloxComponentHelper.RaisePropertyChanged(target, selectedFieldProperty.Name);
-                    FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
                 }
                 catch (Exception ex)
                 {
@@ -248,8 +250,7 @@ namespace FlowBlox.UICore.Resolver
 
         private Button CreateUnlinkButton(
             PropertyInfo property,
-            object target,
-            PropertyInfo selectedFieldProperty,
+            FlowBloxReactiveObject target,
             bool readOnly)
         {
             var button = new Button
@@ -270,40 +271,56 @@ namespace FlowBlox.UICore.Resolver
             };
 
             ((PackIconMaterial)button.Content).SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.UnlinkIconStyle");
-            if (!readOnly && selectedFieldProperty != null)
+            if (!readOnly)
             {
-                button.SetBinding(UIElement.IsEnabledProperty, new Binding(selectedFieldProperty.Name)
+                button.SetBinding(UIElement.IsEnabledProperty, new Binding(nameof(FlowBloxReactiveObject.PropertySelectedFieldMap))
                 {
                     Source = target,
-                    Converter = new NullToBoolConverter(trueWhenNull: false)
+                    Converter = new NullToBoolConverter(trueWhenNull: false),
+                    ConverterParameter = property.Name
                 });
             }
 
             button.Command = new RelayCommand(() =>
             {
-                if (readOnly || selectedFieldProperty == null)
+                if (readOnly)
                     return;
 
-                selectedFieldProperty.SetValue(target, null);
-                FlowBloxComponentHelper.RaisePropertyChanged(target, selectedFieldProperty.Name);
-                FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+                target.SetPropertySelectedField(property.Name, null);
             });
 
             return button;
         }
 
-        private static PropertyInfo ResolveSelectedFieldProperty(object target, PropertyInfo property)
+        private static string GetSelectedFieldName(object value, object parameter)
         {
-            return target?.GetType()?.GetProperty(property.Name + GlobalConstants.SimplePropertySelectedFieldSuffix);
+            var selections = value as IReadOnlyDictionary<string, string>;
+            return selections != null && selections.TryGetValue((string)parameter, out var fieldName)
+                ? fieldName
+                : null;
         }
 
         private static Binding CreateSelectedFieldVisibilityBinding(object target, string selectedFieldPropertyName, bool visibleWhenNull)
         {
-            return new Binding(selectedFieldPropertyName)
+            return new Binding(nameof(FlowBloxReactiveObject.PropertySelectedFieldMap))
             {
                 Source = target,
-                Converter = new NullToVisibilityConverter(visibleWhenNull)
+                Converter = new NullToVisibilityConverter(visibleWhenNull),
+                ConverterParameter = selectedFieldPropertyName
             };
+        }
+
+        private sealed class SelectedFieldNameConverter : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return GetSelectedFieldName(value, parameter);
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                throw new NotSupportedException();
+            }
         }
 
         private sealed class NullToVisibilityConverter : IValueConverter
@@ -317,7 +334,7 @@ namespace FlowBlox.UICore.Resolver
 
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                var isNull = value == null;
+                var isNull = string.IsNullOrWhiteSpace(GetSelectedFieldName(value, parameter));
                 return isNull == _visibleWhenNull ? Visibility.Visible : Visibility.Collapsed;
             }
 
@@ -338,7 +355,7 @@ namespace FlowBlox.UICore.Resolver
 
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                var isNull = value == null;
+                var isNull = string.IsNullOrWhiteSpace(GetSelectedFieldName(value, parameter));
                 return isNull == _trueWhenNull;
             }
 

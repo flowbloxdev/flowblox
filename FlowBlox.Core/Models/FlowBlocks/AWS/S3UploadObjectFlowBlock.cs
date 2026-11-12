@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using Amazon.S3.Model;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
@@ -80,8 +81,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
                 if (Provider == null)
                     throw new InvalidOperationException("No AWS provider is configured.");
 
-                var bucketName = FlowBloxFieldHelper.ReplaceFieldsInString(BucketName)?.Trim();
-                var objectKey = FlowBloxFieldHelper.ReplaceFieldsInString(ObjectKey)?.Trim();
+                var bucketName = this.Resolve(owner => owner.BucketName).Trim();
+                var objectKey = this.Resolve(owner => owner.ObjectKey).Trim();
                 if (string.IsNullOrWhiteSpace(bucketName) || string.IsNullOrWhiteSpace(objectKey))
                     throw new InvalidOperationException("S3 bucket name and object key are required.");
 
@@ -93,7 +94,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
                     BucketName = bucketName,
                     Key = objectKey,
                     InputStream = contentStream,
-                    ContentType = FlowBloxFieldHelper.ReplaceFieldsInString(ContentType)?.Trim()
+                    ContentType = this.Resolve(owner => owner.ContentType).Trim()
                 }).GetAwaiter().GetResult();
 
                 GenerateResult(runtime, bool.TrueString.ToLowerInvariant());

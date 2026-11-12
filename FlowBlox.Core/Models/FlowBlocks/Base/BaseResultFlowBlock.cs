@@ -32,7 +32,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [Display(Name = "BaseResultFlowBlock_StartValue", Description = "BaseResultFlowBlock_StartValue_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseResultFlowBlock_Groups_Output", Order = 0)]
         [ActivationCondition(ActivationMethod = nameof(IsStartValueActive))]
         [DependsOnProperty(MemberNames = [nameof(OutputBehavior), nameof(StartValue), nameof(StartIndex), nameof(EndIndex)])]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default)]
         [FlowBloxFieldSelection(DefaultRequiredValue = false)]
         [FlowBloxTextBox(MultiLine = true)]
         public string StartValue
@@ -243,6 +243,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                 ResultField = field
             });
         }
+
+        internal override void CompleteFailedResolution(BaseRuntime runtime) => GenerateResult(runtime);
 
         protected void GenerateResult(BaseRuntime runtime, string content)
         {

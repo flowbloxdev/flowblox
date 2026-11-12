@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Models.Components;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Runtime;
@@ -63,7 +64,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Logic
                     {
                         var result = string.IsNullOrEmpty(decision.OutputValue)
                             ? decision.FieldElement?.StringValue
-                            : FlowBloxFieldHelper.ReplaceFieldsInString(decision.OutputValue);
+                            : decision.Resolve(owner => owner.OutputValue);
 
                         GenerateResult(runtime, result);
                         return;
@@ -76,7 +77,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Logic
                     return;
                 }
 
-                GenerateResult(runtime, FlowBloxFieldHelper.ReplaceFieldsInString(FallbackValue));
+                GenerateResult(runtime, this.Resolve(owner => owner.FallbackValue));
             });
         }
     }

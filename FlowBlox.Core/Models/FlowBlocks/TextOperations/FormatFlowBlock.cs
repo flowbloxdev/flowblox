@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using SkiaSharp;
 using System.Text;
 using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Extensions;
 using System.Reflection;
 using FlowBlox.Enums;
 
@@ -66,6 +67,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public static ValidationResult ValidateFormatExpression(string formatExpression, ValidationContext validationContext)
         {
             var block = (FormatFlowBlock)validationContext.ObjectInstance;
+            formatExpression = FlowBloxFieldHelper.ReplaceFieldsInString(formatExpression);
             if (string.IsNullOrWhiteSpace(formatExpression))
                 return ValidationResult.Success;
 
@@ -110,19 +112,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         {
             return base.Invoke(runtime, data, () =>
             {
-
-                var formatExpression = FormatExpression ?? string.Empty;
-                var resolvedFormatExpression = FlowBloxFieldHelper.ReplaceFieldsInString(formatExpression);
-                if (!string.IsNullOrWhiteSpace(formatExpression) &&
-                    string.IsNullOrWhiteSpace(resolvedFormatExpression))
-                {
-                    CreateNotification(runtime, FormatFlowBlockNotifications.FormatExpressionMissingAfterResolving);
-                    GenerateResult(runtime);
+                string formatExpression;
+                if (AllowEmptyFormatExpression)
+                    formatExpression = this.Resolve(x => x.FormatExpression);
+                else if (!this.ResolveOrCreateNotification(
+                    x => x.FormatExpression,
+                    out formatExpression,
+                    runtime,
+                    FormatFlowBlockNotifications.FormatExpressionMissingAfterResolving))
                     return;
-                }
 
                 object[] parameters = FormatParameterDefinitions.Select(x => x.Field.Value).ToArray();
-                var formattedValue = string.Format(resolvedFormatExpression, parameters);
+                var formattedValue = string.Format(formatExpression, parameters);
                 GenerateResult(runtime, formattedValue);
             });
         }

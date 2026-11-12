@@ -57,6 +57,7 @@ FlowBlox turns real-world data-processing problems into reusable automation proj
 - **Start locally, without infrastructure.** Install the Windows desktop application and build workflows without provisioning a server or Docker environment. Connections to external systems and cloud AI providers still require their respective credentials or services.
 - **AI-generated, human-editable workflows.** The AI Assistant can create new projects, continue existing ones, configure FlowBlocks, test results, and explain the application. Its output remains a regular visual project, not an opaque one-off agent action.
 - **AI that can extend its own capabilities.** The assistant uses bundled Skills and can create a missing Skill when needed to fulfill your request. To implement it, the assistant builds a compact FlowBlox project—a Skill Project—with defined inputs and outputs. It has the full capabilities of a FlowBlox project at its disposal, including the available FlowBlocks, data sources, and execution logic. Each Skill stays focused on one capability.
+- **Reuse protected environment values.** The local **Vault** stores credentials, server URLs and other environment settings across projects, encrypted for your Windows account. Bind `$Vault::Name` references to input fields or pass them to Skills; the AI Assistant can discover references without reading the stored values.
 - **Work with local resources.** Automate tasks involving files, local databases, intranet websites, and other resources accessible to the FlowBlox process and its configured credentials.
 - **Generate from examples.** Define expected results in test cases, then use AI-based or offline generators to derive selectors, patterns, and FlowBlock configuration.
 - **Test before execution.** Required generator tests can be validated before runtime proceeds; failing tests can trigger regeneration and prevent execution if validation still fails.
@@ -160,7 +161,7 @@ The integrated AI Assistant can:
 
 ### Start with a request
 
-Open the AI Assistant in the right-hand panel. Use its **gear icon** to open Configuration, add an AI provider, choose a model, and enter an API key. Then describe your task, for example:
+Open the AI Assistant in the right-hand panel. Use its **gear icon** to open Configuration. Add providers with their models and API keys to **Providers**, then choose one by name under **Selected provider**. Then describe your task, for example:
 
 > Create a flow that executes an SQL query, iterates through the returned rows, reads JSON property `XZ`, keeps rows where the value equals `XY`, and exports the results to CSV.
 

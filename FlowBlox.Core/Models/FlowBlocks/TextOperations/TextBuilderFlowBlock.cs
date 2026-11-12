@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -48,7 +49,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
             return Invoke(runtime, data, () =>
             {
 
-                var initialText = FlowBloxFieldHelper.ReplaceFieldsInString(InitialText ?? string.Empty);
+                var initialText = this.Resolve(owner => owner.InitialText);
                 InternalStringBuilder = new StringBuilder(initialText);
                 GenerateResult(runtime, bool.TrueString.ToLowerInvariant());
             });

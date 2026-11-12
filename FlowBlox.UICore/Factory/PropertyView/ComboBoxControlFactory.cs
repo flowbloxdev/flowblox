@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Util;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.PropertyView.Resolver;
 using FlowBlox.UICore.Resolver;
@@ -121,6 +122,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
         {
             if (!PropertyTypeHelper.IsSimpleType(_property.PropertyType))
                 return DropDownMode.SelectionOnly;
+
+            var text = _property.GetValue(_target) as string;
+            if (_property.PropertyType == typeof(string) && !string.IsNullOrWhiteSpace(text)
+                && FlowBlox.Core.Models.Components.FieldElement.IsFullyQualifiedName(text))
+                return DropDownMode.Suggestion;
+
             return ResolveMethodValue(_combo.DropDownModeMethod, _combo.DropDownMode);
         }
 
@@ -176,6 +183,20 @@ namespace FlowBlox.UICore.Factory.PropertyView
         private FrameworkElement BuildEditor(DropDownMode mode, bool password, IReadOnlyList<SelectionDropDown.Item> items)
         {
             var readOnly = _readOnly || FlowBlockUIAttributeHelper.IsDynamicallyReadOnly(_target, _ui);
+            if (readOnly && !PropertyTypeHelper.IsSimpleType(_property.PropertyType))
+            {
+                var displayPath = _property.Name;
+                if (!string.IsNullOrWhiteSpace(_ui?.SelectionDisplayMember))
+                    displayPath += "." + _ui.SelectionDisplayMember;
+                var display = new TextBlock { VerticalAlignment = VerticalAlignment.Center };
+                display.SetBinding(TextBlock.TextProperty, new Binding(displayPath)
+                {
+                    Source = _target,
+                    Mode = BindingMode.OneWay
+                });
+                return display;
+            }
+
             var binding = new Binding(_property.Name)
             {
                 Source = _target,
@@ -188,7 +209,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var hasChoices = items.Any(item => item.Value != null);
             if (password || mode == DropDownMode.Suggestion)
             {
-                editor = new TextBoxWithOptionalButtonsCreator(_window).CreateTextBoxWithOptionalButtons(
+                editor = new TextBoxWithOptionalButtonsCreator(_window, _parent).CreateTextBoxWithOptionalButtons(
                     _property, _target, _property.Name, _ui, binding, readOnly, password);
                 if (password || !hasChoices)
                     return editor;
@@ -206,7 +227,15 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var border = new Border { Child = selector };
             border.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.EditorContainerStyle");
             if (editor == null)
+            {
+                if (_property.PropertyType == typeof(string) && FlowBloxFieldSelection.Supports(_property))
+                {
+                    return new TextBoxWithOptionalButtonsCreator(_window, _parent).CreateTextBoxWithOptionalButtons(
+                        _property, _target, _property.Name, _ui, binding, readOnly, password, border);
+                }
+
                 return border;
+            }
             border.Margin = new Thickness(0, 0, 0, 4);
             var panel = new DockPanel();
             DockPanel.SetDock(border, Dock.Top);

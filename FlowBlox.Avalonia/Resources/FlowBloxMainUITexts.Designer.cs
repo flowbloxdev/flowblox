@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FlowBlox.AvaloniaDesktop.Resources {
+namespace FlowBlox.AvaloniaDesktop.Resources
+{
     using System;
     
     
@@ -19,26 +20,31 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class FlowBloxMainUITexts {
+    internal class FlowBloxMainUITexts
+    {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal FlowBloxMainUITexts() {
+        internal FlowBloxMainUITexts()
+        {
         }
         
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FlowBlox.AvaloniaDesktop.Resources.FlowBloxMainUITexts", typeof(FlowBloxMainUITexts).Assembly);
                     resourceMan = temp;
                 }
@@ -51,11 +57,14 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
@@ -63,8 +72,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Product information ähnelt.
         /// </summary>
-        internal static string About_groupBoxProductInformation_Text {
-            get {
+        internal static string About_groupBoxProductInformation_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("About_groupBoxProductInformation_Text", resourceCulture);
             }
         }
@@ -72,8 +83,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die About FlowBlox ähnelt.
         /// </summary>
-        internal static string About_Text {
-            get {
+        internal static string About_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("About_Text", resourceCulture);
             }
         }
@@ -81,8 +94,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Do you really want to close the project &quot;{0}&quot;? ähnelt.
         /// </summary>
-        internal static string AppWindow_CloseProjectConfirm_Message {
-            get {
+        internal static string AppWindow_CloseProjectConfirm_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_CloseProjectConfirm_Message", resourceCulture);
             }
         }
@@ -90,8 +105,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Close Project? ähnelt.
         /// </summary>
-        internal static string AppWindow_CloseProjectConfirm_Title {
-            get {
+        internal static string AppWindow_CloseProjectConfirm_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_CloseProjectConfirm_Title", resourceCulture);
             }
         }
@@ -99,8 +116,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please report this error at https://www.flowblox.net/. ähnelt.
         /// </summary>
-        internal static string AppWindow_ErrorReport_Message {
-            get {
+        internal static string AppWindow_ErrorReport_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_ErrorReport_Message", resourceCulture);
             }
         }
@@ -108,8 +127,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FlowBlox Error Report ähnelt.
         /// </summary>
-        internal static string AppWindow_ErrorReport_Title {
-            get {
+        internal static string AppWindow_ErrorReport_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_ErrorReport_Title", resourceCulture);
             }
         }
@@ -117,8 +138,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open GitHub repository ähnelt.
         /// </summary>
-        internal static string AppWindow_GitHub_Text {
-            get {
+        internal static string AppWindow_GitHub_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_GitHub_Text", resourceCulture);
             }
         }
@@ -126,8 +149,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Could not export the current FlowBlox.Grid as a bitmap (*.bmp). Please check the log files for more information. ähnelt.
         /// </summary>
-        internal static string AppWindow_GridExportFailed_Message {
-            get {
+        internal static string AppWindow_GridExportFailed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_GridExportFailed_Message", resourceCulture);
             }
         }
@@ -135,8 +160,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FlowBlox.Grid: Export Problem ähnelt.
         /// </summary>
-        internal static string AppWindow_GridExportFailed_Title {
-            get {
+        internal static string AppWindow_GridExportFailed_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_GridExportFailed_Title", resourceCulture);
             }
         }
@@ -144,8 +171,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;About FlowBlox ähnelt.
         /// </summary>
-        internal static string AppWindow_itmAbout_Text {
-            get {
+        internal static string AppWindow_itmAbout_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmAbout_Text", resourceCulture);
             }
         }
@@ -153,8 +182,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Auto-align flow ähnelt.
         /// </summary>
-        internal static string AppWindow_itmAutoAdjustFlowLayout_Text {
-            get {
+        internal static string AppWindow_itmAutoAdjustFlowLayout_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmAutoAdjustFlowLayout_Text", resourceCulture);
             }
         }
@@ -162,8 +193,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Automation ähnelt.
         /// </summary>
-        internal static string AppWindow_itmAutomation_Text {
-            get {
+        internal static string AppWindow_itmAutomation_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmAutomation_Text", resourceCulture);
             }
         }
@@ -171,8 +204,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Check for updates... ähnelt.
         /// </summary>
-        internal static string AppWindow_itmCheckForNewVersion_Text {
-            get {
+        internal static string AppWindow_itmCheckForNewVersion_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmCheckForNewVersion_Text", resourceCulture);
             }
         }
@@ -180,8 +215,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Close project ähnelt.
         /// </summary>
-        internal static string AppWindow_itmCloseProject_Text {
-            get {
+        internal static string AppWindow_itmCloseProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmCloseProject_Text", resourceCulture);
             }
         }
@@ -189,8 +226,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Copy ähnelt.
         /// </summary>
-        internal static string AppWindow_itmCopy_Text {
-            get {
+        internal static string AppWindow_itmCopy_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmCopy_Text", resourceCulture);
             }
         }
@@ -198,8 +237,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Create new project ähnelt.
         /// </summary>
-        internal static string AppWindow_itmCreateProject_Text {
-            get {
+        internal static string AppWindow_itmCreateProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmCreateProject_Text", resourceCulture);
             }
         }
@@ -207,8 +248,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Delete element ähnelt.
         /// </summary>
-        internal static string AppWindow_itmDeleteElement_Text {
-            get {
+        internal static string AppWindow_itmDeleteElement_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmDeleteElement_Text", resourceCulture);
             }
         }
@@ -216,8 +259,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Dockable panels ähnelt.
         /// </summary>
-        internal static string AppWindow_itmDockablePanels_Text {
-            get {
+        internal static string AppWindow_itmDockablePanels_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmDockablePanels_Text", resourceCulture);
             }
         }
@@ -225,8 +270,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Edit properties ähnelt.
         /// </summary>
-        internal static string AppWindow_itmEditProject_Text {
-            get {
+        internal static string AppWindow_itmEditProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmEditProject_Text", resourceCulture);
             }
         }
@@ -234,17 +281,21 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manage extensions ähnelt.
         /// </summary>
-        internal static string AppWindow_itmFbExtensions_Text {
-            get {
+        internal static string AppWindow_itmFbExtensions_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmFbExtensions_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die View projects (Project-Space) ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Manage projects ähnelt.
         /// </summary>
-        internal static string AppWindow_itmFbProjects_Text {
-            get {
+        internal static string AppWindow_itmFbProjects_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmFbProjects_Text", resourceCulture);
             }
         }
@@ -252,8 +303,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Scheduled project executions... ähnelt.
         /// </summary>
-        internal static string AppWindow_itmFlowBloxTaskManagement_Text {
-            get {
+        internal static string AppWindow_itmFlowBloxTaskManagement_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmFlowBloxTaskManagement_Text", resourceCulture);
             }
         }
@@ -261,8 +314,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Visit us on GitHub ähnelt.
         /// </summary>
-        internal static string AppWindow_itmGitHub_Text {
-            get {
+        internal static string AppWindow_itmGitHub_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmGitHub_Text", resourceCulture);
             }
         }
@@ -270,8 +325,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;License ähnelt.
         /// </summary>
-        internal static string AppWindow_itmLicense_Text {
-            get {
+        internal static string AppWindow_itmLicense_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmLicense_Text", resourceCulture);
             }
         }
@@ -279,8 +336,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Sign in ähnelt.
         /// </summary>
-        internal static string AppWindow_itmLogin_Text {
-            get {
+        internal static string AppWindow_itmLogin_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmLogin_Text", resourceCulture);
             }
         }
@@ -288,8 +347,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sign &amp;out ähnelt.
         /// </summary>
-        internal static string AppWindow_itmLogout_Text {
-            get {
+        internal static string AppWindow_itmLogout_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmLogout_Text", resourceCulture);
             }
         }
@@ -297,8 +358,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manage input files ähnelt.
         /// </summary>
-        internal static string AppWindow_itmManageInputFiles_Text {
-            get {
+        internal static string AppWindow_itmManageInputFiles_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmManageInputFiles_Text", resourceCulture);
             }
         }
@@ -306,8 +369,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Monitoring ähnelt.
         /// </summary>
-        internal static string AppWindow_itmMonitor_Text {
-            get {
+        internal static string AppWindow_itmMonitor_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmMonitor_Text", resourceCulture);
             }
         }
@@ -315,8 +380,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Notifications... ähnelt.
         /// </summary>
-        internal static string AppWindow_itmNotifications_Text {
-            get {
+        internal static string AppWindow_itmNotifications_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmNotifications_Text", resourceCulture);
             }
         }
@@ -324,8 +391,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Show application log file(s) ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenApplicationLogDirectory_Text {
-            get {
+        internal static string AppWindow_itmOpenApplicationLogDirectory_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenApplicationLogDirectory_Text", resourceCulture);
             }
         }
@@ -333,8 +402,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open example project... ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenExampleProject_Text {
-            get {
+        internal static string AppWindow_itmOpenExampleProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenExampleProject_Text", resourceCulture);
             }
         }
@@ -342,8 +413,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open from Project-Space ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenFromProjectSpace_Text {
-            get {
+        internal static string AppWindow_itmOpenFromProjectSpace_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenFromProjectSpace_Text", resourceCulture);
             }
         }
@@ -351,8 +424,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open input directory ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenInputDir_Text {
-            get {
+        internal static string AppWindow_itmOpenInputDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenInputDir_Text", resourceCulture);
             }
         }
@@ -360,8 +435,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open &amp;GenAI model root directory ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenOnnxGenAiModelRootDirectory_Text {
-            get {
+        internal static string AppWindow_itmOpenOnnxGenAiModelRootDirectory_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenOnnxGenAiModelRootDirectory_Text", resourceCulture);
             }
         }
@@ -369,8 +446,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open &amp;QA model root directory ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenOnnxQaModelRootDirectory_Text {
-            get {
+        internal static string AppWindow_itmOpenOnnxQaModelRootDirectory_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenOnnxQaModelRootDirectory_Text", resourceCulture);
             }
         }
@@ -378,8 +457,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Open output folder ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenOutputDir_Text {
-            get {
+        internal static string AppWindow_itmOpenOutputDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenOutputDir_Text", resourceCulture);
             }
         }
@@ -387,8 +468,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Open project ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenProject_Text {
-            get {
+        internal static string AppWindow_itmOpenProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenProject_Text", resourceCulture);
             }
         }
@@ -396,8 +479,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open project &amp;folder ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenProjectDir_Text {
-            get {
+        internal static string AppWindow_itmOpenProjectDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenProjectDir_Text", resourceCulture);
             }
         }
@@ -405,8 +490,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open project input directory ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenProjectInputDir_Text {
-            get {
+        internal static string AppWindow_itmOpenProjectInputDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenProjectInputDir_Text", resourceCulture);
             }
         }
@@ -414,8 +501,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open project output directory ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenProjectOutputDir_Text {
-            get {
+        internal static string AppWindow_itmOpenProjectOutputDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenProjectOutputDir_Text", resourceCulture);
             }
         }
@@ -423,8 +512,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Show runtime log file(s) ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOpenRuntimeLogDirectory_Text {
-            get {
+        internal static string AppWindow_itmOpenRuntimeLogDirectory_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOpenRuntimeLogDirectory_Text", resourceCulture);
             }
         }
@@ -432,8 +523,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Options... ähnelt.
         /// </summary>
-        internal static string AppWindow_itmOptions_Text {
-            get {
+        internal static string AppWindow_itmOptions_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmOptions_Text", resourceCulture);
             }
         }
@@ -441,8 +534,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Paste ähnelt.
         /// </summary>
-        internal static string AppWindow_itmPaste_Text {
-            get {
+        internal static string AppWindow_itmPaste_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmPaste_Text", resourceCulture);
             }
         }
@@ -450,8 +545,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Exit ähnelt.
         /// </summary>
-        internal static string AppWindow_itmQuitApplication_Text {
-            get {
+        internal static string AppWindow_itmQuitApplication_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmQuitApplication_Text", resourceCulture);
             }
         }
@@ -459,8 +556,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Recent projects ähnelt.
         /// </summary>
-        internal static string AppWindow_itmRecentProjects_Text {
-            get {
+        internal static string AppWindow_itmRecentProjects_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmRecentProjects_Text", resourceCulture);
             }
         }
@@ -468,8 +567,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Redo ähnelt.
         /// </summary>
-        internal static string AppWindow_itmRedo_Text {
-            get {
+        internal static string AppWindow_itmRedo_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmRedo_Text", resourceCulture);
             }
         }
@@ -477,8 +578,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Register ähnelt.
         /// </summary>
-        internal static string AppWindow_itmRegister_Text {
-            get {
+        internal static string AppWindow_itmRegister_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmRegister_Text", resourceCulture);
             }
         }
@@ -486,8 +589,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Report a problem ähnelt.
         /// </summary>
-        internal static string AppWindow_itmReportProblem_Text {
-            get {
+        internal static string AppWindow_itmReportProblem_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmReportProblem_Text", resourceCulture);
             }
         }
@@ -495,8 +600,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Reset dockable dialogues ähnelt.
         /// </summary>
-        internal static string AppWindow_itmResetDockablePanels_Text {
-            get {
+        internal static string AppWindow_itmResetDockablePanels_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmResetDockablePanels_Text", resourceCulture);
             }
         }
@@ -504,8 +611,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save project &amp;as ähnelt.
         /// </summary>
-        internal static string AppWindow_itmSaveAs_Text {
-            get {
+        internal static string AppWindow_itmSaveAs_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmSaveAs_Text", resourceCulture);
             }
         }
@@ -513,8 +622,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Save project ähnelt.
         /// </summary>
-        internal static string AppWindow_itmSaveProject_Text {
-            get {
+        internal static string AppWindow_itmSaveProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmSaveProject_Text", resourceCulture);
             }
         }
@@ -522,8 +633,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save to Project Space ähnelt.
         /// </summary>
-        internal static string AppWindow_itmSaveToProjectSpace_Text {
-            get {
+        internal static string AppWindow_itmSaveToProjectSpace_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmSaveToProjectSpace_Text", resourceCulture);
             }
         }
@@ -531,8 +644,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Toolbox ähnelt.
         /// </summary>
-        internal static string AppWindow_itmToolbox_Text {
-            get {
+        internal static string AppWindow_itmToolbox_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmToolbox_Text", resourceCulture);
             }
         }
@@ -540,8 +655,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Undo ähnelt.
         /// </summary>
-        internal static string AppWindow_itmUndo_Text {
-            get {
+        internal static string AppWindow_itmUndo_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmUndo_Text", resourceCulture);
             }
         }
@@ -549,8 +666,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Custom fields ähnelt.
         /// </summary>
-        internal static string AppWindow_itmUserFields_Text {
-            get {
+        internal static string AppWindow_itmUserFields_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmUserFields_Text", resourceCulture);
             }
         }
@@ -558,8 +677,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Visit online ähnelt.
         /// </summary>
-        internal static string AppWindow_itmVisitOnline_Text {
-            get {
+        internal static string AppWindow_itmVisitOnline_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_itmVisitOnline_Text", resourceCulture);
             }
         }
@@ -567,8 +688,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Account ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmAccount_Text {
-            get {
+        internal static string AppWindow_mnItmAccount_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmAccount_Text", resourceCulture);
             }
         }
@@ -576,8 +699,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Directories ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmDirectories_Text {
-            get {
+        internal static string AppWindow_mnItmDirectories_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmDirectories_Text", resourceCulture);
             }
         }
@@ -585,8 +710,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Edit ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmEdit_Text {
-            get {
+        internal static string AppWindow_mnItmEdit_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmEdit_Text", resourceCulture);
             }
         }
@@ -594,8 +721,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Help ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmHelp_Text {
-            get {
+        internal static string AppWindow_mnItmHelp_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmHelp_Text", resourceCulture);
             }
         }
@@ -603,8 +732,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Tools ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmMisc_Text {
-            get {
+        internal static string AppWindow_mnItmMisc_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmMisc_Text", resourceCulture);
             }
         }
@@ -612,8 +743,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die ONNX model root &amp;directories ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmOnnxModelRootDirectories_Text {
-            get {
+        internal static string AppWindow_mnItmOnnxModelRootDirectories_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmOnnxModelRootDirectories_Text", resourceCulture);
             }
         }
@@ -621,8 +754,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Project ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmProject_Text {
-            get {
+        internal static string AppWindow_mnItmProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmProject_Text", resourceCulture);
             }
         }
@@ -630,8 +765,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;View ähnelt.
         /// </summary>
-        internal static string AppWindow_mnItmWindows_Text {
-            get {
+        internal static string AppWindow_mnItmWindows_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_mnItmWindows_Text", resourceCulture);
             }
         }
@@ -639,8 +776,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Do you really want to close the project &quot;{0}&quot; and create a new project? ähnelt.
         /// </summary>
-        internal static string AppWindow_NewProjectConfirm_Message {
-            get {
+        internal static string AppWindow_NewProjectConfirm_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_NewProjectConfirm_Message", resourceCulture);
             }
         }
@@ -648,8 +787,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create New Project? ähnelt.
         /// </summary>
-        internal static string AppWindow_NewProjectConfirm_Title {
-            get {
+        internal static string AppWindow_NewProjectConfirm_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_NewProjectConfirm_Title", resourceCulture);
             }
         }
@@ -657,8 +798,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die A new internal project GUID was generated: {0} ähnelt.
         /// </summary>
-        internal static string AppWindow_Notification_ProjectGuidChanged_Message {
-            get {
+        internal static string AppWindow_Notification_ProjectGuidChanged_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notification_ProjectGuidChanged_Message", resourceCulture);
             }
         }
@@ -666,8 +809,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Download update ähnelt.
         /// </summary>
-        internal static string AppWindow_Notification_UpdateAvailable_Action_Text {
-            get {
+        internal static string AppWindow_Notification_UpdateAvailable_Action_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notification_UpdateAvailable_Action_Text", resourceCulture);
             }
         }
@@ -675,8 +820,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die A new FlowBlox update is available. ähnelt.
         /// </summary>
-        internal static string AppWindow_Notification_UpdateAvailable_Message {
-            get {
+        internal static string AppWindow_Notification_UpdateAvailable_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notification_UpdateAvailable_Message", resourceCulture);
             }
         }
@@ -684,8 +831,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The update installer has been downloaded. ähnelt.
         /// </summary>
-        internal static string AppWindow_Notification_UpdateDownloaded_Message {
-            get {
+        internal static string AppWindow_Notification_UpdateDownloaded_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notification_UpdateDownloaded_Message", resourceCulture);
             }
         }
@@ -693,8 +842,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Install update ähnelt.
         /// </summary>
-        internal static string AppWindow_Notification_UpdateInstallDownloaded_Action_Text {
-            get {
+        internal static string AppWindow_Notification_UpdateInstallDownloaded_Action_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notification_UpdateInstallDownloaded_Action_Text", resourceCulture);
             }
         }
@@ -702,8 +853,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Notifications could not be loaded ähnelt.
         /// </summary>
-        internal static string AppWindow_Notifications_LoadError_Title {
-            get {
+        internal static string AppWindow_Notifications_LoadError_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notifications_LoadError_Title", resourceCulture);
             }
         }
@@ -711,8 +864,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Notifications could not be saved ähnelt.
         /// </summary>
-        internal static string AppWindow_Notifications_SaveError_Title {
-            get {
+        internal static string AppWindow_Notifications_SaveError_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Notifications_SaveError_Title", resourceCulture);
             }
         }
@@ -720,8 +875,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Do you really want to close the project &quot;{0}&quot; and load another project? ähnelt.
         /// </summary>
-        internal static string AppWindow_OpenProjectConfirm_Message {
-            get {
+        internal static string AppWindow_OpenProjectConfirm_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_OpenProjectConfirm_Message", resourceCulture);
             }
         }
@@ -729,8 +886,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Load New Project? ähnelt.
         /// </summary>
-        internal static string AppWindow_OpenProjectConfirm_Title {
-            get {
+        internal static string AppWindow_OpenProjectConfirm_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_OpenProjectConfirm_Title", resourceCulture);
             }
         }
@@ -738,8 +897,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The page could not be opened: {0} ähnelt.
         /// </summary>
-        internal static string AppWindow_OpenUrlFailed_Message {
-            get {
+        internal static string AppWindow_OpenUrlFailed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_OpenUrlFailed_Message", resourceCulture);
             }
         }
@@ -747,8 +908,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Could Not Open Page ähnelt.
         /// </summary>
-        internal static string AppWindow_OpenUrlFailed_Title {
-            get {
+        internal static string AppWindow_OpenUrlFailed_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_OpenUrlFailed_Title", resourceCulture);
             }
         }
@@ -756,8 +919,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The project could not be fully loaded. When you close this window, an error report will be generated automatically. Please also check the log files for more details about the causes of the problem. ähnelt.
         /// </summary>
-        internal static string AppWindow_ProjectLoadFailed_Message {
-            get {
+        internal static string AppWindow_ProjectLoadFailed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_ProjectLoadFailed_Message", resourceCulture);
             }
         }
@@ -765,8 +930,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project Not Fully Loaded ähnelt.
         /// </summary>
-        internal static string AppWindow_ProjectLoadFailed_Title {
-            get {
+        internal static string AppWindow_ProjectLoadFailed_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_ProjectLoadFailed_Title", resourceCulture);
             }
         }
@@ -774,17 +941,43 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Notice on Open ähnelt.
         /// </summary>
-        internal static string AppWindow_ProjectNotice_Title {
-            get {
+        internal static string AppWindow_ProjectNotice_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_ProjectNotice_Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die You are not logged in. Open &quot;Tools&quot; → &quot;Manage projects&quot; and click &quot;Login&quot;. ähnelt.
+        /// </summary>
+        internal static string AppWindow_ProjectSpaceLoginRequired_Message
+        {
+            get
+            {
+                return ResourceManager.GetString("AppWindow_ProjectSpaceLoginRequired_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Notice ähnelt.
+        /// </summary>
+        internal static string AppWindow_ProjectSpaceLoginRequired_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("AppWindow_ProjectSpaceLoginRequired_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please stop the current execution before closing FlowBlox. ähnelt.
         /// </summary>
-        internal static string AppWindow_RuntimeActiveClose_Message {
-            get {
+        internal static string AppWindow_RuntimeActiveClose_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_RuntimeActiveClose_Message", resourceCulture);
             }
         }
@@ -792,8 +985,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Caution: Runtime Active ähnelt.
         /// </summary>
-        internal static string AppWindow_RuntimeActiveClose_Title {
-            get {
+        internal static string AppWindow_RuntimeActiveClose_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_RuntimeActiveClose_Title", resourceCulture);
             }
         }
@@ -801,8 +996,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Do you want to save changes to the project &quot;{0}&quot; before leaving FlowBlox? ähnelt.
         /// </summary>
-        internal static string AppWindow_SaveBeforeExit_Message {
-            get {
+        internal static string AppWindow_SaveBeforeExit_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_SaveBeforeExit_Message", resourceCulture);
             }
         }
@@ -810,8 +1007,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save Project? ähnelt.
         /// </summary>
-        internal static string AppWindow_SaveBeforeExit_Title {
-            get {
+        internal static string AppWindow_SaveBeforeExit_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_SaveBeforeExit_Title", resourceCulture);
             }
         }
@@ -819,8 +1018,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The save operation could not be completed successfully. Please check the log files for more information. ähnelt.
         /// </summary>
-        internal static string AppWindow_SaveFailed_Message {
-            get {
+        internal static string AppWindow_SaveFailed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_SaveFailed_Message", resourceCulture);
             }
         }
@@ -828,8 +1029,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save Failed ähnelt.
         /// </summary>
-        internal static string AppWindow_SaveFailed_Title {
-            get {
+        internal static string AppWindow_SaveFailed_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_SaveFailed_Title", resourceCulture);
             }
         }
@@ -837,8 +1040,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die (!) Make sure your changes have been saved. ähnelt.
         /// </summary>
-        internal static string AppWindow_SaveReminder_Message {
-            get {
+        internal static string AppWindow_SaveReminder_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_SaveReminder_Message", resourceCulture);
             }
         }
@@ -846,8 +1051,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FlowBlox ähnelt.
         /// </summary>
-        internal static string AppWindow_Text {
-            get {
+        internal static string AppWindow_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_Text", resourceCulture);
             }
         }
@@ -859,8 +1066,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         ///
         ///The application will now restart to restore a clean environment. ähnelt.
         /// </summary>
-        internal static string AppWindow_UnloadProjectFailed_Message {
-            get {
+        internal static string AppWindow_UnloadProjectFailed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UnloadProjectFailed_Message", resourceCulture);
             }
         }
@@ -868,8 +1077,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Could Not Unload Project ähnelt.
         /// </summary>
-        internal static string AppWindow_UnloadProjectFailed_Title {
-            get {
+        internal static string AppWindow_UnloadProjectFailed_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UnloadProjectFailed_Title", resourceCulture);
             }
         }
@@ -877,8 +1088,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Error while checking for updates. ähnelt.
         /// </summary>
-        internal static string AppWindow_UpdateCheck_Error_Message {
-            get {
+        internal static string AppWindow_UpdateCheck_Error_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UpdateCheck_Error_Message", resourceCulture);
             }
         }
@@ -886,8 +1099,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die An unexpected error occurred while checking for updates. ähnelt.
         /// </summary>
-        internal static string AppWindow_UpdateCheck_Exception_Message {
-            get {
+        internal static string AppWindow_UpdateCheck_Exception_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UpdateCheck_Exception_Message", resourceCulture);
             }
         }
@@ -895,8 +1110,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Version check could not be performed because no installer update source is configured. ähnelt.
         /// </summary>
-        internal static string AppWindow_UpdateCheck_NotPackaged_Message {
-            get {
+        internal static string AppWindow_UpdateCheck_NotPackaged_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UpdateCheck_NotPackaged_Message", resourceCulture);
             }
         }
@@ -904,8 +1121,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No update available. ähnelt.
         /// </summary>
-        internal static string AppWindow_UpdateCheck_NoUpdates_Message {
-            get {
+        internal static string AppWindow_UpdateCheck_NoUpdates_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UpdateCheck_NoUpdates_Message", resourceCulture);
             }
         }
@@ -913,8 +1132,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The update source is unknown. Opening the website for manual checking. ähnelt.
         /// </summary>
-        internal static string AppWindow_UpdateCheck_UnknownSource_Message {
-            get {
+        internal static string AppWindow_UpdateCheck_UnknownSource_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UpdateCheck_UnknownSource_Message", resourceCulture);
             }
         }
@@ -922,8 +1143,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The update could not be installed. Please try again later or download the current version from the website. ähnelt.
         /// </summary>
-        internal static string AppWindow_UpdateInstall_Failed_Message {
-            get {
+        internal static string AppWindow_UpdateInstall_Failed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_UpdateInstall_Failed_Message", resourceCulture);
             }
         }
@@ -931,8 +1154,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open FlowBlox website ähnelt.
         /// </summary>
-        internal static string AppWindow_VisitOnline_Text {
-            get {
+        internal static string AppWindow_VisitOnline_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("AppWindow_VisitOnline_Text", resourceCulture);
             }
         }
@@ -940,8 +1165,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manage extensions ähnelt.
         /// </summary>
-        internal static string ComponentLibraryPanel_btManageExtensions_Text {
-            get {
+        internal static string ComponentLibraryPanel_btManageExtensions_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ComponentLibraryPanel_btManageExtensions_Text", resourceCulture);
             }
         }
@@ -949,8 +1176,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Component library ähnelt.
         /// </summary>
-        internal static string ComponentLibraryView_Text {
-            get {
+        internal static string ComponentLibraryView_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ComponentLibraryView_Text", resourceCulture);
             }
         }
@@ -958,8 +1187,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string CreateEntryWindow_btApply_Text {
-            get {
+        internal static string CreateEntryWindow_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("CreateEntryWindow_btApply_Text", resourceCulture);
             }
         }
@@ -967,8 +1198,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string CreateEntryWindow_btCancel_Text {
-            get {
+        internal static string CreateEntryWindow_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("CreateEntryWindow_btCancel_Text", resourceCulture);
             }
         }
@@ -976,8 +1209,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create Entry ähnelt.
         /// </summary>
-        internal static string CreateEntryWindow_Text {
-            get {
+        internal static string CreateEntryWindow_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("CreateEntryWindow_Text", resourceCulture);
             }
         }
@@ -985,8 +1220,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string EditValueWindow_btApply_Text {
-            get {
+        internal static string EditValueWindow_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_btApply_Text", resourceCulture);
             }
         }
@@ -994,8 +1231,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string EditValueWindow_btCancel_Text {
-            get {
+        internal static string EditValueWindow_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_btCancel_Text", resourceCulture);
             }
         }
@@ -1003,8 +1242,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Automatically escape regular expressions ähnelt.
         /// </summary>
-        internal static string EditValueWindow_cbMaskRegex_Text {
-            get {
+        internal static string EditValueWindow_cbMaskRegex_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_cbMaskRegex_Text", resourceCulture);
             }
         }
@@ -1012,8 +1253,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Here you can create or edit a value. ähnelt.
         /// </summary>
-        internal static string EditValueWindow_lbDescription_Text {
-            get {
+        internal static string EditValueWindow_lbDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_lbDescription_Text", resourceCulture);
             }
         }
@@ -1021,8 +1264,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Parameter: ähnelt.
         /// </summary>
-        internal static string EditValueWindow_lbParameter_Text {
-            get {
+        internal static string EditValueWindow_lbParameter_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_lbParameter_Text", resourceCulture);
             }
         }
@@ -1030,8 +1275,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Value: ähnelt.
         /// </summary>
-        internal static string EditValueWindow_lbValue_Text {
-            get {
+        internal static string EditValueWindow_lbValue_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_lbValue_Text", resourceCulture);
             }
         }
@@ -1039,8 +1286,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Value {0} ähnelt.
         /// </summary>
-        internal static string EditValueWindow_Text {
-            get {
+        internal static string EditValueWindow_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_Text", resourceCulture);
             }
         }
@@ -1048,8 +1297,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Next ähnelt.
         /// </summary>
-        internal static string EditValueWindow_TextContinue {
-            get {
+        internal static string EditValueWindow_TextContinue
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_TextContinue", resourceCulture);
             }
         }
@@ -1057,8 +1308,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create value ähnelt.
         /// </summary>
-        internal static string EditValueWindow_TextCreateValue {
-            get {
+        internal static string EditValueWindow_TextCreateValue
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_TextCreateValue", resourceCulture);
             }
         }
@@ -1066,8 +1319,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Edit value ähnelt.
         /// </summary>
-        internal static string EditValueWindow_TextEditValue {
-            get {
+        internal static string EditValueWindow_TextEditValue
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_TextEditValue", resourceCulture);
             }
         }
@@ -1075,8 +1330,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please enter a valid value. ähnelt.
         /// </summary>
-        internal static string EditValueWindow_TextInvalid_Message {
-            get {
+        internal static string EditValueWindow_TextInvalid_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_TextInvalid_Message", resourceCulture);
             }
         }
@@ -1084,8 +1341,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Invalid Input ähnelt.
         /// </summary>
-        internal static string EditValueWindow_TextInvalid_Title {
-            get {
+        internal static string EditValueWindow_TextInvalid_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("EditValueWindow_TextInvalid_Title", resourceCulture);
             }
         }
@@ -1093,8 +1352,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindiw_btCancel_Text {
-            get {
+        internal static string FieldSelectionWindiw_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindiw_btCancel_Text", resourceCulture);
             }
         }
@@ -1102,8 +1363,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindow_btApply_Text {
-            get {
+        internal static string FieldSelectionWindow_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindow_btApply_Text", resourceCulture);
             }
         }
@@ -1111,8 +1374,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindow_btCancel_Text {
-            get {
+        internal static string FieldSelectionWindow_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindow_btCancel_Text", resourceCulture);
             }
         }
@@ -1120,8 +1385,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Required ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindow_cbRequired_Text {
-            get {
+        internal static string FieldSelectionWindow_cbRequired_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindow_cbRequired_Text", resourceCulture);
             }
         }
@@ -1129,8 +1396,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please select an existing field element. ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindow_lbDescription_Text {
-            get {
+        internal static string FieldSelectionWindow_lbDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindow_lbDescription_Text", resourceCulture);
             }
         }
@@ -1138,8 +1407,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Field definitions ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindow_lbFieldDefinitions_Text {
-            get {
+        internal static string FieldSelectionWindow_lbFieldDefinitions_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindow_lbFieldDefinitions_Text", resourceCulture);
             }
         }
@@ -1147,8 +1418,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Field Selection: Choose a field element ähnelt.
         /// </summary>
-        internal static string FieldSelectionWindow_Text {
-            get {
+        internal static string FieldSelectionWindow_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldSelectionWindow_Text", resourceCulture);
             }
         }
@@ -1156,8 +1429,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Show flow block ähnelt.
         /// </summary>
-        internal static string FieldView_checkBoxShowFlowBlock_Text {
-            get {
+        internal static string FieldView_checkBoxShowFlowBlock_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldView_checkBoxShowFlowBlock_Text", resourceCulture);
             }
         }
@@ -1165,8 +1440,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Copy field value(s) ähnelt.
         /// </summary>
-        internal static string FieldView_itmCopy_Text {
-            get {
+        internal static string FieldView_itmCopy_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldView_itmCopy_Text", resourceCulture);
             }
         }
@@ -1174,8 +1451,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open in &amp;default editor ähnelt.
         /// </summary>
-        internal static string FieldView_itmOpenFieldValue_Text {
-            get {
+        internal static string FieldView_itmOpenFieldValue_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldView_itmOpenFieldValue_Text", resourceCulture);
             }
         }
@@ -1183,8 +1462,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Refresh ähnelt.
         /// </summary>
-        internal static string FieldView_itmRefresh_Text {
-            get {
+        internal static string FieldView_itmRefresh_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldView_itmRefresh_Text", resourceCulture);
             }
         }
@@ -1192,8 +1473,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Field view ähnelt.
         /// </summary>
-        internal static string FieldView_Text {
-            get {
+        internal static string FieldView_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FieldView_Text", resourceCulture);
             }
         }
@@ -1201,8 +1484,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string FlowBlockMainView_btApply_Text {
-            get {
+        internal static string FlowBlockMainView_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FlowBlockMainView_btApply_Text", resourceCulture);
             }
         }
@@ -1210,8 +1495,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string FlowBlockMainView_btCancel_Text {
-            get {
+        internal static string FlowBlockMainView_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FlowBlockMainView_btCancel_Text", resourceCulture);
             }
         }
@@ -1219,8 +1506,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Execution index: {0} ähnelt.
         /// </summary>
-        internal static string FlowBlockUIElement_ExecutionIndex_Text {
-            get {
+        internal static string FlowBlockUIElement_ExecutionIndex_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("FlowBlockUIElement_ExecutionIndex_Text", resourceCulture);
             }
         }
@@ -1228,8 +1517,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Output field: {0} (Fully qualified field name: {1}) ähnelt.
         /// </summary>
-        internal static string FlowBlockUIElementRenderer_Field_Tooltip {
-            get {
+        internal static string FlowBlockUIElementRenderer_Field_Tooltip
+        {
+            get
+            {
                 return ResourceManager.GetString("FlowBlockUIElementRenderer_Field_Tooltip", resourceCulture);
             }
         }
@@ -1237,8 +1528,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die This field is required for execution: {0} ähnelt.
         /// </summary>
-        internal static string FlowBlockUIElementRenderer_RequiredFields_Tooltip {
-            get {
+        internal static string FlowBlockUIElementRenderer_RequiredFields_Tooltip
+        {
+            get
+            {
                 return ResourceManager.GetString("FlowBlockUIElementRenderer_RequiredFields_Tooltip", resourceCulture);
             }
         }
@@ -1246,8 +1539,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string GridView_btApply_Text {
-            get {
+        internal static string GridView_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("GridView_btApply_Text", resourceCulture);
             }
         }
@@ -1255,8 +1550,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string GridView_btCancel_Text {
-            get {
+        internal static string GridView_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("GridView_btCancel_Text", resourceCulture);
             }
         }
@@ -1264,8 +1561,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Set the size of your grid here. The values are applied immediately to the current project grid. ähnelt.
         /// </summary>
-        internal static string GridView_lbDescription_Text {
-            get {
+        internal static string GridView_lbDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("GridView_lbDescription_Text", resourceCulture);
             }
         }
@@ -1273,8 +1572,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Height ähnelt.
         /// </summary>
-        internal static string GridView_lbHeight_Text {
-            get {
+        internal static string GridView_lbHeight_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("GridView_lbHeight_Text", resourceCulture);
             }
         }
@@ -1282,8 +1583,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Width ähnelt.
         /// </summary>
-        internal static string GridView_lbWidth_Text {
-            get {
+        internal static string GridView_lbWidth_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("GridView_lbWidth_Text", resourceCulture);
             }
         }
@@ -1291,8 +1594,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Edit grid ähnelt.
         /// </summary>
-        internal static string GridView_Text {
-            get {
+        internal static string GridView_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("GridView_Text", resourceCulture);
             }
         }
@@ -1300,8 +1605,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_btApply_Text {
-            get {
+        internal static string InsertTextOrField_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_btApply_Text", resourceCulture);
             }
         }
@@ -1309,8 +1616,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_btCancel_Text {
-            get {
+        internal static string InsertTextOrField_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_btCancel_Text", resourceCulture);
             }
         }
@@ -1318,8 +1627,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Select field ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_btSelectField_Text {
-            get {
+        internal static string InsertTextOrField_btSelectField_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_btSelectField_Text", resourceCulture);
             }
         }
@@ -1327,8 +1638,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Pass a field value: ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_lbInsertField_Text {
-            get {
+        internal static string InsertTextOrField_lbInsertField_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_lbInsertField_Text", resourceCulture);
             }
         }
@@ -1336,8 +1649,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Enter a custom value: ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_lbInsertText_Text {
-            get {
+        internal static string InsertTextOrField_lbInsertText_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_lbInsertText_Text", resourceCulture);
             }
         }
@@ -1345,8 +1660,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Selected parameter ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_lbParameterHeader_Text {
-            get {
+        internal static string InsertTextOrField_lbParameterHeader_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_lbParameterHeader_Text", resourceCulture);
             }
         }
@@ -1354,8 +1671,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please choose... ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_NoFieldSelected_Text {
-            get {
+        internal static string InsertTextOrField_NoFieldSelected_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_NoFieldSelected_Text", resourceCulture);
             }
         }
@@ -1363,8 +1682,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Enter value or select field ähnelt.
         /// </summary>
-        internal static string InsertTextOrField_Text {
-            get {
+        internal static string InsertTextOrField_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("InsertTextOrField_Text", resourceCulture);
             }
         }
@@ -1372,8 +1693,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Add ähnelt.
         /// </summary>
-        internal static string OptionsWindow_btAdd_Text {
-            get {
+        internal static string OptionsWindow_btAdd_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionsWindow_btAdd_Text", resourceCulture);
             }
         }
@@ -1381,8 +1704,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Remove ähnelt.
         /// </summary>
-        internal static string OptionsWindow_btDelete_Text {
-            get {
+        internal static string OptionsWindow_btDelete_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionsWindow_btDelete_Text", resourceCulture);
             }
         }
@@ -1390,8 +1715,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Load &amp;default options ähnelt.
         /// </summary>
-        internal static string OptionsWindow_btRevert_Text {
-            get {
+        internal static string OptionsWindow_btRevert_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionsWindow_btRevert_Text", resourceCulture);
             }
         }
@@ -1399,8 +1726,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Save ähnelt.
         /// </summary>
-        internal static string OptionView_btApply_Text {
-            get {
+        internal static string OptionView_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_btApply_Text", resourceCulture);
             }
         }
@@ -1408,8 +1737,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Description: ähnelt.
         /// </summary>
-        internal static string OptionView_labelDescription_Text {
-            get {
+        internal static string OptionView_labelDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_labelDescription_Text", resourceCulture);
             }
         }
@@ -1417,8 +1748,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Available as placeholder ähnelt.
         /// </summary>
-        internal static string OptionView_labelIsPlaceholderEnabled_Text {
-            get {
+        internal static string OptionView_labelIsPlaceholderEnabled_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_labelIsPlaceholderEnabled_Text", resourceCulture);
             }
         }
@@ -1426,8 +1759,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Name: ähnelt.
         /// </summary>
-        internal static string OptionView_labelName_Text {
-            get {
+        internal static string OptionView_labelName_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_labelName_Text", resourceCulture);
             }
         }
@@ -1435,8 +1770,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Edit option ähnelt.
         /// </summary>
-        internal static string OptionView_labelTitleHeader_Text {
-            get {
+        internal static string OptionView_labelTitleHeader_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_labelTitleHeader_Text", resourceCulture);
             }
         }
@@ -1444,8 +1781,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Type: ähnelt.
         /// </summary>
-        internal static string OptionView_labelType_Text {
-            get {
+        internal static string OptionView_labelType_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_labelType_Text", resourceCulture);
             }
         }
@@ -1453,8 +1792,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Value: ähnelt.
         /// </summary>
-        internal static string OptionView_labelValue_Text {
-            get {
+        internal static string OptionView_labelValue_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_labelValue_Text", resourceCulture);
             }
         }
@@ -1462,8 +1803,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No ähnelt.
         /// </summary>
-        internal static string OptionView_No {
-            get {
+        internal static string OptionView_No
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_No", resourceCulture);
             }
         }
@@ -1471,8 +1814,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Yes ähnelt.
         /// </summary>
-        internal static string OptionView_Yes {
-            get {
+        internal static string OptionView_Yes
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionView_Yes", resourceCulture);
             }
         }
@@ -1480,8 +1825,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Add ähnelt.
         /// </summary>
-        internal static string OptionWindow_btAdd_Text {
-            get {
+        internal static string OptionWindow_btAdd_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_btAdd_Text", resourceCulture);
             }
         }
@@ -1489,8 +1836,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string OptionWindow_btApply_Text {
-            get {
+        internal static string OptionWindow_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_btApply_Text", resourceCulture);
             }
         }
@@ -1498,8 +1847,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string OptionWindow_btCancel_Text {
-            get {
+        internal static string OptionWindow_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_btCancel_Text", resourceCulture);
             }
         }
@@ -1507,8 +1858,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Remove ähnelt.
         /// </summary>
-        internal static string OptionWindow_btDelete_Text {
-            get {
+        internal static string OptionWindow_btDelete_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_btDelete_Text", resourceCulture);
             }
         }
@@ -1516,8 +1869,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Reset options ähnelt.
         /// </summary>
-        internal static string OptionWindow_btRevert_Text {
-            get {
+        internal static string OptionWindow_btRevert_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_btRevert_Text", resourceCulture);
             }
         }
@@ -1525,8 +1880,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die This command resets existing option values to their defaults. Do you really want to restore the default options? ähnelt.
         /// </summary>
-        internal static string OptionWindow_RevertOptions_Message {
-            get {
+        internal static string OptionWindow_RevertOptions_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_RevertOptions_Message", resourceCulture);
             }
         }
@@ -1534,8 +1891,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Reset Options ähnelt.
         /// </summary>
-        internal static string OptionWindow_RevertOptions_Title {
-            get {
+        internal static string OptionWindow_RevertOptions_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_RevertOptions_Title", resourceCulture);
             }
         }
@@ -1543,8 +1902,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Options ähnelt.
         /// </summary>
-        internal static string OptionWindow_Text {
-            get {
+        internal static string OptionWindow_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("OptionWindow_Text", resourceCulture);
             }
         }
@@ -1552,8 +1913,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problems ähnelt.
         /// </summary>
-        internal static string ProblemsView_Text {
-            get {
+        internal static string ProblemsView_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProblemsView_Text", resourceCulture);
             }
         }
@@ -1561,8 +1924,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No start flow block was found. Automatic alignment cannot be performed. ähnelt.
         /// </summary>
-        internal static string ProjectPanel_AutoAdjust_NoStart_Message {
-            get {
+        internal static string ProjectPanel_AutoAdjust_NoStart_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_AutoAdjust_NoStart_Message", resourceCulture);
             }
         }
@@ -1570,8 +1935,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No automatic alignment ähnelt.
         /// </summary>
-        internal static string ProjectPanel_AutoAdjust_NoStart_Title {
-            get {
+        internal static string ProjectPanel_AutoAdjust_NoStart_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_AutoAdjust_NoStart_Title", resourceCulture);
             }
         }
@@ -1579,8 +1946,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Auto align ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btAutoAdjustFlowLayout_Text {
-            get {
+        internal static string ProjectPanel_btAutoAdjustFlowLayout_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btAutoAdjustFlowLayout_Text", resourceCulture);
             }
         }
@@ -1588,8 +1957,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Connect ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btConnectionMode_Text {
-            get {
+        internal static string ProjectPanel_btConnectionMode_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btConnectionMode_Text", resourceCulture);
             }
         }
@@ -1597,8 +1968,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Run ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btExecute_Text {
-            get {
+        internal static string ProjectPanel_btExecute_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btExecute_Text", resourceCulture);
             }
         }
@@ -1606,8 +1979,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Settings ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btGridSettings_Text {
-            get {
+        internal static string ProjectPanel_btGridSettings_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btGridSettings_Text", resourceCulture);
             }
         }
@@ -1615,8 +1990,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Pause ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btPause_Text {
-            get {
+        internal static string ProjectPanel_btPause_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btPause_Text", resourceCulture);
             }
         }
@@ -1624,8 +2001,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Select ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btSelectionMode_Text {
-            get {
+        internal static string ProjectPanel_btSelectionMode_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btSelectionMode_Text", resourceCulture);
             }
         }
@@ -1633,8 +2012,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Stop ähnelt.
         /// </summary>
-        internal static string ProjectPanel_btStopExecution_Text {
-            get {
+        internal static string ProjectPanel_btStopExecution_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_btStopExecution_Text", resourceCulture);
             }
         }
@@ -1642,8 +2023,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} (Copy) ähnelt.
         /// </summary>
-        internal static string ProjectPanel_Copy_NameFormat {
-            get {
+        internal static string ProjectPanel_Copy_NameFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_Copy_NameFormat", resourceCulture);
             }
         }
@@ -1651,8 +2034,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Remove &amp;breakpoint ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmBreakPoint_Remove_Text {
-            get {
+        internal static string ProjectPanel_itmBreakPoint_Remove_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmBreakPoint_Remove_Text", resourceCulture);
             }
         }
@@ -1660,8 +2045,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Set breakpoint ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmBreakPoint_Set_Text {
-            get {
+        internal static string ProjectPanel_itmBreakPoint_Set_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmBreakPoint_Set_Text", resourceCulture);
             }
         }
@@ -1669,8 +2056,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Breakpoint ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmBreakPoint_Text {
-            get {
+        internal static string ProjectPanel_itmBreakPoint_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmBreakPoint_Text", resourceCulture);
             }
         }
@@ -1678,8 +2067,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Set execution index ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmDefineIndex_Text {
-            get {
+        internal static string ProjectPanel_itmDefineIndex_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmDefineIndex_Text", resourceCulture);
             }
         }
@@ -1687,8 +2078,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Delete connection ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmDeleteConnection_Text {
-            get {
+        internal static string ProjectPanel_itmDeleteConnection_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmDeleteConnection_Text", resourceCulture);
             }
         }
@@ -1696,8 +2089,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Delete flow block ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmDeleteElement_Text {
-            get {
+        internal static string ProjectPanel_itmDeleteElement_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmDeleteElement_Text", resourceCulture);
             }
         }
@@ -1705,8 +2100,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Edit properties ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmEditElement_Edit_Text {
-            get {
+        internal static string ProjectPanel_itmEditElement_Edit_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmEditElement_Edit_Text", resourceCulture);
             }
         }
@@ -1714,8 +2111,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Edit properties ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmEditElement_Text {
-            get {
+        internal static string ProjectPanel_itmEditElement_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmEditElement_Text", resourceCulture);
             }
         }
@@ -1723,8 +2122,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;View properties ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmEditElement_View_Text {
-            get {
+        internal static string ProjectPanel_itmEditElement_View_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmEditElement_View_Text", resourceCulture);
             }
         }
@@ -1732,8 +2133,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manage execution &amp;index ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmIndex_Text {
-            get {
+        internal static string ProjectPanel_itmIndex_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmIndex_Text", resourceCulture);
             }
         }
@@ -1741,8 +2144,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Inspect input records ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmInsightInput_Text {
-            get {
+        internal static string ProjectPanel_itmInsightInput_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmInsightInput_Text", resourceCulture);
             }
         }
@@ -1750,8 +2155,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Inspect output records ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmInsightOutput_Text {
-            get {
+        internal static string ProjectPanel_itmInsightOutput_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmInsightOutput_Text", resourceCulture);
             }
         }
@@ -1759,8 +2166,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manage &amp;notifications ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmManageNotifications_Text {
-            get {
+        internal static string ProjectPanel_itmManageNotifications_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmManageNotifications_Text", resourceCulture);
             }
         }
@@ -1768,8 +2177,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Refresh ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmRefresh_Text {
-            get {
+        internal static string ProjectPanel_itmRefresh_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmRefresh_Text", resourceCulture);
             }
         }
@@ -1777,8 +2188,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Remove execution index ähnelt.
         /// </summary>
-        internal static string ProjectPanel_itmRemoveIndex_Text {
-            get {
+        internal static string ProjectPanel_itmRemoveIndex_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_itmRemoveIndex_Text", resourceCulture);
             }
         }
@@ -1786,8 +2199,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Invoke ähnelt.
         /// </summary>
-        internal static string ProjectPanel_labelInvoke_Text {
-            get {
+        internal static string ProjectPanel_labelInvoke_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_labelInvoke_Text", resourceCulture);
             }
         }
@@ -1795,8 +2210,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Iteration Context ähnelt.
         /// </summary>
-        internal static string ProjectPanel_labelIterationContext_Text {
-            get {
+        internal static string ProjectPanel_labelIterationContext_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_labelIterationContext_Text", resourceCulture);
             }
         }
@@ -1804,8 +2221,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Recursive Call ähnelt.
         /// </summary>
-        internal static string ProjectPanel_labelRecursiveCall_Text {
-            get {
+        internal static string ProjectPanel_labelRecursiveCall_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_labelRecursiveCall_Text", resourceCulture);
             }
         }
@@ -1813,8 +2232,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Iteration-context relation: the selected flow block is executed once per dataset iteration of the target flow block (iteration context). ähnelt.
         /// </summary>
-        internal static string ProjectPanel_Legend_IterationContext_Tooltip {
-            get {
+        internal static string ProjectPanel_Legend_IterationContext_Tooltip
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_Legend_IterationContext_Tooltip", resourceCulture);
             }
         }
@@ -1823,8 +2244,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         ///   Sucht eine lokalisierte Zeichenfolge, die Recursive call:
         ///The Recursive Call flow block invokes the connected earlier target flow block again. The target must lie on the Recursive Call flow block&apos;s incoming execution path. ähnelt.
         /// </summary>
-        internal static string ProjectPanel_Legend_RecursiveCall_Tooltip {
-            get {
+        internal static string ProjectPanel_Legend_RecursiveCall_Tooltip
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_Legend_RecursiveCall_Tooltip", resourceCulture);
             }
         }
@@ -1832,8 +2255,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Multi paste is not supported in this version. Only the first selected Flow Block will be copied. ähnelt.
         /// </summary>
-        internal static string ProjectPanel_MultiPasteNotSupported_Message {
-            get {
+        internal static string ProjectPanel_MultiPasteNotSupported_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_MultiPasteNotSupported_Message", resourceCulture);
             }
         }
@@ -1841,8 +2266,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Multi paste not supported ähnelt.
         /// </summary>
-        internal static string ProjectPanel_MultiPasteNotSupported_Title {
-            get {
+        internal static string ProjectPanel_MultiPasteNotSupported_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_MultiPasteNotSupported_Title", resourceCulture);
             }
         }
@@ -1850,8 +2277,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The runtime was aborted due to an unexpected error.{1}Runtime exception:{1}{0} ähnelt.
         /// </summary>
-        internal static string ProjectPanel_RuntimeAborted_Message {
-            get {
+        internal static string ProjectPanel_RuntimeAborted_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_RuntimeAborted_Message", resourceCulture);
             }
         }
@@ -1859,8 +2288,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Runtime aborted ähnelt.
         /// </summary>
-        internal static string ProjectPanel_RuntimeAborted_Title {
-            get {
+        internal static string ProjectPanel_RuntimeAborted_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_RuntimeAborted_Title", resourceCulture);
             }
         }
@@ -1868,8 +2299,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The execution could not be started: {0} ähnelt.
         /// </summary>
-        internal static string ProjectPanel_RuntimeStartFailed_Message {
-            get {
+        internal static string ProjectPanel_RuntimeStartFailed_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_RuntimeStartFailed_Message", resourceCulture);
             }
         }
@@ -1877,8 +2310,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Runtime execution failed ähnelt.
         /// </summary>
-        internal static string ProjectPanel_RuntimeStartFailed_Title {
-            get {
+        internal static string ProjectPanel_RuntimeStartFailed_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_RuntimeStartFailed_Title", resourceCulture);
             }
         }
@@ -1886,8 +2321,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project ähnelt.
         /// </summary>
-        internal static string ProjectPanel_Text {
-            get {
+        internal static string ProjectPanel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_Text", resourceCulture);
             }
         }
@@ -1895,8 +2332,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die There are grid elements that are never executed. Affected elements: {0} ähnelt.
         /// </summary>
-        internal static string ProjectPanel_Warning_NotExecutedElements_Text {
-            get {
+        internal static string ProjectPanel_Warning_NotExecutedElements_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectPanel_Warning_NotExecutedElements_Text", resourceCulture);
             }
         }
@@ -1904,8 +2343,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string ProjectView_btApply_Text {
-            get {
+        internal static string ProjectView_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_btApply_Text", resourceCulture);
             }
         }
@@ -1913,8 +2354,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string ProjectView_btCancel_Text {
-            get {
+        internal static string ProjectView_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_btCancel_Text", resourceCulture);
             }
         }
@@ -1922,8 +2365,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create project ähnelt.
         /// </summary>
-        internal static string ProjectView_CreateProject_Text {
-            get {
+        internal static string ProjectView_CreateProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_CreateProject_Text", resourceCulture);
             }
         }
@@ -1931,8 +2376,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Edit project ähnelt.
         /// </summary>
-        internal static string ProjectView_EditProject_Text {
-            get {
+        internal static string ProjectView_EditProject_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_EditProject_Text", resourceCulture);
             }
         }
@@ -1940,8 +2387,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Creator ähnelt.
         /// </summary>
-        internal static string ProjectView_lbCreator_Text {
-            get {
+        internal static string ProjectView_lbCreator_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbCreator_Text", resourceCulture);
             }
         }
@@ -1949,8 +2398,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Here you can create a new project or edit the project properties. ähnelt.
         /// </summary>
-        internal static string ProjectView_lbDescription_Text {
-            get {
+        internal static string ProjectView_lbDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbDescription_Text", resourceCulture);
             }
         }
@@ -1958,8 +2409,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project input directory ähnelt.
         /// </summary>
-        internal static string ProjectView_lbInputDir_Text {
-            get {
+        internal static string ProjectView_lbInputDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbInputDir_Text", resourceCulture);
             }
         }
@@ -1967,8 +2420,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Notice on open ähnelt.
         /// </summary>
-        internal static string ProjectView_lbNoteOnOpening_Text {
-            get {
+        internal static string ProjectView_lbNoteOnOpening_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbNoteOnOpening_Text", resourceCulture);
             }
         }
@@ -1976,8 +2431,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project output directory ähnelt.
         /// </summary>
-        internal static string ProjectView_lbOutputDir_Text {
-            get {
+        internal static string ProjectView_lbOutputDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbOutputDir_Text", resourceCulture);
             }
         }
@@ -1985,8 +2442,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project description ähnelt.
         /// </summary>
-        internal static string ProjectView_lbProjectDescription_Text {
-            get {
+        internal static string ProjectView_lbProjectDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbProjectDescription_Text", resourceCulture);
             }
         }
@@ -1994,8 +2453,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project name ähnelt.
         /// </summary>
-        internal static string ProjectView_lbProjectName_Text {
-            get {
+        internal static string ProjectView_lbProjectName_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbProjectName_Text", resourceCulture);
             }
         }
@@ -2003,8 +2464,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Short description ähnelt.
         /// </summary>
-        internal static string ProjectView_lbShortDescription_Text {
-            get {
+        internal static string ProjectView_lbShortDescription_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("ProjectView_lbShortDescription_Text", resourceCulture);
             }
         }
@@ -2012,8 +2475,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die An error occurred while determining the available actions for the component. See the application logs for details. ähnelt.
         /// </summary>
-        internal static string PropertyViewListViewFactory_ComponentActionsLoadingFailure_Message {
-            get {
+        internal static string PropertyViewListViewFactory_ComponentActionsLoadingFailure_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("PropertyViewListViewFactory_ComponentActionsLoadingFailure_Message", resourceCulture);
             }
         }
@@ -2021,8 +2486,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Failed to Load Actions ähnelt.
         /// </summary>
-        internal static string PropertyViewListViewFactory_ComponentActionsLoadingFailure_Title {
-            get {
+        internal static string PropertyViewListViewFactory_ComponentActionsLoadingFailure_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("PropertyViewListViewFactory_ComponentActionsLoadingFailure_Title", resourceCulture);
             }
         }
@@ -2030,8 +2497,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please select an object. ähnelt.
         /// </summary>
-        internal static string PropertyViewListViewFactory_SelectionDialog_Message {
-            get {
+        internal static string PropertyViewListViewFactory_SelectionDialog_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("PropertyViewListViewFactory_SelectionDialog_Message", resourceCulture);
             }
         }
@@ -2039,8 +2508,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Select ähnelt.
         /// </summary>
-        internal static string PropertyViewListViewFactory_SelectionDialog_Title {
-            get {
+        internal static string PropertyViewListViewFactory_SelectionDialog_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("PropertyViewListViewFactory_SelectionDialog_Title", resourceCulture);
             }
         }
@@ -2048,8 +2519,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string PropertyWindow_btApply_Text {
-            get {
+        internal static string PropertyWindow_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("PropertyWindow_btApply_Text", resourceCulture);
             }
         }
@@ -2057,8 +2530,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string PropertyWindow_btCancel_Text {
-            get {
+        internal static string PropertyWindow_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("PropertyWindow_btCancel_Text", resourceCulture);
             }
         }
@@ -2066,8 +2541,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Apply ähnelt.
         /// </summary>
-        internal static string RenameWindow_btApply_Text {
-            get {
+        internal static string RenameWindow_btApply_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RenameWindow_btApply_Text", resourceCulture);
             }
         }
@@ -2075,8 +2552,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Back ähnelt.
         /// </summary>
-        internal static string RenameWindow_btCancel_Text {
-            get {
+        internal static string RenameWindow_btCancel_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RenameWindow_btCancel_Text", resourceCulture);
             }
         }
@@ -2084,8 +2563,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die --- Current value: ähnelt.
         /// </summary>
-        internal static string RenameWindow_lbCurrentValue_Text {
-            get {
+        internal static string RenameWindow_lbCurrentValue_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RenameWindow_lbCurrentValue_Text", resourceCulture);
             }
         }
@@ -2093,8 +2574,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die --- New value: ähnelt.
         /// </summary>
-        internal static string RenameWindow_lbNewValue_Text {
-            get {
+        internal static string RenameWindow_lbNewValue_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RenameWindow_lbNewValue_Text", resourceCulture);
             }
         }
@@ -2102,8 +2585,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Rename Entry ähnelt.
         /// </summary>
-        internal static string RenameWindow_Text {
-            get {
+        internal static string RenameWindow_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RenameWindow_Text", resourceCulture);
             }
         }
@@ -2111,8 +2596,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Clea&amp;r output ähnelt.
         /// </summary>
-        internal static string RuntimeView_btClear_Text {
-            get {
+        internal static string RuntimeView_btClear_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_btClear_Text", resourceCulture);
             }
         }
@@ -2120,8 +2607,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Continue ähnelt.
         /// </summary>
-        internal static string RuntimeView_btContinue_Text {
-            get {
+        internal static string RuntimeView_btContinue_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_btContinue_Text", resourceCulture);
             }
         }
@@ -2129,8 +2618,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open &amp;log file ähnelt.
         /// </summary>
-        internal static string RuntimeView_btOpenLogfile_Text {
-            get {
+        internal static string RuntimeView_btOpenLogfile_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_btOpenLogfile_Text", resourceCulture);
             }
         }
@@ -2138,8 +2629,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Pause ähnelt.
         /// </summary>
-        internal static string RuntimeView_btPause_Text {
-            get {
+        internal static string RuntimeView_btPause_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_btPause_Text", resourceCulture);
             }
         }
@@ -2147,8 +2640,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Refresh ähnelt.
         /// </summary>
-        internal static string RuntimeView_btRefresh_Text {
-            get {
+        internal static string RuntimeView_btRefresh_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_btRefresh_Text", resourceCulture);
             }
         }
@@ -2156,8 +2651,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Stop execution ähnelt.
         /// </summary>
-        internal static string RuntimeView_btStopExecution_Text {
-            get {
+        internal static string RuntimeView_btStopExecution_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_btStopExecution_Text", resourceCulture);
             }
         }
@@ -2165,8 +2662,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Run step by step ähnelt.
         /// </summary>
-        internal static string RuntimeView_cbStepwiseExecution_Text {
-            get {
+        internal static string RuntimeView_cbStepwiseExecution_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_cbStepwiseExecution_Text", resourceCulture);
             }
         }
@@ -2174,8 +2673,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Stop on &amp;error ähnelt.
         /// </summary>
-        internal static string RuntimeView_cbStopOnError_Text {
-            get {
+        internal static string RuntimeView_cbStopOnError_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_cbStopOnError_Text", resourceCulture);
             }
         }
@@ -2183,8 +2684,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Stop on &amp;warning ähnelt.
         /// </summary>
-        internal static string RuntimeView_cbStopOnWarning_Text {
-            get {
+        internal static string RuntimeView_cbStopOnWarning_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_cbStopOnWarning_Text", resourceCulture);
             }
         }
@@ -2192,8 +2695,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Export folder ähnelt.
         /// </summary>
-        internal static string RuntimeView_itmExportDir_Text {
-            get {
+        internal static string RuntimeView_itmExportDir_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_itmExportDir_Text", resourceCulture);
             }
         }
@@ -2201,8 +2706,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Runtime ähnelt.
         /// </summary>
-        internal static string RuntimeView_Text {
-            get {
+        internal static string RuntimeView_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("RuntimeView_Text", resourceCulture);
             }
         }
@@ -2210,8 +2717,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Build, Test, and Run Flows - Visually or with AI. Always Under Your Control. ähnelt.
         /// </summary>
-        internal static string SplashWindow_LabelMessage_Text {
-            get {
+        internal static string SplashWindow_LabelMessage_Text
+        {
+            get
+            {
                 return ResourceManager.GetString("SplashWindow_LabelMessage_Text", resourceCulture);
             }
         }
@@ -2219,8 +2728,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die An unexpected error occurred while trying to create the view. Please check the log files for more information. ähnelt.
         /// </summary>
-        internal static string WindowsFormWPFHelper_ShowDialog_Failure_Message {
-            get {
+        internal static string WindowsFormWPFHelper_ShowDialog_Failure_Message
+        {
+            get
+            {
                 return ResourceManager.GetString("WindowsFormWPFHelper_ShowDialog_Failure_Message", resourceCulture);
             }
         }
@@ -2228,8 +2739,10 @@ namespace FlowBlox.AvaloniaDesktop.Resources {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Failed to Show Dialog ähnelt.
         /// </summary>
-        internal static string WindowsFormWPFHelper_ShowDialog_Failure_Title {
-            get {
+        internal static string WindowsFormWPFHelper_ShowDialog_Failure_Title
+        {
+            get
+            {
                 return ResourceManager.GetString("WindowsFormWPFHelper_ShowDialog_Failure_Title", resourceCulture);
             }
         }

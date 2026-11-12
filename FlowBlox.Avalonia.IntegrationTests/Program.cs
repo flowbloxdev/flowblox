@@ -12,9 +12,9 @@ internal static class Program
         // Emulate normal application startup for WPF pack URIs and application
         // metadata. WPF otherwise resolves /Icons/... against this runner executable.
         System.Reflection.Assembly.SetEntryAssembly(typeof(AvaloniaDesktop.App).Assembly);
-        if (args.Length != 2)
+        if (args.Length < 2 || args.Length > 3 || (args.Length == 3 && args[2] != "--field-selection-only" && args[2] != "--launcher-only"))
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj>");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--field-selection-only|--launcher-only]");
             return 2;
         }
 
@@ -37,7 +37,10 @@ internal static class Program
             {
                 WorkspaceDirectory = directory,
                 EnableInteractiveStartup = false,
-                OnStarted = async window => passed = await new WorkspaceIntegrationChecks(window).RunAsync(directory, sourceProjectPath)
+                OnStarted = async window => passed = await new WorkspaceIntegrationChecks(window).RunAsync(
+                    directory, sourceProjectPath,
+                    fieldSelectionOnly: args.Length == 3 && args[2] == "--field-selection-only",
+                    launcherOnly: args.Length == 3 && args[2] == "--launcher-only")
             });
             return exitCode != 0 ? exitCode : passed ? 0 : 1;
         }

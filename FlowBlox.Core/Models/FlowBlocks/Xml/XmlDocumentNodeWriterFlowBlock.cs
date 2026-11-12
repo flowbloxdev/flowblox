@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -61,10 +62,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_NodeName", Description = "XmlDocumentNodeWriterFlowBlock_NodeName_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [Required()]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string NodeName { get; set; }
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_UpdateExistingNode_DisplayName", Description = "XmlDocumentNodeWriterFlowBlock_UpdateExistingNode_Tooltip", 
             ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UpdateExistingNode { get; set; }
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_Assignments", Description = "XmlDocumentNodeWriterFlowBlock_Assignments_Tooltip",
@@ -85,10 +88,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
         {
             foreach (var assignment in Assignments)
             {
-                var xpath = FlowBloxFieldHelper.ReplaceFieldsInString(assignment.XPath);
+                var xpath = assignment.Resolve(owner => owner.XPath);
                 var value = assignment.FieldValue != null
                     ? assignment.FieldValue.Value?.ToString()
-                    : FlowBloxFieldHelper.ReplaceFieldsInString(assignment.Value);
+                    : assignment.Resolve(owner => owner.Value);
 
                 XPathEnsurer.EnsureXPathExists(baseNode, xpath);
 
@@ -153,6 +156,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
                 if (associatedXmlDocument.InternalXmlDocument == null)
                     throw new InvalidOperationException("The XML document in the source flow block is null or has not been initialized.");
 
+                var xpath = this.Resolve(owner => owner.XPath);
+                var nodeName = this.Resolve(owner => owner.NodeName);
+
                 XmlNode rootNode = null;
                 XmlNode parent = null;
 
@@ -162,22 +168,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
                         throw new InvalidOperationException("NodeSource was specified, but no CreatedNode exists.");
 
                     rootNode = AssociatedNodeWriter.CreatedOrUpdatedNode;
-                    parent = string.IsNullOrEmpty(XPath)
+                    parent = string.IsNullOrEmpty(xpath)
                         ? rootNode
-                        : rootNode.SelectSingleNode(XPath);
+                        : rootNode.SelectSingleNode(xpath);
                 }
                 else if (associatedXmlDocument?.InternalXmlDocument != null)
                 {
                     rootNode = associatedXmlDocument.InternalXmlDocument.DocumentElement;
-                    parent = string.IsNullOrEmpty(XPath)
+                    parent = string.IsNullOrEmpty(xpath)
                         ? rootNode
-                        : associatedXmlDocument.InternalXmlDocument.SelectSingleNode(XPath);
+                        : associatedXmlDocument.InternalXmlDocument.SelectSingleNode(xpath);
                 }
 
                 if (parent == null)
                 {
-                    if (!string.IsNullOrEmpty(XPath))
-                        throw new InvalidOperationException($"The target node could not be found using the specified XPath: '{XPath}'.");
+                    if (!string.IsNullOrEmpty(xpath))
+                        throw new InvalidOperationException($"The target node could not be found using the specified XPath: '{xpath}'.");
                     else
                         throw new InvalidOperationException("The target node could not be found.");
                 }
@@ -185,12 +191,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
                 XmlNode newOrUpdatedNode = null;
 
                 if (UpdateExistingNode)
-                    newOrUpdatedNode = parent.SelectSingleNode(NodeName);
+                    newOrUpdatedNode = parent.SelectSingleNode(nodeName);
 
                 if (newOrUpdatedNode == null)
                 {
                     var baseDoc = associatedXmlDocument.InternalXmlDocument;
-                    var pureNodeName = ExtractSingleLevelNodeName(NodeName);
+                    var pureNodeName = ExtractSingleLevelNodeName(nodeName);
                     var newNode = baseDoc!.CreateElement(pureNodeName);
                     parent.AppendChild(newNode);
                     newOrUpdatedNode = newNode;

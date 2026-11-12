@@ -11,12 +11,26 @@ This file summarizes core project conventions for AI/coding agents working in th
 - FlowBlock execution logic belongs to `FlowBlox.Core` (runtime, testing, generation, execution pipeline).
 
 ## Code Formatting
+- Declare each class in its own file, especially models and DTOs. Use explicit classes rather than records for models and DTOs.
+- Avoid local functions (functions declared inside methods). Use separate methods unless a local function provides a substantial, concrete benefit that outweighs the readability and maintenance cost.
 - Always put XML documentation `<summary>` and `</summary>` on separate lines, with the summary content on one or more lines between them; never use inline summary tags.
 - Prefer open, readable formatting over compressed code: one statement or initializer entry per line.
 - Put conditional bodies on separate lines; use braces for multi-line bodies and object assignments.
 - Wrap longer signatures and calls with one parameter or argument per line; put LINQ steps on separate lines.
 - Separate logical steps with blank lines and use descriptive local names. Keep the implementation simple without squeezing its layout.
 - Do not combine type checks and multiple property checks in compound property-pattern guard clauses. Assign the typed value to a descriptive local first, then express the guard with explicit boolean conditions.
+
+## AI Assistant Explanation Formatting
+
+- Keep explanation/prompt source text readable in the editor, aiming for roughly 120–160 characters per line as a soft guideline.
+- Present separate rules as bullet points. Wrap longer bullets at sentence or clause boundaries and indent continuation lines under the text.
+  Keep related statements in the same bullet; avoid long prose blocks and unnecessarily short, fragmented lines.
+- Preserve inline code, property paths and JSON examples when wrapping; do not split them just to meet the line-length guideline.
+
+## Tool API Metadata and Token Budget
+
+- Tool descriptions and responses, especially type descriptions repeated per type/property, are token-critical.
+  Extend their output only for a concrete consumer need; do not add general explanations, syntax examples or tool/resolver hints.
 
 ## FlowBlock UI Generation Model
 - FlowBlock property UIs are generated via attributes (annotation-driven UI).
@@ -29,6 +43,27 @@ This file summarizes core project conventions for AI/coding agents working in th
   - `Resolver/TextBoxWithOptionalButtonsCreator`
   - `Factory/PropertyView/DataGridFactory`
   - `Factory/Base/PropertyFactoryBase` (`PropertyViewControlFactoryBase`)
+
+### Enabling field references
+
+- Enable field selection for editable business configuration that can consume runtime values:
+  `[FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]`. Leave identifiers, declarations, flow-logic,
+  metadata and UI-control properties unenabled. No disable annotation is needed.
+- Supported types are `string`, `bool`, `int`, `long`, `float`, `double`, `DateTime`, enums and nullable scalar forms.
+  Use `FlowBloxFieldSelection.Supports(PropertyInfo)` as the shared eligibility check; do not duplicate type/flag checks.
+- Read enabled configuration with `this.Resolve(x => x.Property)` before use, including validation, modifiers,
+  lifecycle callbacks and standalone providers. Strings resolve inline placeholders and return `string.Empty` for null;
+  scalars resolve their selected field. Keep configured literals unchanged and name locals after the property in camelCase.
+- Use `Resolve(..., required: true)` for required values (`ValidationException` on null/blank), or `TryResolve(..., out var value)`
+  when the caller decides what to do with an empty value. Zero and false are valid values.
+- FlowBlocks can use `if (!this.ResolveOrCreateNotification(x => x.Property, out var value, runtime, notification)) return;`.
+  Failure creates the notification and completes the block: result blocks generate an empty result; other blocks execute
+  their next blocks. The caller must still return. Preserve intentional optional-value/fallback behavior.
+- Use low-level `FlowBloxFieldHelper` methods for arbitrary text rather than property access; preserve existing specialized
+  SQL/math resolution. Do not assume every configuration consumer runs inside the shared scalar invocation scope.
+- Scalar assignments use `PropertySelectedFieldMap`; strings keep inline placeholders. No companion properties or
+  per-property conversion logic. Preserve selection attributes and flexible runtime conversions.
+  Legacy import and AI updates use the central implementation; see `docs/field-references.md`.
 
 ## Required Annotation Namespaces
 - FlowBlox UI annotations:
@@ -95,6 +130,8 @@ This file summarizes core project conventions for AI/coding agents working in th
 - FlowBlocks without meaningful user-facing configuration may rely on the base implementation.
 
 ## Unit-Test Scope
+- Give each test one clear behavioral outcome. Split independent scenarios; do not lock prompt wording or metadata cleanup
+  through keyword presence/absence checks. Keep text assertions when the text itself is functional output or protects sensitive data.
 - Do not add trivial baseline tests for changes below roughly two story points of complexity.
 - A test must protect meaningful FlowBlox-owned behavior such as branching, validation and error handling, state transitions, migrations, serialization compatibility, runtime interaction, or non-trivial orchestration.
 - Do not create tests that merely prove framework/BCL or third-party behavior, straightforward property-to-option mapping, or known cryptographic library output. For example, hashing `"abc"` and comparing it with the standard SHA-256 digest does not meaningfully test FlowBlox.
@@ -104,6 +141,7 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Add tests when project-specific logic or a concrete regression risk makes them valuable, even if the implementation itself is small.
 
 ## Runtime/Execution Conventions
+- Possible unresolved field references are diagnostic hints only: report them as warnings, never use their presence to block validation, runtime startup, or FlowBlock execution. Text such as `$ABC::53` may be an intentional literal value. Required fields are missing only when their resolved value is null, empty, or whitespace.
 - Keep execution concerns in `FlowBlox.Core`.
 - Generation strategies and FlowBlock test/runtime integration must use existing runtime pipeline, not parallel ad-hoc execution paths.
 - Prefer passing/using existing runtime context from executors instead of creating duplicate runtime instances.

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -49,7 +50,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
             return Invoke(runtime, data, () =>
             {
 
-                var content = FlowBloxFieldHelper.ReplaceFieldsInString(JsonContent);
+                var content = this.Resolve(owner => owner.JsonContent);
                 var token = JToken.Parse(content);
                 if (token is JObject obj)
                     InternalJsonObject = obj;

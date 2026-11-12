@@ -49,13 +49,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         [Range(0d, 100d)]
         [Display(Name = "AWSCompareFacesFlowBlock_SimilarityThreshold", Description = "AWSCompareFacesFlowBlock_SimilarityThreshold_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public double SimilarityThreshold { get; set; } = 90d;
 
         [Display(Name = "AWSCompareFacesFlowBlock_QualityFilter", Description = "AWSCompareFacesFlowBlock_QualityFilter_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public AWSCompareFacesQualityFilter QualityFilter { get; set; } = AWSCompareFacesQualityFilter.Auto;
 
         [Range(1, 1000)]
         [Display(Name = "AWSCompareFacesFlowBlock_MaxResults", Description = "AWSCompareFacesFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxResults { get; set; } = 100;
 
         [Display(Name = "AWSCompareFacesFlowBlock_InputImageMappings", Description = "AWSCompareFacesFlowBlock_InputImageMappings_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AWSCompareFacesFlowBlock_Groups_InputImages", Order = 0)]
@@ -150,7 +153,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
                 foreach (var mapping in InputImageMappings.Where(x => x?.FieldElement != null))
                 {
-                    var key = FlowBloxFieldHelper.ReplaceFieldsInString(mapping.Key ?? string.Empty)?.Trim();
+                    var key = mapping.Resolve(owner => owner.Key).Trim();
                     if (string.IsNullOrWhiteSpace(key))
                         continue;
 
@@ -206,7 +209,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
             if (field.GetConfiguredType() == typeof(byte[]))
                 return field.Value as byte[] ?? Array.Empty<byte>();
 
-            var value = FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue ?? string.Empty)?.Trim();
+            var value = field.Resolve(owner => owner.StringValue).Trim();
             if (string.IsNullOrWhiteSpace(value))
                 return Array.Empty<byte>();
 

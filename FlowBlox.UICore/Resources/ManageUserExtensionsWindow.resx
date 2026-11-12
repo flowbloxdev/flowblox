@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -132,8 +132,8 @@
   <data name="Button_PublishVersion" xml:space="preserve">
   <value>Publish</value>
 </data>
-  <data name="Button_SaveChanges" xml:space="preserve">
-  <value>Save changes</value>
+  <data name="Button_Apply" xml:space="preserve">
+  <value>Apply</value>
 </data>
   <data name="CheckBox_ExtensionVersion_Active" xml:space="preserve">
   <value>Version is active</value>
@@ -201,8 +201,8 @@
   <data name="Button_PublishVersion_Tooltip" xml:space="preserve">
   <value>A version can only be published once valid content has been assigned to it.</value>
 </data>
-  <data name="Button_SaveChanges_Tooltip" xml:space="preserve">
-  <value>This saves the pending changes on the extension platform.</value>
+  <data name="Button_Apply_Tooltip" xml:space="preserve">
+  <value>Saves the changes without closing the dialog.</value>
 </data>
   <data name="VersionView_Expander_Notes_Header" xml:space="preserve">
   <value>What should be considered when uploading a version?</value>
@@ -251,5 +251,8 @@ You can add, edit, disable, or remove extensions, as well as create and manage d
   </data>
   <data name="Loading_SaveInProgress" xml:space="preserve">
     <value>Saving changes and uploading extension content. Please wait...</value>
+  </data>
+  <data name="Button_Back" xml:space="preserve">
+    <value>Back</value>
   </data>
 </root>

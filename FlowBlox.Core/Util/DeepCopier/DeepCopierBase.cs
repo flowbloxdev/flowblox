@@ -78,7 +78,11 @@ namespace FlowBlox.Core.Util.DeepCopier
 
             foreach (var property in properties)
             {
-                if (IsCopyableEnumerable(property))
+                if (IsDictionary(property.PropertyType) && IsCopyableProperty(property))
+                {
+                    CopyToDictionary(source, property, copy);
+                }
+                else if (IsCopyableEnumerable(property))
                 {
                     this.CopyToManyAssociation(source, property, copy);
                 }
@@ -189,6 +193,11 @@ namespace FlowBlox.Core.Util.DeepCopier
             return true;
         }
 
+        private static bool IsDictionary(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+        }
+
         protected bool IsCopyableEnumerable(PropertyInfo property)
         {
             if (!IsCopyableProperty(property))
@@ -261,6 +270,27 @@ namespace FlowBlox.Core.Util.DeepCopier
             return false;
         }
 
+
+        private static void CopyToDictionary(T source, PropertyInfo property, T copy)
+        {
+            if (!property.CanWrite)
+                return;
+
+            var dictionary = property.GetValue(source);
+            if (dictionary == null)
+            {
+                property.SetValue(copy, null);
+                return;
+            }
+
+            // Clone the container and preserve its comparer; keys and values retain their references.
+            // Consider reference resolution analogous to list entries before introducing deep-copy semantics.
+            var comparer = property.PropertyType
+                .GetProperty(nameof(Dictionary<object, object>.Comparer))
+                .GetValue(dictionary);
+            var dictionaryCopy = Activator.CreateInstance(property.PropertyType, dictionary, comparer);
+            property.SetValue(copy, dictionaryCopy);
+        }
 
         private void CopyToOneAssociation(T source, PropertyInfo property, T copy)
         {

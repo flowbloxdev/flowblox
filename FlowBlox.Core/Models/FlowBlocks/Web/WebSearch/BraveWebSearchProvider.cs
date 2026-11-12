@@ -1,8 +1,10 @@
+using FlowBlox.Core.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Util.Fields;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
 {
@@ -37,7 +39,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
             var url = ResolveBaseUrl() + "?" + string.Join("&", query.Select(x =>
                 $"{Uri.EscapeDataString(x.Key)}={Uri.EscapeDataString(x.Value)}"));
 
-            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(Math.Max(1, TimeoutSeconds)) };
+            var timeoutSeconds = this.Resolve(provider => provider.TimeoutSeconds);
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(Math.Max(1, timeoutSeconds)) };
             using var message = new HttpRequestMessage(HttpMethod.Get, url);
             message.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             message.Headers.Add("X-Subscription-Token", ResolveApiKey());

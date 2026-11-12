@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Projekt ausführen</value>
+  </data>
+  <data name="LocalProjects" xml:space="preserve">
+    <value>Lokale Projekte</value>
+  </data>
+  <data name="RecentProjects" xml:space="preserve">
+    <value>Zuletzt geöffnet</value>
+  </data>
+  <data name="Examples" xml:space="preserve">
+    <value>Beispiel-Flows</value>
+  </data>
+  <data name="Favorites" xml:space="preserve">
+    <value>Project-Space-Favoriten</value>
+  </data>
+  <data name="Executions" xml:space="preserve">
+    <value>Ausführungen</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Projekt öffnen</value>
+  </data>
+  <data name="Execute" xml:space="preserve">
+    <value>Projekt ausführen</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Ausführung ansehen</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Aus Liste entfernen</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="InputDirectory" xml:space="preserve">
+    <value>Eingabeverzeichnis öffnen</value>
+  </data>
+  <data name="OutputDirectory" xml:space="preserve">
+    <value>Ausgabeverzeichnis öffnen</value>
+  </data>
+  <data name="OpenLog" xml:space="preserve">
+    <value>Protokolldatei öffnen</value>
+  </data>
+  <data name="OptionOverrides" xml:space="preserve">
+    <value>Optionsüberschreibungen</value>
+  </data>
+  <data name="Option" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="AddOption" xml:space="preserve">
+    <value>Optionsüberschreibung hinzufügen</value>
+  </data>
+  <data name="RemoveOption" xml:space="preserve">
+    <value>Optionsüberschreibung entfernen</value>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>Eingabeparameter</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Läuft</value>
+  </data>
+  <data name="Succeeded" xml:space="preserve">
+    <value>Erfolgreich abgeschlossen</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Bitte füllen Sie das erforderliche Eingabefeld aus: {0}</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Der Projektvorgang ist fehlgeschlagen. {0}</value>
+  </data>
+  <data name="Favorite" xml:space="preserve">
+    <value>Als Project-Space-Favorit markieren oder Markierung entfernen</value>
+  </data>
+  <data name="OptionTooltip" xml:space="preserve">
+    <value>Wählen Sie eine Option, um ihren Wert nur für diese Ausführung zu überschreiben.</value>
+  </data>
+  <data name="NoParameters" xml:space="preserve">
+    <value>Dieses Projekt hat keine Eingabeparameter.</value>
+  </data>
+  <data name="ExecutionStarted" xml:space="preserve">
+    <value>Gestartet: {0}</value>
+  </data>
+  <data name="Readonly" xml:space="preserve">
+    <value>Diese Ausführung wurde gestartet. Ihre Konfiguration ist schreibgeschützt.</value>
+  </data>
+  <data name="DuplicateOption" xml:space="preserve">
+    <value>Wählen Sie jede Option nur einmal.</value>
+  </data>
+  <data name="OutputPath" xml:space="preserve">
+    <value>Ausgabeverzeichnis</value>
+  </data>
+  <data name="InputPath" xml:space="preserve">
+    <value>Eingabeverzeichnis</value>
+  </data>
+  <data name="OwnProjects" xml:space="preserve">
+    <value>Meine Project-Space-Projekte</value>
+  </data>
+  <data name="OwnProjectsLoadFailed" xml:space="preserve">
+    <value>Aufgrund von Problemen beim Abruf können Ihre eigenen Project-Space-Projekte derzeit nicht angezeigt werden.</value>
+  </data>
+  <data name="ViewExecution" xml:space="preserve">
+    <value>Ausführung anzeigen</value>
+  </data>
+  <data name="LogUnavailable" xml:space="preserve">
+    <value>Für diese Ausführung ist keine Protokolldatei verfügbar.</value>
+  </data>
+</root>

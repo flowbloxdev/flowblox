@@ -20,7 +20,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "PossibleValues",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": [
@@ -59,9 +63,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "PossibleValues",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "8",
@@ -79,7 +81,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": true,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -93,15 +99,12 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "10",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Input_SQLQuery",
-        "SyntaxHighlighting": "SQL",
         "FieldType": {
           "$id": "11",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
@@ -114,7 +117,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "SQL",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -128,9 +135,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       },
       {
         "$id": "12",
@@ -149,7 +154,11 @@
         "UserFieldType": "Memory",
         "StringValue": null,
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": true,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": {
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.ValueItem, FlowBlox.Core]], System.ObjectModel",
           "$values": []
@@ -163,10 +172,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": false,
-        "ClearOnRuntimeStart": true
+        "Version": "1.0.0.0"
       }
     ]
   },
@@ -174,75 +180,11 @@
     "$type": "System.Collections.Generic.List`1[[FlowBlox.Core.Interfaces.IManagedObject, FlowBlox.Core]], System.Private.CoreLib",
     "$values": [
       {
-        "$ref": "2"
-      },
-      {
-        "$ref": "8"
-      },
-      {
-        "$ref": "10"
-      },
-      {
-        "$ref": "12"
-      },
-      {
         "$id": "14",
-        "$type": "FlowBlox.Core.Models.Components.IO.MemoryObject, FlowBlox.Core",
-        "Field": {
-          "$ref": "12"
-        },
-        "FileName": "query-result.csv",
-        "EncodingName": "Default",
-        "Name": "Memory_QueryCsvContent",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": []
-        },
-        "Version": "1.0.0.0"
-      },
-      {
-        "$id": "15",
-        "$type": "FlowBlox.Core.Models.Components.IO.CsvTable, FlowBlox.Core",
-        "EncodingName": "Default",
-        "Separator": ";",
-        "DataSource": {
-          "$ref": "14"
-        },
-        "FirstRowHeader": true,
-        "Name": "CsvTable_QueryResult",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": []
-        },
-        "Version": "1.0.0.0"
-      },
-      {
-        "$id": "16",
-        "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
-        "DbType": "MSSQL",
-        "SQLConnectionstring": "$User::Input_SQLConnectionString",
-        "SQLStatement": "$User::Input_SQLQuery",
-        "UseFieldValuesAsParameters": false,
-        "Name": "SQLTable_MSSQL_Query",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": [
-            {
-              "$ref": "8"
-            },
-            {
-              "$ref": "10"
-            }
-          ]
-        },
-        "Version": "1.0.0.0"
-      },
-      {
-        "$id": "17",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "18",
+          "$id": "15",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -253,20 +195,67 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "19",
+          "$id": "16",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableConverterFlowBlock, FlowBlox.Core",
           "SourceTable": {
-            "$ref": "16"
+            "$id": "17",
+            "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
+            "DbType": "MSSQL",
+            "SQLConnectionstring": "$User::Input_SQLConnectionString",
+            "SQLStatement": "$User::Input_SQLQuery",
+            "UseFieldValuesAsParameters": false,
+            "Name": "SQLTable_MSSQL_Query",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": [
+                {
+                  "$ref": "8"
+                },
+                {
+                  "$ref": "10"
+                }
+              ]
+            },
+            "Version": "1.0.0.0"
           },
           "TargetTable": {
-            "$ref": "15"
+            "$id": "18",
+            "$type": "FlowBlox.Core.Models.Components.IO.CsvTable, FlowBlox.Core",
+            "EncodingName": "Default",
+            "Separator": ";",
+            "DataSource": {
+              "$id": "19",
+              "$type": "FlowBlox.Core.Models.Components.IO.MemoryObject, FlowBlox.Core",
+              "Field": {
+                "$ref": "12"
+              },
+              "FileName": "query-result.csv",
+              "EncodingName": "Default",
+              "Name": "Memory_QueryCsvContent",
+              "RequiredFields": {
+                "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+                "$values": []
+              },
+              "Version": "1.0.0.0"
+            },
+            "FirstRowHeader": true,
+            "Name": "CsvTable_QueryResult",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": []
+            },
+            "Version": "1.0.0.0"
           },
           "Name": "TableConverter_MSSQL_QueryResult",
           "ResultField": {
-            "$ref": "17"
+            "$ref": "14"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -278,7 +267,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "420, 120",
+          "Location": "458, 13",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -381,32 +370,17 @@
         "Version": "1.0.0.0"
       },
       {
-        "$id": "22",
-        "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
-        "DbType": "Oracle",
-        "SQLConnectionstring": "$User::Input_SQLConnectionString",
-        "SQLStatement": "$User::Input_SQLQuery",
-        "UseFieldValuesAsParameters": false,
-        "Name": "SQLTable_Oracle_Query",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": [
-            {
-              "$ref": "8"
-            },
-            {
-              "$ref": "10"
-            }
-          ]
-        },
-        "Version": "1.0.0.0"
+        "$ref": "17"
       },
       {
-        "$id": "23",
+        "$ref": "2"
+      },
+      {
+        "$id": "22",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "24",
+          "$id": "23",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -417,20 +391,42 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "25",
+          "$id": "24",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableConverterFlowBlock, FlowBlox.Core",
           "SourceTable": {
-            "$ref": "22"
+            "$id": "25",
+            "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
+            "DbType": "Oracle",
+            "SQLConnectionstring": "$User::Input_SQLConnectionString",
+            "SQLStatement": "$User::Input_SQLQuery",
+            "UseFieldValuesAsParameters": false,
+            "Name": "SQLTable_Oracle_Query",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": [
+                {
+                  "$ref": "8"
+                },
+                {
+                  "$ref": "10"
+                }
+              ]
+            },
+            "Version": "1.0.0.0"
           },
           "TargetTable": {
-            "$ref": "15"
+            "$ref": "18"
           },
           "Name": "TableConverter_Oracle_QueryResult",
           "ResultField": {
-            "$ref": "23"
+            "$ref": "22"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -442,7 +438,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "420, 310",
+          "Location": "458, 231",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -506,32 +502,14 @@
         "Version": "1.0.0.0"
       },
       {
-        "$id": "27",
-        "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
-        "DbType": "MySQL",
-        "SQLConnectionstring": "$User::Input_SQLConnectionString",
-        "SQLStatement": "$User::Input_SQLQuery",
-        "UseFieldValuesAsParameters": false,
-        "Name": "SQLTable_MySQL_Query",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": [
-            {
-              "$ref": "8"
-            },
-            {
-              "$ref": "10"
-            }
-          ]
-        },
-        "Version": "1.0.0.0"
+        "$ref": "25"
       },
       {
-        "$id": "28",
+        "$id": "27",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "29",
+          "$id": "28",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -542,20 +520,42 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "30",
+          "$id": "29",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableConverterFlowBlock, FlowBlox.Core",
           "SourceTable": {
-            "$ref": "27"
+            "$id": "30",
+            "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
+            "DbType": "MySQL",
+            "SQLConnectionstring": "$User::Input_SQLConnectionString",
+            "SQLStatement": "$User::Input_SQLQuery",
+            "UseFieldValuesAsParameters": false,
+            "Name": "SQLTable_MySQL_Query",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": [
+                {
+                  "$ref": "8"
+                },
+                {
+                  "$ref": "10"
+                }
+              ]
+            },
+            "Version": "1.0.0.0"
           },
           "TargetTable": {
-            "$ref": "15"
+            "$ref": "18"
           },
           "Name": "TableConverter_MySQL_QueryResult",
           "ResultField": {
-            "$ref": "28"
+            "$ref": "27"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -567,7 +567,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "420, 500",
+          "Location": "458, 449",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -631,32 +631,14 @@
         "Version": "1.0.0.0"
       },
       {
-        "$id": "32",
-        "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
-        "DbType": "SQLite",
-        "SQLConnectionstring": "$User::Input_SQLConnectionString",
-        "SQLStatement": "$User::Input_SQLQuery",
-        "UseFieldValuesAsParameters": false,
-        "Name": "SQLTable_SQLite_Query",
-        "RequiredFields": {
-          "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
-          "$values": [
-            {
-              "$ref": "8"
-            },
-            {
-              "$ref": "10"
-            }
-          ]
-        },
-        "Version": "1.0.0.0"
+        "$ref": "30"
       },
       {
-        "$id": "33",
+        "$id": "32",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Success",
         "FieldType": {
-          "$id": "34",
+          "$id": "33",
           "$type": "FlowBlox.Core.Models.Components.TypeElement, FlowBlox.Core",
           "FieldType": "Boolean",
           "DateFormat": "dd.MM.yyyy HH:mm:ss",
@@ -667,20 +649,42 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
-          "$id": "35",
+          "$id": "34",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.TableConverterFlowBlock, FlowBlox.Core",
           "SourceTable": {
-            "$ref": "32"
+            "$id": "35",
+            "$type": "FlowBlox.Core.Models.Components.IO.SQLTable, FlowBlox.Core",
+            "DbType": "SQLite",
+            "SQLConnectionstring": "$User::Input_SQLConnectionString",
+            "SQLStatement": "$User::Input_SQLQuery",
+            "UseFieldValuesAsParameters": false,
+            "Name": "SQLTable_SQLite_Query",
+            "RequiredFields": {
+              "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
+              "$values": [
+                {
+                  "$ref": "8"
+                },
+                {
+                  "$ref": "10"
+                }
+              ]
+            },
+            "Version": "1.0.0.0"
           },
           "TargetTable": {
-            "$ref": "15"
+            "$ref": "18"
           },
           "Name": "TableConverter_SQLite_QueryResult",
           "ResultField": {
-            "$ref": "33"
+            "$ref": "32"
           },
           "ResultFieldFieldType": "Boolean",
           "OutputIgnoreDuplicates": false,
@@ -692,7 +696,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "420, 690",
+          "Location": "458, 667",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -756,6 +760,9 @@
         "Version": "1.0.0.0"
       },
       {
+        "$ref": "35"
+      },
+      {
         "$id": "37",
         "$type": "FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core",
         "Name": "Content",
@@ -771,13 +778,17 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "39",
           "$type": "FlowBlox.Core.Models.FlowBlocks.IO.FileReaderFlowBlock, FlowBlox.Core",
           "DataSource": {
-            "$ref": "14"
+            "$ref": "19"
           },
           "EncodingName": "Default",
           "Name": "FileReader_QueryCsvContent",
@@ -794,7 +805,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "1080, 400",
+          "Location": "1274, 376",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -808,7 +819,7 @@
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
                   "$values": []
                 },
-                "Location": "800, 400",
+                "Location": "866, 400",
                 "ExecutionIndex": -1,
                 "IsNotExecuted": false,
                 "BreakPoint": false,
@@ -817,16 +828,16 @@
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.BaseFlowBlock, FlowBlox.Core]], System.ObjectModel",
                   "$values": [
                     {
-                      "$ref": "19"
+                      "$ref": "16"
                     },
                     {
-                      "$ref": "25"
+                      "$ref": "24"
                     },
                     {
-                      "$ref": "30"
+                      "$ref": "29"
                     },
                     {
-                      "$ref": "35"
+                      "$ref": "34"
                     }
                   ]
                 },
@@ -840,7 +851,7 @@
                       "$id": "41",
                       "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                       "FlowBlock": {
-                        "$ref": "19"
+                        "$ref": "16"
                       },
                       "Behavior": "First"
                     },
@@ -848,7 +859,7 @@
                       "$id": "42",
                       "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                       "FlowBlock": {
-                        "$ref": "25"
+                        "$ref": "24"
                       },
                       "Behavior": "First"
                     },
@@ -856,7 +867,7 @@
                       "$id": "43",
                       "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                       "FlowBlock": {
-                        "$ref": "30"
+                        "$ref": "29"
                       },
                       "Behavior": "First"
                     },
@@ -864,7 +875,7 @@
                       "$id": "44",
                       "$type": "FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core",
                       "FlowBlock": {
-                        "$ref": "35"
+                        "$ref": "34"
                       },
                       "Behavior": "First"
                     }
@@ -943,7 +954,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "47",
@@ -976,7 +991,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "1400, 400",
+          "Location": "1682, 340",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -1023,6 +1038,21 @@
           "$values": []
         },
         "Version": "1.0.0.0"
+      },
+      {
+        "$ref": "8"
+      },
+      {
+        "$ref": "10"
+      },
+      {
+        "$ref": "12"
+      },
+      {
+        "$ref": "19"
+      },
+      {
+        "$ref": "18"
       }
     ]
   },
@@ -1033,16 +1063,16 @@
         "$ref": "20"
       },
       {
-        "$ref": "19"
+        "$ref": "16"
       },
       {
-        "$ref": "25"
+        "$ref": "24"
       },
       {
-        "$ref": "30"
+        "$ref": "29"
       },
       {
-        "$ref": "35"
+        "$ref": "34"
       },
       {
         "$ref": "40"
@@ -1055,15 +1085,17 @@
       }
     ]
   },
-  "ProjectGuid": "927701eb-1067-48f5-9763-f071df36af01",
+  "ProjectGuid": "4cc8cb8a-d3ab-49b3-ad38-baf97209719b",
   "ProjectName": "ExecuteSQLQuery",
   "Author": "",
   "ProjectDescription": "Executes SQL against MSSQL, Oracle, MySQL, or SQLite and returns result rows as CSV content. Statements can modify or delete data; review the SQL and connection parameters before approving execution.",
   "AssistantMetadata": {
+    "$id": "49",
+    "$type": "FlowBlox.Core.Models.Project.AssistantMetadata, FlowBlox.Core",
     "ShortDescription": "Execute SQL against a database and return the query result as CSV."
   },
   "Notice": "",
-  "GridSizeX": 2500,
+  "GridSizeX": 2728,
   "GridSizeY": 2000,
   "AutoIncreaseGridSize": true,
   "ProjectDependendDataObjects": {

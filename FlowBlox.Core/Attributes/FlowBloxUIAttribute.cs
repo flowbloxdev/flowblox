@@ -26,7 +26,7 @@
     public enum UIOptions
     {
         /// <summary>
-        /// Enables field/placeholder selection for text-like editors.
+        /// Enables field/placeholder selection for supported property editors.
         /// </summary>
         EnableFieldSelection = 1,
 
@@ -115,33 +115,7 @@
             object value,
             System.ComponentModel.DataAnnotations.ValidationContext validationContext)
         {
-            if (!UiOptions.HasFlag(UIOptions.EnableFieldSelection) || value is not string text)
-                return System.ComponentModel.DataAnnotations.ValidationResult.Success;
-
-            var registry = Provider.FlowBloxRegistryProvider.GetRegistry();
-            if (registry == null)
-                return System.ComponentModel.DataAnnotations.ValidationResult.Success;
-
-            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(
-                         text,
-                         Models.FlowBlocks.Base.BaseFlowBlock.Regex_FullyQualifiedFieldNames))
-            {
-                var sourceId = Models.Components.FieldElement.GetSourceId(match.Value);
-                if (Provider.Placeholders.FlowBloxSourceIds.GetAllSourceIds().Contains(sourceId))
-                {
-                    continue;
-                }
-
-                if (!registry.HasField(match.Value))
-                {
-                    return new System.ComponentModel.DataAnnotations.ValidationResult(
-                        Util.Resources.FlowBloxResourceUtil.GetLocalizedString(
-                            "FlowBloxUIAttribute_Validation_FieldReferenceMissing",
-                            typeof(FlowBloxTexts)),
-                        [validationContext.MemberName]);
-                }
-            }
-
+            // Possible unresolved references are runtime warnings, never UI validation failures.
             return System.ComponentModel.DataAnnotations.ValidationResult.Success;
         }
     }

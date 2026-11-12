@@ -1,4 +1,5 @@
 using System;
+using FlowBlox.Core.Attributes;
 
 namespace FlowBlox.AvaloniaDesktop.Services
 {
@@ -14,6 +15,8 @@ namespace FlowBlox.AvaloniaDesktop.Services
         public string Id { get; set; }
 
         public string Message { get; set; }
+
+        public NotificationType NotificationType { get; set; } = NotificationType.None;
 
         public string ActionText { get; set; }
 

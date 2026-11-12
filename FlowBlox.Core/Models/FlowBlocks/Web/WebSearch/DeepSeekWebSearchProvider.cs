@@ -1,8 +1,10 @@
+using FlowBlox.Core.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Util.Fields;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
 {
@@ -28,7 +30,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
                 need_content = false
             });
 
-            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(Math.Max(1, TimeoutSeconds)) };
+            var timeoutSeconds = this.Resolve(provider => provider.TimeoutSeconds);
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(Math.Max(1, timeoutSeconds)) };
             using var message = new HttpRequestMessage(HttpMethod.Post, ResolveBaseUrl());
             message.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ResolveApiKey());

@@ -36,11 +36,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public IWritableTable ReferencedTable { get; set; }
 
         [Display(Name = "TableWriterFlowBlock_CreateNewDatasets", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public bool CreateNewDatasets { get; set; } = true;
 
         [Display(Name = "TableWriterFlowBlock_UpdateExistingDatasets", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public bool UpdateExistingDatasets { get; set; } = true;
 
         [Display(Name = "TableWriterFlowBlock_ClearOnRuntimeStart", Description = "TableWriterFlowBlock_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]

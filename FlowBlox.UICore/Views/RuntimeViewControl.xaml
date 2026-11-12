@@ -225,24 +225,27 @@
                            VerticalAlignment="Center"
                            Margin="0,0,6,0" />
                 <Separator Width="1" Margin="4,4" Background="#B3FFFFFF" />
-                <CheckBox Content="{x:Static resources:RuntimeView.CheckBox_StopOnError}"
-                          IsChecked="{Binding StopOnError, Mode=TwoWay}"
+                <CheckBox IsChecked="{Binding StopOnError, Mode=TwoWay}"
                           Foreground="White"
                           FontFamily="Calibri"
                           FontSize="11"
-                          Margin="4,0" />
-                <CheckBox Content="{x:Static resources:RuntimeView.CheckBox_StopOnWarning}"
-                          IsChecked="{Binding StopOnWarning, Mode=TwoWay}"
+                          Margin="4,0">
+                    <TextBlock Text="{x:Static resources:RuntimeView.CheckBox_StopOnError}" Foreground="White" />
+                </CheckBox>
+                <CheckBox IsChecked="{Binding StopOnWarning, Mode=TwoWay}"
                           Foreground="White"
                           FontFamily="Calibri"
                           FontSize="11"
-                          Margin="4,0" />
-                <CheckBox Content="{x:Static resources:RuntimeView.CheckBox_StepwiseExecution}"
-                          IsChecked="{Binding StepwiseExecution, Mode=TwoWay}"
+                          Margin="4,0">
+                    <TextBlock Text="{x:Static resources:RuntimeView.CheckBox_StopOnWarning}" Foreground="White" />
+                </CheckBox>
+                <CheckBox IsChecked="{Binding StepwiseExecution, Mode=TwoWay}"
                           Foreground="White"
                           FontFamily="Calibri"
                           FontSize="11"
-                          Margin="4,0" />
+                          Margin="4,0">
+                    <TextBlock Text="{x:Static resources:RuntimeView.CheckBox_StepwiseExecution}" Foreground="White" />
+                </CheckBox>
             </StackPanel>
         </Border>
     </Grid>

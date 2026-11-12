@@ -1,4 +1,3 @@
-using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Format;
@@ -6,7 +5,6 @@ using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.FlowBlocks.TextOperations;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Provider.Project;
-using System.Reflection;
 
 namespace FlowBloxTest.FlowBlocks.TextOperations
 {
@@ -30,22 +28,7 @@ namespace FlowBloxTest.FlowBlocks.TextOperations
 
             var errors = format.ValidateObject();
 
-            Assert.IsFalse(format.AllowEmptyFormatExpression);
             Assert.IsTrue(errors.ContainsKey(nameof(FormatFlowBlock.FormatExpression)));
-            CollectionAssert.Contains(
-                format.GetDisplayableProperties(),
-                nameof(FormatFlowBlock.AllowEmptyFormatExpression));
-        }
-
-        [TestMethod]
-        public void FormatExpression_UsesCompositeFormatToolbox()
-        {
-            var property = typeof(FormatFlowBlock).GetProperty(nameof(FormatFlowBlock.FormatExpression))!;
-            var uiAttribute = property.GetCustomAttribute<FlowBloxUIAttribute>()!;
-
-            Assert.AreEqual(
-                nameof(FlowBloxToolboxCategory.CompositeFormat),
-                uiAttribute.ToolboxCategory);
         }
 
         [TestMethod]

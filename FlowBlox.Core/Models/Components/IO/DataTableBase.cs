@@ -32,6 +32,7 @@ namespace FlowBlox.Core.Models.Components.IO
         }
 
         [Display(Name = "DataTableBase_FirstRowHeader", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool FirstRowHeader { get; set; } = true;
 
         protected DataTableBase()

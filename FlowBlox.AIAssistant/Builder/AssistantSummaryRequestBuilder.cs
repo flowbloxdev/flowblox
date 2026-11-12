@@ -8,8 +8,7 @@ namespace FlowBlox.AIAssistant.Builder
     {
         public static AIChatRequest Build(
             string currentSummary,
-            IReadOnlyList<AssistantSessionMessage> messagesToSummarize,
-            AssistantSummarizationStyle summarizationStyle = AssistantSummarizationStyle.StructuredHistoricalMemory)
+            IReadOnlyList<AssistantSessionMessage> messagesToSummarize)
         {
             var request = new AIChatRequest
             {
@@ -19,7 +18,7 @@ namespace FlowBlox.AIAssistant.Builder
             request.SystemMessages.Add(new AIChatMessage
             {
                 Role = "system",
-                Content = BuildSystemInstruction(summarizationStyle),
+                Content = SystemInstruction,
                 CacheBehavior = AIChatCacheBehavior.PreferCache
             });
 
@@ -55,37 +54,20 @@ namespace FlowBlox.AIAssistant.Builder
             return request;
         }
 
-        private static string BuildSystemInstruction(AssistantSummarizationStyle summarizationStyle)
-        {
-            return summarizationStyle switch
-            {
-                AssistantSummarizationStyle.StructuredHistoricalMemory =>
-                    "Maintain a durable Structured Historical Memory for the FlowBlox AI Assistant conversation. " +
-                    "Merge only the provided new messages into the current summary and return the complete updated memory. " +
-                    "If the current summary uses another schema, migrate all relevant information without intentionally losing project history, rationale, current state, reusable knowledge, or active diagnostics. " +
-                    "Use these Markdown sections: Goals And Constraints, Current Project State, Decision And Change History, Open Work, User Preferences, Reusable FlowBlox And Tool Knowledge, Active Diagnostics. " +
-                    "If a skill project is still being edited, also maintain Active Skill Project with Name, Purpose, Input Fields, and Output Fields; remove that section only when no skill project is active. " +
-                    "Current Project State is authoritative for exact current object names, types, connections, property values, test definitions, generators, and ManagedObjects, including configured AI provider objects and their links. " +
-                    "Decision And Change History preserves chronology, alternatives, failures, corrections, rationale, and outcomes so later questions about why a FlowBlock was configured in a particular way can be answered. Do not replace useful history with only the final state. " +
-                    "Reusable FlowBlox And Tool Knowledge preserves important learned behavior of FlowBlocks, properties, types, tests, generators, ManagedObjects, and tools even when it could potentially be queried again. Compact repeated schemas and raw output, but retain their useful facts. " +
-                    "Active Diagnostics preserves every identifier and detail still needed for ongoing investigation, including active run IDs, FieldChange IDs, generated-result IDs, dataset indexes, relevant errors, and the next diagnostic step. " +
-                    "Remove a diagnostic identifier only after its investigation is resolved and the identifier is no longer needed; preserve the resulting finding, reasoning, and outcome in history or reusable knowledge. " +
-                    "Apply the DRY principle throughout the memory: keep one canonical representation of each fact, use compact references instead of restating unchanged details, and do not repeat information merely to make every section self-contained. " +
-                    "Generally store an exact current value in Current Project State, its reason and evolution in Decision And Change History, and only generally reusable behavior in Reusable FlowBlox And Tool Knowledge. Cross-section repetition is allowed only when it contributes distinct current-state, historical, or reusable meaning. " +
-                    "Preserve exact FlowBlox identifiers, property/update and collection paths, enum values, placeholders, resolver syntax and values, connection directions, selection constraints, user preferences, and relevant ManagedObject constraints whenever they may be needed to resume work. " +
-                    "Minimize token usage and request traffic while preserving informational content, recognizable history, rationale, active working memory, and explainability. Generic bootstrap guidance may be omitted only when it adds no conversation-specific fact or learned behavior. Prefer concise grouped bullets, but completeness and explainability take precedence over brevity. Write '(none)' for empty sections.",
-                _ =>
-                    "Maintain a compact, durable Project Summarization Schema (PSS) for the FlowBlox AI Assistant conversation. " +
-                    "Merge only the provided new messages into the current summary and return the complete updated PSS. " +
-                    "The PSS uses these Markdown sections: Goals, Decisions, Completed Changes, Open Points, User Preferences, Provider And Configuration Constraints, Important Identifiers, Tool API Working Memory. " +
-                    "If the latest provided message says a skill project is still being edited, maintain a separate 'Active Skill Project' PSS with Name, Purpose, Input Fields, and Output Fields. " +
-                    "If it says no skill project is active, remove that PSS and retain only the project's usage instructions in the main PSS Tool API Working Memory. " +
-                    "Use concise bullet points. Write '(none)' for empty sections. Do not include chat messages verbatim unless an exact identifier, property path, type name, resolver value, tool name, or error message is important. " +
-                    "In Tool API Working Memory, preserve reusable technical facts learned from tool responses, especially skill project state, GetDistributedData, GetSkillProjects, ExecuteExternalProject, GetTypeKindsInfo, GetManagedObjectKindsInfo, snapshot/update/connect tools, and failed tool calls. " +
-                    "Keep exact FlowBlox type names, property/update paths, collection paths, supported enum values, placeholder names, option names, resolver syntax and concrete resolver values like {\"resolveFieldElementByFQName\":\"$FlowBlock::Field\"}, referenced flow block names, connection direction, selection-filter constraints, and design hints needed for later updates or connections. " +
-                    "Prefer compact grouped bullets by FlowBlock/ManagedObject/type. " +
-                    "Remove obsolete technical facts when newer tool responses clearly supersede them."
-            };
-        }
+        private const string SystemInstruction =
+            "Maintain a durable Structured Historical Memory for the FlowBlox AI Assistant conversation. " +
+            "Merge only the provided new messages into the current summary and return the complete updated memory. " +
+            "If the current summary uses another schema, migrate all relevant information without intentionally losing project history, rationale, current state, reusable knowledge, or active diagnostics. " +
+            "Use these Markdown sections: Goals And Constraints, Current Project State, Decision And Change History, Open Work, User Preferences, Reusable FlowBlox And Tool Knowledge, Active Diagnostics. " +
+            "If a skill project is still being edited, also maintain Active Skill Project with Name, Purpose, Input Fields, and Output Fields; remove that section only when no skill project is active. " +
+            "Current Project State is authoritative for exact current object names, types, connections, property values, test definitions, generators, and ManagedObjects, including configured AI provider objects and their links. " +
+            "Decision And Change History preserves chronology, alternatives, failures, corrections, rationale, and outcomes so later questions about why a FlowBlock was configured in a particular way can be answered. Do not replace useful history with only the final state. " +
+            "Reusable FlowBlox And Tool Knowledge preserves important learned behavior of FlowBlocks, properties, types, tests, generators, ManagedObjects, and tools even when it could potentially be queried again. Compact repeated schemas and raw output, but retain their useful facts. " +
+            "Active Diagnostics preserves every identifier and detail still needed for ongoing investigation, including active run IDs, FieldChange IDs, generated-result IDs, dataset indexes, relevant errors, and the next diagnostic step. " +
+            "Remove a diagnostic identifier only after its investigation is resolved and the identifier is no longer needed; preserve the resulting finding, reasoning, and outcome in history or reusable knowledge. " +
+            "Apply the DRY principle throughout the memory: keep one canonical representation of each fact, use compact references instead of restating unchanged details, and do not repeat information merely to make every section self-contained. " +
+            "Generally store an exact current value in Current Project State, its reason and evolution in Decision And Change History, and only generally reusable behavior in Reusable FlowBlox And Tool Knowledge. Cross-section repetition is allowed only when it contributes distinct current-state, historical, or reusable meaning. " +
+            "Preserve exact FlowBlox identifiers, property/update and collection paths, enum values, placeholders, resolver syntax and values, connection directions, selection constraints, user preferences, and relevant ManagedObject constraints whenever they may be needed to resume work. " +
+            "Minimize token usage and request traffic while preserving informational content, recognizable history, rationale, active working memory, and explainability. Generic bootstrap guidance may be omitted only when it adds no conversation-specific fact or learned behavior. Prefer concise grouped bullets, but completeness and explainability take precedence over brevity. Write '(none)' for empty sections.";
     }
 }

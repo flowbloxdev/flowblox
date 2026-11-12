@@ -1,4 +1,6 @@
-﻿using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.Components;
@@ -60,13 +62,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
                     content
                 };
 
+                string lastStartPattern = null;
+                string lastEndPattern = null;
                 foreach (var startEndPattern in StartEndPatterns)
                 {
-                    var endPattern = string.IsNullOrWhiteSpace(startEndPattern.EndPattern)
-                        ? null
-                        : startEndPattern.EndPattern;
+                    var startPattern = startEndPattern.Resolve(owner => owner.StartPattern);
+                    var endPattern = startEndPattern.Resolve(owner => owner.EndPattern);
+                    lastStartPattern = startPattern;
+                    lastEndPattern = endPattern;
+                    if (string.IsNullOrWhiteSpace(endPattern))
+                        endPattern = null;
 
-                    results = PatternSelector.SelectPatternFromContext(results, startEndPattern.StartPattern, endPattern, true);
+                    results = PatternSelector.SelectPatternFromContext(results, startPattern, endPattern, true);
                     runtime.Report($"Found {results.Count} results for pattern combination \"{startEndPattern.StartPattern}\" and \"{startEndPattern.EndPattern}\"");
 
                     if (startEndPattern.Index != null)
@@ -89,7 +96,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
                 }
 
                 var lastPattern = StartEndPatterns.LastOrDefault();
-                results = ApplyReturnOptions(results, lastPattern);
+                results = ApplyReturnOptions(results, lastPattern?.ReturnOptions, lastStartPattern, lastEndPattern);
 
                 if (results.Count == 0)
                     CreateNotification(runtime, StartEndPatternSelectorNotifications.ReturnedNoMatches);
@@ -119,21 +126,25 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
             ReturnedNoMatches
         }
 
-        private static List<string> ApplyReturnOptions(IEnumerable<string> values, StartEndPattern startEndPattern)
+        private static List<string> ApplyReturnOptions(
+            IEnumerable<string> values,
+            StartEndPatternReturnOptions? returnOptions,
+            string startPattern,
+            string endPattern)
         {
-            if (startEndPattern?.ReturnOptions == null)
+            if (returnOptions == null)
                 return values.ToList();
 
-            return startEndPattern.ReturnOptions.Value switch
+            return returnOptions.Value switch
             {
                 StartEndPatternReturnOptions.StartPattern => values
-                    .Select(val => string.Concat(startEndPattern.StartPattern, val))
+                    .Select(val => string.Concat(startPattern, val))
                     .ToList(),
                 StartEndPatternReturnOptions.EndPattern => values
-                    .Select(val => string.Concat(val, startEndPattern.EndPattern))
+                    .Select(val => string.Concat(val, endPattern))
                     .ToList(),
                 StartEndPatternReturnOptions.StartAndEndPattern => values
-                    .Select(val => string.Concat(startEndPattern.StartPattern, val, startEndPattern.EndPattern))
+                    .Select(val => string.Concat(startPattern, val, endPattern))
                     .ToList(),
                 _ => values.ToList()
             };

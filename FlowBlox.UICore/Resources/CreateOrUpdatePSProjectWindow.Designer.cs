@@ -70,16 +70,16 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Cancel ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
-        public static string Button_Cancel
+        public static string Button_Back
         {
             get
             {
-                return ResourceManager.GetString("Button_Cancel", resourceCulture);
+                return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create new project ähnelt.
         /// </summary>
@@ -114,7 +114,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die You are not logged in. Please log in first: Go to &quot;Extras&quot;, &quot;View projects&quot; and click &quot;Login&quot;. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die You are not logged in. Open &quot;Tools&quot; → &quot;Manage projects&quot; and click &quot;Login&quot;. ähnelt.
         /// </summary>
         public static string CreateOrUpdatePSProjectWindow_Message_LoginRequired
         {

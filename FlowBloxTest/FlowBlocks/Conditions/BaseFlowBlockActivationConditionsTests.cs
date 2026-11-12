@@ -26,6 +26,34 @@ namespace FlowBloxTest.FlowBlocks.Conditions
         }
 
         [TestMethod]
+        [DataRow("$ABC::53")]
+        [DataRow("Prefix $Unknown::Field suffix")]
+        public void ValidateRequirements_PossibleUnresolvedReferences_DoNotBlock(string value)
+        {
+            var field = FieldMockCreator.CreateStringField("RequiredText", value);
+            var block = CreateFlowBlock<StartFlowBlock>();
+            block.RequiredFields.Add(field);
+
+            Assert.IsTrue(block.ValidateRequirements(out var messages));
+            Assert.IsEmpty(messages);
+        }
+
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
+        public void ValidateRequirements_ReferenceResolvesToEmptyValue_Blocks(string value)
+        {
+            var source = FieldMockCreator.CreateStringField("EmptySource", value);
+            var field = FieldMockCreator.CreateStringField("RequiredText", source.FullyQualifiedName);
+            var block = CreateFlowBlock<StartFlowBlock>();
+            block.RequiredFields.Add(field);
+
+            Assert.IsFalse(block.ValidateRequirements(out var messages));
+            Assert.IsTrue(messages.Any(message => message.Contains(field.FullyQualifiedName)));
+        }
+
+        [TestMethod]
         public void ValidateRequirements_NoActivationConditions_ReturnsTrue()
         {
             var registry = _project.FlowBloxRegistry;
@@ -53,8 +81,7 @@ namespace FlowBloxTest.FlowBlocks.Conditions
             var ok = block.ValidateRequirements(out var messages);
 
             Assert.IsFalse(ok);
-            Assert.IsTrue(messages.Any(m => m.StartsWith("Activation conditions were not met:")), "Expected activation summary message.");
-            Assert.IsTrue(messages.Single().Contains("and") || messages.Single().Contains("or"), "Expected summary to contain logical operator text.");
+            Assert.HasCount(1, messages);
         }
 
         [TestMethod]

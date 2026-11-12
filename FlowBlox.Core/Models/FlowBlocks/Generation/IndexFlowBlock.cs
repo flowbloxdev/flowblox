@@ -1,10 +1,12 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Util.Fields;
 using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,6 +22,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         private bool _initialized;
 
         [Display(Name = "IndexFlowBlock_InitialIndex", Description = "IndexFlowBlock_InitialIndex_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int InitialIndex { get; set; } = 0;
 
         /// <summary>
@@ -65,17 +68,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         {
             base.RuntimeStarted(runtime);
             ResetCurrentIndex(runtime);
+            // Test/project input values may be assigned after initialization; read them on first execution.
+            _initialized = false;
 
             if (AssociatedContextualObject != null)
             {
                 AssociatedContextualObject.IterationStart -= Context_IterationStart;
                 AssociatedContextualObject.IterationStart += Context_IterationStart;
 
-                runtime.Report($"IndexFlowBlock \"{Name}\": Index resets on IterationStart of context \"{AssociatedContextualObject.Name}\". InitialIndex={InitialIndex}");
+                runtime.Report($"IndexFlowBlock \"{Name}\": Index resets on IterationStart of context \"{AssociatedContextualObject.Name}\". InitialIndex={_currentIndex}");
             }
             else
             {
-                runtime.Report($"IndexFlowBlock \"{Name}\": No context set -> index is global for whole runtime. InitialIndex={InitialIndex}");
+                runtime.Report($"IndexFlowBlock \"{Name}\": No context set -> index is global for whole runtime. InitialIndex={_currentIndex}");
             }
         }
 
@@ -94,10 +99,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
 
         private void ResetCurrentIndex(BaseRuntime runtime)
         {
-            _currentIndex = InitialIndex;
+            _currentIndex = this.Resolve(block => block.InitialIndex);
             _initialized = true;
 
-            runtime.Report($"IndexFlowBlock \"{Name}\": Reset index to InitialIndex={InitialIndex}");
+            runtime.Report($"IndexFlowBlock \"{Name}\": Reset index to InitialIndex={_currentIndex}");
         }
 
         private void EnsureInitialized()
@@ -105,7 +110,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
             if (_initialized)
                 return;
 
-            _currentIndex = InitialIndex;
+            _currentIndex = this.Resolve(block => block.InitialIndex);
             _initialized = true;
         }
 

@@ -9,6 +9,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
     public class XmlAssignment : FlowBloxReactiveObject
     {
         [Display(Name = "XmlAssignment_XPath", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string XPath { get; set; }
 
         [Display(Name = "XmlAssignment_Value", ResourceType = typeof(FlowBloxTexts))]

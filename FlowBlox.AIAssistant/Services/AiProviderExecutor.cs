@@ -25,7 +25,7 @@ namespace FlowBlox.AIAssistant.Services
                     };
                 }
 
-                var provider = configuration.Provider ?? throw new InvalidOperationException("AI provider is not configured.");
+                var provider = configuration.SelectedProvider ?? throw new InvalidOperationException("AI provider is not configured.");
                 request ??= new AIChatRequest();
                 request.Model = string.IsNullOrWhiteSpace(request.Model)
                     ? provider.DefaultModel

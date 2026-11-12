@@ -13,7 +13,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
     public class HmacModifier : ModifierBase
     {
         [Display(Name = "HmacModifier_Algorithm", Description = "HmacModifier_Algorithm_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicHashAlgorithm Algorithm { get; set; } = CryptographicHashAlgorithm.SHA256;
 
         [Required]
@@ -22,21 +22,24 @@ namespace FlowBlox.Core.Models.Components.Modifier
         public string SecretKey { get; set; }
 
         [Display(Name = "HmacModifier_KeyEncoding", Description = "HmacModifier_KeyEncoding_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicKeyEncoding KeyEncoding { get; set; } = CryptographicKeyEncoding.Text;
 
         [Display(Name = "HashModifier_OutputEncoding", Description = "HashModifier_OutputEncoding_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicOutputEncoding OutputEncoding { get; set; } = CryptographicOutputEncoding.HexLowerCase;
 
         public override string Modify(BaseRuntime runtime, string value)
         {
-            var resolvedKey = FlowBloxFieldHelper.ReplaceFieldsInString(SecretKey ?? string.Empty);
-            var key = CryptographicModifierSupport.DecodeKey(resolvedKey, KeyEncoding);
-            using var algorithm = CryptographicModifierSupport.CreateHmac(Algorithm, key);
+            var secretKey = this.Resolve(owner => owner.SecretKey);
+            var keyEncoding = this.Resolve(modifier => modifier.KeyEncoding);
+            var algorithm = this.Resolve(modifier => modifier.Algorithm);
+            var outputEncoding = this.Resolve(modifier => modifier.OutputEncoding);
+            var key = CryptographicModifierSupport.DecodeKey(secretKey, keyEncoding);
+            using var hmac = CryptographicModifierSupport.CreateHmac(algorithm, key);
             return CryptographicModifierSupport.Encode(
-                algorithm.ComputeHash(Encoding.UTF8.GetBytes(value ?? string.Empty)),
-                OutputEncoding);
+                hmac.ComputeHash(Encoding.UTF8.GetBytes(value ?? string.Empty)),
+                outputEncoding);
         }
 
         public override string ToString() => string.Format(

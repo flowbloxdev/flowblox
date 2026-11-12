@@ -4,6 +4,8 @@ using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
+using FlowBlox.Core.Models.Base;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Deletion;
 using FlowBlox.Core.Provider.Registry;
@@ -165,6 +167,8 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     var property = current.GetType().GetProperty(segment.PropertyName!, BindingFlags.Public | BindingFlags.Instance);
                     if (property == null)
                         throw new InvalidOperationException($"Property '{segment.PropertyName}' not found on '{current.GetType().FullName}'.");
+
+                    EnsurePropertyWriteAccess(property);
 
                     var propertyType = property.PropertyType;
                     var propertyTargetType = GetElementType(propertyType) ?? propertyType;
@@ -404,12 +408,17 @@ namespace FlowBlox.AIAssistant.Tools.Util
             FlowBloxRegistry registry,
             string path)
         {
+            if (TryApplyScalarFieldSelection(current, property, operation, value, registry))
+                return;
+
             if (operation == TerminalOperation.Set)
             {
                 EnsureNoDirectReactiveObjectJsonAssignment(property.PropertyType, value, path);
                 var convertedValue = ConvertToken(value, property.PropertyType, registry);
                 EnsureReferenceValueIsSelectable(current, parent, property, convertedValue, path);
                 property.SetValue(current, convertedValue);
+                if (current is FlowBloxReactiveObject reactiveObject && FlowBloxFieldSelection.SupportsScalar(property.PropertyType))
+                    reactiveObject.SetPropertySelectedField(property.Name, null);
                 return;
             }
 
@@ -420,6 +429,51 @@ namespace FlowBlox.AIAssistant.Tools.Util
             }
 
             ApplyReferenceLinkOperationToProperty(current, parent, property, operation, value, registry, path);
+        }
+
+        private static bool TryApplyScalarFieldSelection(
+            object target,
+            PropertyInfo property,
+            TerminalOperation operation,
+            JToken value,
+            FlowBloxRegistry registry)
+        {
+            var reactiveObject = target as FlowBloxReactiveObject;
+            if (reactiveObject == null || !FlowBloxFieldSelection.Supports(property))
+                return false;
+
+            var isString = property.PropertyType == typeof(string);
+            if (operation == TerminalOperation.Unlink && !isString)
+            {
+                reactiveObject.SetPropertySelectedField(property.Name, null);
+                return true;
+            }
+
+            if (operation != TerminalOperation.Link)
+                return false;
+
+            var explicitReference = (value as JObject)?.Value<string>("resolveFieldElementByFQName");
+            var fieldName = explicitReference;
+            if (fieldName == null && !isString && value.Type == JTokenType.String)
+            {
+                var text = value.Value<string>();
+                if (!string.IsNullOrWhiteSpace(text) && FieldElement.IsFullyQualifiedName(text))
+                    fieldName = text;
+            }
+
+            if (fieldName == null)
+                return false;
+
+            if (explicitReference != null && ResolveFieldElementByFQName(registry, fieldName) == null)
+                throw new InvalidOperationException($"Field reference '{fieldName}' could not be resolved.");
+
+            if (isString)
+                property.SetValue(target, fieldName);
+            else
+                reactiveObject.SetPropertySelectedFieldName(property.Name, fieldName);
+
+            FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
+            return true;
         }
 
         private static void ApplyIndexedTerminalOperation(

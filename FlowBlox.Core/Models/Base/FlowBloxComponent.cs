@@ -181,6 +181,15 @@ namespace FlowBlox.Core.Models.Base
         /// </remarks>
         protected virtual void OnReferencedFieldNameChanged(FieldElement field, string oldFQFieldName, string newFQFieldName)
         {
+            foreach (var reactiveObject in GetNestedReactiveObjects().Prepend(this))
+            {
+                foreach (var selection in reactiveObject.PropertySelectedFieldMap.ToArray())
+                {
+                    if (string.Equals(selection.Value, oldFQFieldName, StringComparison.Ordinal))
+                        reactiveObject.SetPropertySelectedFieldName(selection.Key, newFQFieldName);
+                }
+            }
+
             var reflectionData = FlowBlockObjectCollector.CollectStringPropertiesContainingFields(this);
             foreach (var (property, instance) in reflectionData)
             {

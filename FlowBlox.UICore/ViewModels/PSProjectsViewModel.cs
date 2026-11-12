@@ -242,9 +242,12 @@ namespace FlowBlox.UICore.ViewModels
                 arg => !string.IsNullOrWhiteSpace(arg as string));
         }
 
-        public PSProjectsViewModel(Window ownerWindow) : this()
+        public PSProjectsViewModel(Window ownerWindow, bool loadRemoteData = true) : this()
         {
             _ownerWindow = ownerWindow;
+
+            if (!loadRemoteData)
+                return;
 
             ExecuteSearch();
             _ = LoadApiMetadataAsync();

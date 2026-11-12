@@ -3,8 +3,11 @@ using FlowBlox.Core;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
-using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
 using FlowBlox.AIAssistant.Constants;
+using FlowBlox.Core.Util.Resources;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 
 namespace FlowBlox.AIAssistant.Models
@@ -15,10 +18,83 @@ namespace FlowBlox.AIAssistant.Models
     [FlowBloxUIGroup("AssistantConfiguration_Groups_Permissions", 2)]
     public class AssistantConfiguration : FlowBloxReactiveObject
     {
-        [Required]
-        [Display(Name = "AssistantConfiguration_Provider", Description = "AssistantConfiguration_Provider_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        public AIProviderBase Provider { get; set; }
+        private string _selectedProviderName;
+        private ObservableCollection<AIProviderBase> _providers;
+
+        public AssistantConfiguration()
+        {
+            Providers = new ObservableCollection<AIProviderBase>();
+        }
+
+        [Display(Name = "AssistantConfiguration_SelectedProviderName", Description = "AssistantConfiguration_SelectedProviderName_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetProviderNames), SelectionFilterDependency = nameof(Providers))]
+        [CustomValidation(typeof(AssistantConfiguration), nameof(ValidateSelectedProviderName))]
+        public string SelectedProviderName
+        {
+            get => _selectedProviderName;
+            set
+            {
+                if (_selectedProviderName == value)
+                    return;
+                _selectedProviderName = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedProvider));
+            }
+        }
+
+        [JsonIgnore]
+        public AIProviderBase SelectedProvider
+        {
+            get
+            {
+                return _providers.FirstOrDefault(provider => 
+                    !string.IsNullOrWhiteSpace(SelectedProviderName) && provider.Name == SelectedProviderName);
+            }
+        }
+
+        [Display(Name = "AssistantConfiguration_Providers", Description = "AssistantConfiguration_Providers_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = -1)]
+        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(AIProviderBase.Name), nameof(AIProviderBase.DefaultModel) })]
+        public ObservableCollection<AIProviderBase> Providers
+        {
+            get => _providers;
+            set
+            {
+                if (_providers != null)
+                    _providers.CollectionChanged -= ProvidersChanged;
+                _providers = value ?? new ObservableCollection<AIProviderBase>();
+                _providers.CollectionChanged += ProvidersChanged;
+                UpdateProviderSelection();
+            }
+        }
+
+        public IList<string> GetProviderNames() => Providers
+            .Select(provider => provider.Name)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Distinct()
+            .ToList();
+
+        public static ValidationResult ValidateSelectedProviderName(object value, ValidationContext context)
+        {
+            var configuration = (AssistantConfiguration)context.ObjectInstance;
+            if (configuration.GetProviderNames().Contains(value as string))
+                return ValidationResult.Success;
+
+            return new ValidationResult(
+                FlowBloxResourceUtil.GetLocalizedString("AssistantConfiguration_SelectedProviderName_Invalid", typeof(FlowBloxTexts)),
+                new[] { context.MemberName });
+        }
+
+        private void ProvidersChanged(object sender, NotifyCollectionChangedEventArgs args) => UpdateProviderSelection();
+
+        private void UpdateProviderSelection()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedProviderName))
+                SelectedProviderName = GetProviderNames().FirstOrDefault();
+
+            OnPropertyChanged(nameof(Providers));
+            OnPropertyChanged(nameof(SelectedProvider));
+        }
 
         [Display(Name = "AssistantConfiguration_Temperature", Description = "AssistantConfiguration_Temperature_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         public double? Temperature { get; set; }
@@ -52,9 +128,6 @@ namespace FlowBlox.AIAssistant.Models
         [Display(Name = "AssistantConfiguration_SummaryCompactionRate", Description = "AssistantConfiguration_SummaryCompactionRate_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 4)]
         [Range(AssistantConfigurationLimits.MinSummaryCompactionRate, AssistantConfigurationLimits.MaxSummaryCompactionRate)]
         public double SummaryCompactionRate { get; set; } = 1d;
-
-        [Display(Name = "AssistantConfiguration_SummarizationStyle", Description = "AssistantConfiguration_SummarizationStyle_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        public AssistantSummarizationStyle SummarizationStyle { get; set; } = AssistantSummarizationStyle.StructuredHistoricalMemory;
 
         [Display(Name = "AssistantConfiguration_MaxContextTokens", Description = "AssistantConfiguration_MaxContextTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 6)]
         public int MaxContextTokens { get; set; } = 32000;

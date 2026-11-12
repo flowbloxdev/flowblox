@@ -22,7 +22,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         protected override string GetReasoningEffortValue()
         {
-            return ReasoningEffort == AIReasoningEffort.Low
+            return GetRuntimeReasoningEffort() == AIReasoningEffort.Low
                 ? "low"
                 : "high";
         }
@@ -34,7 +34,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             {
                 ["thinking"] = new Dictionary<string, object>
                 {
-                    ["type"] = ReasoningEffort == AIReasoningEffort.None
+                    ["type"] = GetRuntimeReasoningEffort() == AIReasoningEffort.None
                         ? "disabled"
                         : "enabled"
                 }

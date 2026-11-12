@@ -20,6 +20,34 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <Style x:Key="ProjectModeHeader" TargetType="Border">
+                <Setter Property="Padding" Value="10,3" />
+                <Setter Property="Margin" Value="0,0,6,0" />
+                <Setter Property="CornerRadius" Value="4" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Background" Value="Transparent" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.DropDownHoverBackground}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.TabSelected}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.DropDownFocusBorder}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ProjectModeHeaderText" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.MutedText}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.Text}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
+                        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.DropDownDisabledText}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -66,6 +94,7 @@
                         <TabItem Header="{x:Static resources:CreateOrUpdatePSProjectWindow.Tab_CreateNewProject}">
                             <TabItem.HeaderTemplate>
                                 <DataTemplate>
+                                    <Border Style="{StaticResource ProjectModeHeader}">
                                     <StackPanel Orientation="Horizontal">
                                         <iconPacks:PackIconMaterial Kind="PlusBoxOutline"
                                                                     Width="16"
@@ -74,10 +103,12 @@
                                                                     VerticalAlignment="Center"
                                                                     Foreground="#2E7D32"/>
                                         <TextBlock Text="{Binding}"
+                                                   Style="{StaticResource ProjectModeHeaderText}"
                                                    FontSize="15"
                                                    FontWeight="SemiBold"
                                                    Padding="0,5"/>
                                     </StackPanel>
+                                    </Border>
                                 </DataTemplate>
                             </TabItem.HeaderTemplate>
 
@@ -94,6 +125,7 @@
                                  IsEnabled="{Binding CanSelectUpdateTab}">
                             <TabItem.HeaderTemplate>
                                 <DataTemplate>
+                                    <Border Style="{StaticResource ProjectModeHeader}">
                                     <StackPanel Orientation="Horizontal">
                                         <iconPacks:PackIconMaterial Kind="CloudUploadOutline"
                                                                     Width="16"
@@ -102,10 +134,12 @@
                                                                     VerticalAlignment="Center"
                                                                     Foreground="#3A6EA5"/>
                                         <TextBlock Text="{Binding}"
+                                                   Style="{StaticResource ProjectModeHeaderText}"
                                                    FontSize="15"
                                                    FontWeight="SemiBold"
                                                    Padding="0,5"/>
                                     </StackPanel>
+                                    </Border>
                                 </DataTemplate>
                             </TabItem.HeaderTemplate>
 
@@ -132,8 +166,8 @@
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="0,10,0,0">
-                <Button Content="{x:Static resources:CreateOrUpdatePSProjectWindow.Button_Cancel}"
-                        Style="{StaticResource FlowBlox.WindowActionButton}"
+                <Button Content="{x:Static resources:CreateOrUpdatePSProjectWindow.Button_Back}"
+                        Style="{StaticResource FlowBlox.WindowActionButton.Back}"
                         Command="{Binding CloseCommand}"
                         IsCancel="True"/>
                 <Button Content="{x:Static resources:CreateOrUpdatePSProjectWindow.Button_Save}"

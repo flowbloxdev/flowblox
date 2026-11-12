@@ -1,6 +1,7 @@
 ﻿using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.UICore.Factory.PropertyView;
@@ -24,12 +25,12 @@ namespace FlowBlox.UICore.Resolver
         private TextBoxWithOptionalButtonsCreator _textBoxWithOptionalButtonsCreator;
         private SimplePropertyInputControlWithOptionalButtonsCreator _simplePropertyInputControlWithOptionalButtonsCreator;
 
-        public PropertyControlResolver(Window window, object parent = null)
+        public PropertyControlResolver(Window window, object parent = null, bool isGridCell = false)
         {
             this._window = window;
             this._parent = parent;
-            this._textBoxWithOptionalButtonsCreator = new TextBoxWithOptionalButtonsCreator(window);
-            this._simplePropertyInputControlWithOptionalButtonsCreator = new SimplePropertyInputControlWithOptionalButtonsCreator(window);
+            this._textBoxWithOptionalButtonsCreator = new TextBoxWithOptionalButtonsCreator(window, parent);
+            this._simplePropertyInputControlWithOptionalButtonsCreator = new SimplePropertyInputControlWithOptionalButtonsCreator(window, parent, isGridCell);
         }
 
         public PropertyControlViewModel Resolve(
@@ -118,7 +119,7 @@ namespace FlowBlox.UICore.Resolver
             return (true, displayName);
         }
 
-        private PropertyControlWithFactoryResult CreateControl(
+        internal PropertyControlWithFactoryResult CreateControl(
             PropertyInfo property, 
             object target, 
             string displayName, 
@@ -142,11 +143,22 @@ namespace FlowBlox.UICore.Resolver
             if (uiAttribute?.Factory == UIFactory.ComboBox && !useDefaultEnumEditor)
             {
                 var factory = new ComboBoxControlFactory(_window, property, target, _parent, readOnly);
+                if (FlowBloxFieldSelection.SupportsScalar(property.PropertyType))
+                {
+                    return new PropertyControlWithFactoryResult(
+                        _simplePropertyInputControlWithOptionalButtonsCreator.CreateSimplePropertyInputControlWithOptionalButtons(
+                            property,
+                            target,
+                            uiAttribute,
+                            binding,
+                            readOnly,
+                            factory.Create()));
+                }
+
                 return new PropertyControlWithFactoryResult(factory.Create());
             }
 
-            if (IsSupportedSimplePropertyType(property.PropertyType) ||
-                EnumHelper.IsEnumType(property))
+            if (FlowBloxFieldSelection.SupportsScalar(property.PropertyType))
             {
                 return new PropertyControlWithFactoryResult(
                     _simplePropertyInputControlWithOptionalButtonsCreator.CreateSimplePropertyInputControlWithOptionalButtons(
@@ -188,20 +200,5 @@ namespace FlowBlox.UICore.Resolver
                     .CreateTextBoxWithOptionalButtons(property, target, displayName, uiAttribute, binding, readOnly));
         }
 
-        private static bool IsSupportedSimplePropertyType(Type propertyType)
-        {
-            return propertyType == typeof(bool) ||
-                   propertyType == typeof(bool?) ||
-                   propertyType == typeof(int) ||
-                   propertyType == typeof(int?) ||
-                   propertyType == typeof(long) ||
-                   propertyType == typeof(long?) ||
-                   propertyType == typeof(float) ||
-                   propertyType == typeof(float?) ||
-                   propertyType == typeof(double) ||
-                   propertyType == typeof(double?) ||
-                   propertyType == typeof(DateTime) ||
-                   propertyType == typeof(DateTime?);
-        }
     }
 }

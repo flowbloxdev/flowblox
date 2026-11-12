@@ -24,7 +24,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
         [Required]
         [Display(Name = "JPathMultiSelectorMappingEntry_JPath", Description = "JPathMultiSelectorMappingEntry_JPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
         public string JPath { get; set; }
 
         [JsonProperty("JsonPath")]
@@ -38,7 +38,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JPathMultiSelectorMappingEntry_RowPath", Description = "JPathMultiSelectorMappingEntry_RowPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(JPathRowPathValidator), nameof(JPathRowPathValidator.ValidateRowPath))]
         [DependsOnProperty(MemberName = nameof(FallbackValue))]
         public string RowPath
@@ -55,6 +55,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JPathMultiSelectorMappingEntry_FallbackValue", Description = "JPathMultiSelectorMappingEntry_FallbackValue_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string FallbackValue
         {
             get => _fallbackValue;
@@ -139,7 +140,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
             return Invoke(runtime, data, () =>
             {
 
-                var jsonText = FlowBloxFieldHelper.ReplaceFieldsInString(JsonContent ?? string.Empty)?.Trim();
+                var jsonText = this.Resolve(owner => owner.JsonContent).Trim();
                 if (string.IsNullOrWhiteSpace(jsonText))
                 {
                     CreateNotification(runtime, JPathMultiSelectorNotifications.JsonContentIsEmpty);
@@ -157,7 +158,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
                 JToken rootToken;
                 try
                 {
-                    rootToken = JToken.Parse(jsonText);
+                    // JSON strings remain strings; date parsing belongs to the target
+                    // field type, otherwise timestamps lose their original offset/format.
+                    using var reader = new JsonTextReader(new StringReader(jsonText))
+                    {
+                        DateParseHandling = DateParseHandling.None
+                    };
+                    rootToken = JToken.Load(reader);
                 }
                 catch (Exception)
                 {
@@ -174,20 +181,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
                     if (mappingEntry?.Field == null)
                         continue;
 
-                    var resolvedPath = FlowBloxFieldHelper.ReplaceFieldsInString(mappingEntry.JPath ?? string.Empty)?.Trim();
-                    if (string.IsNullOrWhiteSpace(resolvedPath))
+                    var jPath = mappingEntry.Resolve(owner => owner.JPath).Trim();
+                    if (string.IsNullOrWhiteSpace(jPath))
                     {
                         hadUnresolvedPaths = true;
                         continue;
                     }
 
-                    var resolvedRowPath = FlowBloxFieldHelper.ReplaceFieldsInString(mappingEntry.RowPath ?? string.Empty)?.Trim();
-                    if (!string.IsNullOrWhiteSpace(resolvedRowPath))
+                    var rowPath = mappingEntry.Resolve(owner => owner.RowPath).Trim();
+                    if (!string.IsNullOrWhiteSpace(rowPath))
                     {
                         try
                         {
-                            var fallbackValue = FlowBloxFieldHelper.ReplaceFieldsInString(mappingEntry.FallbackValue) ?? string.Empty;
-                            if (!JPathRowValueResolver.TryResolve(rootToken, resolvedPath, resolvedRowPath, fallbackValue, out var rowValues))
+                            var fallbackValue = mappingEntry.Resolve(owner => owner.FallbackValue);
+                            if (!JPathRowValueResolver.TryResolve(rootToken, jPath, rowPath, fallbackValue, out var rowValues))
                             {
                                 hadUnresolvedPaths = true;
                                 continue;
@@ -207,7 +214,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
                     try
                     {
                         resultTokens = rootToken
-                            .SelectTokens(resolvedPath, errorWhenNoMatch: false)
+                            .SelectTokens(jPath, errorWhenNoMatch: false)
                             .ToList();
                     }
                     catch (Exception)

@@ -31,14 +31,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         [Display(Name = "IMAPMailFetchFlowBlock_Port", Description = "IMAPMailFetchFlowBlock_Port_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Port { get; set; } = 993;
-        public FieldElement Port_SelectedField { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_UseSsl", Description = "IMAPMailFetchFlowBlock_UseSsl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseSsl { get; set; } = true;
-        public FieldElement UseSsl_SelectedField { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_AcceptInvalidCertificates", Description = "IMAPMailFetchFlowBlock_AcceptInvalidCertificates_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AcceptInvalidCertificates { get; set; }
 
         [Required]
@@ -57,17 +56,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         public string Folder { get; set; } = "INBOX";
 
         [Display(Name = "IMAPMailFetchFlowBlock_OnlyUnread", Description = "IMAPMailFetchFlowBlock_OnlyUnread_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool OnlyUnread { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_StartDate", Description = "IMAPMailFetchFlowBlock_StartDate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 1)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTime? StartDate { get; set; }
-        public FieldElement StartDate_SelectedField { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_EndDate", Description = "IMAPMailFetchFlowBlock_EndDate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 2)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTime? EndDate { get; set; }
-        public FieldElement EndDate_SelectedField { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_SearchText", Description = "IMAPMailFetchFlowBlock_SearchText_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 3)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
@@ -75,15 +73,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
 
         [Range(1, 5000)]
         [Display(Name = "IMAPMailFetchFlowBlock_MaxResults", Description = "IMAPMailFetchFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxResults { get; set; } = 100;
 
         [Display(Name = "IMAPMailFetchFlowBlock_NewestFirst", Description = "IMAPMailFetchFlowBlock_NewestFirst_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool NewestFirst { get; set; } = true;
 
         [Display(Name = "IMAPMailFetchFlowBlock_MarkAsRead", Description = "IMAPMailFetchFlowBlock_MarkAsRead_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool MarkAsRead { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_DeleteAfterFetch", Description = "IMAPMailFetchFlowBlock_DeleteAfterFetch_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool DeleteAfterFetch { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 20)]
@@ -160,15 +162,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 if (!ResultFields.Any())
                     throw new InvalidOperationException("No result fields have been configured.");
 
-                var port = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.Port);
-                var useSsl = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.UseSsl);
-                var host = FlowBloxFieldHelper.ReplaceFieldsInString(Host ?? string.Empty)?.Trim();
-                var userName = FlowBloxFieldHelper.ReplaceFieldsInString(UserName ?? string.Empty)?.Trim();
-                var password = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty) ?? string.Empty;
-                var folderName = FlowBloxFieldHelper.ReplaceFieldsInString(Folder ?? "INBOX")?.Trim();
-                var searchText = FlowBloxFieldHelper.ReplaceFieldsInString(SearchText ?? string.Empty)?.Trim();
-                var startDate = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.StartDate)?.Date;
-                var endDate = FlowBloxFieldHelper.GetSimplePropertyOrFieldValue(this, x => x.EndDate)?.Date;
+                var port = this.Resolve(x => x.Port);
+                var useSsl = this.Resolve(x => x.UseSsl);
+                var host = this.Resolve(owner => owner.Host).Trim();
+                var userName = this.Resolve(owner => owner.UserName).Trim();
+                var password = this.Resolve(owner => owner.Password);
+                var folderName = (Folder == null ? "INBOX" : this.Resolve(x => x.Folder)).Trim();
+                var searchText = this.Resolve(owner => owner.SearchText).Trim();
+                var startDate = this.Resolve(x => x.StartDate)?.Date;
+                var endDate = this.Resolve(x => x.EndDate)?.Date;
                 if (startDate.HasValue && endDate.HasValue && endDate.Value < startDate.Value)
                 {
                     runtime.Report(

@@ -70,16 +70,16 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
-        public static string Button_Close
+        public static string Button_Back
         {
             get
             {
-                return ResourceManager.GetString("Button_Close", resourceCulture);
+                return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Confirm password change ähnelt.
         /// </summary>
@@ -92,16 +92,16 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Reset password ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Request reset code ähnelt.
         /// </summary>
-        public static string Button_ResetPassword
+        public static string Button_RequestResetCode
         {
             get
             {
-                return ResourceManager.GetString("Button_ResetPassword", resourceCulture);
+                return ResourceManager.GetString("Button_RequestResetCode", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The captcha could not be loaded. Please try again. ähnelt.
         /// </summary>

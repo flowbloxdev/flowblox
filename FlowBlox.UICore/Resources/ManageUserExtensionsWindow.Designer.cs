@@ -70,6 +70,39 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Apply ähnelt.
+        /// </summary>
+        public static string Button_Apply
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_Apply", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Saves the changes without closing the dialog. ähnelt.
+        /// </summary>
+        public static string Button_Apply_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_Apply_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
+        /// </summary>
+        public static string Button_Back
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_Back", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create extension ähnelt.
         /// </summary>
         public static string Button_CreateExtension
@@ -176,28 +209,6 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Button_PublishVersion_Tooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Save changes ähnelt.
-        /// </summary>
-        public static string Button_SaveChanges
-        {
-            get
-            {
-                return ResourceManager.GetString("Button_SaveChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die This saves the pending changes on the extension platform. ähnelt.
-        /// </summary>
-        public static string Button_SaveChanges_Tooltip
-        {
-            get
-            {
-                return ResourceManager.GetString("Button_SaveChanges_Tooltip", resourceCulture);
             }
         }
         

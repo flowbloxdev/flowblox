@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -15,18 +16,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
     public class RegexSelectorFlowBlock : BasePipeFlowBlock
     {
         [Display(Name = "RegexSelectorFlowBlock_RegularExpression", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex), UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsCodingMode = true, SyntaxHighlighting = "FlowBlox.UICore.Resources.Highlighting.Regex.xshd")]
         public string RegularExpression { get; set; }
 
         [Display(Name = "RegexSelectorFlowBlock_Group", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public string Group { get; set; }
 
         [Display(Name = "RegexSelectorFlowBlock_CaseSensitive", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool CaseSensitive { get; set; }
 
         [Display(Name = "RegexSelectorFlowBlock_Multiline", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Multiline { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.regex, 16, SKColors.OrangeRed);
@@ -54,16 +57,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
 
                 string content = InputField.StringValue;
 
-                var regexString = RegularExpression;
-                regexString = FlowBloxFieldHelper.ReplaceFieldsInString(regexString);
-                if (string.IsNullOrWhiteSpace(regexString))
-                {
-                    CreateNotification(runtime, RegexSelectorNotifications.RegularExpressionIsEmpty);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    x => x.RegularExpression,
+                    out var regularExpression,
+                    runtime,
+                    RegexSelectorNotifications.RegularExpressionIsEmpty))
                     return;
-                }
 
-                Regex regex = new Regex(regexString);
+                Regex regex = new Regex(regularExpression);
                 MatchCollection matchCollection = regex.Matches(content);
 
                 if (matchCollection.Count == 0)
@@ -76,12 +77,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
                     runtime.Report("The regular expression returned " + matchCollection.Count.ToString() + " matches.");
                 }
 
+                var group = this.Resolve(owner => owner.Group);
                 List<string> matchValues = new List<string>();
                 foreach (Match match in matchCollection)
                 {
-                    if (!string.IsNullOrEmpty(Group))
+                    if (!string.IsNullOrEmpty(group))
                     {
-                        matchValues.Add(match.Groups.GetValueOrDefault(Group)?.Value);
+                        matchValues.Add(match.Groups.GetValueOrDefault(group)?.Value);
                     }
                     else
                     {

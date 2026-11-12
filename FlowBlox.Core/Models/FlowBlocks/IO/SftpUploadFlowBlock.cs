@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -36,6 +37,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public FieldElement ContentField { get => _contentField; set => SetRequiredInputField(ref _contentField, value); }
 
         [Display(Name = "SftpUploadFlowBlock_Overwrite", Description = "SftpUploadFlowBlock_Overwrite_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Overwrite { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cloud_upload_outline, 16, SKColors.Teal);
@@ -58,13 +60,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public override bool Execute(BaseRuntime runtime, object data) => Invoke(runtime, data, () =>
         {
             if (Connection == null) throw new ValidationException("No SFTP connection is configured.");
-            var path = FlowBloxFieldHelper.ReplaceFieldsInString(RemotePath ?? string.Empty)?.Trim();
-            if (string.IsNullOrWhiteSpace(path)) throw new ValidationException("The SFTP remote path is empty.");
+            var remotePath = this.Resolve(owner => owner.RemotePath, required: true).Trim();
             var content = FlowBloxBinaryContentHelper.Resolve(ContentField, allowPlainText: true);
             using var input = new MemoryStream(content, writable: false);
             using var client = Connection.CreateClient();
             client.Connect();
-            client.UploadFile(input, path, Overwrite);
+            client.UploadFile(input, remotePath, Overwrite);
             GenerateResult(runtime, bool.TrueString.ToLowerInvariant());
         });
     }

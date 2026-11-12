@@ -453,14 +453,20 @@ Alle Eingabedaten werden innerhalb jeder referenzierten Iteration gesammelt, und
 	<data name="Direction_Encode" xml:space="preserve">
 		<value>Enkodieren</value>
 	</data>
-	<data name="DistributorFlowBlock_Description" xml:space="preserve">
-		<value>Erhält einen einzelnen Eingabewert und verteilt diesen auf eine beliebige Anzahl definierter Ausgabefeldwerte.</value>
+	<data name="FieldCopyFlowBlock_Description" xml:space="preserve">
+		<value>Kopiert den Wert eines Eingabefeldes in ein oder mehrere unabhängige Ausgabefelder. Modifier können auf jede Kopie angewendet werden, während der ursprüngliche Feldwert erhalten bleibt.</value>
 	</data>
-	<data name="DistributorFlowBlock_DisplayName" xml:space="preserve">
-		<value>Verteilen</value>
+	<data name="FieldCopyFlowBlock_DisplayName" xml:space="preserve">
+		<value>Feld kopieren</value>
 	</data>
-	<data name="DistributorFlowBlock_DisributedFields" xml:space="preserve">
-		<value>Wert aus Eingangsfeld auf folgende Felder verteilen</value>
+	<data name="FieldCopyFlowBlock_CopiedFields" xml:space="preserve">
+		<value>Kopierte Felder</value>
+	</data>
+	<data name="FieldCopyFlowBlock_InputField_Tooltip" xml:space="preserve">
+		<value>Quellfeld, dessen Wert unverändert kopiert wird. Beispielsweise bleibt das binäre Ergebnis eines FileReaders erhalten, während eine separate Textkopie gehasht wird.</value>
+	</data>
+	<data name="FieldCopyFlowBlock_CopiedFields_Tooltip" xml:space="preserve">
+		<value>Hier die Ausgabefelder anlegen und deren Typen und Modifier unabhängig konfigurieren. Jedes Ausgabefeld erhält den Quellwert, bevor seine eigenen Modifier ausgeführt werden. Für einen Hash oder eine kodierte Kopie den Typ Text verwenden.</value>
 	</data>
 	<data name="DownloaderFlowBlock_Description" xml:space="preserve">
 		<value>Flow-Block zum Herunterladen von Dateien aus dem Internet unter Verwendung einer URL.</value>
@@ -4006,18 +4012,6 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
 	<data name="AssistantConfiguration_SummaryCompactionRate_Tooltip" xml:space="preserve">
 		<value>Anteil der zusammenfassbaren Konversationsnachrichten, der auf einmal komprimiert wird, sobald der Assistent die Zusammenfassung aktualisieren muss. Zum Beispiel komprimiert 0,4 insgesamt 40%, behält aber weiterhin die konfigurierte Mindestanzahl neuester Nachrichten unverändert bei.</value>
 	</data>
-	<data name="AssistantConfiguration_SummarizationStyle" xml:space="preserve">
-		<value>Zusammenfassungsstil</value>
-	</data>
-	<data name="AssistantConfiguration_SummarizationStyle_Tooltip" xml:space="preserve">
-		<value>Legt fest, wie Konversationsverlauf, aktueller Projektzustand, Entscheidungen, Diagnosen und wiederverwendbares FlowBlox-Wissen in der dauerhaften Zusammenfassung strukturiert werden.</value>
-	</data>
-	<data name="AssistantSummarizationStyle_DetailedProjectMemory" xml:space="preserve">
-		<value>Detailliertes Projektgedächtnis (klassisch)</value>
-	</data>
-	<data name="AssistantSummarizationStyle_StructuredHistoricalMemory" xml:space="preserve">
-		<value>Strukturierte Projekthistorie und Erinnerung</value>
-	</data>
 	<data name="AssistantConfiguration_MaxContextTokens" xml:space="preserve">
 		<value>Maximale Kontext-Tokens</value>
 	</data>
@@ -4461,7 +4455,7 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="CollectionQueryOperation_Average" xml:space="preserve"><value>Durchschnitt</value></data>
   <data name="CollectionQueryOperation_Any" xml:space="preserve"><value>Mindestens eines (Any)</value></data>
   <data name="CollectionQueryOperation_All" xml:space="preserve"><value>Alle (All)</value></data>
-  <data name="FieldComparisonCondition_Validation_ByteArrayNotSupported" xml:space="preserve"><value>Felder mit einem ByteArray-Wert können nicht für Vergleiche verwendet werden. Wählen Sie ein Feld mit einem unterstützten Datentyp.</value></data>
+  <data name="FieldComparisonCondition_Validation_ByteArrayOperatorNotSupported" xml:space="preserve"><value>ByteArray-Felder unterstützen nur Gleichheit, Ungleichheit und die Prüfung auf vorhandene oder fehlende Werte.</value></data>
   <data name="FieldComparisonCondition_Validation_ContainsRequiresText" xml:space="preserve"><value>Die Operatoren „Enthält“ und „Enthält nicht“ erfordern ein Textfeld. Wählen Sie ein Textfeld oder einen anderen Vergleichsoperator.</value></data>
   <data name="TableSelectorColumnCondition_ColumnType" xml:space="preserve"><value>Spaltentyp</value></data>
   <data name="TableSelectorColumnCondition_ColumnType_Tooltip" xml:space="preserve"><value>Typdefinition für diese Spaltenbedingung. Wählen Sie DateTime, Float oder Double, um das Datums-/Zeitformat oder die Zahlentrennzeichen für das Einlesen des Vergleichswerts festzulegen. Der Standardtyp ist Text.</value></data>
@@ -4634,6 +4628,45 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="FieldElement_SyntaxHighlighting" xml:space="preserve"><value>Syntaxhervorhebung</value></data>
   <data name="FieldElement_SyntaxHighlighting_Tooltip" xml:space="preserve"><value>Sprache zur Hervorhebung des Feldwerts im Editor. Wähle eine der verfügbaren Sprachen. Standard: Text (keine Hervorhebung); eine leere Auswahl bedeutet ebenfalls Text. Ändert nur die Darstellung, nicht Feldtyp oder Wert.</value></data>
   <data name="OpenApiRestFlowBlockUIActions_ReloadDefinition" xml:space="preserve"><value>API-Definition neu laden</value></data>
+  <data name="FlowBloxOptions_VaultValues_DisplayName" xml:space="preserve"><value>Vault: Geschützte Umgebungswerte</value></data>
+  <data name="FlowBloxOptions_VaultValues_Description" xml:space="preserve"><value>Verschlüsselte lokale Zugangsdaten, URLs und Umgebungseinstellungen für mehrere Projekte. Einträge unter Extras &gt; Vault verwalten.</value></data>
+  <data name="FieldElement_Groups_Advanced" xml:space="preserve"><value>Erweiterte Einstellungen</value></data>
+  <data name="AssistantConfiguration_SelectedProviderName" xml:space="preserve">
+    <value>Ausgewählter Provider</value>
+  </data>
+  <data name="AssistantConfiguration_SelectedProviderName_Tooltip" xml:space="preserve">
+    <value>Einen Provider anhand seines Namens aus der konfigurierten Provider-Liste auswählen.</value>
+  </data>
+  <data name="AssistantConfiguration_SelectedProviderName_Invalid" xml:space="preserve">
+    <value>Bitte einen vorhandenen Provider aus der Provider-Liste auswählen. Ist die Liste leer, zuerst einen Provider hinzufügen.</value>
+  </data>
+  <data name="AssistantConfiguration_Providers" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="AssistantConfiguration_Providers_Tooltip" xml:space="preserve">
+    <value>Provider hier anlegen und konfigurieren. Anschließend den Provider für Anfragen des Assistenten auswählen.</value>
+  </data>
+  <data name="FieldResolution_RequiredValueMissing" xml:space="preserve">
+    <value>Der Wert für „{0}“ ist nach der Feldauflösung leer.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_DisplayName" xml:space="preserve">
+    <value>SQLite-Datenbank erstellen</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_Description" xml:space="preserve">
+    <value>Erstellt eine neue SQLite-Datenbankdatei. Eine vorhandene Datenbank wird bei jeder Ausführung überschrieben. Gibt die Verbindungszeichenfolge für SQL-Tabellen und -Anweisungen zurück.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_DatabaseFile" xml:space="preserve">
+    <value>Datenbankdatei</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_DatabaseFile_Tooltip" xml:space="preserve">
+    <value>FileObject mit dem lokalen SQLite-Pfad, zum Beispiel $Project::OutputDirectory/hash-store.sqlite. Datei und Schema werden bei jeder Ausführung ersetzt.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_PathRequired" xml:space="preserve">
+    <value>Ein lokaler Pfad für die Datenbankdatei ist erforderlich.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_CreationFailed" xml:space="preserve">
+    <value>Die lokale Datenbank konnte nicht erstellt werden. Prüfe den Pfad und schließe andere Verbindungen.</value>
+  </data>
 </root>
 
 

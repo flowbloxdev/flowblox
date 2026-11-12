@@ -220,6 +220,8 @@ namespace FlowBloxTest.AIAssistant
         [TestMethod]
         [DataRow("executesqlquery")]
         [DataRow("GetFileContent")]
+        [DataRow("SearchJiraTickets")]
+        [DataRow("GetJiraTicket")]
         public async Task GetSkillProject_ResolvesBootstrapNameWithSameParameterContractAsCatalog(string skillProjectName)
         {
             var api = new DefaultToolApi();

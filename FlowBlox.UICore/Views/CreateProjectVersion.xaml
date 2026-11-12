@@ -131,15 +131,20 @@
                         HorizontalAlignment="Right"
                         Margin="0,12,0,0">
 
-                <Button Content="{x:Static resources:CreateProjectVersionWindow.Button_Cancel}"
-                        Margin="0,0,6,0"
+                <Button Content="{x:Static resources:CreateProjectVersionWindow.Button_Back}"
                         Command="{Binding CloseCommand}"
-                        IsCancel="True"/>
+                        IsCancel="True"
+                        Style="{StaticResource FlowBlox.WindowActionButton.Back}"/>
 
-                <Button Content="{x:Static resources:CreateProjectVersionWindow.Button_Create}"
-                        Command="{Binding CreateCommand}"
+                <Button Command="{Binding CreateCommand}"
                         IsEnabled="{Binding CanCreate}"
-                        IsDefault="True"/>
+                        IsDefault="True"
+                        Style="{StaticResource FlowBlox.WindowActionButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="SourceBranchPlus" Style="{StaticResource FlowBlox.WindowActionIcon.Save}"/>
+                        <TextBlock Text="{x:Static resources:CreateProjectVersionWindow.Button_Create}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
 
         </Grid>

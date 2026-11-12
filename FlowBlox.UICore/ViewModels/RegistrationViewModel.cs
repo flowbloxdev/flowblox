@@ -207,7 +207,8 @@ namespace FlowBlox.UICore.ViewModels
             if (result.Success)
             {
                 await MessageBoxHelper.ShowMessageBoxAsync((MetroWindow)_window, MessageBoxType.Notification,
-                    FlowBloxResourceUtil.GetLocalizedString("Message_Success", typeof(Resources.RegistrationWindow))); ;
+                    FlowBloxResourceUtil.GetLocalizedString("Message_Success", typeof(Resources.RegistrationWindow)));
+                _window.DialogResult = true;
             }
             else
             {

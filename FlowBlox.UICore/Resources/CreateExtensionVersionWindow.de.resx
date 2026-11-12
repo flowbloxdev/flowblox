@@ -126,8 +126,8 @@
   <data name="ToolTip_Format" xml:space="preserve">
 		<value>Geben Sie die Versionsnummer im Format 'Major.Minor.Patch' an.</value>
 	</data>
-  <data name="Button_Cancel" xml:space="preserve">
-		<value>Abbrechen</value>
+  <data name="Button_Back" xml:space="preserve">
+		<value>Zurück</value>
 	</data>
   <data name="Button_Create" xml:space="preserve">
 		<value>Erstellen</value>

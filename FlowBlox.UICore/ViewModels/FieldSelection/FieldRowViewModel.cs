@@ -15,7 +15,6 @@ namespace FlowBlox.UICore.ViewModels.FieldSelection
         public string FieldName { get; }
         public bool IsUserField { get; }
         public bool IsConnected { get; }
-        public string IconKey { get; }
 
         public FieldRowViewModel(FieldElement element, bool isConnected)
         {
@@ -25,13 +24,6 @@ namespace FlowBlox.UICore.ViewModels.FieldSelection
             FieldName = element?.Name ?? "";
             IsUserField = element?.UserField == true;
             IsConnected = isConnected;
-
-            if (IsUserField)
-                IconKey = "user";
-            else if (IsConnected)
-                IconKey = "connected";
-            else
-                IconKey = "disconnected";
         }
     }
 }

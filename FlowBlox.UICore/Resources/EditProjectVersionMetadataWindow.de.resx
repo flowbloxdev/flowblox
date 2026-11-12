@@ -138,8 +138,8 @@
   <data name="Placeholder_VersionComment" xml:space="preserve">
   <value>Optional: Beschreibe kurz die Änderung.</value>
 </data>
-  <data name="Button_Cancel" xml:space="preserve">
-  <value>Abbrechen</value>
+  <data name="Button_Back" xml:space="preserve">
+  <value>Zurück</value>
 </data>
   <data name="Button_Save" xml:space="preserve">
   <value>Speichern</value>

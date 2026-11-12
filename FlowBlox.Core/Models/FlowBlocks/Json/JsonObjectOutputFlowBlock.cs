@@ -32,10 +32,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
         [Required]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; } = DotNetEncodingNames.Default;
 
         [Display(Name = "JsonObjectOutputFlowBlock_Indented", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Indented { get; set; } = true;
 
         [Display(Name = "JsonObjectOutputFlowBlock_NullValueHandling", ResourceType = typeof(FlowBloxTexts))]

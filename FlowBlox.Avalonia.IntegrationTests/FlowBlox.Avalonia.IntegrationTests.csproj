@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\FlowBlox.Avalonia\FlowBlox.Avalonia.csproj" />
+    <ProjectReference Include="..\FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj" />
   </ItemGroup>
   <Import Project="..\FlowBlox.Build\FlowBlox.Build.targets" />
   <Target Name="RemoveUnusedDockJsonGenerator" BeforeTargets="CoreCompile">

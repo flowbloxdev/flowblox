@@ -6,6 +6,7 @@ using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.FlowBlocks.Web.OpenApi;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -137,6 +138,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public ObservableCollection<OpenApiParameterValue> RequestParameters { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_ContentType", Description = "OpenApiRestFlowBlock_ContentType_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Payload", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ContentType { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_Payload", Description = "OpenApiRestFlowBlock_Payload_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Payload", Order = 1)]
@@ -350,7 +352,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             var offsetParameter = RequestParameters.SingleOrDefault(x => x.Name == PaginationOffsetParameter);
             if (offsetParameter == null || !string.Equals(offsetParameter.Location, "Query", StringComparison.OrdinalIgnoreCase))
                 throw new ValidationException("The pagination offset must be a configured query parameter.");
-            var offsetText = FlowBloxFieldHelper.ReplaceFieldsInString(offsetParameter.Value);
+            var offsetText = offsetParameter.Resolve(owner => owner.Value);
             var offset = string.IsNullOrWhiteSpace(offsetText) ? 0 : int.Parse(offsetText, System.Globalization.CultureInfo.InvariantCulture);
             var combined = new JArray();
             JObject firstPage = null;
@@ -360,7 +362,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 var response = await InvokeEndpoint(descriptor, runtime, offset).ConfigureAwait(false);
                 if (response.StatusCode < 200 || response.StatusCode >= 300)
                     return response;
-                var page = JObject.Parse(response.Payload);
+                // Combining pages must not reinterpret JSON string values as local dates.
+                using var reader = new JsonTextReader(new StringReader(response.Payload))
+                {
+                    DateParseHandling = DateParseHandling.None
+                };
+                var page = JObject.Load(reader);
                 firstPage ??= page;
                 var items = page.SelectToken(PaginationItemsPath) as JArray
                     ?? throw new ValidationException("The pagination item path must select a JSON array.");
@@ -383,13 +390,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         private async Task<InvocationResult> InvokeEndpoint(OpenApiEndpointDescriptor descriptor, BaseRuntime runtime, int? offset = null)
         {
-            var baseUrl = FlowBloxFieldHelper.ReplaceFieldsInString(BaseUrl ?? descriptor.ServerUrl)?.TrimEnd('/');
+            var baseUrl = (BaseUrl == null
+                ? FlowBloxFieldHelper.ReplaceFieldsInString(descriptor.ServerUrl) ?? string.Empty
+                : this.Resolve(x => x.BaseUrl)).Trim();
             var path = descriptor.Path;
             var query = new List<string>();
             var cookies = new List<string>();
             foreach (var parameter in RequestParameters)
             {
-                var value = FlowBloxFieldHelper.ReplaceFieldsInString(parameter.Value ?? string.Empty);
+                var value = parameter.Resolve(owner => owner.Value);
                 if (offset.HasValue && parameter.Name == PaginationOffsetParameter)
                     value = offset.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (parameter.Required && string.IsNullOrWhiteSpace(value))
@@ -407,7 +416,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
             if (System.Text.RegularExpressions.Regex.IsMatch(path, @"\{[^{}]+\}"))
                 throw new ValidationException("One or more OpenAPI path parameters are unresolved.");
-            var url = (baseUrl ?? string.Empty) + "/" + path.TrimStart('/');
+            var url = UriHelper.NormalizePathSeparators(UriHelper.ConcatUri(baseUrl, path));
             if (query.Count > 0)
                 url += (url.Contains('?') ? "&" : "?") + string.Join("&", query);
 
@@ -415,13 +424,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             {
                 using var client = new HttpClient();
                 using var request = new HttpRequestMessage(new HttpMethod(descriptor.Method), url);
-                var token = FlowBloxFieldHelper.ReplaceFieldsInString(BearerToken ?? string.Empty)?.Trim();
-                var userName = FlowBloxFieldHelper.ReplaceFieldsInString(UserName ?? string.Empty);
+                var token = this.Resolve(owner => owner.BearerToken).Trim();
+                var userName = this.Resolve(owner => owner.UserName);
                 if (!string.IsNullOrWhiteSpace(userName))
                 {
                     if (!string.IsNullOrWhiteSpace(token))
                         throw new ValidationException("Configure either Basic authentication or a Bearer token.");
-                    var password = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty);
+                    var password = this.Resolve(owner => owner.Password);
                     request.Headers.Authorization = new AuthenticationHeaderValue("Basic",
                         Convert.ToBase64String(Encoding.UTF8.GetBytes(userName + ":" + password)));
                 }
@@ -429,14 +438,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (!string.IsNullOrWhiteSpace(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 foreach (var parameter in HeaderParameters)
                 {
-                    var value = FlowBloxFieldHelper.ReplaceFieldsInString(parameter.Value ?? string.Empty);
+                    var value = parameter.Resolve(owner => owner.Value);
                     if (parameter.Required && string.IsNullOrWhiteSpace(value))
                         throw new ValidationException($"Required OpenAPI header '{parameter.Name}' is empty.");
                     if (!string.IsNullOrEmpty(value)) request.Headers.TryAddWithoutValidation(parameter.Name, value);
                 }
                 if (cookies.Count > 0) request.Headers.TryAddWithoutValidation("Cookie", string.Join("; ", cookies));
-                var payload = FlowBloxFieldHelper.ReplaceFieldsInString(Payload ?? string.Empty);
-                if (!string.IsNullOrEmpty(payload)) request.Content = new StringContent(payload, Encoding.UTF8, string.IsNullOrWhiteSpace(ContentType) ? "application/json" : ContentType);
+                var payload = this.Resolve(owner => owner.Payload);
+                var contentType = this.Resolve(owner => owner.ContentType);
+                if (!string.IsNullOrEmpty(payload))
+                    request.Content = new StringContent(payload, Encoding.UTF8, string.IsNullOrWhiteSpace(contentType) ? "application/json" : contentType);
                 runtime.Report($"Calling OpenAPI endpoint: {descriptor.Method} {url}", FlowBloxLogLevel.Info);
                 using var response = await client.SendAsync(request, runtime.GetCancellationToken()).ConfigureAwait(false);
                 var responsePayload = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

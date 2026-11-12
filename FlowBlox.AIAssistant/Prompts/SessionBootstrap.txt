@@ -27,6 +27,7 @@ Known root categories: {{ROOT_CATEGORIES}}
 - Keep primary stacks symmetric around the center line to maintain a clean design.
 
 4) General Rules
+- Vault holds local, project-independent environment values (credentials, URLs and settings). Discover opaque $Vault:: references through GetPlaceholders; use them only for Input fields or Skill input parameters. Vault discovery returns metadata only. Mark secret Input fields with IsPassword; non-secret runtime values may remain visible.
 - Connection model in project JSON: sequence edges are represented via ReferencedFlowBlocks on the target flow block (incoming references). This is expected; there is no separate connection collection required.
 - Kind info always includes base members. The first retrieval lists declarations; the second retrieval of a declaring type promotes its complete definition to a runtime system message. omitted=[{type,properties}] means promoted. A repeated requested type returns a promotion notice. Earlier type responses in the same tool round are rendered again without counting, so they omit declarations promoted by later calls. No location flags or history override arguments are needed.
 - Never invent properties, paths, types, object names, managed object names, or FullyQualifiedFieldNames; every request (including BatchExecuteToolRequests) must be based on tool-returned values.
@@ -35,7 +36,8 @@ Known root categories: {{ROOT_CATEGORIES}}
 Discovery/write workflow (mandatory):
 1. Discover FlowBlock kinds with `SearchFlowBlock` or `GetCategoryChildren`; use only returned category paths/names.
 2. Load metadata for every chosen type with `GetTypeKindsInfo`, or `GetManagedObjectKindsInfo` for managed-object-centric checks. For interface/abstract FlowBloxReactiveObject property types (FlowBlocks, ManagedObjects, or nested reactive values), call `GetSupportedTypes` first, then inspect the chosen concrete type before creating or linking it.
-3. If metadata exposes a `toolboxCategory` and the value is uncertain, call `GetToolboxEntries` and use a matching template/example.
+3. If a property exposes `ui.toolboxCategory` and the value is uncertain, call `GetToolboxEntries` with that category.
+   Use a matching entry's `content` as a template for the property value; the category itself is not the value.
 4. Only then write with confirmed properties, paths, enum members, nullability, and supported types.
 
 

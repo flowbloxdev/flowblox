@@ -63,7 +63,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
         [ActivationCondition(MemberName = nameof(ContentField), ActivationMethod = nameof(IsEncodingNameActive))]
         [ConditionallyRequired]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         private bool IsEncodingNameActive()
@@ -145,10 +145,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
                 try
                 {
                     var entryPath = BuildEntryPath(
-                        FlowBloxFieldHelper.ReplaceFieldsInString(ArchivePath ?? string.Empty),
-                        FlowBloxFieldHelper.ReplaceFieldsInString(FileName ?? string.Empty));
+                        this.Resolve(owner => owner.ArchivePath),
+                        this.Resolve(owner => owner.FileName));
 
-                    var password = FlowBloxFieldHelper.ReplaceFieldsInString(Password ?? string.Empty);
+                    var password = this.Resolve(owner => owner.Password);
                     var content = ResolveContentBytes();
 
                     ZipArchiveObject.AppendOrReplaceEntry(password, entryPath, content);

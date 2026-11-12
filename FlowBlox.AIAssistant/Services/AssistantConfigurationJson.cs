@@ -1,6 +1,7 @@
 ﻿using FlowBlox.AIAssistant.Models;
-using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
+using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Services
 {
@@ -20,10 +21,22 @@ namespace FlowBlox.AIAssistant.Services
 
             try
             {
-                var configuration = JsonConvert.DeserializeObject<AssistantConfiguration>(raw, _settings)
+                var json = JObject.Parse(raw);
+                var serializer = JsonSerializer.Create(_settings);
+                var configuration = json.ToObject<AssistantConfiguration>(serializer)
                     ?? new AssistantConfiguration();
 
-                configuration.Provider ??= new OpenAIProvider();
+                // Preserve existing single-provider configurations without storing an object reference.
+                if (configuration.Providers.Count == 0 && json["Provider"] is JObject legacyProvider)
+                {
+                    var provider = legacyProvider.ToObject<AIProviderBase>(serializer);
+                    if (provider != null)
+                    {
+                        if (string.IsNullOrWhiteSpace(provider.Name))
+                            provider.Name = provider.ProviderType;
+                        configuration.Providers.Add(provider);
+                    }
+                }
                 return new AssistantConfigurationParseResult
                 {
                     Configuration = configuration
@@ -42,7 +55,6 @@ namespace FlowBlox.AIAssistant.Services
         {
             ArgumentNullException.ThrowIfNull(configuration);
 
-            configuration.Provider ??= new OpenAIProvider();
             return JsonConvert.SerializeObject(configuration, _settings);
         }
     }

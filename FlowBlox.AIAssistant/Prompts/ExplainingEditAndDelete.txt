@@ -47,12 +47,22 @@ Link/Unlink (reference components only):
 - Single reference:
   - /Property/Link + resolver
   - /Property/Unlink (resolver optional)
+- Scalar field reference (EnableFieldSelection / uiFlags [FLD], including nested reactive properties):
+  - /Property/Link + field resolver
+  - /Property/Unlink
 - Collection reference:
   - /Collection/Link + resolver (no duplicates)
   - /Collection/Unlink + resolver (no-op if absent)
   - /Collection/<index>/Link + resolver (explicit replace/swap)
   - /Collection/<index>/Unlink (explicit index removal)
 - Never use Unlink for FlowBloxReactiveObject-only values; use Delete on parent path instead.
+
+Scalar field references:
+- Use Link/Unlink for field assignments; /Property sets a literal and removes any selection. Unlink preserves the configured literal.
+- Use GetPlaceholders to discover fields and GetTypeKindsInfo to inspect uiFlags [FLD], readOnly and selection attributes.
+- PropertySelectedFieldMap is the read-only source of truth in snapshots: property names map to fully qualified field names;
+  absent entries use the configured literal. Never write the map, its child paths or legacy _SelectedField paths.
+- Field and property types may differ; existing runtime conversions apply.
 
 Delete rules:
 - Context delete via Update path:
@@ -62,7 +72,7 @@ Delete rules:
   - Reactive delete uses the same central dependency analysis as direct component deletion.
 - Permanent delete for reference components:
   - DeleteFlowBlock / DeleteManagedObject
-- Direct and collection references are removed automatically. EnableFieldSelection strings remain unchanged and are returned with reviewStatus=ManualActionRequired in deletionReport.
+- Direct and collection references are removed automatically. Inline field expressions and scalar field selections remain available for review and are returned with reviewStatus=ManualActionRequired in deletionReport.
 - Deletion is always performed. When dependencies are affected, deletionReport lists every dependent reference handled because of the deletion. Collection removals have reviewStatus=Information. Optional references set to null have reviewStatus=ReviewRecommended; currently required references and invalid field expressions have reviewStatus=ManualActionRequired. If deletionReport is absent, no dependencies were affected.
 
 Deletion workflow:

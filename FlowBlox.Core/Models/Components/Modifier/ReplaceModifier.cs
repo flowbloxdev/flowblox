@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.Resources;
@@ -21,8 +22,8 @@ namespace FlowBlox.Core.Models.Components.Modifier
 
         public override string Modify(BaseRuntime runtime, string value)
         {
-            string search = FlowBloxFieldHelper.ReplaceFieldsInString(this.Search);
-            string replace = FlowBloxFieldHelper.ReplaceFieldsInString(this.Replace);
+            string search = this.Resolve(owner => owner.Search);
+            string replace = this.Resolve(owner => owner.Replace);
             var replaced = value.Replace(search, replace);
             return replaced;
         }

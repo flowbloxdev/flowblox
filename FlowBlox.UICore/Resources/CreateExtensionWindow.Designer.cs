@@ -70,16 +70,16 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Cancel ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
-        public static string Button_Cancel
+        public static string Button_Back
         {
             get
             {
-                return ResourceManager.GetString("Button_Cancel", resourceCulture);
+                return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create ähnelt.
         /// </summary>

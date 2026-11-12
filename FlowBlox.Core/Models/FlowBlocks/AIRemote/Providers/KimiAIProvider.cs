@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Enums;
@@ -23,19 +24,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         protected override string GetReasoningEffortValue()
         {
-            return ReasoningEffort == AIReasoningEffort.Low
+            return GetRuntimeReasoningEffort() == AIReasoningEffort.Low
                 ? "low"
                 : "high";
         }
 
         protected override void ConfigureExecutionSettings(OpenAIPromptExecutionSettings settings, AIChatRequest request)
         {
-            var resolvedModel = FlowBloxFieldHelper.ReplaceFieldsInString(request.Model);
-            if (string.IsNullOrWhiteSpace(resolvedModel))
-                resolvedModel = FlowBloxFieldHelper.ReplaceFieldsInString(DefaultModel);
+            var model = FlowBloxFieldHelper.ReplaceFieldsInString(request.Model);
+            if (string.IsNullOrWhiteSpace(model))
+                model = this.Resolve(owner => owner.DefaultModel);
 
             // K3.1 Pro (including Highspeed) fixes temperature server-side.
-            if (resolvedModel.StartsWith("kimi-k3.1-pro", StringComparison.OrdinalIgnoreCase))
+            if (model.StartsWith("kimi-k3.1-pro", StringComparison.OrdinalIgnoreCase))
                 settings.Temperature = null;
         }
     }

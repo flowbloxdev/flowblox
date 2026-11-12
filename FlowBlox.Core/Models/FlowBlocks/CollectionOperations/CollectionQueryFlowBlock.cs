@@ -54,6 +54,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
         private CollectionQueryOperation _operation;
 
         [Display(Name = "CollectionQueryFlowBlock_Operation", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public CollectionQueryOperation Operation
         {
             get => _operation;
@@ -70,10 +71,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
         [ActivationCondition(MemberName = nameof(Operation), Value = CollectionQueryOperation.ElementAt)]
         [Range(0, int.MaxValue)]
         [Display(Name = "CollectionQueryFlowBlock_ElementIndex", Description = "CollectionQueryFlowBlock_ElementIndex_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 1)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int ElementIndex { get; set; }
 
         [Display(Name = "CollectionQueryFlowBlock_Predicates", Description = "CollectionQueryFlowBlock_Predicates_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.GridView, UiOptions = UIOptions.EnableFieldSelection, CreatableTypes = [typeof(FieldLogicalComparisonCondition), typeof(LogicalGroupCondition)])]
+        [FlowBloxUI(Factory = UIFactory.GridView, CreatableTypes = [typeof(FieldLogicalComparisonCondition), typeof(LogicalGroupCondition)])]
         [FlowBloxCardList(ItemDisplayName = "CollectionQueryFlowBlock_Predicate")]
         [FlowBloxDataGrid(GridColumnMemberNames = [nameof(LogicalCondition.LogicalOperator), nameof(LogicalCondition.DisplayName)])]
         public ObservableCollection<LogicalCondition> Predicates { get; set; }

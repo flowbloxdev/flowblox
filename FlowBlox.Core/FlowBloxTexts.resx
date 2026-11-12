@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
     Microsoft ResX Schema 
@@ -453,14 +453,20 @@ All inputs are collected during each referenced iteration and this flow block ex
 	<data name="Direction_Encode" xml:space="preserve">
 		<value>Encode</value>
 	</data>
-	<data name="DistributorFlowBlock_Description" xml:space="preserve">
-		<value>Receives a single input value and distributes it to any number of defined output field values.</value>
+	<data name="FieldCopyFlowBlock_Description" xml:space="preserve">
+		<value>Copies one input field value to one or more independent output fields. Apply modifiers to each copy while preserving the original field value.</value>
 	</data>
-	<data name="DistributorFlowBlock_DisplayName" xml:space="preserve">
-		<value>Distribute</value>
+	<data name="FieldCopyFlowBlock_DisplayName" xml:space="preserve">
+		<value>Copy field</value>
 	</data>
-	<data name="DistributorFlowBlock_DisributedFields" xml:space="preserve">
-		<value>Distribute value from input field to the following fields</value>
+	<data name="FieldCopyFlowBlock_CopiedFields" xml:space="preserve">
+		<value>Copied fields</value>
+	</data>
+	<data name="FieldCopyFlowBlock_InputField_Tooltip" xml:space="preserve">
+		<value>Source field whose value is copied without changing it. For example, keep a FileReader's binary result and hash a separate Text copy.</value>
+	</data>
+	<data name="FieldCopyFlowBlock_CopiedFields_Tooltip" xml:space="preserve">
+		<value>Create the output fields here and configure their types and modifiers independently. Every output receives the source value before its own modifiers run. Use Text for a hash or encoded copy.</value>
 	</data>
 	<data name="DownloaderFlowBlock_Description" xml:space="preserve">
 		<value>Flow block for downloading files from the internet using a URL.</value>
@@ -4058,18 +4064,6 @@ If a Join collector should aggregate links across all page iterations:
 	<data name="AssistantConfiguration_SummaryCompactionRate_Tooltip" xml:space="preserve">
 		<value>Fraction of summarizable conversation messages compressed at once when the assistant needs to update the summary. For example, 0.4 compresses 40% while still keeping the configured minimum latest messages verbatim.</value>
 	</data>
-	<data name="AssistantConfiguration_SummarizationStyle" xml:space="preserve">
-		<value>Summarization style</value>
-	</data>
-	<data name="AssistantConfiguration_SummarizationStyle_Tooltip" xml:space="preserve">
-		<value>Controls how conversation history, current project state, decisions, diagnostics, and reusable FlowBlox knowledge are organized in the durable summary.</value>
-	</data>
-	<data name="AssistantSummarizationStyle_DetailedProjectMemory" xml:space="preserve">
-		<value>Detailed project memory (classic)</value>
-	</data>
-	<data name="AssistantSummarizationStyle_StructuredHistoricalMemory" xml:space="preserve">
-		<value>Structured project history and memory</value>
-	</data>
 	<data name="AssistantConfiguration_MaxContextTokens" xml:space="preserve">
 		<value>Maximum context tokens</value>
 	</data>
@@ -4513,7 +4507,7 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="CollectionQueryOperation_Average" xml:space="preserve"><value>Average</value></data>
   <data name="CollectionQueryOperation_Any" xml:space="preserve"><value>Any</value></data>
   <data name="CollectionQueryOperation_All" xml:space="preserve"><value>All</value></data>
-  <data name="FieldComparisonCondition_Validation_ByteArrayNotSupported" xml:space="preserve"><value>Fields with a ByteArray value cannot be used in comparisons. Select a field of a supported type.</value></data>
+  <data name="FieldComparisonCondition_Validation_ByteArrayOperatorNotSupported" xml:space="preserve"><value>ByteArray fields support equality, inequality and presence checks only.</value></data>
   <data name="FieldComparisonCondition_Validation_ContainsRequiresText" xml:space="preserve"><value>The Contains and NotContains operators require a text field. Select a text field or a different comparison operator.</value></data>
   <data name="TableSelectorColumnCondition_ColumnType" xml:space="preserve"><value>Column type</value></data>
   <data name="TableSelectorColumnCondition_ColumnType_Tooltip" xml:space="preserve"><value>Type definition for this column condition. Select DateTime, Float, or Double to configure the date/time format or number separators used to parse its comparison value. The default type is Text.</value></data>
@@ -4632,6 +4626,45 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="FieldElement_SyntaxHighlighting" xml:space="preserve"><value>Syntax highlighting</value></data>
   <data name="FieldElement_SyntaxHighlighting_Tooltip" xml:space="preserve"><value>Language used to highlight the field value in its editor. Choose from the available languages. Default: Text (no highlighting); an empty selection also means Text. This changes only the display, not the field type or value.</value></data>
   <data name="OpenApiRestFlowBlockUIActions_ReloadDefinition" xml:space="preserve"><value>Reload API definition</value></data>
+  <data name="FlowBloxOptions_VaultValues_DisplayName" xml:space="preserve"><value>Vault: Protected environment values</value></data>
+  <data name="FlowBloxOptions_VaultValues_Description" xml:space="preserve"><value>Encrypted local credentials, URLs and environment settings shared by projects. Manage entries in Tools &gt; Vault.</value></data>
+  <data name="FieldElement_Groups_Advanced" xml:space="preserve"><value>Advanced settings</value></data>
+  <data name="AssistantConfiguration_SelectedProviderName" xml:space="preserve">
+    <value>Selected provider</value>
+  </data>
+  <data name="AssistantConfiguration_SelectedProviderName_Tooltip" xml:space="preserve">
+    <value>Select a provider by name from the configured provider list.</value>
+  </data>
+  <data name="AssistantConfiguration_SelectedProviderName_Invalid" xml:space="preserve">
+    <value>Select an existing provider from the provider list. If the list is empty, add a provider first.</value>
+  </data>
+  <data name="AssistantConfiguration_Providers" xml:space="preserve">
+    <value>Providers</value>
+  </data>
+  <data name="AssistantConfiguration_Providers_Tooltip" xml:space="preserve">
+    <value>Create and configure providers here, then select the provider to use for assistant requests.</value>
+  </data>
+  <data name="FieldResolution_RequiredValueMissing" xml:space="preserve">
+    <value>The value for '{0}' is empty after field resolution.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_DisplayName" xml:space="preserve">
+    <value>Create SQLite database</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_Description" xml:space="preserve">
+    <value>Creates a new SQLite database file. An existing database is overwritten on every execution. Returns its connection string for SQL tables and statements.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_DatabaseFile" xml:space="preserve">
+    <value>Database file</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_DatabaseFile_Tooltip" xml:space="preserve">
+    <value>FileObject containing the local SQLite path, for example $Project::OutputDirectory/hash-store.sqlite. The file and its schema are replaced on every execution.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_PathRequired" xml:space="preserve">
+    <value>A local database file path is required.</value>
+  </data>
+  <data name="CreateSqlLiteDbFlowBlock_CreationFailed" xml:space="preserve">
+    <value>Could not create the local database. Check its path and close other connections.</value>
+  </data>
 </root>
 
 

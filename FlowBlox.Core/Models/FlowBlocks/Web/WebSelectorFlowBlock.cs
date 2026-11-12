@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.WebBrowser;
@@ -28,11 +29,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public override string CSSSelector { get; set; }
 
         [Display(Name = "WebSelectorFlowBlock_InnerContent", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public bool InnerContent { get; set; } = true;
 
         [Display(Name = "WebSelectorFlowBlock_OutputMode", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public WebSelectorOutputMode OutputMode { get; set; } = WebSelectorOutputMode.Element;
 
         [ActivationCondition(MemberName = nameof(OutputMode), Value = WebSelectorOutputMode.Attribute)]
@@ -89,7 +90,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                     return;
 
-                var attributeName = FlowBloxFieldHelper.ReplaceFieldsInString(AttributeName);
+                var attributeName = this.Resolve(owner => owner.AttributeName);
                 if (OutputMode == WebSelectorOutputMode.Attribute && string.IsNullOrWhiteSpace(attributeName))
                 {
                     CreateNotification(runtime, WebSelectorNotifications.AttributeNameIsEmpty);

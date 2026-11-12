@@ -34,13 +34,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public string Url { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_HTTPAction", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public HttpActions? HTTPAction { get; set; } = HttpActions.GET;
 
         private ResponseBodyKind _responseBodyKind;
 
         [Display(Name = "WebRequestFlowBlock_ResponseBodyKind", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public ResponseBodyKind ResponseBodyKind
         {
             get => _responseBodyKind;
@@ -90,9 +90,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public int ContentCacheSize { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_WebRequestTimeout", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Advanced", Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int WebRequestTimeout { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_Payload_ContentType", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Payload", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Payload_ContentType { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_Payload", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Payload", Order = 0)]
@@ -101,14 +103,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         public string Payload { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_PostParameters", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Payload", Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.GridView, UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.GridView)]
         public ObservableCollection<WebRequestParameter> PostParameters { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_HeaderParameters", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Payload", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.GridView, UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.GridView)]
         public ObservableCollection<WebRequestParameter> HeaderParameters { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_UserName", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Authentication", Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string UserName { get; set; }
 
         [Display(Name = "WebRequestFlowBlock_Password", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Authentication", Order = 1)]
@@ -290,13 +293,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 if (!ResultFields.Any())
                     throw new InvalidOperationException("No result fields have been configured.");
 
-                string url = FlowBloxFieldHelper.ReplaceFieldsInString(Url);
-                if (string.IsNullOrWhiteSpace(url))
-                {
-                    CreateNotification(runtime, WebRequestNotifications.RequestedUrlIsEmpty);
-                    GenerateResult(runtime);
+                if (!this.ResolveOrCreateNotification(
+                    owner => owner.Url,
+                    out var url,
+                    runtime,
+                    WebRequestNotifications.RequestedUrlIsEmpty))
                     return;
-                }
 
                 if (!IsAlreadyProcessed(url))
                 {
@@ -371,9 +373,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             webRequest.ExpectContinue = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestExpectContinue].GetValueBoolean();
             webRequest.Version = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.WebRequestVersion].Value;
             webRequest.ResponseBodyKind = ResponseBodyKind;
-            webRequest.UserName = UserName;
-            webRequest.Password = Password;
-            webRequest.ContentType = Payload_ContentType;
+            webRequest.UserName = this.Resolve(owner => owner.UserName);
+            webRequest.Password = this.Resolve(owner => owner.Password);
+            webRequest.ContentType = this.Resolve(owner => owner.Payload_ContentType);
             webRequest.Headers = FlowBloxFieldHelper.ReplaceFieldsInDictionary(HeaderParameters.ToDictionary(x => x.Key, y => y.Value));
             webRequest.Payload = new WebRequestPayloadCreator(this).GetPayload(runtime, PostParameters.ToDictionary(x => x.Key, y => y.Value));
 

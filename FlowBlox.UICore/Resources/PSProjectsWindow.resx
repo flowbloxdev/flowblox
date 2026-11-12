@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
 		Microsoft ResX Schema
@@ -148,8 +148,8 @@
   <data name="Button_Open" xml:space="preserve">
 		<value>Open</value>
 	</data>
-  <data name="Button_Close" xml:space="preserve">
-		<value>Close</value>
+  <data name="Button_Back" xml:space="preserve">
+		<value>Back</value>
 	</data>
   <data name="Error_SearchProjectsFailed" xml:space="preserve">
 		<value>The projects could not be loaded from the server.</value>
@@ -228,5 +228,14 @@
 	</data>
   <data name="Tooltip_CopyToClipboard" xml:space="preserve">
     <value>Copy to clipboard</value>
+  </data>
+  <data name="Label_CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="Format_CreatedBy" xml:space="preserve">
+    <value>User #{0}</value>
+  </data>
+  <data name="Tooltip_CreatedBy" xml:space="preserve">
+    <value>Project creator (user ID supplied by the API).</value>
   </data>
 </root>

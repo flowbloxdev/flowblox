@@ -37,7 +37,9 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     throw new InvalidOperationException($"Input parameter '{parameter.Name}' must be a textual or scalar value.");
 
                 result[parameter.Name] = FlowBloxFieldHelper.ReplaceFieldsInString(
-                    parameter.Value.Type == JTokenType.Null ? string.Empty : parameter.Value.ToString());
+                    parameter.Value.Type == JTokenType.Null 
+                        ? string.Empty 
+                        : parameter.Value.ToString(), resolveVaultReferences: false);
             }
 
             return result;

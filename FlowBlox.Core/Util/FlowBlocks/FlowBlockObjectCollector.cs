@@ -185,6 +185,20 @@ namespace FlowBlox.Core.Util.FlowBlocks
 
         private static void NavigateReferencedFieldsFromString(object obj, IEnumerable<PropertyInfo> props, List<FlowBloxReactiveObject> result)
         {
+            if (obj is FlowBloxReactiveObject reactiveObject)
+            {
+                foreach (var propertyName in reactiveObject.PropertySelectedFieldMap.Keys)
+                {
+                    var property = obj.GetType().GetProperty(propertyName);
+                    if (property == null || !FlowBloxFieldSelection.Supports(property))
+                        continue;
+
+                    var selectedField = reactiveObject.GetPropertySelectedField(propertyName);
+                    if (selectedField != null)
+                        result.Add(selectedField);
+                }
+            }
+
             foreach (var prop in props)
             {
                 if (IsIgnored(obj, prop.Name))
@@ -205,9 +219,7 @@ namespace FlowBlox.Core.Util.FlowBlocks
                     continue;
                 }
 
-                var uiAttr = prop.GetCustomAttribute<FlowBloxUIAttribute>();
-                if (uiAttr != null &&
-                    uiAttr.UiOptions.HasFlag(UIOptions.EnableFieldSelection) &&
+                if (FlowBloxFieldSelection.Supports(prop) &&
                     propValue is string strValue)
                 {
                     result.AddRange(FlowBloxFieldHelper.GetFieldElementsFromString(strValue));
@@ -248,8 +260,7 @@ namespace FlowBlox.Core.Util.FlowBlocks
                 if (!prop.TryGetValue(obj, out var propValue) || propValue is not string strValue)
                     continue;
 
-                var uiAttr = prop.GetCustomAttribute<FlowBloxUIAttribute>();
-                if (uiAttr == null || !uiAttr.UiOptions.HasFlag(UIOptions.EnableFieldSelection))
+                if (!FlowBloxFieldSelection.Supports(prop))
                     continue;
 
                 matches.Add((prop, obj));

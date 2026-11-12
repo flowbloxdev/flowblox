@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -156,8 +156,8 @@
   <data name="Label_UpdatedAt" xml:space="preserve">
 		<value>Last updated at</value>
 	</data>
-  <data name="Button_Cancel" xml:space="preserve">
-		<value>Cancel</value>
+  <data name="Button_Back" xml:space="preserve">
+		<value>Back</value>
 	</data>
   <data name="Button_Save" xml:space="preserve">
 		<value>Save</value>
@@ -193,7 +193,7 @@
 		<value>Clears the current ProjectSpace GUID. On save, a new ProjectSpace project will be created with a new GUID.</value>
 	</data>
   <data name="CreateOrUpdatePSProjectWindow_Message_LoginRequired" xml:space="preserve">
-		<value>You are not logged in. Please log in first: Go to "Extras", "View projects" and click "Login".</value>
+		<value>You are not logged in. Open "Tools" → "Manage projects" and click "Login".</value>
 	</data>
   <data name="Tab_CreateNewProject" xml:space="preserve">
 		<value>Create new project</value>

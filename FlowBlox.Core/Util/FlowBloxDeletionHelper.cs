@@ -11,6 +11,7 @@ using FlowBlox.Core.Provider.Registry;
 using FlowBlox.Core.Util.DeepCopier;
 using FlowBlox.Core.Util.Deletion;
 using FlowBlox.Core.Util.FlowBlocks;
+using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Validations;
 using System.Text.RegularExpressions;
 using FlowBlox.Enums;
@@ -85,11 +86,13 @@ namespace FlowBlox.Core.Util
                     }
                 }
 
-                if (context.Value is string text && deletedFieldNames.Count > 0 &&
-                    context.Property.GetCustomAttribute<FlowBloxUIAttribute>()?.UiOptions
-                        .HasFlag(UIOptions.EnableFieldSelection) == true)
+                var selectionOwner = context.Owner as FlowBloxReactiveObject;
+                var selectedFieldName = selectionOwner?.GetPropertySelectedFieldName(context.Property.Name);
+                var referenceText = selectedFieldName ?? context.Value as string;
+                if (referenceText != null && deletedFieldNames.Count > 0 &&
+                    FlowBloxFieldSelection.Supports(context.Property))
                 {
-                    foreach (Match match in Regex.Matches(text, BaseFlowBlock.Regex_FullyQualifiedFieldNames))
+                    foreach (Match match in Regex.Matches(referenceText, BaseFlowBlock.Regex_FullyQualifiedFieldNames))
                     {
                         if (!deletedFieldNames.Contains(match.Value))
                             continue;

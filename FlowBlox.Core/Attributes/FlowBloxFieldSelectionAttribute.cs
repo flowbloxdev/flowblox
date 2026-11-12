@@ -9,6 +9,8 @@ namespace FlowBlox.Core.Attributes
 
         public bool HideRequiredCheckbox { get; set; } = false;
 
+        public string AllowedFieldSelectionModesMethod { get; set; }
+
         public FieldSelectionModes AllowedFieldSelectionModes { get; set; } = FieldSelectionModes.Default;
     }
 }

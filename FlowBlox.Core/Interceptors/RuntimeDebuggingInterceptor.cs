@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
+using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.Runtime.Debugging;
 using FlowBlox.Core.Util;
 
@@ -38,12 +40,16 @@ namespace FlowBlox.Core.Interceptors
             };
 
             AppendProtocol("RuntimeStarted", "Runtime started.");
+            Runtime.LogEntryCreated -= OnRuntimeLogEntryCreated;
+            Runtime.LogEntryCreated += OnRuntimeLogEntryCreated;
         }
 
         public override void NotifyRuntimeFinished()
         {
             if (!IsEnabled)
                 return;
+
+            Runtime.LogEntryCreated -= OnRuntimeLogEntryCreated;
 
             lock (_sync)
             {
@@ -258,52 +264,55 @@ namespace FlowBlox.Core.Interceptors
 
         public override void NotifyWarning(BaseFlowBlock baseFlowBlock, string message, Exception exception = null)
         {
-            if (!IsEnabled)
-                return;
-
-            var flowBlockName = baseFlowBlock?.Name ?? string.Empty;
-            var text = message ?? string.Empty;
-
-            lock (_sync)
-            {
-                if (_result == null)
-                    return;
-
-                _result.Warnings.Add(new RuntimeDebugProblemEntry
-                {
-                    Elapsed = GetElapsed(),
-                    FlowBlockName = flowBlockName,
-                    Message = text,
-                    Exception = exception?.ToString() ?? string.Empty
-                });
-            }
-
-            AppendProtocol("Warning", text, flowBlockName, details: exception?.ToString());
+            CaptureProblem(FlowBloxLogLevel.Warning, message, exception, baseFlowBlock, fromReport: false);
         }
 
         public override void NotifyError(BaseFlowBlock baseFlowBlock, string message, Exception exception = null)
         {
+            CaptureProblem(FlowBloxLogLevel.Error, message, exception, baseFlowBlock, fromReport: false);
+        }
+
+        private void OnRuntimeLogEntryCreated(BaseRuntime runtime, string message, FlowBloxLogLevel level, Exception exception)
+        {
+            if (level == FlowBloxLogLevel.Warning || level == FlowBloxLogLevel.Error)
+                CaptureProblem(level, message, exception, null, fromReport: true);
+        }
+
+        private void CaptureProblem(
+            FlowBloxLogLevel level,
+            string message,
+            Exception exception,
+            BaseFlowBlock flowBlock,
+            bool fromReport)
+        {
             if (!IsEnabled)
                 return;
 
-            var flowBlockName = baseFlowBlock?.Name ?? string.Empty;
             var text = message ?? string.Empty;
+            var details = exception?.ToString() ?? string.Empty;
 
             lock (_sync)
             {
                 if (_result == null)
                     return;
 
-                _result.Errors.Add(new RuntimeDebugProblemEntry
+                var problem = new RuntimeDebugProblemEntry
                 {
                     Elapsed = GetElapsed(),
-                    FlowBlockName = flowBlockName,
+                    FlowBlockName = flowBlock?.Name ?? string.Empty,
                     Message = text,
-                    Exception = exception?.ToString() ?? string.Empty
-                });
-            }
+                    Exception = details
+                };
+                List<RuntimeDebugProblemEntry> problems;
+                if (fromReport)
+                    problems = level == FlowBloxLogLevel.Warning ? _result.Warnings : _result.Errors;
+                else
+                    problems = level == FlowBloxLogLevel.Warning ? _result.WarningNotifications : _result.ErrorNotifications;
 
-            AppendProtocol("Error", text, flowBlockName, details: exception?.ToString());
+                problems.Add(problem);
+                var eventType = fromReport ? level.ToString() : level + "Notification";
+                AppendProtocol(eventType, text, flowBlock?.Name, details: exception?.ToString());
+            }
         }
 
         public override void NotifyFieldChange(FieldElement fieldElement, string oldValue, string newValue)
@@ -385,7 +394,7 @@ namespace FlowBlox.Core.Interceptors
                 if (_result == null)
                     return;
 
-                _result.Protocol.Add(new RuntimeDebugProtocolEntry
+                var entry = new RuntimeDebugProtocolEntry
                 {
                     Elapsed = GetElapsed(),
                     EventType = eventType ?? string.Empty,
@@ -394,7 +403,8 @@ namespace FlowBlox.Core.Interceptors
                     FlowBlockName = flowBlockName,
                     FieldValueChangeId = fieldValueChangeId,
                     GeneratedResultId = generatedResultId
-                });
+                };
+                _result.Protocol.Add(entry);
             }
         }
 

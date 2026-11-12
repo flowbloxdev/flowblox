@@ -12,6 +12,7 @@ using FlowBlox.Core.Models.Testing;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Util.Fields;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +23,7 @@ namespace FlowBlox.Core.Models.Components
     [Display(Name = "FieldElement_DisplayName", ResourceType = typeof(FlowBloxTexts))]
     [FlowBloxUIGroup("Global_Groups_Default", 0, ControlAlignment.Top)]
     [FlowBloxUIGroup("FieldElement_Groups_Behavior", 5, ControlAlignment.Top)]
+    [FlowBloxUIGroup("FieldElement_Groups_Advanced", 30, ControlAlignment.Top)]
     [FlowBloxUIGroup("FieldElement_Groups_Conditions", 10, ControlAlignment.Fill)]
     [FlowBloxUIGroup("FieldElement_Groups_Modifiers", 20, ControlAlignment.Fill)]
     [Serializable()]
@@ -129,9 +131,10 @@ namespace FlowBlox.Core.Models.Components
 
         private void Source_OnNameChanged(BaseFlowBlock flowBlock, string oldSourceName, string newSourceName)
         {
-            var oldFieldName = GetDefaultFieldName(this.Source, this, oldSourceName, FieldNameGenerationMode.DeriveFromFlowBlock);
+            var oldFieldName = this.Name;
+            var oldDerivedFieldName = GetDefaultFieldName(this.Source, this, oldSourceName, FieldNameGenerationMode.DeriveFromFlowBlock);
             
-            if (this.Name == oldFieldName)
+            if (oldFieldName == oldDerivedFieldName)
             {
                 var newFieldName = GetDefaultFieldName(this.Source, this, newSourceName, FieldNameGenerationMode.DeriveFromFlowBlock);
                 this.Name = newFieldName;
@@ -213,14 +216,15 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Values = [ UserFieldTypes.Input, UserFieldTypes.Memory])]
         [Display(Name = "FieldElement_StringValue", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection,
+        [FlowBloxUI(Factory = UIFactory.ComboBox,
             SelectionFilterMethod = nameof(GetPossibleValues),
             SelectionFilterDependency = nameof(ListOfValues),
-            SelectionDisplayMember = nameof(ValueItem.DisplayName))]
+            SelectionDisplayMember = nameof(ValueItem.DisplayName), UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxComboBox(DropDownModeMethod = nameof(GetValueDropDownMode), SelectionValueMember = nameof(ValueItem.Value))]
         [RequiredIf(nameof(IsRequiredAtRuntimeStartup), true)]
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true, 
-                        AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options)]
+            AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options | FieldSelectionModes.Vault,
+            AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true,
             IsPasswordMethod = nameof(ShouldMaskValue), SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
         public string StringValue
@@ -243,6 +247,10 @@ namespace FlowBlox.Core.Models.Components
         }
 
         public string ShortStringValue => GetShortStringValue(this.StringValue);
+
+        public FieldSelectionModes GetValueFieldSelectionModes() => FieldSelectionModes.ProjectProperties
+            | FieldSelectionModes.Options
+            | (IsUserInputField() ? FieldSelectionModes.Vault : FieldSelectionModes.Default);
 
         public bool ShouldMaskValue() => IsPassword
             && FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.UIPropertyViewMaskPasswordValues)?.GetValueBoolean() == true;
@@ -317,7 +325,7 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_SyntaxHighlighting", Description = "FieldElement_SyntaxHighlighting_Tooltip",
-            ResourceType = typeof(FlowBloxTexts), Order = 4)]
+            ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Advanced", Order = 0)]
         [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetPossibleSyntaxHighlightings))]
         [FlowBloxComboBox(DropDownMode = DropDownMode.SelectionOnly)]
         public string? SyntaxHighlighting { get; set; } = "Text";
@@ -361,7 +369,7 @@ namespace FlowBlox.Core.Models.Components
                     FieldTypes.Double => FieldType.ValueDouble,
                     FieldTypes.DateTime => FieldType.ValueDateTime,
                     FieldTypes.ByteArray => FieldType.ValueByteArray,
-                    _ => StringValue
+                    _ => FlowBloxFieldHelper.ReplaceFieldsInString(StringValue, resolveVaultReferences: IsUserInputField())
                 };
             }
         }

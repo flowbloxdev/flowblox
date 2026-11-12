@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -33,6 +34,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public string Text { get; set; }
 
         [Display(Name = "TextBuilderAppendFlowBlock_AppendLine", Description = "TextBuilderAppendFlowBlock_AppendLine_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AppendLine { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_box_plus_outline, 16, SKColors.SlateBlue);
@@ -61,7 +63,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
                 if (textBuilder?.InternalStringBuilder == null)
                     throw new InvalidOperationException("No initialized text builder source is assigned.");
 
-                var text = FlowBloxFieldHelper.ReplaceFieldsInString(Text ?? string.Empty);
+                var text = this.Resolve(owner => owner.Text);
                 if (AppendLine)
                     textBuilder.InternalStringBuilder.AppendLine(text);
                 else

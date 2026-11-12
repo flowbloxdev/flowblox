@@ -24,6 +24,13 @@ namespace FlowBlox.Core.Provider
 
         private Dictionary<string, DbConnection> _nameToDbConnection { get; } = new Dictionary<string, DbConnection>();
 
+        /// <summary>
+        /// Releases cached connections and their pools before recreating a SQLite file.
+        /// Equivalent connection strings must not retain handles to the old database.
+        /// </summary>
+        public void ReleaseSqliteConnections(string filePath) =>
+            SqliteConnectionHelper.ReleaseConnections(_nameToDbConnection, filePath);
+
         private static void EnsureOpen(DbConnection connection)
         {
             if (connection.State != ConnectionState.Open)

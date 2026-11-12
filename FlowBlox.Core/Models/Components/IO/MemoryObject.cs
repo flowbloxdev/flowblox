@@ -1,3 +1,5 @@
+using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Util.Fields;
 using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Attributes;
@@ -36,12 +38,13 @@ namespace FlowBlox.Core.Models.Components.IO
 
         [Required()]
         [Display(Name = "PropertyNames_FileName", Description = "MemoryObject_FileName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string FileName { get; set; }
 
         [ActivationCondition(MemberName = nameof(Field), ActivationMethod = nameof(IsEncodingNameActive))]
         [ConditionallyRequired()]
         [Display(Name = "PropertyNames_Encoding", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         private bool IsEncodingNameActive()
@@ -67,7 +70,8 @@ namespace FlowBlox.Core.Models.Components.IO
                     return byteArray;
 
                 if (fieldValue is string stringValue)
-                    return EncodingName.ToEncoding().GetBytes(stringValue);
+                    return this.Resolve(memory => memory.EncodingName)
+                        .ToEncoding().GetBytes(stringValue);
 
                 throw new NotSupportedException($"Field value of type '{fieldValue?.GetType().FullName}' is not supported for Content conversion.");
             }
@@ -90,7 +94,8 @@ namespace FlowBlox.Core.Models.Components.IO
                 if (configuredType == typeof(string))
                 {
                     Field.StringValue = value != null
-                        ? EncodingName.ToEncoding().GetString(value)
+                        ? this.Resolve(memory => memory.EncodingName)
+                            .ToEncoding().GetString(value)
                         : null;
 
                     TriggerDataSourceChanged();
@@ -107,8 +112,7 @@ namespace FlowBlox.Core.Models.Components.IO
 
         public void CreateTemporaryFile()
         {
-            if (string.IsNullOrEmpty(FileName))
-                throw new InvalidOperationException("No file name could be determined from the memory object.");
+            var fileName = this.Resolve(owner => owner.FileName, required: true);
 
             if (string.IsNullOrEmpty(_tempDirectory))
                 _tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -116,7 +120,7 @@ namespace FlowBlox.Core.Models.Components.IO
             if (!Directory.Exists(_tempDirectory))
                 Directory.CreateDirectory(_tempDirectory);
 
-            this.TemporaryFilePath = Path.Combine(_tempDirectory, FileName);
+            this.TemporaryFilePath = Path.Combine(_tempDirectory, fileName);
             File.WriteAllBytes(this.TemporaryFilePath, Content);
         }
 
@@ -128,7 +132,7 @@ namespace FlowBlox.Core.Models.Components.IO
             if (this.Content == null)
                 return false;
 
-            if (string.IsNullOrWhiteSpace(FileName))
+            if (string.IsNullOrWhiteSpace(this.Resolve(owner => owner.FileName)))
                 return false;
 
             return true;

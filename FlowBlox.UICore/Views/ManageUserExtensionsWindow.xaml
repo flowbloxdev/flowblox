@@ -34,6 +34,28 @@
 
     <Grid>
     <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,0,0">
+            <Button Content="{x:Static resources:ManageUserExtensionsWindow.Button_Back}"
+                    Style="{StaticResource FlowBlox.WindowActionButton.Back}"
+                    IsCancel="True"/>
+            <Button Style="{StaticResource FlowBlox.WindowActionButton}"
+                    Command="{Binding PublishVersionCommand}"
+                    ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_PublishVersion_Tooltip}"
+                    Visibility="{Binding IsVersionSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="CloudUploadOutline" Style="{StaticResource FlowBlox.WindowActionIcon.Execute}"/>
+                    <TextBlock Text="{x:Static resources:ManageUserExtensionsWindow.Button_PublishVersion}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Content="{x:Static resources:ManageUserExtensionsWindow.Button_Apply}"
+                    Style="{StaticResource FlowBlox.WindowActionButton.Apply}"
+                    Command="{Binding SaveChangesCommand}"
+                    ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_Apply_Tooltip}"
+                    IsDefault="True"/>
+        </StackPanel>
 
         <!-- Header -->
         <Border Style="{DynamicResource FlowBlox.DialogHeader}"
@@ -67,7 +89,7 @@
                 <Button Command="{Binding CreateExtensionCommand}" ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_CreateExtension_Tooltip}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="Plus" Margin="0,0,5,0"/>
+                            <iconPacks:PackIconMaterial Kind="Plus" Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                             <TextBlock Text="{x:Static resources:ManageUserExtensionsWindow.Button_CreateExtension}" />
                         </StackPanel>
                     </Button.Content>
@@ -78,7 +100,7 @@
                     ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_DeleteExtension_Tooltip}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="Delete" Margin="0,0,5,0"/>
+                            <iconPacks:PackIconMaterial Kind="Delete" Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                             <TextBlock Text="{x:Static resources:ManageUserExtensionsWindow.Button_DeleteExtension}" />
                         </StackPanel>
                     </Button.Content>
@@ -89,7 +111,7 @@
                     ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_CreateVersion_Tooltip}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="PlusCircle" Margin="0,0,5,0"/>
+                            <iconPacks:PackIconMaterial Kind="PlusCircle" Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                             <TextBlock Text="{x:Static resources:ManageUserExtensionsWindow.Button_CreateVersion}" />
                         </StackPanel>
                     </Button.Content>
@@ -100,7 +122,7 @@
                     ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_DeleteVersion_Tooltip}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="DeleteCircle" Margin="0,0,5,0"/>
+                            <iconPacks:PackIconMaterial Kind="DeleteCircle" Margin="0,0,5,0" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                             <TextBlock Text="{x:Static resources:ManageUserExtensionsWindow.Button_DeleteVersion}" />
                         </StackPanel>
                     </Button.Content>
@@ -169,12 +191,6 @@
                                   IsChecked="{Binding SelectedExtension.Active, UpdateSourceTrigger=PropertyChanged}"
                                   Margin="0,10,0,0"/>
 
-                            <!-- Save Changes Button for Extension -->
-                            <Button Content="{x:Static resources:ManageUserExtensionsWindow.Button_SaveChanges}"
-                                Command="{Binding SaveChangesCommand}"
-                                Style="{StaticResource FlowBlox.WindowActionButton.Save}"
-                                ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_SaveChanges_Tooltip}"
-                                Margin="0,10,0,0" HorizontalAlignment="Right" />
                         </StackPanel>
 
                         <!-- Detail Panel for Version -->
@@ -292,21 +308,6 @@
                             </ListView>
                         </StackPanel>
                     </Expander>
-
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!-- Publish Version Button -->
-                        <Button Content="{x:Static resources:ManageUserExtensionsWindow.Button_PublishVersion}"
-                        Command="{Binding PublishVersionCommand}"
-                        ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_PublishVersion_Tooltip}"
-                        Margin="0,10,0,0" HorizontalAlignment="Right" />
-
-                        <!-- Save Changes Button for Version -->
-                        <Button Content="{x:Static resources:ManageUserExtensionsWindow.Button_SaveChanges}"
-                        Command="{Binding SaveChangesCommand}"
-                        Style="{StaticResource FlowBlox.WindowActionButton.Save}"
-                        ToolTip="{x:Static resources:ManageUserExtensionsWindow.Button_SaveChanges_Tooltip}"
-                        Margin="10,10,0,0" HorizontalAlignment="Right" />
-                    </StackPanel>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>

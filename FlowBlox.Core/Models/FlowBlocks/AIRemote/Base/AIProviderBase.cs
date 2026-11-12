@@ -1,3 +1,5 @@
+using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Util.Fields;
 using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
 using FlowBlox.Core.Attributes;
@@ -36,9 +38,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
 
         [Display(Name = "AIProvider_ReasoningEffort", Description = "AIProvider_ReasoningEffort_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [ActivationCondition(ActivationMethod = nameof(IsReasoningEffortActive))]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public AIReasoningEffort ReasoningEffort { get; set; }
 
         [Display(Name = "AIProvider_TimeoutSeconds", Description = "AIProvider_TimeoutSeconds_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TimeoutSeconds { get; set; }
 
         [Display(Name = "AIProvider_BaseUrl", Description = "AIProvider_BaseUrl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
@@ -245,11 +249,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
 
         protected int ResolveTimeoutSeconds(AIChatRequest request)
         {
-            var timeoutSeconds = request?.TimeoutSecondsOverride ?? TimeoutSeconds;
+            var timeoutSeconds = request?.TimeoutSecondsOverride
+                ?? this.Resolve(provider => provider.TimeoutSeconds);
             return timeoutSeconds > 0
                 ? timeoutSeconds
                 : AiProviderDefaults.DefaultTimeoutSeconds;
         }
+
+        protected AIReasoningEffort GetRuntimeReasoningEffort() =>
+            this.Resolve(provider => provider.ReasoningEffort);
 
         protected static string ToReasoningEffortValue(AIReasoningEffort reasoningEffort)
         {

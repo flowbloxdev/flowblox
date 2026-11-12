@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.WebBrowser;
@@ -40,7 +41,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         }
 
         [Display(Name = "WebEventFlowBlock_WebBrowserEventType", Description = "WebEventFlowBlock_WebBrowserEventType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebBrowserEventTypes WebBrowserEventType { get; set; } = WebBrowserEventTypes.Click;
 
         [Display(Name = "WebEventFlowBlock_XPath", Description = "WebEventFlowBlock_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
@@ -58,16 +59,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         [ActivationCondition(MemberName = nameof(WebBrowserEventType), Values = new object[] { WebBrowserEventTypes.SendSpecialKey })]
         [Display(Name = "WebEventFlowBlock_SpecialKey", Description = "WebEventFlowBlock_SpecialKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebSpecialKey SpecialKey { get; set; } = WebSpecialKey.Enter;
 
         [ActivationCondition(MemberName = nameof(WebBrowserEventType), Values = new object[] { WebBrowserEventTypes.SendSpecialKey })]
         [Display(Name = "WebEventFlowBlock_SpecialKeyModifier", Description = "WebEventFlowBlock_SpecialKeyModifier_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebSpecialKeyModifier SpecialKeyModifier { get; set; } = WebSpecialKeyModifier.None;
 
         [Display(Name = "WebEventFlowBlock_WaitingTimeAfterExecution", Description = "WebEventFlowBlock_WaitingTimeAfterExecution_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebEventFlowBlock_Groups_Advanced", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public int WaitingTimeAfterExecution { get; set; }
 
         [Display(Name = "WebEventFlowBlock_ElementDeterminationRequired", Description = "WebEventFlowBlock_ElementDeterminationRequired_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebEventFlowBlock_Groups_Advanced", Order = 1)]
@@ -137,7 +138,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
                 var webBrowserFlowBlock = AssociatedWebBrowser ?? GetPreviousFlowBlockOnPath<WebBrowserFlowBlock>(this);
                 var webBrowser = webBrowserFlowBlock.InternalWebBrowser;
-                string inputText = FlowBloxFieldHelper.ReplaceFieldsInString(InputText);
+                string inputText = this.Resolve(owner => owner.InputText);
 
                 WebEventSelectionMode mode;
                 string selector;

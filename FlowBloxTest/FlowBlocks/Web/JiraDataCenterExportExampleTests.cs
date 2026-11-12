@@ -20,6 +20,7 @@ public sealed class JiraDataCenterExportExampleTests
 {
     [TestMethod]
     [DataRow("success")]
+    [DataRow("trailingSlash")]
     [DataRow("empty")]
     [DataRow("unauthorized")]
     [DataRow("failedSecondPage")]
@@ -46,7 +47,7 @@ public sealed class JiraDataCenterExportExampleTests
             FlowBloxProjectManager.Instance.ActiveProject = project;
             var values = new Dictionary<string, string>
             {
-                ["JiraBaseUrl"] = api.BaseUrl + "/jira",
+                ["JiraBaseUrl"] = api.BaseUrl + "/jira" + (scenario == "trailingSlash" ? "/" : string.Empty),
                 ["ProjectKey"] = "DEMO",
                 ["Username"] = "export-user",
                 ["Password"] = "p&ss:+üword",

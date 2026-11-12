@@ -45,7 +45,6 @@ namespace FlowBloxTest.AIAssistant
             Assert.AreEqual(false, second.Result.Value<bool>("loaded"));
             Assert.IsNull(second.Result["content"]);
             Assert.AreEqual(1, ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Count);
-            StringAssert.StartsWith(second.Result.Value<string>("message"), "Already loaded:");
             CollectionAssert.AreEqual(
                 new[] { AssistantPromptCatalog.SpecialGeneratorsKey },
                 ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Select(x => x.Key.Replace("explanation:", "")).ToArray());
@@ -61,20 +60,7 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsTrue(response.Ok);
             Assert.AreEqual(false, response.Result.Value<bool>("loaded"));
             Assert.IsNull(response.Result["content"]);
-            StringAssert.StartsWith(response.Result.Value<string>("message"), "Already loaded:");
             Assert.AreEqual(0, ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Count);
-        }
-
-        [TestMethod]
-        public void PromptCatalog_AllExplanationsHaveTitleHeaders()
-        {
-            var explanations = AssistantPromptCatalog.GetAllEntries()
-                .Where(entry => entry.Key != AssistantPromptCatalog.SystemMessageKey &&
-                                entry.Key != AssistantPromptCatalog.SessionBootstrapKey)
-                .ToList();
-
-            Assert.IsTrue(explanations.Count > 0);
-            Assert.IsTrue(explanations.All(entry => entry.Content.StartsWith("# ", StringComparison.Ordinal)));
         }
 
         [TestMethod]

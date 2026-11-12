@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:localconverters="clr-namespace:FlowBlox.UICore.Converters.FieldSelection"
+    xmlns:propertyconverters="clr-namespace:FlowBlox.UICore.Converters.PropertyView"
     xmlns:converters="clr-namespace:FlowBlox.UICore.Converters"
     Title="{x:Static resources:FieldSelectionWindow.Title}"
     Height="640"
@@ -22,7 +22,7 @@
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <localconverters:FieldIconKindConverter x:Key="FieldIconKindConverter" />
+            <propertyconverters:FlowBloxComponentIcon16Converter x:Key="FieldIconConverter" />
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -57,11 +57,8 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Main (scrollable) -->
-            <ScrollViewer Grid.Row="0"
-                          VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Disabled"
-                          CanContentScroll="True">
+            <!-- Keep the lists bounded so their own ScrollViewers handle wheel input and virtualization. -->
+            <Border Grid.Row="0">
 
                 <Grid>
                     <TabControl SelectedIndex="{Binding SelectedTabIndex}">
@@ -95,24 +92,59 @@
                                             <GridViewColumn Width="32">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <iconPacks:PackIconMaterial
-                                                            Kind="{Binding IconKey, Converter={StaticResource FieldIconKindConverter}}"
-                                                            Width="14"
-                                                            Height="14"
+                                                        <Image
+                                                            Source="{Binding FieldElement, Converter={StaticResource FieldIconConverter}}"
+                                                            Width="16"
+                                                            Height="16"
                                                             VerticalAlignment="Center"
-                                                            HorizontalAlignment="Center"
-                                                            Foreground="#3A6EA5"/>
+                                                            HorizontalAlignment="Center"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
 
+                                            <GridViewColumn Width="28">
+                                                <GridViewColumn.Header>
+                                                    <iconPacks:PackIconMaterial Kind="LinkVariant"
+                                                                                Width="14" Height="14"
+                                                                                Foreground="#356F9F"
+                                                                                ToolTip="{x:Static resources:FieldSelectionWindow.Col_Connected}"
+                                                                                AutomationProperties.Name="{x:Static resources:FieldSelectionWindow.Col_Connected}"/>
+                                                </GridViewColumn.Header>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <iconPacks:PackIconMaterial Width="16" Height="16"
+                                                                                    HorizontalAlignment="Center"
+                                                                                    VerticalAlignment="Center">
+                                                            <iconPacks:PackIconMaterial.Style>
+                                                                <Style TargetType="iconPacks:PackIconMaterial">
+                                                                    <Setter Property="Kind" Value="LinkVariantOff"/>
+                                                                    <Setter Property="Foreground" Value="#C0C7CE"/>
+                                                                    <Setter Property="ToolTip" Value="{x:Static resources:FieldSelectionWindow.Required_Off}"/>
+                                                                    <Setter Property="AutomationProperties.Name" Value="{x:Static resources:FieldSelectionWindow.Required_Off}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                                            <Setter Property="Kind" Value="LinkVariant"/>
+                                                                            <Setter Property="Foreground" Value="#356F9F"/>
+                                                                            <Setter Property="ToolTip" Value="{x:Static resources:FieldSelectionWindow.Required_On}"/>
+                                                                            <Setter Property="AutomationProperties.Name" Value="{x:Static resources:FieldSelectionWindow.Required_On}"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding IsUserField}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Hidden"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </iconPacks:PackIconMaterial.Style>
+                                                        </iconPacks:PackIconMaterial>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
                                             <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_Source}"
                                                             DisplayMemberBinding="{Binding SourceName}"
                                                             Width="260"/>
 
                                             <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_Field}"
                                                             DisplayMemberBinding="{Binding FieldName}"
-                                                            Width="560"/>
+                                                            Width="440"/>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
@@ -151,7 +183,7 @@
                                             <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_ProjectPropertyKey}"
                                     DisplayMemberBinding="{Binding Key}"
                                     Width="220"/>
-                                            <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_ProjectPropertyDescription}"
+                                            <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_OptionDescription}"
                                     DisplayMemberBinding="{Binding Description}"
                                     Width="320"/>
                                             <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_ProjectPropertyValue}"
@@ -289,9 +321,26 @@
                             </Grid>
                         </TabItem>
 
+                        <TabItem Header="Vault" Visibility="{Binding CanSelectVault, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TabItem.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <iconPacks:PackIconMaterial Kind="SafeSquareOutline" Foreground="#22B8CF" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding}" FontSize="15" FontWeight="SemiBold" Padding="0,5"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </TabItem.HeaderTemplate>
+                            <ListView x:Name="VaultListView" ItemsSource="{Binding VaultRows}" MouseDoubleClick="FieldsListView_MouseDoubleClick">
+                                <ListView.View><GridView>
+                                    <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_ProjectPropertyName}" DisplayMemberBinding="{Binding Name}" Width="220"/>
+                                    <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_VaultReference}" DisplayMemberBinding="{Binding Reference}" Width="290"/>
+                                    <GridViewColumn Header="{x:Static resources:FieldSelectionWindow.Col_ProjectPropertyDescription}" DisplayMemberBinding="{Binding Description}" Width="340"/>
+                                </GridView></ListView.View>
+                            </ListView>
+                        </TabItem>
                     </TabControl>
                 </Grid>
-            </ScrollViewer>
+            </Border>
 
             <!-- Required (Fields only) -->
             <Border Grid.Row="1"

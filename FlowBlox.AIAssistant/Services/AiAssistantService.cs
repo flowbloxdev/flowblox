@@ -1,4 +1,4 @@
-using FlowBlox.Core.Constants;
+﻿using FlowBlox.Core.Constants;
 using System.Text;
 using FlowBlox.AIAssistant.Builder;
 using FlowBlox.AIAssistant.Constants;
@@ -328,7 +328,7 @@ namespace FlowBlox.AIAssistant.Services
                         modelPrompt,
                         maxLatestMessages,
                         minLatestMessages,
-                        config.Provider,
+                        config.SelectedProvider,
                         tokenBudget,
                         session.SummarizedMessageCount,
                         GetRuntimeSystemContents(session.SessionId));
@@ -357,7 +357,7 @@ namespace FlowBlox.AIAssistant.Services
                         modelPrompt,
                         maxLatestMessages,
                         minLatestMessages,
-                        config.Provider,
+                        config.SelectedProvider,
                         tokenBudget,
                         session.SummarizedMessageCount,
                         GetRuntimeSystemContents(session.SessionId));
@@ -370,7 +370,7 @@ namespace FlowBlox.AIAssistant.Services
                         config,
                         "Thinking...",
                         ct).ConfigureAwait(false);
-                    AddEstimatedTokenUsage(session, EstimateTokenUsage(chatRequest, exec, tokenBudget, config.Provider));
+                    AddEstimatedTokenUsage(session, EstimateTokenUsage(chatRequest, exec, tokenBudget, config.SelectedProvider));
                     result.RawModelOutput = exec.RawOutput ?? exec.OutputText ?? string.Empty;
 
                     if (!exec.Success)
@@ -385,7 +385,7 @@ namespace FlowBlox.AIAssistant.Services
 
                     var assistantOutput = exec.OutputText ?? string.Empty;
 
-                    var parseResult = _instructionParser.Parse(assistantOutput, config.Provider);
+                    var parseResult = _instructionParser.Parse(assistantOutput, config.SelectedProvider);
                     if (!parseResult.Success || parseResult.Instruction == null)
                     {
                         AppendSingleSessionMessage(session, "assistant", assistantOutput);
@@ -724,7 +724,7 @@ namespace FlowBlox.AIAssistant.Services
                     systemMessages,
                     BuildTokenBudget(configuration).ApproximateCharactersPerToken,
                     Math.Clamp(
-                        configuration.Provider?.EstimatedSystemPromptCacheSavingsRate ?? 0d,
+                        configuration.SelectedProvider?.EstimatedSystemPromptCacheSavingsRate ?? 0d,
                         0d,
                         1d));
             }
@@ -803,15 +803,14 @@ namespace FlowBlox.AIAssistant.Services
 
                 var summaryRequest = AssistantSummaryRequestBuilder.Build(
                     currentSummary,
-                    messagesToSummarize,
-                    config.SummarizationStyle);
+                    messagesToSummarize);
                 var tokenBudget = BuildTokenBudget(config);
                 var summaryResult = await ExecuteChatWithCommunicationStatusAsync(
                     summaryRequest,
                     config,
                     "Summarize...",
                     ct).ConfigureAwait(false);
-                AddEstimatedTokenUsage(session, EstimateTokenUsage(summaryRequest, summaryResult, tokenBudget, config.Provider));
+                AddEstimatedTokenUsage(session, EstimateTokenUsage(summaryRequest, summaryResult, tokenBudget, config.SelectedProvider));
                 if (!summaryResult.Success || string.IsNullOrWhiteSpace(summaryResult.OutputText))
                 {
                     if (!string.IsNullOrWhiteSpace(summaryResult.Error))

@@ -20,7 +20,11 @@
         "UserField": true,
         "UserFieldType": "Input",
         "StoreValueLocally": true,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": true,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": null,
         "Conditions": {
@@ -31,9 +35,7 @@
           "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.Modifier.ModifierBase, FlowBlox.Core]], System.ObjectModel",
           "$values": []
         },
-        "Version": "1.0.0.0",
-        "LoVType": "Suggestion",
-        "IsRequiredAtRuntimeStartup": true
+        "Version": "1.0.0.0"
       }
     ]
   },
@@ -56,7 +58,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "6",
@@ -84,6 +90,7 @@
             "DbType": "SQLite",
             "SQLConnectionstring": "Data Source=$User::Input_SqliteDatabasePath;",
             "SQLStatement": "SELECT name AS TableName\r\nFROM sqlite_master\r\nWHERE type = 'table' AND name NOT LIKE 'sqlite_%'\r\nORDER BY name",
+            "UseFieldValuesAsParameters": true,
             "Name": "SQLTable_SqliteTables",
             "RequiredFields": {
               "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.Components.FieldElement, FlowBlox.Core]], System.ObjectModel",
@@ -95,6 +102,7 @@
             },
             "Version": "1.0.0.0"
           },
+          "OutputIgnoreDuplicates": false,
           "OutputBehavior": "All",
           "StartValue": null,
           "StartIndex": null,
@@ -103,7 +111,7 @@
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.OverriddenNotificationEntry, FlowBlox.Core]], System.ObjectModel",
             "$values": []
           },
-          "Location": "458, 352",
+          "Location": "458, 364",
           "ExecutionIndex": -1,
           "IsNotExecuted": false,
           "BreakPoint": false,
@@ -129,6 +137,7 @@
                 },
                 "AssociatedIterationContext": null,
                 "InputIgnoreDuplicates": false,
+                "AutomaticInputBehaviorAssignment": true,
                 "InputBehaviorAssignments": {
                   "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
                   "$values": []
@@ -156,6 +165,7 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
@@ -217,7 +227,11 @@
         "UserField": false,
         "UserFieldType": "None",
         "StoreValueLocally": false,
+        "ClearOnRuntimeStart": false,
+        "IsRequiredAtRuntimeStartup": false,
         "IsPassword": false,
+        "SyntaxHighlighting": "Text",
+        "LoVType": "Suggestion",
         "ListOfValues": null,
         "Source": {
           "$id": "13",
@@ -241,6 +255,7 @@
             "$ref": "11"
           },
           "ResultFieldFieldType": "Boolean",
+          "OutputIgnoreDuplicates": false,
           "OutputBehavior": "All",
           "StartValue": null,
           "StartIndex": null,
@@ -263,6 +278,7 @@
           },
           "AssociatedIterationContext": null,
           "InputIgnoreDuplicates": false,
+          "AutomaticInputBehaviorAssignment": true,
           "InputBehaviorAssignments": {
             "$type": "System.Collections.ObjectModel.ObservableCollection`1[[FlowBlox.Core.Models.FlowBlocks.Base.InputBehaviorAssignment, FlowBlox.Core]], System.ObjectModel",
             "$values": [
@@ -328,11 +344,13 @@
       }
     ]
   },
-  "ProjectGuid": "786a2d92-2f6a-4cd9-a71b-429b8f80ae3d",
+  "ProjectGuid": "d431ccd3-e822-490d-a502-a3847b08cec4",
   "ProjectName": "SqliteTableDiscovery",
   "Author": "",
   "ProjectDescription": "Reads user table names from a SQLite database file and returns them as project output.",
   "AssistantMetadata": {
+    "$id": "16",
+    "$type": "FlowBlox.Core.Models.Project.AssistantMetadata, FlowBlox.Core",
     "ShortDescription": "Discover user table names in a SQLite database file."
   },
   "Notice": "",

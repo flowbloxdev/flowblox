@@ -20,6 +20,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             "Runs the current project or an explicitly supplied project file in RunnerHost debug mode and returns runtime protocol output. " +
             "For an explicitly supplied external project or an active skill project, provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedSkillProjects option. The main project requires neither. " +
             "FieldValueChanges and GeneratedResults must be read via GetLastDebugArtefact. " +
+            "warningCount/errorCount count runtime reports; warningNotificationCount/errorNotificationCount count flow-block notifications separately. " +
             "If a target is set, runtime always stops at target: default is stopping before target execution. Set includeTargetExecution=true to execute target once and then stop.",
             new JObject
             {
@@ -156,6 +157,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 var protocol = GetArrayIgnoreCase(debuggingResult, "Protocol", "protocol");
                 var warnings = GetArrayIgnoreCase(debuggingResult, "Warnings", "warnings");
                 var errors = GetArrayIgnoreCase(debuggingResult, "Errors", "errors");
+                var warningNotifications = GetArrayIgnoreCase(debuggingResult, "WarningNotifications", "warningNotifications");
+                var errorNotifications = GetArrayIgnoreCase(debuggingResult, "ErrorNotifications", "errorNotifications");
                 var protocolLimited = BuildProtocol(protocol, maxProtocolEntries);
 
                 var payload = new JObject
@@ -179,6 +182,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     ["maxProtocolEntries"] = maxProtocolEntries,
                     ["warningCount"] = warnings.Count,
                     ["errorCount"] = errors.Count,
+                    ["warningNotificationCount"] = warningNotifications.Count,
+                    ["errorNotificationCount"] = errorNotifications.Count,
                     ["protocol"] = protocolLimited,
                     ["outputSummary"] = BuildOutputSummary(response)
                 };

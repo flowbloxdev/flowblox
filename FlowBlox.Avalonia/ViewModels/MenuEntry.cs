@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using Avalonia.Input;
-using Avalonia.Media.Imaging;
+using Avalonia.Media;
 
 namespace FlowBlox.AvaloniaDesktop.ViewModels;
 
@@ -13,7 +13,7 @@ public sealed class MenuEntry : INotifyPropertyChanged, ICommand
     private bool _checked;
     public string Text { get; set; }
     public object Tag { get; set; }
-    public Bitmap Icon { get; set; }
+    public IImage Icon { get; set; }
     public Avalonia.Input.KeyGesture Gesture { get; set; }
     public bool IsSeparator { get; set; }
     public ObservableCollection<MenuEntry> DropDownItems { get; } = new();

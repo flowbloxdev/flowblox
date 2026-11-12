@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -36,14 +37,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [Required]
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_ModelFolder", Description = "OnnxRuntimeGenAIFlowBlock_ModelFolder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFolderSelection | UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
         [FlowBloxFieldSelection(AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties)]
         [FlowBloxOpenFromFileSystem(InitialDirectoryMethod = nameof(GetInitialModelDirectory))]
         public string ModelFolder { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_Prompt", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
         [Required]
         public string Prompt { get; set; }
 
@@ -78,34 +79,39 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TokenSelectionStrategy", Description = "OnnxRuntimeGenAIFlowBlock_TokenSelectionStrategy_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public TokenSelectionStrategy TokenSelectionStrategy { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_MaxNewTokens", Description = "OnnxRuntimeGenAIFlowBlock_MaxNewTokens_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings",
             ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxNewTokens { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_Temperature", Description = "OnnxRuntimeGenAIFlowBlock_Temperature_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public float Temperature { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TopP", Description = "OnnxRuntimeGenAIFlowBlock_TopP_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public float TopP { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TopK", Description = "OnnxRuntimeGenAIFlowBlock_TopK_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TopK { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_UseChatTemplate", Description = "OnnxRuntimeGenAIFlowBlock_UseChatTemplate_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 6)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseChatTemplate { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_SystemPrompt", Description = "OnnxRuntimeGenAIFlowBlock_SystemPrompt_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 7)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
         public string SystemPrompt { get; set; }
 
         [ActivationCondition(MemberName = nameof(UseChatTemplate), Value = true)]
@@ -113,7 +119,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_ChatTemplate", Description = "OnnxRuntimeGenAIFlowBlock_ChatTemplate_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 8)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection, ToolboxCategory = nameof(FlowBloxToolboxCategory.ChatTemplates))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.ChatTemplates), UiOptions = UIOptions.EnableFieldSelection)]
         public string ChatTemplate { get; set; }
 
         #endregion
@@ -173,8 +179,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                     return;
                 }
 
-                string userPrompt = FlowBloxFieldHelper.ReplaceFieldsInString(Prompt);
-                string systemPrompt = FlowBloxFieldHelper.ReplaceFieldsInString(SystemPrompt ?? string.Empty);
+                string userPrompt = this.Resolve(owner => owner.Prompt);
+                string systemPrompt = this.Resolve(owner => owner.SystemPrompt);
 
                 string finalPrompt = UseChatTemplate
                     ? ApplyChatTemplate(systemPrompt, userPrompt)
@@ -199,10 +205,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         private string ApplyChatTemplate(string systemPrompt, string userPrompt)
         {
-            if (string.IsNullOrEmpty(this.ChatTemplate))
+            var chatTemplate = this.Resolve(owner => owner.ChatTemplate);
+            if (string.IsNullOrEmpty(chatTemplate))
                 throw new ArgumentNullException(nameof(this.ChatTemplate));
 
-            return ChatTemplate
+            return chatTemplate
                 .Replace("{SystemPrompt}", systemPrompt ?? string.Empty)
                 .Replace("{UserPrompt}", userPrompt ?? string.Empty);
         }
@@ -272,7 +279,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         }
 
         private string ResolveModelFolder() => 
-            FlowBloxFieldHelper.ReplaceFieldsInString(ModelFolder);
+            this.Resolve(owner => owner.ModelFolder);
 
         private string GetInitialModelDirectory()
         {

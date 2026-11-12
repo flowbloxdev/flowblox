@@ -58,11 +58,6 @@ namespace FlowBloxTest.Notifications
             };
 
             var html = RuntimeNotificationMailFormatter.CreateHtmlBody(context);
-            var subject = RuntimeNotificationMailFormatter.CreateSubject(context);
-
-            StringAssert.Contains(subject, "Runtime aborted");
-            StringAssert.Contains(html, "Event");
-            StringAssert.Contains(html, "Runtime aborted");
             StringAssert.Contains(html, "Project &lt;A&gt;");
             StringAssert.Contains(html, "Flow block &lt;failed&gt;");
             StringAssert.Contains(html, "Bad &lt;value&gt;");

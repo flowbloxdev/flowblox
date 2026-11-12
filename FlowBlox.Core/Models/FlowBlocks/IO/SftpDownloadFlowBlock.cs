@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -46,12 +47,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         public override bool Execute(BaseRuntime runtime, object data) => Invoke(runtime, data, () =>
         {
             if (Connection == null) throw new ValidationException("No SFTP connection is configured.");
-            var path = FlowBloxFieldHelper.ReplaceFieldsInString(RemotePath ?? string.Empty)?.Trim();
-            if (string.IsNullOrWhiteSpace(path)) throw new ValidationException("The SFTP remote path is empty.");
+            var remotePath = this.Resolve(owner => owner.RemotePath, required: true).Trim();
             using var client = Connection.CreateClient();
             client.Connect();
             using var output = new MemoryStream();
-            client.DownloadFile(path, output);
+            client.DownloadFile(remotePath, output);
             GenerateResult(runtime, Convert.ToBase64String(output.ToArray()));
         });
     }

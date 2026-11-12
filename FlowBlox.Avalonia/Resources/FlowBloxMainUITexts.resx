@@ -767,7 +767,7 @@ The application will now restart to restore a clean environment.</value>
 		<value>Save to Project Space</value>
 	</data>
   <data name="AppWindow_itmFbProjects_Text" xml:space="preserve">
-		<value>View projects (Project-Space)</value>
+		<value>Manage projects</value>
 	</data>
   <data name="AppWindow_itmFbExtensions_Text" xml:space="preserve">
 		<value>Manage extensions</value>
@@ -835,4 +835,10 @@ The Recursive Call flow block invokes the connected earlier target flow block ag
   <data name="AppWindow_Notifications_SaveError_Title" xml:space="preserve"><value>Notifications could not be saved</value></data>
   <data name="AppWindow_itmOpenExampleProject_Text" xml:space="preserve"><value>Open example project...</value></data>
   <data name="AppWindow_Notification_ProjectGuidChanged_Message" xml:space="preserve"><value>A new internal project GUID was generated: {0}</value></data>
+  <data name="AppWindow_ProjectSpaceLoginRequired_Title" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="AppWindow_ProjectSpaceLoginRequired_Message" xml:space="preserve">
+    <value>You are not logged in. Open "Tools" → "Manage projects" and click "Login".</value>
+  </data>
 </root>

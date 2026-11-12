@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Xml;
 using System.Xml.XPath;
+using FlowBlox.Core.Models.Components;
+using FlowBlox.Core.Provider;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Additions
 {
@@ -28,8 +30,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
 
         public bool Check(ComparisonOperator op, string rawRightValue, object leftValue, IValueParsingStrategy parsingStrategy = null)
         {
-            if (leftValue is byte[])
-                throw new NotSupportedException("Comparisons of ByteArray values are not supported.");
+            if (leftValue is byte[] bytes)
+                return CheckBinary(op, rawRightValue, bytes);
 
             if (op == ComparisonOperator.HasValue)
                 return leftValue != null && (leftValue is not string text || !string.IsNullOrEmpty(text));
@@ -42,6 +44,59 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
                 return CheckTyped(op, rawRightValue, (IComparable)leftValue, converter, parsingStrategy);
 
             return Check(op, rawRightValue, leftValue?.ToString());
+        }
+
+        public bool CheckField(ComparisonOperator op, string rawRightValue, FieldElement field)
+        {
+            if (field?.FieldType?.FieldType == FieldTypes.ByteArray)
+            {
+                var bytes = GetRuntimeValue(field.FullyQualifiedName) == null ? null : (byte[])field.Value;
+                return CheckBinary(op, rawRightValue, bytes);
+            }
+
+            return Check(op, rawRightValue, field?.Value, field?.FieldType?.GetSpecialParsingStrategy());
+        }
+
+        internal static bool SupportsBinaryOperator(ComparisonOperator op) =>
+            op == ComparisonOperator.Equals ||
+            op == ComparisonOperator.NotEquals ||
+            op == ComparisonOperator.HasValue ||
+            op == ComparisonOperator.HasNoValue;
+
+        private static bool CheckBinary(ComparisonOperator op, string rawRightValue, byte[] left)
+        {
+            if (!SupportsBinaryOperator(op))
+                throw new NotSupportedException("ByteArray values support equality and presence checks only.");
+
+            var leftMissing = left == null || left.Length == 0;
+            if (op == ComparisonOperator.HasValue)
+                return !leftMissing;
+
+            if (op == ComparisonOperator.HasNoValue)
+                return leftMissing;
+
+            var rightValue = GetRuntimeValue(rawRightValue);
+            var rightMissing = string.IsNullOrWhiteSpace(rightValue);
+            if (leftMissing || rightMissing)
+            {
+                var bothMissing = leftMissing && rightMissing;
+                return op == ComparisonOperator.Equals ?
+                    bothMissing :
+                    !bothMissing;
+            }
+
+            byte[] right;
+            try
+            {
+                right = Convert.FromBase64String(rightValue);
+            }
+            catch (FormatException exception)
+            {
+                throw new InvalidOperationException("Invalid comparison value for ByteArray operation (Base64 expected).", exception);
+            }
+
+            var equal = left.AsSpan().SequenceEqual(right);
+            return op == ComparisonOperator.Equals ? equal : !equal;
         }
 
         private static object ParseSpecial(string value, Type valueType, IValueParsingStrategy strategy)
@@ -186,9 +241,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
 
         private static string GetRuntimeValue(string value)
         {
-            string runtimeValue = value;
-            runtimeValue = FlowBloxFieldHelper.ReplaceFieldsInString(runtimeValue);
-            return runtimeValue;
+            var field = FlowBloxRegistryProvider.GetRegistry()?.GetFieldElementOrNull(value);
+            return field != null
+                ? FlowBloxFieldHelper.ResolveFieldValue(field)
+                : FlowBloxFieldHelper.ReplaceFieldsInString(value);
         }
     }
 }

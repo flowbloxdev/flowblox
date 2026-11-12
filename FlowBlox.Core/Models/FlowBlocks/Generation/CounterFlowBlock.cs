@@ -1,4 +1,6 @@
-﻿using FlowBlox.Core.Constants;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Components;
@@ -22,10 +24,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         }
 
         [Display(Name = "CounterFlowBlock_CounterType", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public CounterTypes CounterType { get; set; }
 
         [Display(Name = "CounterFlowBlock_Format", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.CounterFormat))]
+        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.CounterFormat), UiOptions = UIOptions.EnableFieldSelection)]
         public string Format { get; set; }
 
         [Display(Name = "CounterFlowBlock_StartValue", ResourceType = typeof(FlowBloxTexts), Order = 2)]
@@ -42,7 +45,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         {
             var instance = (CounterFlowBlock)validationContext.ObjectInstance;
 
-            if (instance.CounterType == CounterTypes.Integer && !string.IsNullOrEmpty(startValue))
+            startValue = FlowBloxFieldHelper.ReplaceFieldsInString(startValue);
+            var counterType = instance.Resolve(counter => counter.CounterType);
+            if (counterType == CounterTypes.Integer && !string.IsNullOrEmpty(startValue))
             {
                 if (!int.TryParse(startValue, out int startValueInt))
                     return new ValidationResult("The starting value must be an integer.", [validationContext.MemberName]);
@@ -58,11 +63,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         {
             var instance = (CounterFlowBlock)validationContext.ObjectInstance;
 
-            if (instance.CounterType == CounterTypes.Integer)
+            endValue = FlowBloxFieldHelper.ReplaceFieldsInString(endValue);
+            var counterType = instance.Resolve(counter => counter.CounterType);
+            if (counterType == CounterTypes.Integer)
             {
                 if (string.IsNullOrEmpty(endValue))
                 {
-                    if (string.IsNullOrEmpty(instance.Format))
+                    if (string.IsNullOrEmpty(instance.Resolve(owner => owner.Format)))
                         return new ValidationResult("If the format has not been assigned, an end value must be set for the counter type \"Integer\".", [validationContext.MemberName]);
                 }
                 else
@@ -76,6 +83,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         }
 
         [Display(Name = "CounterFlowBlock_AlphaRange", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string AlphaRange { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.counter, 16, SKColors.DarkCyan);
@@ -123,50 +131,56 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
 
         private void ExecuteIntegerCounter(BaseRuntime runtime)
         {
-            int startValue = string.IsNullOrEmpty(StartValue) ? 0 : int.Parse(StartValue);
+            var startValue = this.Resolve(owner => owner.StartValue);
+            var finalValue = this.Resolve(owner => owner.FinalValue);
+            var format = this.Resolve(owner => owner.Format);
+            int start = string.IsNullOrEmpty(startValue) ? 0 : int.Parse(startValue);
 
             int endValue;
-            if (!string.IsNullOrEmpty(FinalValue))
-                endValue = int.Parse(FinalValue);
-            else if (!string.IsNullOrEmpty(Format))
+            if (!string.IsNullOrEmpty(finalValue))
+                endValue = int.Parse(finalValue);
+            else if (!string.IsNullOrEmpty(format))
             {
-                var resolvedFinalValue = string.Concat(Enumerable.Range(0, Format.Length).Select(x => "9"));
-                endValue = int.Parse(resolvedFinalValue);
+                var maximumDigits = string.Concat(Enumerable.Range(0, format.Length).Select(x => "9"));
+                endValue = int.Parse(maximumDigits);
             }
             else
             {
                 throw new InvalidOperationException("The final value or format must be set.");
             }
 
-            if (endValue < 0 || endValue < startValue)
+            if (endValue < 0 || endValue < start)
                 throw new InvalidOperationException("Invalid value for CounterElement.EndValue: The ending value must be positive and greater than CounterElement.StartValue.");
 
-            if (startValue < 0)
+            if (start < 0)
                 throw new InvalidOperationException("Invalid value for CounterElement.StartValue: The starting value must be positive.");
 
-            runtime.Report($"Use Type=Integer StartValue={startValue} EndValue={endValue}");
+            runtime.Report($"Use Type=Integer StartValue={start} EndValue={endValue}");
 
-            var contents = Enumerable.Range(startValue, endValue - startValue + 1).Select(x => x.ToString(Format));
+            var contents = Enumerable.Range(start, endValue - start + 1).Select(x => x.ToString(format));
 
             GenerateResult(runtime, contents);
         }
 
         private void ExecuteAlphanumericCounter(BaseRuntime runtime)
         {
-            string alphaRange = string.IsNullOrEmpty(AlphaRange) ? 
-                FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.CounterAlphanumericRange].Value :
-                AlphaRange;
+            var startValue = this.Resolve(owner => owner.StartValue);
+            var finalValue = this.Resolve(owner => owner.FinalValue);
+            var format = this.Resolve(owner => owner.Format);
+            var alphaRange = this.Resolve(owner => owner.AlphaRange);
+            if (string.IsNullOrEmpty(alphaRange))
+                alphaRange = FlowBloxOptions.GetOptionInstance().OptionCollection[OptionsConstants.CounterAlphanumericRange].Value;
 
             List<char> characters = alphaRange.ToCharArray().ToList();
 
             int counterRange = characters.Count;
-            int length = Format.Length;
+            int length = format.Length;
             int endIndex = (int)Math.Pow(counterRange, length);
 
             var counterValues = new List<string>();
 
-            bool startValueFound = string.IsNullOrEmpty(StartValue);
-            bool endValueFound = string.IsNullOrEmpty(FinalValue);
+            bool startValueFound = string.IsNullOrEmpty(startValue);
+            bool endValueFound = string.IsNullOrEmpty(finalValue);
 
             for (int counter = 0; counter < endIndex; counter++)
             {
@@ -179,7 +193,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
                     counterTemp /= counterRange;
 
                     char character = characters[valueIndex];
-                    char formatChar = Format[index];
+                    char formatChar = format[index];
 
                     if (char.IsUpper(formatChar))
                         character = char.ToUpper(character);
@@ -189,23 +203,23 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
                     counterValue += character;
                 }
 
-                if (!startValueFound && counterValue == StartValue)
+                if (!startValueFound && counterValue == startValue)
                     startValueFound = true;
 
                 if (startValueFound)
                     counterValues.Add(counterValue);
 
-                if (!endValueFound && counterValue == FinalValue)
+                if (!endValueFound && counterValue == finalValue)
                 {
                     endValueFound = true;
                     break;
                 }
             }
 
-            if (!startValueFound && !string.IsNullOrEmpty(StartValue))
+            if (!startValueFound && !string.IsNullOrEmpty(startValue))
                 throw new InvalidOperationException("The starting value was not found in the generated range.");
 
-            if (!endValueFound && !string.IsNullOrEmpty(FinalValue))
+            if (!endValueFound && !string.IsNullOrEmpty(finalValue))
                 throw new InvalidOperationException("The final value was not found in the generated range.");
 
             GenerateResult(runtime, counterValues);

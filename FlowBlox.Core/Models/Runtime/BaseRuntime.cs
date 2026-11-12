@@ -592,7 +592,8 @@ namespace FlowBlox.Core.Models.Runtime
                 var clearsValue = field.UserFieldType == UserFieldTypes.Memory && field.ClearOnRuntimeStart;
                 var value = clearsValue
                     ? string.Empty
-                    : FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue);
+                    : FlowBloxFieldHelper.ResolveFieldValue(field);
+
                 if (field.IsRequiredAtRuntimeStartup && string.IsNullOrWhiteSpace(value))
                 {
                     var key = clearsValue

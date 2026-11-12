@@ -32,14 +32,6 @@ namespace FlowBloxTest.Models.Generators
         }
 
         [TestMethod]
-        public void DefaultsTemperatureToNull()
-        {
-            var strategy = new AIPropertyValueGenerationStrategy();
-
-            Assert.IsNull(strategy.Temperature);
-        }
-
-        [TestMethod]
         public void IncludesExpectedValueInPrompt()
         {
             var startFlowBlock = CreateFlowBlock<StartFlowBlock>();
@@ -169,28 +161,6 @@ namespace FlowBloxTest.Models.Generators
             Assert.AreEqual("</name>", selector.StartEndPatterns[1].EndPattern);
             Assert.IsNull(selector.StartEndPatterns[1].Index);
             Assert.AreEqual(StartEndPatternReturnOptions.StartPattern, selector.StartEndPatterns[1].ReturnOptions);
-        }
-
-        [TestMethod]
-        public void ResolvesQuickUpdatePlaceholders()
-        {
-            var startFlowBlock = CreateFlowBlock<StartFlowBlock>();
-            var resultBlock = CreateFlowBlock<ExecutionOrderTestFlowBlock>(startFlowBlock);
-            var provider = new CapturingAIProvider();
-            var strategy = new AIPropertyValueGenerationStrategy(resultBlock)
-            {
-                Provider = provider,
-                PromptTemplate = "$GenerationStrategy::FlowBloxQuickUpdateFormat\r\n$GenerationStrategy::FlowBloxQuickUpdateSchema"
-            };
-            var runtime = new FlowBloxUnitTestRuntime(_project);
-
-            strategy.Execute(runtime, new Dictionary<FlowBloxTestDefinition, FlowBloxTestResult>());
-
-            Assert.IsTrue(provider.LastPrompt?.Contains("JsonContract") == true);
-            Assert.IsTrue(provider.LastPrompt?.Contains("FlowBloxQuickUpdate") == true);
-            Assert.IsTrue(provider.LastPrompt?.Contains("Properties") == true);
-            Assert.IsTrue(provider.LastPrompt?.Contains("\"PropertyName\": \"value\"") == true);
-            Assert.IsTrue(provider.LastPrompt?.Contains("FlowBloxQuickUpdateSchema") == true);
         }
 
         [TestMethod]

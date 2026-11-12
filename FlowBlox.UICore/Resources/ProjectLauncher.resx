@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Run project</value>
+  </data>
+  <data name="LocalProjects" xml:space="preserve">
+    <value>Local projects</value>
+  </data>
+  <data name="RecentProjects" xml:space="preserve">
+    <value>Recently opened</value>
+  </data>
+  <data name="Examples" xml:space="preserve">
+    <value>Example flows</value>
+  </data>
+  <data name="Favorites" xml:space="preserve">
+    <value>Project Space favorites</value>
+  </data>
+  <data name="Executions" xml:space="preserve">
+    <value>Executions</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open project</value>
+  </data>
+  <data name="Execute" xml:space="preserve">
+    <value>Run project</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View execution</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove from list</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="InputDirectory" xml:space="preserve">
+    <value>Open input directory</value>
+  </data>
+  <data name="OutputDirectory" xml:space="preserve">
+    <value>Open output directory</value>
+  </data>
+  <data name="OpenLog" xml:space="preserve">
+    <value>Open log file</value>
+  </data>
+  <data name="OptionOverrides" xml:space="preserve">
+    <value>Option overrides</value>
+  </data>
+  <data name="Option" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="AddOption" xml:space="preserve">
+    <value>Add option override</value>
+  </data>
+  <data name="RemoveOption" xml:space="preserve">
+    <value>Remove option override</value>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>Input parameters</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="Succeeded" xml:space="preserve">
+    <value>Completed successfully</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Please provide the required input: {0}</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>The project operation failed. {0}</value>
+  </data>
+  <data name="Favorite" xml:space="preserve">
+    <value>Mark or unmark as Project Space favorite</value>
+  </data>
+  <data name="OptionTooltip" xml:space="preserve">
+    <value>Select an option to override its value for this execution only.</value>
+  </data>
+  <data name="NoParameters" xml:space="preserve">
+    <value>This project has no input parameters.</value>
+  </data>
+  <data name="ExecutionStarted" xml:space="preserve">
+    <value>Started: {0}</value>
+  </data>
+  <data name="Readonly" xml:space="preserve">
+    <value>This execution has started. Its configuration is read-only.</value>
+  </data>
+  <data name="DuplicateOption" xml:space="preserve">
+    <value>Select each option only once.</value>
+  </data>
+  <data name="OutputPath" xml:space="preserve">
+    <value>Output directory</value>
+  </data>
+  <data name="InputPath" xml:space="preserve">
+    <value>Input directory</value>
+  </data>
+  <data name="OwnProjects" xml:space="preserve">
+    <value>My Project Space projects</value>
+  </data>
+  <data name="OwnProjectsLoadFailed" xml:space="preserve">
+    <value>Your own Project Space projects cannot currently be displayed because there was a problem retrieving them.</value>
+  </data>
+  <data name="ViewExecution" xml:space="preserve">
+    <value>View execution</value>
+  </data>
+  <data name="LogUnavailable" xml:space="preserve">
+    <value>No log file is available for this execution.</value>
+  </data>
+</root>

@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util.Resources;
@@ -28,7 +28,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         [Display(Name = "LogicalGroupCondition_Conditions", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxUI(
             Factory = UIFactory.GridView,
-            UiOptions = UIOptions.EnableFieldSelection,
             CreatableTypes = new[] { 
                 typeof(FieldLogicalComparisonCondition), 
                 typeof(LogicalGroupCondition) })]

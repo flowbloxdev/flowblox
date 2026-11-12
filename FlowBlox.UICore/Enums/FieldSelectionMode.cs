@@ -6,6 +6,7 @@
         ProjectProperties,
         Options,
         InputFiles,
+        Vault,
         GenerationStrategyData
     }
 }

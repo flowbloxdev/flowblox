@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -144,8 +144,8 @@
   <data name="Tooltip_VersionComment" xml:space="preserve">
     <value>The comment helps you identify this version later. It does not affect the project content.</value>
   </data>
-  <data name="Button_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="Button_Back" xml:space="preserve">
+    <value>Back</value>
   </data>
   <data name="Button_Create" xml:space="preserve">
     <value>Create version</value>
