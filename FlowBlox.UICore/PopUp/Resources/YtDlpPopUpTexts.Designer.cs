@@ -112,7 +112,7 @@ namespace FlowBlox.UICore.PopUp.Resources
         ///Reuse an existing tools object when FFmpeg is already installed.
         ///Configure the FFmpeg binary directory on that tools object.
         ///
-        ///The tools must be available on the computer executing the [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///The tools must be available on the computer exe [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string Step2_Description
         {
@@ -137,7 +137,7 @@ namespace FlowBlox.UICore.PopUp.Resources
         ///   Sucht eine lokalisierte Zeichenfolge, die Save this provider and select it in the **Media download** FlowBlock.
         ///
         ///Use a video URL supported by yt-dlp, such as a YouTube video page.
-        ///A playlist URL selects its first item. Iterate separate video URLs in the flow for multiple downloads.
+        ///Playlist downloads are disabled by default and can be enabled using **Download playlist**.
         ///Adjust this provider&apos;s timeout for long downloads and conversion.
         ///
         ///The FlowBlock&apos;s own **Quick Start** explains source fields, output directory, output format and result fields.

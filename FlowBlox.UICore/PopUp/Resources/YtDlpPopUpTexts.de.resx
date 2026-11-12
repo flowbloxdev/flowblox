@@ -33,7 +33,7 @@ Die Werkzeuge müssen auf dem ausführenden Rechner verfügbar sein, auch bei CL
   <data name="Step3_Description" xml:space="preserve"><value>Diesen Anbieter speichern und im FlowBlock **Mediendownload** auswählen.
 
 Eine von yt-dlp unterstützte Video-URL verwenden, z. B. die Seite eines YouTube-Videos.
-Eine Playlist-URL wählt den ersten Eintrag aus. Für mehrere Downloads einzelne Video-URLs über den Flow iterieren.
+Playlist-Downloads sind standardmäßig deaktiviert und können über **Playlist herunterladen** aktiviert werden.
 Für lange Downloads und Konvertierung das Zeitlimit dieses Anbieters anpassen.
 
 Der eigene **QuickStart** des FlowBlocks erklärt Quellfelder, Zielordner, Ausgabeformat und Ergebnisfelder.

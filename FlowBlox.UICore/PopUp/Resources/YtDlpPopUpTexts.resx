@@ -33,7 +33,7 @@ The tools must be available on the computer executing the flow, including CLI/se
   <data name="Step3_Description" xml:space="preserve"><value>Save this provider and select it in the **Media download** FlowBlock.
 
 Use a video URL supported by yt-dlp, such as a YouTube video page.
-A playlist URL selects its first item. Iterate separate video URLs in the flow for multiple downloads.
+Playlist downloads are disabled by default and can be enabled using **Download playlist**.
 Adjust this provider&apos;s timeout for long downloads and conversion.
 
 The FlowBlock&apos;s own **Quick Start** explains source fields, output directory, output format and result fields.
