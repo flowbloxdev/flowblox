@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>yt-dlp-Mediendownloads einrichten</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>yt-dlp und Deno herunterladen</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Für Windows x64 die neueste eigenständige Programmdatei herunterladen:
+[yt-dlp.exe herunterladen (neuestes Release)]({0})
+
+Für vollständige YouTube-Unterstützung zusätzlich Deno herunterladen und entpacken:
+[Deno für Windows x64 herunterladen (ZIP, neuestes Release)]({1})
+
+yt-dlp.exe und die entpackte deno.exe in einem dauerhaften lokalen Ordner ablegen.
+Das offizielle eigenständige yt-dlp-Release enthält die EJS-Skripte; Python ist nicht erforderlich.
+
+Weitere Plattformen und Release-Details:
+[yt-dlp-Releases]({2}) · [Deno-Releases]({3})</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Binaries auswählen und FFmpeg-Werkzeuge verknüpfen</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>In diesem Anbieter konfigurieren:
+
+- **yt-dlp-Programmdatei** → z. B. C:\Tools\Media\yt-dlp.exe
+- **Deno-Programmdatei** → z. B. C:\Tools\Media\deno.exe
+- **Gemeinsame FFmpeg-Werkzeuge** → ein Objekt **FFmpeg-Werkzeuge** anlegen oder verknüpfen.
+
+Den eigenen **QuickStart** des FFmpeg-Werkzeugobjekts öffnen. Dort stehen dessen Download-Link und die Anleitung zum Programmordner.
+Ein vorhandenes Werkzeugobjekt wiederverwenden, wenn FFmpeg bereits installiert ist.
+Ein verknüpftes Werkzeugobjekt hat Vorrang vor dem bisherigen anbieterspezifischen FFmpeg-Programmdateipfad.
+
+Die Werkzeuge müssen auf dem ausführenden Rechner verfügbar sein, auch bei CLI-/Dienst-Ausführung.</value></data>
+  <data name="Step3_Headline" xml:space="preserve"><value>Diesen Anbieter speichern und verwenden</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>Diesen Anbieter speichern und im FlowBlock **Mediendownload** auswählen.
+
+Eine von yt-dlp unterstützte Video-URL verwenden, z. B. die Seite eines YouTube-Videos.
+Eine Playlist-URL wählt den ersten Eintrag aus. Für mehrere Downloads einzelne Video-URLs über den Flow iterieren.
+Für lange Downloads und Konvertierung das Zeitlimit dieses Anbieters anpassen.
+
+Der eigene **QuickStart** des FlowBlocks erklärt Quellfelder, Zielordner, Ausgabeformat und Ergebnisfelder.
+Diese Anbieteranleitung jederzeit über dessen Aktion **QuickStart** erneut öffnen.</value></data>
+</root>

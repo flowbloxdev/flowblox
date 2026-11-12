@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
+using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using Newtonsoft.Json;
@@ -11,19 +11,24 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
     {
         protected string _baseUrl;
         protected HttpClient _httpClient;
+        protected HttpClient _uploadClient;
 
         /// <summary>
         /// Gets the configured base URL of the FlowBlox Web API.
         /// </summary>
         public string BaseUrl => _baseUrl;
 
-        public FlowBloxWebApiService(string baseUrl)
+        public FlowBloxWebApiService(string baseUrl, TimeSpan? uploadTimeout = null)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
                 throw new ArgumentException("The endpoint URI must not be null or empty.", nameof(baseUrl));
 
             _baseUrl = baseUrl;
             _httpClient = new HttpClient();
+            _uploadClient = new HttpClient
+            {
+                Timeout = uploadTimeout ?? TimeSpan.FromMinutes(3)
+            };
         }
 
         protected class ErrorDetails
@@ -627,11 +632,11 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);
+            _uploadClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);
 
             try
             {
-                HttpResponseMessage response = await _httpClient.PutAsync(url, content);
+                HttpResponseMessage response = await _uploadClient.PutAsync(url, content);
                 if (response.IsSuccessStatusCode)
                 {
                     return new ApiResponse

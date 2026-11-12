@@ -11,6 +11,14 @@ namespace FlowBlox.Core.Constants
         public const string FlowBloxReportProblem = FlowBloxGitHubRepository + "/issues/new";
         public const string FlowBloxPublicApiBaseUrl = "https://www.flowblox.net/api/";
         public const string FlowBloxInstallerManifestUrl = "https://flowblox.net/app/FlowBloxInstallerUpdates.xml";
+        public const string YtDlpReleases = "https://github.com/yt-dlp/yt-dlp/releases/latest";
+        public const string FFmpegDownloads = "https://ffmpeg.org/download.html";
+        public const string DenoReleases = "https://github.com/denoland/deno/releases/latest";
+
+        public const string YtDlpWindowsExecutable = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+        public const string DenoWindowsExecutableZip = "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip";
+        public const string FFmpegWindowsEssentialsZip = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
+
         public const string PythonDownloads = "https://www.python.org/downloads/";
 
         public static IReadOnlyDictionary<string, string> GetAll()

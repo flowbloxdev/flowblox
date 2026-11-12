@@ -1,3 +1,4 @@
+using FlowBlox.Core.Util.Downloads;
 using OpenQA.Selenium;
 using System.Net;
 using System.Net.Http;
@@ -11,12 +12,21 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
         private readonly IWebDriver _driver;
         private readonly int _timeoutSeconds;
 
-        public WebBrowserDownloadFileHandler(IWebDriver driver, int timeoutSeconds)
+        private readonly TransferProgressReporter? _progress;
+        private readonly CancellationToken _cancellationToken;
+
+        public WebBrowserDownloadFileHandler(
+            IWebDriver driver,
+            int timeoutSeconds,
+            TransferProgressReporter? progress = null,
+            CancellationToken cancellationToken = default)
         {
             _driver = driver ?? throw new ArgumentNullException(nameof(driver));
             if (timeoutSeconds < 0)
                 throw new ArgumentException("Timeout seconds must be greater than or equal to 0.", nameof(timeoutSeconds));
             _timeoutSeconds = timeoutSeconds;
+            _progress = progress;
+            _cancellationToken = cancellationToken;
         }
 
         public WebBrowserDownloadActionResult DownloadFile(
@@ -28,6 +38,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
         {
             try
             {
+                _cancellationToken.ThrowIfCancellationRequested();
                 if (downloadMode == WebDownloadMode.BrowserNative)
                     return DownloadFileByBrowserClick(selector, mode, downloadDirectory);
 
@@ -46,6 +57,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
                 }
 
                 return DownloadFileByHttpRequest(selector, mode, downloadPath);
+            }
+            catch (OperationCanceledException) when (_cancellationToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (NoSuchElementException ex)
             {
@@ -121,6 +136,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
                     DownloadPath = targetFilePath
                 };
             }
+            catch (OperationCanceledException) when (_cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 return new WebBrowserDownloadActionResult
@@ -154,11 +173,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
                 StringComparer.OrdinalIgnoreCase);
 
             var element = FindElement(selector, mode);
+            _progress?.Report("Browser download");
             element.Click();
 
             var timeoutAt = DateTime.UtcNow.AddSeconds(_timeoutSeconds);
             while (DateTime.UtcNow <= timeoutAt)
             {
+                _cancellationToken.ThrowIfCancellationRequested();
                 var completedFiles = Directory.GetFiles(resolvedDirectory)
                     .Where(IsCompletedDownloadFile)
                     .OrderByDescending(File.GetLastWriteTimeUtc)
@@ -174,7 +195,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
                     };
                 }
 
-                Thread.Sleep(250);
+                ReportBrowserDownloadProgress(resolvedDirectory, knownFiles);
+                _cancellationToken.WaitHandle.WaitOne(250);
             }
 
             return new WebBrowserDownloadActionResult
@@ -182,6 +204,30 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
                 Success = false,
                 Status = WebBrowserActionStatus.FileDownloadFailed
             };
+        }
+
+        private void ReportBrowserDownloadProgress(string directory, HashSet<string> knownFiles)
+        {
+            if (_progress == null)
+                return;
+
+            long received = 0;
+            foreach (var path in Directory.EnumerateFiles(directory))
+            {
+                if (knownFiles.Contains(Path.GetFileName(path)))
+                    continue;
+
+                try
+                {
+                    received += new FileInfo(path).Length;
+                }
+                catch (IOException)
+                {
+                    // The browser may rename or remove a temporary file during polling.
+                }
+            }
+
+            _progress.ReportBytes(received, null);
         }
 
         private string ResolveNativeDownloadDirectory(string configuredDownloadDirectory, out bool shouldConfigureBrowserDownloadDirectory)
@@ -310,14 +356,59 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
                 AllowAutoRedirect = true
             };
 
-            using var client = new HttpClient(handler);
+            using var client = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("FlowBlox", "1.0"));
+            DownloadStreamAsync(client, fileUri, targetFilePath).GetAwaiter().GetResult();
+        }
 
-            using var response = client.GetAsync(fileUri).GetAwaiter().GetResult();
-            response.EnsureSuccessStatusCode();
+        private async Task DownloadStreamAsync(HttpClient client, Uri fileUri, string targetFilePath)
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(_cancellationToken);
+            if (_timeoutSeconds > 0)
+                timeout.CancelAfter(TimeSpan.FromSeconds(_timeoutSeconds));
 
-            var bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-            File.WriteAllBytes(targetFilePath, bytes);
+            var cancellationToken = timeout.Token;
+            var temporaryPath = targetFilePath + "." + Guid.NewGuid().ToString("N") + ".part";
+            try
+            {
+                _progress?.Report("Downloading");
+                using var response = await client.GetAsync(
+                    fileUri,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    cancellationToken).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+
+                await using (var input = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
+                await using (var output = new FileStream(
+                    temporaryPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true))
+                {
+                    var buffer = new byte[81920];
+                    long received = 0;
+                    var total = response.Content.Headers.ContentLength;
+                    int count;
+                    while ((count = await input.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false)) > 0)
+                    {
+                        await output.WriteAsync(buffer.AsMemory(0, count), cancellationToken).ConfigureAwait(false);
+                        received += count;
+                        _progress?.ReportBytes(received, total);
+                    }
+
+                    if (total.HasValue && received != total.Value)
+                        throw new IOException("The HTTP download ended before the expected content length was received.");
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                File.Move(temporaryPath, targetFilePath, overwrite: true);
+            }
+            catch (OperationCanceledException) when (!_cancellationToken.IsCancellationRequested && timeout.IsCancellationRequested)
+            {
+                throw new TimeoutException("The HTTP download exceeded its configured timeout.");
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
         }
 
         private static bool IsCompletedDownloadFile(string filePath)

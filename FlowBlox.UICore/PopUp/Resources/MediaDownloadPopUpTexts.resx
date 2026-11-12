@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Download_WindowTitle" xml:space="preserve"><value>Set up media downloads</value></data>
+  <data name="Download_ProviderHeadline" xml:space="preserve"><value>Choose a download provider</value></data>
+  <data name="Download_ProviderDescription" xml:space="preserve"><value>Download audio or video from a source URL to a local file and optionally convert audio to the selected output format.
+
+The selected provider determines supported sources and prerequisites.
+
+Select or create a provider in **Provider** that supports your source URL.
+Open that provider's own **Quick Start** for its prerequisites, installation links and configuration.
+The available providers can be extended; their supported source types and prerequisites may differ.</value></data>
+  <data name="Download_ToolsHeadline" xml:space="preserve"><value>Configure the selected provider</value></data>
+  <data name="Download_ToolsDescription" xml:space="preserve"><value>Open the selected provider and follow its own setup guide.
+
+If it uses external tools, create or link the corresponding tool objects there.
+Each tool's own **Quick Start** explains its installation and physical path.
+Reuse an existing tool configuration when several providers use the same installation.
+
+The FlowBlock keeps the source URL, output directory and output format; provider and tool setup remains with those components.</value></data>
+  <data name="Download_RunHeadline" xml:space="preserve"><value>Configure and run the download</value></data>
+  <data name="Download_RunDescription" xml:space="preserve"><value>Connect **Start → Media download**.
+
+1. Enter a source URL or bind an input field.
+2. Choose the output directory and format, e.g. MP3.
+3. Optionally choose an audio bitrate and allow overwriting.
+4. Run the flow and use **Success** and **File path** in subsequent blocks.
+
+Progress is reported as throttled Info messages.
+Reopen these instructions using **Quick Start** in the FlowBlock's actions.</value></data>
+  <data name="Tool_WindowTitle" xml:space="preserve"><value>Set up FFmpeg tools</value></data>
+  <data name="Tool_DownloadHeadline" xml:space="preserve"><value>Download and extract FFmpeg</value></data>
+  <data name="Tool_DownloadDescription" xml:space="preserve"><value>Download the latest release essentials ZIP for Windows x64:
+[Download FFmpeg for Windows x64 (ZIP, latest release)]({0})
+
+This Windows build is provided by Gyan, a distributor linked from the official FFmpeg page:
+[Official FFmpeg download page — other platforms and builds]({1})
+
+Extract the ZIP. Keep **ffmpeg.exe** and **ffprobe.exe** together in its **bin** directory.
+The installation must be accessible on the machine executing the flow, including CLI/service runs.</value></data>
+  <data name="Tool_PathHeadline" xml:space="preserve"><value>Select the physical binary directory</value></data>
+  <data name="Tool_PathDescription" xml:space="preserve"><value>Set **Binary directory** to the folder containing the executables, e.g. **C:\Tools\ffmpeg\bin**.
+Select the directory, not the ffmpeg.exe file.
+An empty directory uses the executing process's PATH.
+
+Link this **FFmpeg tools** object in each provider under **Shared FFmpeg tools**.
+You can reuse the same installation across several providers and FlowBlocks.</value></data>
+  <data name="FFmpeg_WindowTitle" xml:space="preserve"><value>Set up direct media downloads with FFmpeg</value></data>
+  <data name="FFmpeg_SourceHeadline" xml:space="preserve"><value>Use a direct media or manifest URL</value></data>
+  <data name="FFmpeg_SourceDescription" xml:space="preserve"><value>Link this provider to the **Media download** FlowBlock.
+Its URL must point directly to a media file or HLS/DASH manifest, e.g. **https://example.org/video.mp4** or **stream.m3u8**.
+A website page URL requires a site extractor such as yt-dlp.
+
+**Video** copies streams into MKV; **Original audio** copies audio into MKA.
+**MP3**, **M4A** and **Opus** convert audio. Set the output folder and format on the FlowBlock.</value></data>
+  <data name="FFmpeg_ToolsHeadline" xml:space="preserve"><value>Link FFmpeg tools and configure recording</value></data>
+  <data name="FFmpeg_ToolsDescription" xml:space="preserve"><value>Create or link **FFmpeg tools** under **Shared FFmpeg tools**.
+Its Quick Start explains the installation. No yt-dlp or Deno executable is needed for this provider.
+
+For a live stream, set **Recording duration (seconds)** and a larger **Timeout** so recording can finish.
+For finite media, leave duration empty to read to the end.
+**Output name** is optional; empty generates a stable name from the URL.
+Use a distinct name for each source when specifying it yourself.</value></data>
+</root>

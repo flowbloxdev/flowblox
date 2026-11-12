@@ -130,11 +130,11 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);
+            _uploadClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);
 
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+                HttpResponseMessage response = await _uploadClient.PostAsync(url, content);
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
@@ -174,11 +174,11 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);
+            _uploadClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);
 
             try
             {
-                HttpResponseMessage response = await _httpClient.PutAsync(url, content);
+                HttpResponseMessage response = await _uploadClient.PutAsync(url, content);
                 if (response.IsSuccessStatusCode)
                 {
                     return new ApiResponse { Success = true };

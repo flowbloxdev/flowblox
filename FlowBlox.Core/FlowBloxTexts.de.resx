@@ -4667,6 +4667,71 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="CreateSqlLiteDbFlowBlock_CreationFailed" xml:space="preserve">
     <value>Die lokale Datenbank konnte nicht erstellt werden. Prüfe den Pfad und schließe andere Verbindungen.</value>
   </data>
+  <data name="MediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>Mediendownload-Anbieter</value></data>
+  <data name="MediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>Mediendownload-Anbieter</value></data>
+  <data name="MediaDownloadProviderBase_TimeoutSeconds" xml:space="preserve"><value>Zeitlimit (Sekunden)</value></data>
+  <data name="MediaDownloadProviderBase_TimeoutSeconds_Tooltip" xml:space="preserve"><value>Maximale Dauer des gesamten Downloads einschließlich Konvertierung (1–86400 Sekunden).</value></data>
+  <data name="YtDlpMediaDownloadProvider_DisplayName" xml:space="preserve"><value>yt-dlp-Mediendownload-Anbieter</value></data>
+  <data name="YtDlpMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>yt-dlp-Mediendownload-Anbieter</value></data>
+  <data name="YtDlpMediaDownloadProvider_Description" xml:space="preserve"><value>Lädt Medien über YoutubeDLSharp und externes yt-dlp herunter. yt-dlp, FFmpeg/ffprobe und Deno manuell bereitstellen. Download-Links und Einrichtung stehen im QuickStart.</value></data>
+  <data name="YtDlpMediaDownloadProvider_ExecutablePath" xml:space="preserve"><value>yt-dlp-Programmdatei</value></data>
+  <data name="YtDlpMediaDownloadProvider_ExecutablePath_Tooltip" xml:space="preserve"><value>Pfad zur offiziellen eigenständigen yt-dlp-Programmdatei, z. B. C:\Tools\yt-dlp.exe, oder ihr Name im PATH.</value></data>
+  <data name="YtDlpMediaDownloadProvider_FFmpegPath" xml:space="preserve"><value>FFmpeg-Programmdatei</value></data>
+  <data name="YtDlpMediaDownloadProvider_FFmpegPath_Tooltip" xml:space="preserve"><value>Pfad zu ffmpeg.exe. ffprobe.exe im selben Verzeichnis belassen. Für Audiokonvertierung und Zusammenführen von Video/Audio erforderlich.</value></data>
+  <data name="YtDlpMediaDownloadProvider_DenoPath" xml:space="preserve"><value>Deno-Programmdatei</value></data>
+  <data name="YtDlpMediaDownloadProvider_DenoPath_Tooltip" xml:space="preserve"><value>Optionaler Pfad zu deno.exe für YouTube-JavaScript-Challenges. Leer verwendet die Laufzeiterkennung von yt-dlp. Offizielle yt-dlp-Releases enthalten EJS-Skripte.</value></data>
+  <data name="MediaDownloadFlowBlock_DisplayName" xml:space="preserve"><value>Mediendownload</value></data>
+  <data name="MediaDownloadFlowBlock_Description" xml:space="preserve"><value>Lädt eine Medien-URL über einen verknüpften Anbieter herunter und konvertiert optional Audio. Liefert Erfolg und lokalen Dateipfad. Externe Werkzeuge beim Anbieter konfigurieren; Fortschritt wird gedrosselt gemeldet.</value></data>
+  <data name="MediaDownloadFlowBlock_Provider" xml:space="preserve"><value>Anbieter</value></data>
+  <data name="MediaDownloadFlowBlock_Provider_Tooltip" xml:space="preserve"><value>Wiederverwendbarer Download-Anbieter mit Implementierung und Werkzeugkonfiguration.</value></data>
+  <data name="MediaDownloadFlowBlock_Url" xml:space="preserve"><value>Medien-URL</value></data>
+  <data name="MediaDownloadFlowBlock_Url_Tooltip" xml:space="preserve"><value>HTTP- oder HTTPS-Medien-URL. yt-dlp akzeptiert unterstützte Webseiten-URLs und wählt den ersten Playlist-Eintrag. FFmpeg erwartet eine direkte Mediendatei- oder HLS-/DASH-Manifest-URL.</value></data>
+  <data name="MediaDownloadFlowBlock_OutputDirectory" xml:space="preserve"><value>Zielordner</value></data>
+  <data name="MediaDownloadFlowBlock_OutputDirectory_Tooltip" xml:space="preserve"><value>Lokaler Ordner auf dem ausführenden Rechner. Wird bei Bedarf erstellt. Dateinamen werden vom gewählten Anbieter bestimmt.</value></data>
+  <data name="MediaDownloadFlowBlock_Format" xml:space="preserve"><value>Ausgabeformat</value></data>
+  <data name="MediaDownloadFlowBlock_Format_Tooltip" xml:space="preserve"><value>Video, ursprüngliches Audio oder konvertiertes Audio. Für einen YouTube-MP3-Download MP3 auswählen.</value></data>
+  <data name="MediaDownloadFlowBlock_AudioBitrateKbps" xml:space="preserve"><value>Audio-Bitrate (kbit/s)</value></data>
+  <data name="MediaDownloadFlowBlock_AudioBitrateKbps_Tooltip" xml:space="preserve"><value>Optionale Zielbitrate für konvertiertes Audio (32–320 kbit/s). Leer verwendet den Anbieterstandard. Eine höhere Bitrate verbessert die ursprüngliche Aufnahme nicht.</value></data>
+  <data name="MediaDownloadFlowBlock_OverwriteFiles" xml:space="preserve"><value>Vorhandene Dateien überschreiben</value></data>
+  <data name="MediaDownloadFlowBlock_OverwriteFiles_Tooltip" xml:space="preserve"><value>Erlaubt das Ersetzen vorhandener Zieldateien. Standardmäßig deaktiviert; der Anbieter kann eine bereits vollständig vorhandene Datei wiederverwenden.</value></data>
+  <data name="MediaDownloadFlowBlock_ResultFields" xml:space="preserve"><value>Ergebnisfelder</value></data>
+  <data name="MediaDownloadNotifications_DownloadFailed" xml:space="preserve"><value>Mediendownload fehlgeschlagen. Anbieterkonfiguration und Protokoll prüfen.</value></data>
+  <data name="MediaDownloadFormat_Video" xml:space="preserve"><value>Video (beste verfügbare Qualität)</value></data>
+  <data name="MediaDownloadFormat_Audio" xml:space="preserve"><value>Ursprüngliches Audio</value></data>
+  <data name="MediaDownloadFormat_Mp3" xml:space="preserve"><value>MP3</value></data>
+  <data name="MediaDownloadFormat_M4a" xml:space="preserve"><value>M4A</value></data>
+  <data name="MediaDownloadFormat_Opus" xml:space="preserve"><value>Opus</value></data>
+  <data name="MediaDownloadDestinations_Success" xml:space="preserve"><value>Erfolg</value></data>
+  <data name="MediaDownloadDestinations_FilePath" xml:space="preserve"><value>Dateipfad</value></data>
+  <data name="MediaDownloadDestinations_FileName" xml:space="preserve"><value>Dateiname</value></data>
+  <data name="MediaDownloadDestinations_FileSize" xml:space="preserve"><value>Dateigröße (Bytes)</value></data>
+  <data name="MediaDownloadDestinations_SourceUrl" xml:space="preserve"><value>Quell-URL</value></data>
+  <data name="FieldCopyFlowBlock_InputFieldScope" xml:space="preserve"><value>Auswahlbereich des Quellfelds</value></data>
+  <data name="FieldCopyFlowBlock_InputFieldScope_Tooltip" xml:space="preserve"><value>Direkte Vorgänger (Standard), die normale Auswahl aller verfügbaren Projektfelder ohne eigene Ausgabefelder oder ausschließlich Benutzereingabe-/Speicherfelder auswählen. Ein Benutzerfeld in ein Ausgabefeld kopieren, um es in nachfolgenden Blocks wie Split zu verwenden.</value></data>
+  <data name="FieldCopyInputScope_DirectPredecessors" xml:space="preserve"><value>Direkte Vorgänger</value></data>
+  <data name="FieldCopyInputScope_AllFields" xml:space="preserve"><value>Alle verfügbaren Felder</value></data>
+  <data name="FieldCopyInputScope_InputFields" xml:space="preserve"><value>Benutzereingabefelder</value></data>
+  <data name="FieldCopyInputScope_MemoryFields" xml:space="preserve"><value>Speicherfelder</value></data>
+  <data name="FFmpegTool_DisplayName" xml:space="preserve"><value>FFmpeg-Werkzeuge</value></data>
+  <data name="FFmpegTool_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-Werkzeugkonfigurationen</value></data>
+  <data name="FFmpegTool_Description" xml:space="preserve"><value>Gemeinsame FFmpeg-Installation für Download-Anbieter. FFmpeg entpacken und ffmpeg sowie ffprobe zusammen belassen. Download-Links stehen in der Projekt-README und im yt-dlp-QuickStart.</value></data>
+  <data name="FFmpegTool_BinaryDirectory" xml:space="preserve"><value>Programmordner</value></data>
+  <data name="FFmpegTool_BinaryDirectory_Tooltip" xml:space="preserve"><value>Ordner mit ffmpeg.exe und ffprobe.exe, z. B. C:\Tools\ffmpeg\bin. Leer verwendet PATH. Diese Konfiguration kann mit mehreren Anbietern verknüpft werden.</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>FFmpeg-basierter Download-Anbieter</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-basierte Download-Anbieter</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_FFmpeg" xml:space="preserve"><value>Gemeinsame FFmpeg-Werkzeuge</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip" xml:space="preserve"><value>Optionale gemeinsame Installationskonfiguration. Hat Vorrang vor anbieterspezifischen FFmpeg-Pfaden. Ohne Verknüpfung wird der bisherige Anbieterpfad oder PATH verwendet.</value></data>
+  <data name="FFmpegMediaDownloadProvider_DisplayName" xml:space="preserve"><value>FFmpeg-Mediendownload-Anbieter</value></data>
+  <data name="FFmpegMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-Mediendownload-Anbieter</value></data>
+  <data name="FFmpegMediaDownloadProvider_Description" xml:space="preserve"><value>Lädt direkte HTTP-/HTTPS-Medien-URLs und HLS-/DASH-Manifeste über FFMpegCore und FFmpeg, z. B. Podcast-Dateien, MP4-Dateien oder .m3u8-/.mpd-Streams. Video/Audio werden in MKV-/MKA-Container kopiert; MP3/M4A/Opus werden konvertiert. Gemeinsame FFmpeg-Werkzeuge verknüpfen oder PATH verwenden. Für Live-Aufnahmen eine Dauer unterhalb des Zeitlimits festlegen.</value></data>
+  <data name="FFmpegMediaDownloadProvider_OutputName" xml:space="preserve"><value>Ausgabename</value></data>
+  <data name="FFmpegMediaDownloadProvider_OutputName_Tooltip" xml:space="preserve"><value>Optionaler Dateiname ohne Ordner und Erweiterung. Leer erzeugt einen stabilen Namen aus der Quell-URL. Pro Quelle einen eigenen Namen verwenden, damit vorhandene Dateien nicht wiederverwendet werden.</value></data>
+  <data name="FFmpegMediaDownloadProvider_RecordingDurationSeconds" xml:space="preserve"><value>Aufnahmedauer (Sekunden)</value></data>
+  <data name="FFmpegMediaDownloadProvider_RecordingDurationSeconds_Tooltip" xml:space="preserve"><value>Optionale maximale Mediendauer. Für Live-Streams sinnvoll. Das Anbieterzeitlimit höher setzen, damit Download und Abschluss möglich sind. Leer liest bis zum Ende der Quelle.</value></data>
+  <data name="MediaToolBase_DisplayName" xml:space="preserve"><value>Medienwerkzeug</value></data>
+  <data name="MediaToolBase_DisplayName_Plural" xml:space="preserve"><value>Medienwerkzeuge</value></data>
+  <data name="MediaToolBase_BinaryDirectory" xml:space="preserve"><value>Programmordner</value></data>
+  <data name="MediaToolBase_BinaryDirectory_Tooltip" xml:space="preserve"><value>Physischer Ordner mit den Programmdateien des Werkzeugs. Leer verwendet PATH. Feldreferenzen werden vor der Verwendung aufgelöst.</value></data>
 </root>
 
 

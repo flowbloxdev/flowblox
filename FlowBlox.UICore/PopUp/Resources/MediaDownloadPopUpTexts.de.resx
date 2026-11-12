@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Download_WindowTitle" xml:space="preserve"><value>Mediendownloads einrichten</value></data>
+  <data name="Download_ProviderHeadline" xml:space="preserve"><value>Den Download-Anbieter auswählen</value></data>
+  <data name="Download_ProviderDescription" xml:space="preserve"><value>Mit **Mediendownload** Audio oder Video aus einer Quell-URL als lokale Datei speichern und Audio bei Bedarf in das gewählte Ausgabeformat konvertieren.
+
+Der gewählte Anbieter bestimmt die unterstützten Quellen und Voraussetzungen.
+
+Unter **Anbieter** einen Anbieter auswählen oder anlegen, der die Quell-URL unterstützt.
+Dessen eigenen **QuickStart** für Voraussetzungen, Download-Links und Konfiguration öffnen.
+Die verfügbaren Anbieter sind erweiterbar; unterstützte Quellen und Voraussetzungen können sich unterscheiden.</value></data>
+  <data name="Download_ToolsHeadline" xml:space="preserve"><value>Den gewählten Anbieter konfigurieren</value></data>
+  <data name="Download_ToolsDescription" xml:space="preserve"><value>Den gewählten Anbieter öffnen und dessen eigener Einrichtungsanleitung folgen.
+
+Wenn er externe Werkzeuge verwendet, dort die passenden Werkzeugobjekte anlegen oder verknüpfen.
+Der eigene **QuickStart** jedes Werkzeugs erklärt dessen Installation und physischen Pfad.
+Eine vorhandene Werkzeugkonfiguration wiederverwenden, wenn mehrere Anbieter dieselbe Installation nutzen.
+
+Quell-URL, Zielordner und Ausgabeformat bleiben am FlowBlock; Anbieter- und Werkzeugeinrichtung erfolgen an den jeweiligen Komponenten.</value></data>
+  <data name="Download_RunHeadline" xml:space="preserve"><value>Den Download konfigurieren und ausführen</value></data>
+  <data name="Download_RunDescription" xml:space="preserve"><value>**Start → Mediendownload** verbinden.
+
+1. Eine Quell-URL eintragen oder ein Eingabefeld anbinden.
+2. Zielordner und Ausgabeformat auswählen, z. B. MP3.
+3. Optional Audio-Bitrate einstellen und Überschreiben erlauben.
+4. Den Flow ausführen und **Erfolg** sowie **Dateipfad** in folgenden Blocks verwenden.
+
+Fortschritt erscheint als gedrosselte Info-Reports.
+Diese Anleitung über **QuickStart** in den FlowBlock-Aktionen erneut öffnen.</value></data>
+  <data name="Tool_WindowTitle" xml:space="preserve"><value>FFmpeg-Werkzeuge einrichten</value></data>
+  <data name="Tool_DownloadHeadline" xml:space="preserve"><value>FFmpeg herunterladen und entpacken</value></data>
+  <data name="Tool_DownloadDescription" xml:space="preserve"><value>Das aktuelle Release-Essentials-ZIP für Windows x64 herunterladen:
+[FFmpeg für Windows x64 herunterladen (ZIP, neuestes Release)]({0})
+
+Dieser Windows-Build stammt von Gyan, einem auf der offiziellen FFmpeg-Seite verlinkten Anbieter:
+[Offizielle FFmpeg-Downloadseite — weitere Plattformen und Builds]({1})
+
+Das ZIP entpacken. **ffmpeg.exe** und **ffprobe.exe** zusammen im **bin**-Ordner belassen.
+Die Installation muss auf dem ausführenden Rechner erreichbar sein, auch bei CLI-/Dienst-Ausführung.</value></data>
+  <data name="Tool_PathHeadline" xml:space="preserve"><value>Den physischen Programmordner auswählen</value></data>
+  <data name="Tool_PathDescription" xml:space="preserve"><value>Als **Programmordner** den Ordner mit den Programmdateien auswählen, z. B. **C:\Tools\ffmpeg\bin**.
+Dies ist ein Ordner, nicht die Datei ffmpeg.exe.
+Ein leerer Ordnerpfad verwendet PATH des ausführenden Prozesses.
+
+Dieses Objekt **FFmpeg-Werkzeuge** bei den Anbietern unter **Gemeinsame FFmpeg-Werkzeuge** verknüpfen.
+Dieselbe Installation lässt sich für mehrere Anbieter und FlowBlocks wiederverwenden.</value></data>
+  <data name="FFmpeg_WindowTitle" xml:space="preserve"><value>Direkte Mediendownloads mit FFmpeg einrichten</value></data>
+  <data name="FFmpeg_SourceHeadline" xml:space="preserve"><value>Eine direkte Medien- oder Manifest-URL verwenden</value></data>
+  <data name="FFmpeg_SourceDescription" xml:space="preserve"><value>Diesen Anbieter mit dem FlowBlock **Mediendownload** verknüpfen.
+Dessen URL muss direkt auf eine Mediendatei oder ein HLS-/DASH-Manifest zeigen, z. B. **https://example.org/video.mp4** oder **stream.m3u8**.
+Für eine Webseiten-URL wird ein Webseiten-Extraktor wie yt-dlp benötigt.
+
+**Video** kopiert die Streams in MKV; **Ursprüngliches Audio** kopiert Audio in MKA.
+**MP3**, **M4A** und **Opus** konvertieren Audio. Zielordner und Format am FlowBlock einstellen.</value></data>
+  <data name="FFmpeg_ToolsHeadline" xml:space="preserve"><value>FFmpeg-Werkzeuge verknüpfen und Aufnahme einstellen</value></data>
+  <data name="FFmpeg_ToolsDescription" xml:space="preserve"><value>Unter **Gemeinsame FFmpeg-Werkzeuge** ein Objekt **FFmpeg-Werkzeuge** anlegen oder verknüpfen.
+Dessen QuickStart erklärt die Installation. Dieser Anbieter benötigt keine yt-dlp- oder Deno-Programmdatei.
+
+Für einen Live-Stream eine **Aufnahmedauer (Sekunden)** und ein höheres **Zeitlimit** festlegen, damit die Aufnahme abgeschlossen werden kann.
+Bei endlichen Medien die Dauer leer lassen, um bis zum Ende zu lesen.
+**Ausgabename** ist optional; leer erzeugt einen stabilen Namen aus der URL.
+Bei eigener Vorgabe pro Quelle einen eigenen Namen verwenden.</value></data>
+</root>

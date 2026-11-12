@@ -15941,5 +15941,720 @@ namespace FlowBlox.Core {
                 return ResourceManager.GetString("ZipCompressionStrength_VeryHigh", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media download provider ähnelt.
+        /// </summary>
+        public static string MediaDownloadProviderBase_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadProviderBase_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media download providers ähnelt.
+        /// </summary>
+        public static string MediaDownloadProviderBase_DisplayName_Plural
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadProviderBase_DisplayName_Plural", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Timeout (seconds) ähnelt.
+        /// </summary>
+        public static string MediaDownloadProviderBase_TimeoutSeconds
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadProviderBase_TimeoutSeconds", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Maximum duration of the complete download including conversion (1–86400 seconds). ähnelt.
+        /// </summary>
+        public static string MediaDownloadProviderBase_TimeoutSeconds_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadProviderBase_TimeoutSeconds_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die yt-dlp media download provider ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die yt-dlp media download providers ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_DisplayName_Plural
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_DisplayName_Plural", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Downloads media through YoutubeDLSharp and external yt-dlp. Install yt-dlp, FFmpeg/ffprobe and Deno manually. Open Quick Start for download links and setup instructions. ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die yt-dlp executable ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_ExecutablePath
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_ExecutablePath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Path to the official standalone yt-dlp executable, e.g. C:\Tools\yt-dlp.exe, or its name on PATH. ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_ExecutablePath_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_ExecutablePath_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg executable ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_FFmpegPath
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_FFmpegPath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Path to ffmpeg.exe. Keep ffprobe.exe in the same directory. Required for audio conversion and merging video/audio. ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_FFmpegPath_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_FFmpegPath_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Deno executable ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_DenoPath
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_DenoPath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional path to deno.exe for YouTube JavaScript challenges. Empty uses yt-dlp runtime discovery. Official yt-dlp releases include EJS scripts. ähnelt.
+        /// </summary>
+        public static string YtDlpMediaDownloadProvider_DenoPath_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("YtDlpMediaDownloadProvider_DenoPath_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media download ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Downloads one media URL through a linked provider, optionally converting audio. Returns success and the local output file path. Configure external tools on the provider; progress is reported at throttled intervals. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Provider ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Provider
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Provider", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reusable download provider that supplies the download implementation and tool configuration. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Provider_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Provider_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media URL ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Url
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Url", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die HTTP or HTTPS media URL. yt-dlp accepts supported website URLs and selects the first playlist item. FFmpeg expects a direct media file or HLS/DASH manifest URL. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Url_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Url_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Output directory ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_OutputDirectory
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_OutputDirectory", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Local folder on the executing computer. Created if necessary. File names are determined by the selected provider. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_OutputDirectory_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_OutputDirectory_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Output format ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Format
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Format", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Video, original audio, or converted audio. Select MP3 for a YouTube-to-MP3 download. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_Format_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_Format_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Audio bitrate (kbps) ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_AudioBitrateKbps
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_AudioBitrateKbps", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional target bitrate for converted audio (32–320 kbps). Empty uses the provider default. A higher bitrate cannot improve the original recording. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_AudioBitrateKbps_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_AudioBitrateKbps_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Overwrite existing files ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_OverwriteFiles
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_OverwriteFiles", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Allow replacing existing output files. Disabled by default; the provider may reuse a completed existing file. ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_OverwriteFiles_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_OverwriteFiles_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Result fields ähnelt.
+        /// </summary>
+        public static string MediaDownloadFlowBlock_ResultFields
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFlowBlock_ResultFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media download failed. Check provider configuration and log. ähnelt.
+        /// </summary>
+        public static string MediaDownloadNotifications_DownloadFailed
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadNotifications_DownloadFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Video (best available) ähnelt.
+        /// </summary>
+        public static string MediaDownloadFormat_Video
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFormat_Video", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Original audio ähnelt.
+        /// </summary>
+        public static string MediaDownloadFormat_Audio
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFormat_Audio", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die MP3 ähnelt.
+        /// </summary>
+        public static string MediaDownloadFormat_Mp3
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFormat_Mp3", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die M4A ähnelt.
+        /// </summary>
+        public static string MediaDownloadFormat_M4a
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFormat_M4a", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Opus ähnelt.
+        /// </summary>
+        public static string MediaDownloadFormat_Opus
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadFormat_Opus", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Success ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_Success
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_Success", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die File path ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_FilePath
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_FilePath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die File name ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_FileName
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_FileName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die File size (bytes) ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_FileSize
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_FileSize", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source URL ähnelt.
+        /// </summary>
+        public static string MediaDownloadDestinations_SourceUrl
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaDownloadDestinations_SourceUrl", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source field scope ähnelt.
+        /// </summary>
+        public static string FieldCopyFlowBlock_InputFieldScope
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldCopyFlowBlock_InputFieldScope", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Choose direct predecessors (default), the standard selection of all available project fields excluding this block&apos;s outputs, or only user input/memory fields. Copy a user field into an output field to use it in downstream blocks such as Split. ähnelt.
+        /// </summary>
+        public static string FieldCopyFlowBlock_InputFieldScope_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldCopyFlowBlock_InputFieldScope_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Direct predecessors ähnelt.
+        /// </summary>
+        public static string FieldCopyInputScope_DirectPredecessors
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldCopyInputScope_DirectPredecessors", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die All available fields ähnelt.
+        /// </summary>
+        public static string FieldCopyInputScope_AllFields
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldCopyInputScope_AllFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die User input fields ähnelt.
+        /// </summary>
+        public static string FieldCopyInputScope_InputFields
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldCopyInputScope_InputFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Memory fields ähnelt.
+        /// </summary>
+        public static string FieldCopyInputScope_MemoryFields
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldCopyInputScope_MemoryFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg tools ähnelt.
+        /// </summary>
+        public static string FFmpegTool_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegTool_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg tool configurations ähnelt.
+        /// </summary>
+        public static string FFmpegTool_DisplayName_Plural
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegTool_DisplayName_Plural", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Shared FFmpeg installation used by download providers. Extract FFmpeg and keep ffmpeg and ffprobe together. Download links are in the project README and yt-dlp Quick Start. ähnelt.
+        /// </summary>
+        public static string FFmpegTool_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegTool_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Binary directory ähnelt.
+        /// </summary>
+        public static string FFmpegTool_BinaryDirectory
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegTool_BinaryDirectory", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Folder containing ffmpeg.exe and ffprobe.exe, e.g. C:\Tools\ffmpeg\bin. Empty uses PATH. This configuration can be linked to multiple providers. ähnelt.
+        /// </summary>
+        public static string FFmpegTool_BinaryDirectory_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegTool_BinaryDirectory_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg-based download provider ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProviderBase_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProviderBase_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg-based download providers ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProviderBase_DisplayName_Plural
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProviderBase_DisplayName_Plural", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Shared FFmpeg tools ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProviderBase_FFmpeg
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProviderBase_FFmpeg", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional shared installation configuration. Takes precedence over provider-specific FFmpeg paths. Without a link the provider uses its existing path or PATH. ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg media download provider ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg media download providers ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_DisplayName_Plural
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_DisplayName_Plural", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Downloads direct HTTP/HTTPS media URLs and HLS/DASH manifests through FFMpegCore and FFmpeg, e.g. podcast files, MP4 files or .m3u8/.mpd streams. Video/audio are copied into MKV/MKA containers; MP3/M4A/Opus are converted. Link shared FFmpeg tools or use PATH. Live recordings require a duration shorter than the timeout. ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Output name ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_OutputName
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_OutputName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional base file name without directory or extension. Empty generates a stable name from the source URL. Use a distinct name for each source to avoid reusing existing files. ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_OutputName_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_OutputName_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Recording duration (seconds) ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_RecordingDurationSeconds
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_RecordingDurationSeconds", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional maximum media duration. Useful for live streams. Set the provider timeout higher to allow download and finalization. Empty reads until the source ends. ähnelt.
+        /// </summary>
+        public static string FFmpegMediaDownloadProvider_RecordingDurationSeconds_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("FFmpegMediaDownloadProvider_RecordingDurationSeconds_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media tool ähnelt.
+        /// </summary>
+        public static string MediaToolBase_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaToolBase_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Media tools ähnelt.
+        /// </summary>
+        public static string MediaToolBase_DisplayName_Plural
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaToolBase_DisplayName_Plural", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Binary directory ähnelt.
+        /// </summary>
+        public static string MediaToolBase_BinaryDirectory
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaToolBase_BinaryDirectory", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Physical directory containing the tool executables. Empty uses PATH. Field references are resolved before use. ähnelt.
+        /// </summary>
+        public static string MediaToolBase_BinaryDirectory_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("MediaToolBase_BinaryDirectory_Tooltip", resourceCulture);
+            }
+        }
+
     }
 }

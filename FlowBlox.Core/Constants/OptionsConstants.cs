@@ -107,6 +107,12 @@ namespace FlowBlox.Core.Constants
 
         public const string UpdatesInstallerManifestUrl = "Updates.InstallerManifestUrl";
 
+        public const string PopUpMediaDownloadQuickStartCompleted = "PopUp.MediaDownload.QuickStartCompleted";
+        public const string PopUpFFmpegMediaDownloadQuickStartCompleted = "PopUp.FFmpegMediaDownload.QuickStartCompleted";
+        public const string PopUpFFmpegToolQuickStartCompleted = "PopUp.FFmpegTool.QuickStartCompleted";
+
+        public const string PopUpYtDlpQuickStartCompleted = "PopUp.YtDlp.QuickStartCompleted.V2";
+
         public const string WebBrowserServiceName = "WebBrowser.ServiceName";
         public const string WebBrowserServiceSettings = "WebBrowser.ServiceSettings";
 

@@ -254,6 +254,7 @@ namespace FlowBloxTest.Models.Project
             {
                 _handler = new StubHttpMessageHandler(statusCode);
                 _httpClient = new HttpClient(_handler);
+                _uploadClient = _httpClient;
             }
 
             public string LastRequestContent => _handler.LastRequestContent;

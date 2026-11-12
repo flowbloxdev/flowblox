@@ -1,3 +1,4 @@
+using FlowBlox.Core.Util.Downloads;
 using FlowBlox.Core.Models.FlowBlocks.Web.InternalWebBrowser;
 using FlowBlox.Core.Models.FlowBlocks.Web;
 using Newtonsoft.Json;
@@ -359,7 +360,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
             string downloadDirectory,
             int timeoutSeconds)
         {
-            var handler = new WebBrowserDownloadFileHandler(driver, timeoutSeconds);
+            return DownloadFile(selector, mode, downloadMode, downloadPath, downloadDirectory, timeoutSeconds, null, default);
+        }
+
+        public virtual WebBrowserDownloadActionResult DownloadFile(
+            string selector,
+            WebEventSelectionMode mode,
+            WebDownloadMode downloadMode,
+            string downloadPath,
+            string downloadDirectory,
+            int timeoutSeconds,
+            TransferProgressReporter? progress,
+            CancellationToken cancellationToken)
+        {
+            var handler = new WebBrowserDownloadFileHandler(driver, timeoutSeconds, progress, cancellationToken);
             return handler.DownloadFile(selector, mode, downloadMode, downloadPath, downloadDirectory);
         }
 

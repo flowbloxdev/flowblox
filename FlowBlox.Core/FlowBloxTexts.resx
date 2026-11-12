@@ -4665,6 +4665,71 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="CreateSqlLiteDbFlowBlock_CreationFailed" xml:space="preserve">
     <value>Could not create the local database. Check its path and close other connections.</value>
   </data>
+  <data name="MediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>Media download provider</value></data>
+  <data name="MediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>Media download providers</value></data>
+  <data name="MediaDownloadProviderBase_TimeoutSeconds" xml:space="preserve"><value>Timeout (seconds)</value></data>
+  <data name="MediaDownloadProviderBase_TimeoutSeconds_Tooltip" xml:space="preserve"><value>Maximum duration of the complete download including conversion (1–86400 seconds).</value></data>
+  <data name="YtDlpMediaDownloadProvider_DisplayName" xml:space="preserve"><value>yt-dlp media download provider</value></data>
+  <data name="YtDlpMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>yt-dlp media download providers</value></data>
+  <data name="YtDlpMediaDownloadProvider_Description" xml:space="preserve"><value>Downloads media through YoutubeDLSharp and external yt-dlp. Install yt-dlp, FFmpeg/ffprobe and Deno manually. Open Quick Start for download links and setup instructions.</value></data>
+  <data name="YtDlpMediaDownloadProvider_ExecutablePath" xml:space="preserve"><value>yt-dlp executable</value></data>
+  <data name="YtDlpMediaDownloadProvider_ExecutablePath_Tooltip" xml:space="preserve"><value>Path to the official standalone yt-dlp executable, e.g. C:\Tools\yt-dlp.exe, or its name on PATH.</value></data>
+  <data name="YtDlpMediaDownloadProvider_FFmpegPath" xml:space="preserve"><value>FFmpeg executable</value></data>
+  <data name="YtDlpMediaDownloadProvider_FFmpegPath_Tooltip" xml:space="preserve"><value>Path to ffmpeg.exe. Keep ffprobe.exe in the same directory. Required for audio conversion and merging video/audio.</value></data>
+  <data name="YtDlpMediaDownloadProvider_DenoPath" xml:space="preserve"><value>Deno executable</value></data>
+  <data name="YtDlpMediaDownloadProvider_DenoPath_Tooltip" xml:space="preserve"><value>Optional path to deno.exe for YouTube JavaScript challenges. Empty uses yt-dlp runtime discovery. Official yt-dlp releases include EJS scripts.</value></data>
+  <data name="MediaDownloadFlowBlock_DisplayName" xml:space="preserve"><value>Media download</value></data>
+  <data name="MediaDownloadFlowBlock_Description" xml:space="preserve"><value>Downloads one media URL through a linked provider, optionally converting audio. Returns success and the local output file path. Configure external tools on the provider; progress is reported at throttled intervals.</value></data>
+  <data name="MediaDownloadFlowBlock_Provider" xml:space="preserve"><value>Provider</value></data>
+  <data name="MediaDownloadFlowBlock_Provider_Tooltip" xml:space="preserve"><value>Reusable download provider that supplies the download implementation and tool configuration.</value></data>
+  <data name="MediaDownloadFlowBlock_Url" xml:space="preserve"><value>Media URL</value></data>
+  <data name="MediaDownloadFlowBlock_Url_Tooltip" xml:space="preserve"><value>HTTP or HTTPS media URL. yt-dlp accepts supported website URLs and selects the first playlist item. FFmpeg expects a direct media file or HLS/DASH manifest URL.</value></data>
+  <data name="MediaDownloadFlowBlock_OutputDirectory" xml:space="preserve"><value>Output directory</value></data>
+  <data name="MediaDownloadFlowBlock_OutputDirectory_Tooltip" xml:space="preserve"><value>Local folder on the executing computer. Created if necessary. File names are determined by the selected provider.</value></data>
+  <data name="MediaDownloadFlowBlock_Format" xml:space="preserve"><value>Output format</value></data>
+  <data name="MediaDownloadFlowBlock_Format_Tooltip" xml:space="preserve"><value>Video, original audio, or converted audio. Select MP3 for a YouTube-to-MP3 download.</value></data>
+  <data name="MediaDownloadFlowBlock_AudioBitrateKbps" xml:space="preserve"><value>Audio bitrate (kbps)</value></data>
+  <data name="MediaDownloadFlowBlock_AudioBitrateKbps_Tooltip" xml:space="preserve"><value>Optional target bitrate for converted audio (32–320 kbps). Empty uses the provider default. A higher bitrate cannot improve the original recording.</value></data>
+  <data name="MediaDownloadFlowBlock_OverwriteFiles" xml:space="preserve"><value>Overwrite existing files</value></data>
+  <data name="MediaDownloadFlowBlock_OverwriteFiles_Tooltip" xml:space="preserve"><value>Allow replacing existing output files. Disabled by default; the provider may reuse a completed existing file.</value></data>
+  <data name="MediaDownloadFlowBlock_ResultFields" xml:space="preserve"><value>Result fields</value></data>
+  <data name="MediaDownloadNotifications_DownloadFailed" xml:space="preserve"><value>Media download failed. Check provider configuration and log.</value></data>
+  <data name="MediaDownloadFormat_Video" xml:space="preserve"><value>Video (best available)</value></data>
+  <data name="MediaDownloadFormat_Audio" xml:space="preserve"><value>Original audio</value></data>
+  <data name="MediaDownloadFormat_Mp3" xml:space="preserve"><value>MP3</value></data>
+  <data name="MediaDownloadFormat_M4a" xml:space="preserve"><value>M4A</value></data>
+  <data name="MediaDownloadFormat_Opus" xml:space="preserve"><value>Opus</value></data>
+  <data name="MediaDownloadDestinations_Success" xml:space="preserve"><value>Success</value></data>
+  <data name="MediaDownloadDestinations_FilePath" xml:space="preserve"><value>File path</value></data>
+  <data name="MediaDownloadDestinations_FileName" xml:space="preserve"><value>File name</value></data>
+  <data name="MediaDownloadDestinations_FileSize" xml:space="preserve"><value>File size (bytes)</value></data>
+  <data name="MediaDownloadDestinations_SourceUrl" xml:space="preserve"><value>Source URL</value></data>
+  <data name="FieldCopyFlowBlock_InputFieldScope" xml:space="preserve"><value>Source field scope</value></data>
+  <data name="FieldCopyFlowBlock_InputFieldScope_Tooltip" xml:space="preserve"><value>Choose direct predecessors (default), the standard selection of all available project fields excluding this block's outputs, or only user input/memory fields. Copy a user field into an output field to use it in downstream blocks such as Split.</value></data>
+  <data name="FieldCopyInputScope_DirectPredecessors" xml:space="preserve"><value>Direct predecessors</value></data>
+  <data name="FieldCopyInputScope_AllFields" xml:space="preserve"><value>All available fields</value></data>
+  <data name="FieldCopyInputScope_InputFields" xml:space="preserve"><value>User input fields</value></data>
+  <data name="FieldCopyInputScope_MemoryFields" xml:space="preserve"><value>Memory fields</value></data>
+  <data name="FFmpegTool_DisplayName" xml:space="preserve"><value>FFmpeg tools</value></data>
+  <data name="FFmpegTool_DisplayName_Plural" xml:space="preserve"><value>FFmpeg tool configurations</value></data>
+  <data name="FFmpegTool_Description" xml:space="preserve"><value>Shared FFmpeg installation used by download providers. Extract FFmpeg and keep ffmpeg and ffprobe together. Download links are in the project README and yt-dlp Quick Start.</value></data>
+  <data name="FFmpegTool_BinaryDirectory" xml:space="preserve"><value>Binary directory</value></data>
+  <data name="FFmpegTool_BinaryDirectory_Tooltip" xml:space="preserve"><value>Folder containing ffmpeg.exe and ffprobe.exe, e.g. C:\Tools\ffmpeg\bin. Empty uses PATH. This configuration can be linked to multiple providers.</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>FFmpeg-based download provider</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-based download providers</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_FFmpeg" xml:space="preserve"><value>Shared FFmpeg tools</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip" xml:space="preserve"><value>Optional shared installation configuration. Takes precedence over provider-specific FFmpeg paths. Without a link the provider uses its existing path or PATH.</value></data>
+  <data name="FFmpegMediaDownloadProvider_DisplayName" xml:space="preserve"><value>FFmpeg media download provider</value></data>
+  <data name="FFmpegMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>FFmpeg media download providers</value></data>
+  <data name="FFmpegMediaDownloadProvider_Description" xml:space="preserve"><value>Downloads direct HTTP/HTTPS media URLs and HLS/DASH manifests through FFMpegCore and FFmpeg, e.g. podcast files, MP4 files or .m3u8/.mpd streams. Video/audio are copied into MKV/MKA containers; MP3/M4A/Opus are converted. Link shared FFmpeg tools or use PATH. Live recordings require a duration shorter than the timeout.</value></data>
+  <data name="FFmpegMediaDownloadProvider_OutputName" xml:space="preserve"><value>Output name</value></data>
+  <data name="FFmpegMediaDownloadProvider_OutputName_Tooltip" xml:space="preserve"><value>Optional base file name without directory or extension. Empty generates a stable name from the source URL. Use a distinct name for each source to avoid reusing existing files.</value></data>
+  <data name="FFmpegMediaDownloadProvider_RecordingDurationSeconds" xml:space="preserve"><value>Recording duration (seconds)</value></data>
+  <data name="FFmpegMediaDownloadProvider_RecordingDurationSeconds_Tooltip" xml:space="preserve"><value>Optional maximum media duration. Useful for live streams. Set the provider timeout higher to allow download and finalization. Empty reads until the source ends.</value></data>
+  <data name="MediaToolBase_DisplayName" xml:space="preserve"><value>Media tool</value></data>
+  <data name="MediaToolBase_DisplayName_Plural" xml:space="preserve"><value>Media tools</value></data>
+  <data name="MediaToolBase_BinaryDirectory" xml:space="preserve"><value>Binary directory</value></data>
+  <data name="MediaToolBase_BinaryDirectory_Tooltip" xml:space="preserve"><value>Physical directory containing the tool executables. Empty uses PATH. Field references are resolved before use.</value></data>
 </root>
 
 

@@ -1,3 +1,5 @@
+using FlowBlox.Core.Util.Downloads;
+using FlowBlox.Core.Exceptions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Extensions;
@@ -138,10 +140,28 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
                 var downloadPath = this.Resolve(owner => owner.DownloadPath);
                 var downloadDirectory = this.Resolve(owner => owner.DownloadDirectory);
-                if (TimeoutSeconds < 0)
+                var timeoutSeconds = this.Resolve(owner => owner.TimeoutSeconds);
+                if (timeoutSeconds < 0)
                     throw new ArgumentException("TimeoutSeconds must be greater than or equal to 0.", nameof(TimeoutSeconds));
 
-                var result = webBrowser.DownloadFile(selector, mode, DownloadMode, downloadPath, downloadDirectory, TimeoutSeconds);
+                var progress = new TransferProgressReporter(message => runtime.Report(message, FlowBloxLogLevel.Info));
+                WebBrowserDownloadActionResult result;
+                try
+                {
+                    result = webBrowser.DownloadFile(
+                        selector,
+                        mode,
+                        this.Resolve(owner => owner.DownloadMode),
+                        downloadPath,
+                        downloadDirectory,
+                        timeoutSeconds,
+                        progress,
+                        runtime.GetCancellationToken());
+                }
+                catch (OperationCanceledException)
+                {
+                    throw new RuntimeCancellationException();
+                }
 
                 if (!result.Success)
                 {
@@ -153,6 +173,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 }
                 else
                 {
+                    progress.Complete();
                     runtime.Report($"Download action successfully executed for selector \"{selector}\". Downloaded file: \"{result.DownloadPath}\".");
                 }
 

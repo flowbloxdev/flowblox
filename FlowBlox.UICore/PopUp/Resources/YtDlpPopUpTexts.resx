@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>Set up yt-dlp media downloads</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>Download yt-dlp and Deno</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>For Windows x64, download the latest standalone executable:
+[Download yt-dlp.exe (latest release)]({0})
+
+For full YouTube support, also download and extract Deno:
+[Download Deno for Windows x64 (ZIP, latest release)]({1})
+
+Keep yt-dlp.exe and the extracted deno.exe in a permanent local folder.
+The official standalone yt-dlp release includes the EJS scripts; Python is not required.
+
+Other platforms and release details:
+[yt-dlp releases]({2}) · [Deno releases]({3})</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Select binaries and link FFmpeg tools</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Configure this provider:
+
+- **yt-dlp executable** → e.g. C:\Tools\Media\yt-dlp.exe
+- **Deno executable** → e.g. C:\Tools\Media\deno.exe
+- **Shared FFmpeg tools** → create or link an **FFmpeg tools** object.
+
+Open the FFmpeg tools object&apos;s **Quick Start**. That guide provides its download link and explains the binary directory.
+Reuse an existing tools object when FFmpeg is already installed.
+A linked tools object takes precedence over the older provider-specific FFmpeg executable path.
+
+The tools must be available on the computer executing the flow, including CLI/service runs.</value></data>
+  <data name="Step3_Headline" xml:space="preserve"><value>Save and use this provider</value></data>
+  <data name="Step3_Description" xml:space="preserve"><value>Save this provider and select it in the **Media download** FlowBlock.
+
+Use a video URL supported by yt-dlp, such as a YouTube video page.
+A playlist URL selects its first item. Iterate separate video URLs in the flow for multiple downloads.
+Adjust this provider&apos;s timeout for long downloads and conversion.
+
+The FlowBlock&apos;s own **Quick Start** explains source fields, output directory, output format and result fields.
+Reopen this provider&apos;s guide at any time using its **Quick Start** action.</value></data>
+</root>

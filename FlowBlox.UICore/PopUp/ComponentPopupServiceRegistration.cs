@@ -40,6 +40,30 @@ namespace FlowBlox.UICore.PopUp
             serviceCollection.AddSingleton<IOptionsRegistration>(sp =>
                 sp.GetRequiredService<ComponentValidationFailedPopUpProvider>());
 
+            serviceCollection.AddSingleton<YtDlpPopUpProvider>();
+            serviceCollection.AddSingleton<IComponentPopupProvider>(sp =>
+                sp.GetRequiredService<YtDlpPopUpProvider>());
+            serviceCollection.AddSingleton<IOptionsRegistration>(sp =>
+                sp.GetRequiredService<YtDlpPopUpProvider>());
+
+            serviceCollection.AddSingleton<MediaDownloadPopUpProvider>();
+            serviceCollection.AddSingleton<IComponentPopupProvider>(sp =>
+                sp.GetRequiredService<MediaDownloadPopUpProvider>());
+            serviceCollection.AddSingleton<IOptionsRegistration>(sp =>
+                sp.GetRequiredService<MediaDownloadPopUpProvider>());
+
+            serviceCollection.AddSingleton<FFmpegMediaDownloadPopUpProvider>();
+            serviceCollection.AddSingleton<IComponentPopupProvider>(sp =>
+                sp.GetRequiredService<FFmpegMediaDownloadPopUpProvider>());
+            serviceCollection.AddSingleton<IOptionsRegistration>(sp =>
+                sp.GetRequiredService<FFmpegMediaDownloadPopUpProvider>());
+
+            serviceCollection.AddSingleton<FFmpegToolPopUpProvider>();
+            serviceCollection.AddSingleton<IComponentPopupProvider>(sp =>
+                sp.GetRequiredService<FFmpegToolPopUpProvider>());
+            serviceCollection.AddSingleton<IOptionsRegistration>(sp =>
+                sp.GetRequiredService<FFmpegToolPopUpProvider>());
+
             serviceCollection.AddSingleton<IComponentPopupService, ComponentPopupService>();
         }
     }
