@@ -16040,27 +16040,7 @@ namespace FlowBlox.Core {
             }
         }
 
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die FFmpeg executable ähnelt.
-        /// </summary>
-        public static string YtDlpMediaDownloadProvider_FFmpegPath
-        {
-            get
-            {
-                return ResourceManager.GetString("YtDlpMediaDownloadProvider_FFmpegPath", resourceCulture);
-            }
-        }
 
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Path to ffmpeg.exe. Keep ffprobe.exe in the same directory. Required for audio conversion and merging video/audio. ähnelt.
-        /// </summary>
-        public static string YtDlpMediaDownloadProvider_FFmpegPath_Tooltip
-        {
-            get
-            {
-                return ResourceManager.GetString("YtDlpMediaDownloadProvider_FFmpegPath_Tooltip", resourceCulture);
-            }
-        }
 
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Deno executable ähnelt.
@@ -16525,7 +16505,7 @@ namespace FlowBlox.Core {
         }
 
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Optional shared installation configuration. Takes precedence over provider-specific FFmpeg paths. Without a link the provider uses its existing path or PATH. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Shared FFmpeg installation configuration. Configure the binary directory on the linked tool. Without a link the provider uses PATH. ähnelt.
         /// </summary>
         public static string FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip
         {

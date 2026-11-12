@@ -20,22 +20,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
         public string ExecutablePath { get; set; } = OperatingSystem.IsWindows() ? "yt-dlp.exe" : "yt-dlp";
 
-        [ActivationCondition(ActivationMethod = nameof(IsStandaloneFFmpegPathActive))]
-        [ConditionallyRequired]
-        [Display(Name = "YtDlpMediaDownloadProvider_FFmpegPath", Description = "YtDlpMediaDownloadProvider_FFmpegPath_Tooltip",
-            ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
-        public string FFmpegPath { get; set; } = OperatingSystem.IsWindows() ? "ffmpeg.exe" : "ffmpeg";
-
         [Display(Name = "YtDlpMediaDownloadProvider_DenoPath", Description = "YtDlpMediaDownloadProvider_DenoPath_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
         public string DenoPath { get; set; } = string.Empty;
-
-        private bool IsStandaloneFFmpegPathActive() => FFmpeg == null;
-
-        protected override string ResolveFallbackFFmpegPath() =>
-            this.Resolve(provider => provider.FFmpegPath, required: true);
 
         protected override async Task<string> DownloadCoreAsync(
             MediaDownloadRequest request,

@@ -31,20 +31,20 @@ namespace FlowBlox.UICore.PopUp.Implementations
                         GlobalUrls.YtDlpReleases,
                         GlobalUrls.DenoReleases),
                     PopUpImageResourceHelper.GetImageSource(
-                        YtDlpPopUpImages.ResourceManager,
-                        nameof(YtDlpPopUpImages.YtDlpQuickStart_1))),
+                        MediaDownloadPopUpImages.ResourceManager,
+                        nameof(MediaDownloadPopUpImages.YtDlpProviderQuickStart_1))),
                 new ComponentPopupItem(
                     Text("Step2_Headline"),
                     Text("Step2_Description"),
                     PopUpImageResourceHelper.GetImageSource(
-                        YtDlpPopUpImages.ResourceManager,
-                        nameof(YtDlpPopUpImages.YtDlpQuickStart_2))),
+                        MediaDownloadPopUpImages.ResourceManager,
+                        nameof(MediaDownloadPopUpImages.YtDlpProviderQuickStart_2))),
                 new ComponentPopupItem(
                     Text("Step3_Headline"),
                     Text("Step3_Description"),
                     PopUpImageResourceHelper.GetImageSource(
-                        YtDlpPopUpImages.ResourceManager,
-                        nameof(YtDlpPopUpImages.YtDlpQuickStart_3)))
+                        MediaDownloadPopUpImages.ResourceManager,
+                        nameof(MediaDownloadPopUpImages.YtDlpProviderQuickStart_3)))
             ];
         }
 

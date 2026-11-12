@@ -4674,8 +4674,6 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="YtDlpMediaDownloadProvider_Description" xml:space="preserve"><value>Downloads media through YoutubeDLSharp and external yt-dlp. Install yt-dlp, FFmpeg/ffprobe and Deno manually. Open Quick Start for download links and setup instructions.</value></data>
   <data name="YtDlpMediaDownloadProvider_ExecutablePath" xml:space="preserve"><value>yt-dlp executable</value></data>
   <data name="YtDlpMediaDownloadProvider_ExecutablePath_Tooltip" xml:space="preserve"><value>Path to the official standalone yt-dlp executable, e.g. C:\Tools\yt-dlp.exe, or its name on PATH.</value></data>
-  <data name="YtDlpMediaDownloadProvider_FFmpegPath" xml:space="preserve"><value>FFmpeg executable</value></data>
-  <data name="YtDlpMediaDownloadProvider_FFmpegPath_Tooltip" xml:space="preserve"><value>Path to ffmpeg.exe. Keep ffprobe.exe in the same directory. Required for audio conversion and merging video/audio.</value></data>
   <data name="YtDlpMediaDownloadProvider_DenoPath" xml:space="preserve"><value>Deno executable</value></data>
   <data name="YtDlpMediaDownloadProvider_DenoPath_Tooltip" xml:space="preserve"><value>Optional path to deno.exe for YouTube JavaScript challenges. Empty uses yt-dlp runtime discovery. Official yt-dlp releases include EJS scripts.</value></data>
   <data name="MediaDownloadFlowBlock_DisplayName" xml:space="preserve"><value>Media download</value></data>
@@ -4718,7 +4716,7 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="FFmpegMediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>FFmpeg-based download provider</value></data>
   <data name="FFmpegMediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-based download providers</value></data>
   <data name="FFmpegMediaDownloadProviderBase_FFmpeg" xml:space="preserve"><value>Shared FFmpeg tools</value></data>
-  <data name="FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip" xml:space="preserve"><value>Optional shared installation configuration. Takes precedence over provider-specific FFmpeg paths. Without a link the provider uses its existing path or PATH.</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip" xml:space="preserve"><value>Shared FFmpeg installation configuration. Configure the binary directory on the linked tool. Without a link the provider uses PATH.</value></data>
   <data name="FFmpegMediaDownloadProvider_DisplayName" xml:space="preserve"><value>FFmpeg media download provider</value></data>
   <data name="FFmpegMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>FFmpeg media download providers</value></data>
   <data name="FFmpegMediaDownloadProvider_Description" xml:space="preserve"><value>Downloads direct HTTP/HTTPS media URLs and HLS/DASH manifests through FFMpegCore and FFmpeg, e.g. podcast files, MP4 files or .m3u8/.mpd streams. Video/audio are copied into MKV/MKA containers; MP3/M4A/Opus are converted. Link shared FFmpeg tools or use PATH. Live recordings require a duration shorter than the timeout.</value></data>
