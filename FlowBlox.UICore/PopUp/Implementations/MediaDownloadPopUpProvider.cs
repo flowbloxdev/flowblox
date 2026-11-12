@@ -3,6 +3,7 @@ using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Media;
 using FlowBlox.UICore.PopUp.Provider;
+using FlowBlox.UICore.PopUp.Resources;
 
 namespace FlowBlox.UICore.PopUp.Implementations
 {
@@ -20,15 +21,15 @@ namespace FlowBlox.UICore.PopUp.Implementations
                 MediaDownloadQuickStartContent.Create(
                     "Download_ProviderHeadline",
                     "Download_ProviderDescription",
-                    showConfiguration: false),
+                    imageName: nameof(MediaDownloadPopUpImages.MediaDownloadQuickStart_1)),
                 MediaDownloadQuickStartContent.Create(
                     "Download_ToolsHeadline",
                     "Download_ToolsDescription",
-                    showConfiguration: true),
+                    imageName: nameof(MediaDownloadPopUpImages.MediaDownloadQuickStart_2)),
                 MediaDownloadQuickStartContent.Create(
                     "Download_RunHeadline",
                     "Download_RunDescription",
-                    showConfiguration: false)
+                    imageName: nameof(MediaDownloadPopUpImages.MediaDownloadQuickStart_3))
             ];
         }
 

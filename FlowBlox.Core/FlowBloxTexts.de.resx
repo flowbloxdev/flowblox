@@ -4676,8 +4676,6 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="YtDlpMediaDownloadProvider_Description" xml:space="preserve"><value>Lädt Medien über YoutubeDLSharp und externes yt-dlp herunter. yt-dlp, FFmpeg/ffprobe und Deno manuell bereitstellen. Download-Links und Einrichtung stehen im QuickStart.</value></data>
   <data name="YtDlpMediaDownloadProvider_ExecutablePath" xml:space="preserve"><value>yt-dlp-Programmdatei</value></data>
   <data name="YtDlpMediaDownloadProvider_ExecutablePath_Tooltip" xml:space="preserve"><value>Pfad zur offiziellen eigenständigen yt-dlp-Programmdatei, z. B. C:\Tools\yt-dlp.exe, oder ihr Name im PATH.</value></data>
-  <data name="YtDlpMediaDownloadProvider_FFmpegPath" xml:space="preserve"><value>FFmpeg-Programmdatei</value></data>
-  <data name="YtDlpMediaDownloadProvider_FFmpegPath_Tooltip" xml:space="preserve"><value>Pfad zu ffmpeg.exe. ffprobe.exe im selben Verzeichnis belassen. Für Audiokonvertierung und Zusammenführen von Video/Audio erforderlich.</value></data>
   <data name="YtDlpMediaDownloadProvider_DenoPath" xml:space="preserve"><value>Deno-Programmdatei</value></data>
   <data name="YtDlpMediaDownloadProvider_DenoPath_Tooltip" xml:space="preserve"><value>Optionaler Pfad zu deno.exe für YouTube-JavaScript-Challenges. Leer verwendet die Laufzeiterkennung von yt-dlp. Offizielle yt-dlp-Releases enthalten EJS-Skripte.</value></data>
   <data name="MediaDownloadFlowBlock_DisplayName" xml:space="preserve"><value>Mediendownload</value></data>
@@ -4720,7 +4718,7 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="FFmpegMediaDownloadProviderBase_DisplayName" xml:space="preserve"><value>FFmpeg-basierter Download-Anbieter</value></data>
   <data name="FFmpegMediaDownloadProviderBase_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-basierte Download-Anbieter</value></data>
   <data name="FFmpegMediaDownloadProviderBase_FFmpeg" xml:space="preserve"><value>Gemeinsame FFmpeg-Werkzeuge</value></data>
-  <data name="FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip" xml:space="preserve"><value>Optionale gemeinsame Installationskonfiguration. Hat Vorrang vor anbieterspezifischen FFmpeg-Pfaden. Ohne Verknüpfung wird der bisherige Anbieterpfad oder PATH verwendet.</value></data>
+  <data name="FFmpegMediaDownloadProviderBase_FFmpeg_Tooltip" xml:space="preserve"><value>Gemeinsame FFmpeg-Installationskonfiguration. Den Programmordner am verknüpften Werkzeug einstellen. Ohne Verknüpfung wird PATH verwendet.</value></data>
   <data name="FFmpegMediaDownloadProvider_DisplayName" xml:space="preserve"><value>FFmpeg-Mediendownload-Anbieter</value></data>
   <data name="FFmpegMediaDownloadProvider_DisplayName_Plural" xml:space="preserve"><value>FFmpeg-Mediendownload-Anbieter</value></data>
   <data name="FFmpegMediaDownloadProvider_Description" xml:space="preserve"><value>Lädt direkte HTTP-/HTTPS-Medien-URLs und HLS-/DASH-Manifeste über FFMpegCore und FFmpeg, z. B. Podcast-Dateien, MP4-Dateien oder .m3u8-/.mpd-Streams. Video/Audio werden in MKV-/MKA-Container kopiert; MP3/M4A/Opus werden konvertiert. Gemeinsame FFmpeg-Werkzeuge verknüpfen oder PATH verwenden. Für Live-Aufnahmen eine Dauer unterhalb des Zeitlimits festlegen.</value></data>

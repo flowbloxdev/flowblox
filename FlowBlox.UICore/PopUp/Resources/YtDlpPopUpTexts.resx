@@ -26,7 +26,7 @@ Other platforms and release details:
 
 Open the FFmpeg tools object&apos;s **Quick Start**. That guide provides its download link and explains the binary directory.
 Reuse an existing tools object when FFmpeg is already installed.
-A linked tools object takes precedence over the older provider-specific FFmpeg executable path.
+Configure the FFmpeg binary directory on that tools object.
 
 The tools must be available on the computer executing the flow, including CLI/service runs.</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Save and use this provider</value></data>

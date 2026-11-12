@@ -14,21 +14,18 @@ namespace FlowBlox.UICore.PopUp.Implementations
         internal static ComponentPopupItem Create(
             string headlineKey,
             string descriptionKey,
-            bool showConfiguration,
+            string imageName,
             params object[] formatArguments)
         {
             var description = string.Format(
                 CultureInfo.CurrentCulture,
                 Text(descriptionKey),
                 formatArguments);
-            var imageName = showConfiguration
-                ? nameof(YtDlpPopUpImages.YtDlpQuickStart_2)
-                : nameof(YtDlpPopUpImages.YtDlpQuickStart_3);
 
             return new ComponentPopupItem(
                 Text(headlineKey),
                 description,
-                PopUpImageResourceHelper.GetImageSource(YtDlpPopUpImages.ResourceManager, imageName));
+                PopUpImageResourceHelper.GetImageSource(MediaDownloadPopUpImages.ResourceManager, imageName));
         }
     }
 }

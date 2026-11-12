@@ -3,6 +3,7 @@ using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Media;
 using FlowBlox.UICore.PopUp.Provider;
+using FlowBlox.UICore.PopUp.Resources;
 
 namespace FlowBlox.UICore.PopUp.Implementations
 {
@@ -20,13 +21,13 @@ namespace FlowBlox.UICore.PopUp.Implementations
                 MediaDownloadQuickStartContent.Create(
                     "Tool_DownloadHeadline",
                     "Tool_DownloadDescription",
-                    showConfiguration: false,
+                    imageName: nameof(MediaDownloadPopUpImages.FFmpegToolQuickStart_1),
                     GlobalUrls.FFmpegWindowsEssentialsZip,
                     GlobalUrls.FFmpegDownloads),
                 MediaDownloadQuickStartContent.Create(
                     "Tool_PathHeadline",
                     "Tool_PathDescription",
-                    showConfiguration: true)
+                    imageName: nameof(MediaDownloadPopUpImages.FFmpegToolQuickStart_2))
             ];
         }
 

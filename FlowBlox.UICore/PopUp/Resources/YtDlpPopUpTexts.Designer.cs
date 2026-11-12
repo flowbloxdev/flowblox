@@ -110,9 +110,9 @@ namespace FlowBlox.UICore.PopUp.Resources
         ///
         ///Open the FFmpeg tools object&apos;s **Quick Start**. That guide provides its download link and explains the binary directory.
         ///Reuse an existing tools object when FFmpeg is already installed.
-        ///A linked tools object takes precedence over the older provider-specific FFmpeg executable path.
+        ///Configure the FFmpeg binary directory on that tools object.
         ///
-        ///The tools must be ava [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///The tools must be available on the computer executing the [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string Step2_Description
         {

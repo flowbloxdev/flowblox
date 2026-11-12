@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="MediaDownloadQuickStart_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\MediaDownloadQuickStart_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MediaDownloadQuickStart_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\MediaDownloadQuickStart_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MediaDownloadQuickStart_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\MediaDownloadQuickStart_3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FFmpegToolQuickStart_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\FFmpegToolQuickStart_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FFmpegToolQuickStart_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\FFmpegToolQuickStart_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FFmpegMediaDownloadQuickStart_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\FFmpegMediaDownloadQuickStart_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FFmpegMediaDownloadQuickStart_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\FFmpegMediaDownloadQuickStart_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="YtDlpProviderQuickStart_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\YtDlpProviderQuickStart_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="YtDlpProviderQuickStart_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\YtDlpProviderQuickStart_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="YtDlpProviderQuickStart_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\QuickStart\YtDlpProviderQuickStart_3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>

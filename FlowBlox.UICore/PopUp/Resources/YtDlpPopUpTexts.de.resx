@@ -26,7 +26,7 @@ Weitere Plattformen und Release-Details:
 
 Den eigenen **QuickStart** des FFmpeg-Werkzeugobjekts öffnen. Dort stehen dessen Download-Link und die Anleitung zum Programmordner.
 Ein vorhandenes Werkzeugobjekt wiederverwenden, wenn FFmpeg bereits installiert ist.
-Ein verknüpftes Werkzeugobjekt hat Vorrang vor dem bisherigen anbieterspezifischen FFmpeg-Programmdateipfad.
+Den FFmpeg-Programmordner an diesem Werkzeugobjekt konfigurieren.
 
 Die Werkzeuge müssen auf dem ausführenden Rechner verfügbar sein, auch bei CLI-/Dienst-Ausführung.</value></data>
   <data name="Step3_Headline" xml:space="preserve"><value>Diesen Anbieter speichern und verwenden</value></data>
