@@ -221,4 +221,5 @@ Beispiele (max. {1}):
   <data name="Loading_SaveInProgress" xml:space="preserve">
     <value>Projekt wird gespeichert und Inhalt hochgeladen. Bitte warten...</value>
   </data>
+  <data name="Hint_ProjectNotFound" xml:space="preserve"><value>Unter der GUID {0} wurde kein Projekt im Project Space gefunden. Es wurde möglicherweise gelöscht. Zum Speichern mit einer neuen GUID auf „{1}“ wechseln.</value></data>
 </root>

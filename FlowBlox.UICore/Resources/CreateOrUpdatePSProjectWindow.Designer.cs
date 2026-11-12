@@ -218,6 +218,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No project was found in Project Space under GUID {0}. It may have been deleted. Switch to “{1}” to save it with a new GUID. ähnelt.
+        /// </summary>
+        public static string Hint_ProjectNotFound
+        {
+            get
+            {
+                return ResourceManager.GetString("Hint_ProjectNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Created at ähnelt.
         /// </summary>
         public static string Label_CreatedAt

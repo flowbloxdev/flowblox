@@ -238,4 +238,11 @@
   <data name="Tooltip_CreatedBy" xml:space="preserve">
     <value>Project creator (user ID supplied by the API).</value>
   </data>
+  <data name="Button_DeleteProject" xml:space="preserve"><value>Delete project</value></data>
+  <data name="Button_CancelDeleteProject" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Tooltip_DeleteProject" xml:space="preserve"><value>Delete this project. Projects with stable versions cannot be deleted.</value></data>
+  <data name="Confirm_DeleteProject_Title" xml:space="preserve"><value>Delete project</value></data>
+  <data name="Confirm_DeleteProject_Message" xml:space="preserve"><value>Permanently delete the project “{0}”? This cannot be undone.</value></data>
+  <data name="Warning_ProjectHasStableVersions" xml:space="preserve"><value>Projects with stable versions cannot be deleted.</value></data>
+  <data name="Error_DeleteProjectFailed" xml:space="preserve"><value>The project could not be deleted.</value></data>
 </root>

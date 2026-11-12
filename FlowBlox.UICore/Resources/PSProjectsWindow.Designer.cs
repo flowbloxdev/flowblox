@@ -81,6 +81,17 @@ namespace FlowBlox.UICore.Resources
         }
 
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cancel ähnelt.
+        /// </summary>
+        public static string Button_CancelDeleteProject
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_CancelDeleteProject", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create stable version ähnelt.
         /// </summary>
         public static string Button_CreateStableVersion
@@ -91,6 +102,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete project ähnelt.
+        /// </summary>
+        public static string Button_DeleteProject
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_DeleteProject", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Download ähnelt.
         /// </summary>
@@ -190,6 +212,39 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Permanently delete the project “{0}”? This cannot be undone. ähnelt.
+        /// </summary>
+        public static string Confirm_DeleteProject_Message
+        {
+            get
+            {
+                return ResourceManager.GetString("Confirm_DeleteProject_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete project ähnelt.
+        /// </summary>
+        public static string Confirm_DeleteProject_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("Confirm_DeleteProject_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The project could not be deleted. ähnelt.
+        /// </summary>
+        public static string Error_DeleteProjectFailed
+        {
+            get
+            {
+                return ResourceManager.GetString("Error_DeleteProjectFailed", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Failed to download the project version. ähnelt.
         /// </summary>
@@ -543,6 +598,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete this project. Projects with stable versions cannot be deleted. ähnelt.
+        /// </summary>
+        public static string Tooltip_DeleteProject
+        {
+            get
+            {
+                return ResourceManager.GetString("Tooltip_DeleteProject", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Download version ähnelt.
         /// </summary>
         public static string Tooltip_DownloadVersion
@@ -583,6 +649,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Tooltip_RefreshVersions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Projects with stable versions cannot be deleted. ähnelt.
+        /// </summary>
+        public static string Warning_ProjectHasStableVersions
+        {
+            get
+            {
+                return ResourceManager.GetString("Warning_ProjectHasStableVersions", resourceCulture);
             }
         }
     }

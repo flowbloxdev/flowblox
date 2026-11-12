@@ -155,11 +155,14 @@
             </ScrollViewer>
 
             <!-- Error message (always visible) -->
-            <TextBlock Grid.Row="1"
-                       Text="{Binding ErrorText}"
-                       Foreground="Red"
-                       Margin="0,8,0,0"
-                       TextWrapping="Wrap" />
+            <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <TextBlock x:Name="MissingProjectHintText" Text="{Binding MissingProjectHint}"
+                           Foreground="DarkGoldenrod"
+                           TextWrapping="Wrap" />
+                <TextBlock Text="{Binding ErrorText}"
+                           Foreground="Red"
+                           TextWrapping="Wrap" />
+            </StackPanel>
 
             <!-- Footer buttons (always visible) -->
             <StackPanel Grid.Row="2"

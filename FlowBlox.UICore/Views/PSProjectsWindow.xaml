@@ -413,6 +413,14 @@
                                             AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Button_Edit}">
                                         <iconPacks:PackIconMaterial Kind="PencilOutline" Width="16" Height="16" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
                                     </Button>
+                                    <Button x:Name="DeleteProjectButton"
+                                            Command="{Binding DeleteProjectCommand}"
+                                            IsEnabled="{Binding CanDeleteProject}"
+                                            ToolTip="{x:Static resources:PSProjectsWindow.Tooltip_DeleteProject}"
+                                            ToolTipService.ShowOnDisabled="True"
+                                            AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Button_DeleteProject}">
+                                        <iconPacks:PackIconMaterial Kind="TrashCanOutline" Width="16" Height="16" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
+                                    </Button>
                                 </ToolBar>
 
                                 <!-- Name -->

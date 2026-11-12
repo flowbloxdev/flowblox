@@ -80,6 +80,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             await CheckLiteralGridRenderingAsync(Check);
             await CheckAssistantProviderSelectionAsync(Check);
             CheckProjectSpaceCards(Check, directory);
+            await CheckMissingProjectSpaceGuidAsync(Check);
             CheckFieldSelectionDialogScrolling(Check, directory);
             CheckFieldSelectionDialogContext(Check);
             await CaptureNotificationBarPreviewAsync(directory);

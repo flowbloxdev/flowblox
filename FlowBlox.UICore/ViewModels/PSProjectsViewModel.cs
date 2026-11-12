@@ -2,6 +2,7 @@ using FlowBlox.Core.Constants;
 using FlowBlox.Core.Authentication;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
+using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.UICore.Commands;
@@ -23,6 +24,8 @@ namespace FlowBlox.UICore.ViewModels
 
         private string _searchText;
         private bool _isMine;
+        private bool _isDeletingProject;
+        private bool _loadRemoteData = true;
 
         private FbProjectResult _selectedProject;
         private List<FbProjectResult> _searchResults;
@@ -38,6 +41,7 @@ namespace FlowBlox.UICore.ViewModels
         public RelayCommand OpenProjectCommand { get; }
         public RelayCommand OpenVersionCommand { get; }
         public RelayCommand EditProjectCommand { get; }
+        public RelayCommand DeleteProjectCommand { get; }
 
         public RelayCommand LoginCommand { get; }
         public RelayCommand RegisterCommand { get; }
@@ -67,6 +71,7 @@ namespace FlowBlox.UICore.ViewModels
                 _isMine = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(CanEditProject));
+                OnPropertyChanged(nameof(CanDeleteProject));
                 OnPropertyChanged(nameof(CanManageVersions));
                 ExecuteSearch();
             }
@@ -97,6 +102,7 @@ namespace FlowBlox.UICore.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsProjectSelected));
                 OnPropertyChanged(nameof(CanEditProject));
+                OnPropertyChanged(nameof(CanDeleteProject));
 
                 // Versions are part of project DTO now.
                 OnPropertyChanged(nameof(ProjectVersions));
@@ -154,6 +160,7 @@ namespace FlowBlox.UICore.ViewModels
             {
                 FlowBloxAccountManager.Instance.SetActiveUser(ApiUrl, value);
                 OnPropertyChanged(nameof(ActiveUser));
+                OnPropertyChanged(nameof(CanDeleteProject));
                 OnPropertyChanged(nameof(CanLogin));
                 OnPropertyChanged(nameof(CanLogout));
                 OnPropertyChanged(nameof(CanToggleMyProjects));
@@ -169,6 +176,7 @@ namespace FlowBlox.UICore.ViewModels
             {
                 FlowBloxAccountManager.Instance.SetUserToken(ApiUrl, value);
                 OnPropertyChanged(nameof(UserToken));
+                OnPropertyChanged(nameof(CanDeleteProject));
                 OnPropertyChanged(nameof(CanEditUserProperties));
                 OnPropertyChanged(nameof(CanManageVersions));
             }
@@ -200,6 +208,13 @@ namespace FlowBlox.UICore.ViewModels
 
         public bool CanEditProject(object arg) => IsProjectSelected && IsMine;
 
+        private bool IsSelectedProjectDeletable => CanManageVersions
+            && SelectedProject.Versions != null
+            && SelectedProject.Versions.Count == 0
+            && Guid.TryParse(SelectedProject.Guid, out _);
+
+        public bool CanDeleteProject => !_isDeletingProject && IsSelectedProjectDeletable;
+
         private static string ApiUrl => FlowBloxOptions.GetOptionInstance()
             .OptionCollection[OptionsConstants.ApiProjectServiceBaseUrl]
             .Value;
@@ -218,6 +233,7 @@ namespace FlowBlox.UICore.ViewModels
             OpenProjectCommand = new RelayCommand(OpenSelectedProject, _ => IsProjectSelected);
             OpenVersionCommand = new RelayCommand(_ => OpenSelectedVersion(), _ => CanOpenVersion);
             EditProjectCommand = new RelayCommand(EditSelectedProject, CanEditProject);
+            DeleteProjectCommand = new RelayCommand(async () => await DeleteSelectedProjectAsync(), () => CanDeleteProject);
 
             LoginCommand = new RelayCommand(ExecuteLogin);
             RegisterCommand = new RelayCommand(() =>
@@ -255,6 +271,7 @@ namespace FlowBlox.UICore.ViewModels
         public PSProjectsViewModel(Window ownerWindow, bool loadRemoteData = true) : this()
         {
             _ownerWindow = ownerWindow;
+            _loadRemoteData = loadRemoteData;
 
             if (!loadRemoteData)
                 return;
@@ -332,6 +349,9 @@ namespace FlowBlox.UICore.ViewModels
 
         private async void ExecuteSearch()
         {
+            if (!_loadRemoteData)
+                return;
+
             var token = IsMine ? UserToken : "";
             var endpoint = _flowBloxWebApiService.Value.BaseUrl;
 
@@ -434,15 +454,90 @@ namespace FlowBlox.UICore.ViewModels
             }
         }
 
+        private async Task DeleteSelectedProjectAsync()
+        {
+            if (!CanDeleteProject || _ownerWindow is not MetroWindow owner)
+                return;
+
+            var project = SelectedProject;
+            var token = UserToken;
+            _isDeletingProject = true;
+            NotifyDeleteProjectAvailabilityChanged();
+            try
+            {
+                var confirmed = await MessageBoxHelper.ShowQuestionAsync(
+                    owner,
+                    FlowBloxResourceUtil.GetLocalizedString("Confirm_DeleteProject_Title", typeof(Resources.PSProjectsWindow)),
+                    string.Format(
+                        FlowBloxResourceUtil.GetLocalizedString("Confirm_DeleteProject_Message", typeof(Resources.PSProjectsWindow)),
+                        project.Name),
+                    FlowBloxResourceUtil.GetLocalizedString("Button_DeleteProject", typeof(Resources.PSProjectsWindow)),
+                    FlowBloxResourceUtil.GetLocalizedString("Button_CancelDeleteProject", typeof(Resources.PSProjectsWindow)));
+                if (confirmed != true || !IsSelectedProjectDeletable ||
+                    !ReferenceEquals(SelectedProject, project) || UserToken != token)
+                    return;
+
+                var response = await _flowBloxWebApiService.Value.DeleteProjectAsync(
+                    token,
+                    new FbProjectDeleteRequest { ProjectGuid = project.Guid });
+                if (!response.Success)
+                {
+                    if (response.ErrorCode == "PROJECT_HAS_STABLE_VERSIONS")
+                    {
+                        await MessageBoxHelper.ShowMessageBoxAsync(owner, MessageBoxType.Warning,
+                            FlowBloxResourceUtil.GetLocalizedString("Warning_ProjectHasStableVersions", typeof(Resources.PSProjectsWindow)));
+                        if (ReferenceEquals(SelectedProject, project))
+                            await RefreshVersionsAsync();
+                    }
+                    else
+                    {
+                        await MessageBoxHelper.ShowMessageBoxAsync(owner, MessageBoxType.Error,
+                            ApiErrorMessageHelper.BuildErrorMessage(
+                                FlowBloxResourceUtil.GetLocalizedString("Error_DeleteProjectFailed", typeof(Resources.PSProjectsWindow)),
+                                response.ErrorMessage));
+                    }
+                    return;
+                }
+
+                if (ReferenceEquals(SelectedProject, project))
+                    SelectedProject = null;
+                SearchResults = SearchResults.Where(item => item.Guid != project.Guid).ToList();
+            }
+            catch (Exception exception)
+            {
+                FlowBloxLogManager.Instance.GetLogger().Error("Failed to delete Project Space project.", exception);
+                await MessageBoxHelper.ShowMessageBoxAsync(owner, MessageBoxType.Error,
+                    ApiErrorMessageHelper.BuildErrorMessage(
+                        FlowBloxResourceUtil.GetLocalizedString("Error_DeleteProjectFailed", typeof(Resources.PSProjectsWindow)),
+                        exception.Message));
+            }
+            finally
+            {
+                _isDeletingProject = false;
+                NotifyDeleteProjectAvailabilityChanged();
+            }
+        }
+
+        private void NotifyDeleteProjectAvailabilityChanged()
+        {
+            OnPropertyChanged(nameof(CanDeleteProject));
+            DeleteProjectCommand.Invalidate();
+        }
+
         private async Task RefreshVersionsAsync()
         {
             if (!CanManageVersions || SelectedProject == null)
                 return;
 
-            if (!Guid.TryParse(SelectedProject.Guid, out var projectGuid))
+            var project = SelectedProject;
+            var token = UserToken;
+            if (!Guid.TryParse(project.Guid, out var projectGuid))
                 return;
 
-            var resp = await _flowBloxWebApiService.Value.GetProjectVersionsAsync(UserToken, projectGuid);
+            var resp = await _flowBloxWebApiService.Value.GetProjectVersionsAsync(token, projectGuid);
+            if (!ReferenceEquals(SelectedProject, project) || UserToken != token)
+                return;
+
             if (!resp.Success)
             {
                 if (_ownerWindow is MetroWindow mw)
@@ -456,8 +551,9 @@ namespace FlowBlox.UICore.ViewModels
                 return;
             }
 
-            SelectedProject.Versions = resp.ResultObject;
+            project.Versions = resp.ResultObject;
             OnPropertyChanged(nameof(ProjectVersions));
+            NotifyDeleteProjectAvailabilityChanged();
             SelectedVersion = null;
         }
 

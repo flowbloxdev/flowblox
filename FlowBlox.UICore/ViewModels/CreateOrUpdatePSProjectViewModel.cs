@@ -11,6 +11,7 @@ using FlowBlox.UICore.Commands;
 using FlowBlox.UICore.Utilities;
 using MahApps.Metro.Controls;
 using System.ComponentModel;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
@@ -31,6 +32,19 @@ namespace FlowBlox.UICore.ViewModels
 
         private bool _suppressTabEffects;
         private bool _isBusy;
+        private int _initializationVersion;
+        private bool _existingProjectMissing;
+        private string _missingProjectHint;
+
+        public string MissingProjectHint
+        {
+            get => _missingProjectHint;
+            private set
+            {
+                _missingProjectHint = value;
+                OnPropertyChanged();
+            }
+        }
 
         public RelayCommand CloseCommand { get; }
         public RelayCommand SaveCommand { get; }
@@ -93,7 +107,10 @@ namespace FlowBlox.UICore.ViewModels
                     return;
 
                 _projectGuid = value;
+                _existingProjectMissing = false;
+                MissingProjectHint = string.Empty;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(CanSave));
                 OnPropertyChanged(nameof(HasProjectGuid));
                 OnPropertyChanged(nameof(CanSelectUpdateTab));
                 OnPropertyChanged(nameof(ShowUpdateTab));
@@ -176,6 +193,7 @@ namespace FlowBlox.UICore.ViewModels
                                && !string.IsNullOrWhiteSpace(UserToken)
                                && !string.IsNullOrWhiteSpace(ProjectName)
                                && !string.IsNullOrWhiteSpace(ProjectDescription)
+                               && !_existingProjectMissing
                                && !IsBusy;
 
         public bool IsBusy
@@ -342,6 +360,8 @@ namespace FlowBlox.UICore.ViewModels
 
         private async void InitializeFromLocalOrRemoteAsync()
         {
+            var initializationVersion = ++_initializationVersion;
+            var requestedGuid = ProjectGuid;
             ErrorText = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(ProjectGuid) && !string.IsNullOrWhiteSpace(UserToken))
@@ -349,6 +369,8 @@ namespace FlowBlox.UICore.ViewModels
                 var remoteResp = await _flowBloxWebApiService.Value.GetProjectAsync(
                     new FbProjectRequest { Guid = ProjectGuid },
                     UserToken);
+                if (initializationVersion != _initializationVersion || ProjectGuid != requestedGuid)
+                    return;
 
                 if (remoteResp.Success && remoteResp.ResultObject != null)
                 {
@@ -360,6 +382,10 @@ namespace FlowBlox.UICore.ViewModels
                     CreatedAtText = remote.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty;
                     UpdatedAtText = remote.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty;
                     return;
+                }
+                else if (IsProjectNotFound(remoteResp))
+                {
+                    ShowMissingProjectHint();
                 }
                 else if (!remoteResp.Success)
                 {
@@ -377,6 +403,11 @@ namespace FlowBlox.UICore.ViewModels
         private async Task ExecuteSaveAsync()
         {
             ErrorText = string.Empty;
+            if (_existingProjectMissing)
+            {
+                ShowMissingProjectHint();
+                return;
+            }
 
             if (ActiveUser == null || string.IsNullOrWhiteSpace(UserToken))
             {
@@ -429,6 +460,12 @@ namespace FlowBlox.UICore.ViewModels
 
                     if (updateMeta == null || !updateMeta.Success)
                     {
+                        if (IsProjectNotFound(updateMeta))
+                        {
+                            ShowMissingProjectHint();
+                            return;
+                        }
+
                         await ShowErrorAsync(
                             ApiErrorMessageHelper.BuildErrorMessage(
                                 FlowBloxResourceUtil.GetLocalizedString("Error_UpdateFailed", typeof(Resources.CreateOrUpdatePSProjectWindow)),
@@ -459,6 +496,12 @@ namespace FlowBlox.UICore.ViewModels
 
                 if (saveContent == null || !saveContent.Success)
                 {
+                    if (IsProjectNotFound(saveContent))
+                    {
+                        ShowMissingProjectHint();
+                        return;
+                    }
+
                     await ShowErrorAsync(ApiErrorMessageHelper.BuildErrorMessage(
                         FlowBloxResourceUtil.GetLocalizedString("Error_UploadFailed", typeof(Resources.CreateOrUpdatePSProjectWindow)),
                         saveContent?.ErrorMessage));
@@ -480,6 +523,12 @@ namespace FlowBlox.UICore.ViewModels
                 }
                 else if (!remoteResp.Success)
                 {
+                    if (IsProjectNotFound(remoteResp))
+                    {
+                        ShowMissingProjectHint();
+                        return;
+                    }
+
                     await ShowErrorAsync(ApiErrorMessageHelper.BuildErrorMessage(
                         FlowBloxResourceUtil.GetLocalizedString("Error_RefreshMetadataFailed", typeof(Resources.CreateOrUpdatePSProjectWindow)),
                         remoteResp.ErrorMessage));
@@ -502,6 +551,21 @@ namespace FlowBlox.UICore.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private static bool IsProjectNotFound(FlowBloxWebApiService.ApiResponse response) =>
+            response != null && !response.Success &&
+            (response.ErrorCode == "PROJECT_NOT_FOUND" || response.StatusCode == HttpStatusCode.NotFound);
+
+        private void ShowMissingProjectHint()
+        {
+            _existingProjectMissing = true;
+            MissingProjectHint = string.Format(
+                FlowBloxResourceUtil.GetLocalizedString("Hint_ProjectNotFound", typeof(Resources.CreateOrUpdatePSProjectWindow)),
+                ProjectGuid,
+                FlowBloxResourceUtil.GetLocalizedString("Tab_CreateNewProject", typeof(Resources.CreateOrUpdatePSProjectWindow)));
+            OnPropertyChanged(nameof(CanSave));
+            SaveCommand.Invalidate();
         }
 
         private async Task WarnIfExternalProjectReferencesExistAsync()

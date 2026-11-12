@@ -25,7 +25,10 @@ namespace FlowBloxTest.FlowBlocks.Media
                 var provider = new YtDlpMediaDownloadProvider
                 {
                     ExecutablePath = ytDlpPath,
-                    FFmpegPath = ffmpegPath,
+                    FFmpeg = new FFmpegTool
+                    {
+                        BinaryDirectory = Path.GetDirectoryName(ffmpegPath)!
+                    },
                     DownloadPlaylist = downloadPlaylist,
                     TimeoutSeconds = 60
                 };

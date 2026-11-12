@@ -258,4 +258,11 @@
   <data name="Tooltip_CreatedBy" xml:space="preserve">
     <value>Ersteller des Projekts (von der API gelieferte Benutzer-ID).</value>
   </data>
+  <data name="Button_DeleteProject" xml:space="preserve"><value>Projekt löschen</value></data>
+  <data name="Button_CancelDeleteProject" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Tooltip_DeleteProject" xml:space="preserve"><value>Dieses Projekt löschen. Projekte mit stabilen Versionen können nicht gelöscht werden.</value></data>
+  <data name="Confirm_DeleteProject_Title" xml:space="preserve"><value>Projekt löschen</value></data>
+  <data name="Confirm_DeleteProject_Message" xml:space="preserve"><value>Das Projekt „{0}“ endgültig löschen? Dies kann nicht rückgängig gemacht werden.</value></data>
+  <data name="Warning_ProjectHasStableVersions" xml:space="preserve"><value>Projekte mit stabilen Versionen können nicht gelöscht werden.</value></data>
+  <data name="Error_DeleteProjectFailed" xml:space="preserve"><value>Das Projekt konnte nicht gelöscht werden.</value></data>
 </root>

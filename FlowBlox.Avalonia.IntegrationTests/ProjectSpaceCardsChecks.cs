@@ -42,6 +42,7 @@ internal sealed partial class WorkspaceIntegrationChecks
                     "Project cards update the selected project and clear the previous version selection");
                 check(model.ProjectVersions.Single().VersionNumber == 2 && model.OpenProjectCommand.CanExecute(null),
                     "Project cards retain version details and the open-project action");
+                CheckProjectDeletionAvailability(dialog, model, check);
 
                 var scroll = FindFieldSelectionVisual<ScrollViewer>(cards);
                 var row = (ListBoxItem)cards.ItemContainerGenerator.ContainerFromIndex(1);
@@ -80,6 +81,67 @@ internal sealed partial class WorkspaceIntegrationChecks
             throw failure;
         var selection = dialog.Tag as PSProjectSelection;
         check(selection?.Project == model.SearchResults[0], "Enter opens the selected project card through the existing selection contract");
+    }
+
+    private static void CheckProjectDeletionAvailability(
+        PSProjectsWindow dialog,
+        PSProjectsViewModel model,
+        Action<bool, string> check)
+    {
+        var deleteButton = (Button)dialog.FindName("DeleteProjectButton");
+        var previousUser = model.ActiveUser;
+        var previousToken = model.UserToken;
+        var project = model.SelectedProject;
+        var versions = project.Versions;
+        var previousVersion = model.SelectedVersion;
+        try
+        {
+            model.ActiveUser = new FbUserData { UserName = "project-delete-check" };
+            model.UserToken = "project-delete-check-token";
+            model.IsMine = true;
+            dialog.UpdateLayout();
+            check(deleteButton.IsVisible && !deleteButton.IsEnabled && !model.DeleteProjectCommand.CanExecute(null),
+                "Own projects with stable versions show a disabled delete button");
+            model.DeleteProjectCommand.Execute(null);
+            check(dialog.IsVisible, "Invoking deletion for a stable project does not open a confirmation or call the API");
+
+            project.Versions = [];
+            model.SelectedProject = null;
+            model.SelectedProject = project;
+            dialog.UpdateLayout();
+            dialog.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            check(deleteButton.IsEnabled && model.DeleteProjectCommand.CanExecute(null),
+                "Authenticated own projects without stable versions can be deleted");
+
+            model.UserToken = null;
+            dialog.UpdateLayout();
+            check(!deleteButton.IsEnabled && !model.DeleteProjectCommand.CanExecute(null),
+                "Project deletion requires a user token");
+            model.UserToken = "project-delete-check-token";
+
+            model.IsMine = false;
+            dialog.UpdateLayout();
+            check(!deleteButton.IsVisible && !model.DeleteProjectCommand.CanExecute(null),
+                "Public-project browsing hides and disables project deletion");
+
+            model.IsMine = true;
+            project.Versions = null;
+            model.SelectedProject = null;
+            model.SelectedProject = project;
+            check(!model.DeleteProjectCommand.CanExecute(null),
+                "Unknown stable-version data never enables project deletion");
+            model.SelectedProject = null;
+            check(!model.DeleteProjectCommand.CanExecute(null), "No project selection disables deletion");
+        }
+        finally
+        {
+            project.Versions = versions;
+            model.IsMine = false;
+            model.SelectedProject = project;
+            model.SelectedVersion = previousVersion;
+            model.ActiveUser = previousUser;
+            model.UserToken = previousToken;
+        }
     }
 
     private static void CaptureProjectCards(Window dialog, string path)

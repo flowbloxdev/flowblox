@@ -41,11 +41,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             _ => false
         };
 
-        private bool IsStandaloneFFmpegPathActive() => FFmpeg == null;
-
-        protected override string ResolveFallbackFFmpegPath() =>
-            this.Resolve(provider => provider.FFmpegPath, required: true);
-
         protected override async Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
