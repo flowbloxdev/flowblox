@@ -10,14 +10,12 @@ namespace FlowBlox.Core.Models.Components.Modifier
     [Display(Name = "ReplaceModifier_DisplayName", ResourceType = typeof(FlowBloxTexts))]
     public class ReplaceModifier : ModifierBase
     {
-        [Required()]
+        [Required]
         [Display(Name = "ReplaceModifier_Search", Order = 0, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Search { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "ReplaceModifier_Replace", Order = 1, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Replace { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)

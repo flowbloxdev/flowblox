@@ -1,4 +1,5 @@
 using FlowBlox.Core.Enums;
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider;
@@ -39,7 +40,7 @@ public sealed class ScalarFieldSelectionRuntimeTests
     [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
-    public void Invocation_ResolvesScalarsAndNestedConfigurationThenRestoresLiterals(bool throwInExecutor)
+    public void Invocation_ResolvesScalarsAndNestedConfigurationWithoutMutatingLiterals(bool throwInExecutor)
     {
         var project = new FlowBloxProject();
         var registry = project.FlowBloxRegistry;
@@ -62,11 +63,13 @@ public sealed class ScalarFieldSelectionRuntimeTests
         var observed = false;
         block.Observe = current =>
         {
-            Assert.AreEqual(42, current.Count);
-            Assert.IsTrue(current.Enabled);
-            Assert.AreEqual(new DateTime(2026, 11, 5), current.Since);
-            Assert.AreEqual(DotNetEncodingNames.UTF8, current.Encoding);
-            Assert.AreEqual(42, current.Settings.Limit);
+            Assert.AreEqual(42, current.Resolve(owner => owner.Count));
+            Assert.IsTrue(current.Resolve(owner => owner.Enabled));
+            Assert.AreEqual(new DateTime(2026, 11, 5), current.Resolve(owner => owner.Since));
+            Assert.AreEqual(DotNetEncodingNames.UTF8, current.Resolve(owner => owner.Encoding));
+            Assert.AreEqual(42, current.Settings.Resolve(owner => owner.Limit));
+            Assert.AreEqual(7, current.Count);
+            Assert.AreEqual(10, current.Settings.Limit);
             observed = true;
             if (throwInExecutor)
                 throw new InvalidOperationException("Expected probe failure.");
@@ -84,14 +87,14 @@ public sealed class ScalarFieldSelectionRuntimeTests
         if (!throwInExecutor)
         {
             count.StringValue = "51";
-            block.Observe = current => Assert.AreEqual(51, current.Count);
+            block.Observe = current => Assert.AreEqual(51, current.Resolve(owner => owner.Count));
             Assert.IsTrue(block.Execute(runtime, null!));
             Assert.AreEqual(7, block.Count);
         }
     }
 
     [TestMethod]
-    public void FailedConversion_RestoresPreviouslyAppliedProperties()
+    public void FailedConversion_PreservesConfiguredProperties()
     {
         var project = new FlowBloxProject();
         var registry = project.FlowBloxRegistry;
@@ -104,6 +107,11 @@ public sealed class ScalarFieldSelectionRuntimeTests
         invalid.StringValue = "not-a-boolean";
         block.SetPropertySelectedField(nameof(block.Count), valid);
         block.SetPropertySelectedField(nameof(block.Enabled), invalid);
+        block.Observe = current =>
+        {
+            Assert.AreEqual(42, current.Resolve(owner => owner.Count));
+            _ = current.Resolve(owner => owner.Enabled);
+        };
 
         Assert.IsFalse(block.Execute(new TransientRuntime(project), null!));
         Assert.AreEqual(7, block.Count);

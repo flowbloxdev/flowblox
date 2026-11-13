@@ -1,4 +1,5 @@
-﻿using PropertyViewControlFactoryBaseResources = FlowBlox.UICore.Resources.ClassResources.PropertyViewControlFactoryBase;
+﻿using FlowBlox.Core.Extensions;
+using PropertyViewControlFactoryBaseResources = FlowBlox.UICore.Resources.ClassResources.PropertyViewControlFactoryBase;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Interfaces;
@@ -19,6 +20,8 @@ namespace FlowBlox.UICore.Factory.Base
         protected readonly object _target;
         protected readonly PropertyInfo _property;
         protected readonly FlowBloxUIAttribute _uiAttribute;
+        protected readonly FlowBloxAssociationAttribute _associationAttribute;
+        protected readonly FlowBloxItemsSourceAttribute _itemsSourceAttribute;
         protected readonly FlowBloxRegistry _registry;
         protected readonly bool _readOnly;
         private FlowBloxBaseAction _pendingDeletionAction;
@@ -27,7 +30,9 @@ namespace FlowBlox.UICore.Factory.Base
         protected PropertyViewControlFactoryBase(PropertyInfo property, object target, bool readOnly)
         {
             _property = property;
-            _uiAttribute = property.GetCustomAttribute<FlowBloxUIAttribute>();
+            _uiAttribute = property.GetFlowBloxUIAttribute();
+            _associationAttribute = property.GetFlowBloxAssociationAttribute();
+            _itemsSourceAttribute = property.GetFlowBloxItemsSourceAttribute();
             _target = target;
             _registry = FlowBloxRegistryProvider.GetRegistry();
             _readOnly = readOnly;
@@ -40,17 +45,17 @@ namespace FlowBlox.UICore.Factory.Base
             IList<Type> types;
             if (propertyType.IsInterface || propertyType.IsAbstract)
             {
-                if (_uiAttribute?.CreatableTypes != null && _uiAttribute.CreatableTypes.Length > 0)
+                if (_associationAttribute?.CreatableTypes != null && _associationAttribute.CreatableTypes.Length > 0)
                 {
                     types = FlowBloxSupportedTypesResolver.ResolveSupportedTypes(
                         _target,
                         propertyType,
-                        _uiAttribute.CreatableTypes);
+                        _associationAttribute.CreatableTypes);
                 }
                 else
                 {
                     types = FlowBloxSupportedTypesResolver.ResolveSupportedTypes(_target, propertyType);
-                }   
+                }
             }
             else
             {
@@ -84,7 +89,7 @@ namespace FlowBlox.UICore.Factory.Base
             {
                 _registry.PostProcessManagedObjectCreated(managedObject);
             }
-            
+
             if (newInstance is FlowBloxReactiveObject reactiveObject &&
                 FlowBloxReactiveObjectHelper.IsReactiveObjectOnly(reactiveObject))
             {

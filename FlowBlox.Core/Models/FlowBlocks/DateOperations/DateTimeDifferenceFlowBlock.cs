@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -16,28 +17,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
     {
         [Required]
         [Display(Name = "DateTimeDifferenceFlowBlock_StartDate", Description = "DateTimeDifferenceFlowBlock_StartDate_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleDateTimeFields),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDateTimeFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement StartDate { get; set; }
 
         [Required]
         [Display(Name = "DateTimeDifferenceFlowBlock_EndDate", Description = "DateTimeDifferenceFlowBlock_EndDate_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleDateTimeFields),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDateTimeFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement EndDate { get; set; }
 
         [Display(Name = "DateTimeDifferenceFlowBlock_Unit", Description = "DateTimeDifferenceFlowBlock_Unit_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeOperationUnit Unit { get; set; } = DateTimeOperationUnit.Days;
 
         [Display(Name = "DateTimeDifferenceFlowBlock_AbsoluteValue", Description = "DateTimeDifferenceFlowBlock_AbsoluteValue_Description", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AbsoluteValue { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.timeline_clock, 16, SKColors.SteelBlue);
@@ -67,8 +60,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
                 var startDate = DateTimeFlowBlockHelper.ResolveDateTime(StartDate, nameof(StartDate));
                 var endDate = DateTimeFlowBlockHelper.ResolveDateTime(EndDate, nameof(EndDate));
 
-                var diffValue = CalculateDifference(startDate, endDate, Unit);
-                if (AbsoluteValue)
+                var diffValue = CalculateDifference(startDate, endDate, this.Resolve(x => x.Unit));
+                if (this.Resolve(x => x.AbsoluteValue))
                     diffValue = Math.Abs(diffValue);
 
                 GenerateResult(runtime, diffValue.ToString(CultureInfo.InvariantCulture));

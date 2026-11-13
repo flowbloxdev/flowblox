@@ -51,18 +51,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
     public class DateTimeComponentAdjustmentEntry : FlowBloxReactiveObject
     {
         [Display(Name = "DateTimeComponentAdjustmentEntry_Target", Description = "DateTimeComponentAdjustmentEntry_Target_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeComponentAdjustmentTarget Target { get; set; } = DateTimeComponentAdjustmentTarget.Day;
 
         [Display(Name = "DateTimeComponentAdjustmentEntry_Mode", Description = "DateTimeComponentAdjustmentEntry_Mode_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeComponentAdjustmentMode Mode { get; set; } = DateTimeComponentAdjustmentMode.Add;
 
         [Display(Name = "DateTimeComponentAdjustmentEntry_Value", Description = "DateTimeComponentAdjustmentEntry_Value_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Value { get; set; } = 1;
 
-        public override string ToString() => $"{Mode} {Value} {Target}";
+        public override string ToString() => $"{this.Resolve(x => x.Mode)} {this.Resolve(x => x.Value)} {this.Resolve(x => x.Target)}";
     }
 
     [FlowBloxUIGroup("DateTimeComponentAdjustFlowBlock_Groups_Adjustments", 0)]
@@ -71,16 +68,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
     {
         [Required]
         [Display(Name = "DateTimeComponentAdjustFlowBlock_SourceDate", Description = "DateTimeComponentAdjustFlowBlock_SourceDate_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleDateTimeFields),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDateTimeFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement SourceDate { get; set; }
 
         [Display(Name = "DateTimeComponentAdjustFlowBlock_Adjustments", Description = "DateTimeComponentAdjustFlowBlock_Adjustments_Description", ResourceType = typeof(FlowBloxTexts), GroupName = "DateTimeComponentAdjustFlowBlock_Groups_Adjustments", Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
-        [FlowBloxDataGrid(GridColumnMemberNames =
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxDataGrid(
+            ColumnMemberNames =
         [
             nameof(DateTimeComponentAdjustmentEntry.Target),
             nameof(DateTimeComponentAdjustmentEntry.Mode),

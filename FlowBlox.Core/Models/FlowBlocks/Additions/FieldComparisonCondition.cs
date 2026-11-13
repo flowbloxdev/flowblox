@@ -17,9 +17,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         [CustomValidation(typeof(FieldComparisonCondition), nameof(ValidateFieldElement))]
         [DependsOnProperty(MemberName = nameof(Operator))]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(FlowBloxComponent.GetPossibleFieldElements))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         public FieldElement FieldElement { get; set; }
 
         public static ValidationResult ValidateFieldElement(FieldElement fieldElement, ValidationContext validationContext)
@@ -52,7 +53,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         }
 
         [Display(Name = "FieldComparisonCondition_OutputValue", Description = "FieldComparisonCondition_OutputValue_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 30)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string OutputValue
         {

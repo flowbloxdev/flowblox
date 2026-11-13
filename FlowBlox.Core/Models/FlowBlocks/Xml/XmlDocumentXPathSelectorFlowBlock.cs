@@ -17,10 +17,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
     public class XmlDocumentXPathSelectorFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "XmlDocumentXPathSelector_AssociatedXmlDocument", Description = "XmlDocumentXPathSelector_AssociatedXmlDocument_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleXmlDocumentFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleXmlDocumentFlowBlocks), DisplayMember = nameof(Name))]
         public XmlDocumentFlowBlock AssociatedXmlDocument { get; set; }
 
         private List<XmlDocumentFlowBlock> GetPossibleXmlDocumentFlowBlocks()
@@ -31,12 +30,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
         }
 
         [Display(Name = "XmlDocumentXPathSelector_XPath", Description = "XmlDocumentXPathSelector_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath))]
         [Required]
         public string XPath { get; set; }
 
         [Display(Name = "XmlDocumentXPathSelector_ResultMode", Description = "XmlDocumentXPathSelector_ResultMode_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public XPathResultMode ResultMode { get; set; } = XPathResultMode.InnerXml;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.magnify_scan, 16, SKColors.MediumSeaGreen);
@@ -83,7 +81,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
                     XmlDocumentXPathSelectorNotifications.XPathExpressionIsEmpty))
                     return;
 
-                var contents = XPathSelector.SelectValues(xmlDoc, xPath, ResultMode);
+                var contents = XPathSelector.SelectValues(xmlDoc, xPath, this.Resolve(x => x.ResultMode));
                 if (contents.Count == 0)
                 {
                     CreateNotification(runtime, XmlDocumentXPathSelectorNotifications.NoMatchingNodesFound);

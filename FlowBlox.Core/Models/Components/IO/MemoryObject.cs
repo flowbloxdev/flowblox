@@ -25,26 +25,23 @@ namespace FlowBlox.Core.Models.Components.IO
 
         private FieldElement _field;
 
-        [Required()]
+        [Required]
         [Display(Name = "Global_FieldElement", Description = "MemoryObject_Field_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(GetPossibleFieldElements))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(DisplayMember = nameof(FieldElement.FullyQualifiedName), Method = nameof(GetPossibleFieldElements))]
         public FieldElement Field 
         {
             get => _field;
             set => SetRequiredInputField(ref _field, value);
         }
 
-        [Required()]
+        [Required]
         [Display(Name = "PropertyNames_FileName", Description = "MemoryObject_FileName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string FileName { get; set; }
 
         [ActivationCondition(MemberName = nameof(Field), ActivationMethod = nameof(IsEncodingNameActive))]
-        [ConditionallyRequired()]
+        [ConditionallyRequired]
         [Display(Name = "PropertyNames_Encoding", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         private bool IsEncodingNameActive()

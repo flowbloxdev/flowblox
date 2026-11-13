@@ -13,11 +13,9 @@ namespace FlowBlox.Core.Models.Components.Modifier
     public class HashModifier : ModifierBase
     {
         [Display(Name = "HashModifier_Algorithm", Description = "HashModifier_Algorithm_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicHashAlgorithm Algorithm { get; set; } = CryptographicHashAlgorithm.SHA256;
 
         [Display(Name = "HashModifier_OutputEncoding", Description = "HashModifier_OutputEncoding_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicOutputEncoding OutputEncoding { get; set; } = CryptographicOutputEncoding.HexLowerCase;
 
         public override string Modify(BaseRuntime runtime, string value)

@@ -46,9 +46,9 @@ This file summarizes core project conventions for AI/coding agents working in th
 
 ### Enabling field references
 
-- Enable field selection for editable business configuration that can consume runtime values:
-  `[FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]`. Leave identifiers, declarations, flow-logic,
-  metadata and UI-control properties unenabled. No disable annotation is needed.
+- Field selection defaults to `UISelectionButtons.FLD` for supported scalar properties, including properties without `FlowBloxUI`.
+  Omit redundant field-only annotations. Disable it explicitly with `[FlowBloxUI(UISelectionButtons.None)]`
+  for identifiers, declarations, flow-logic, metadata and UI-control properties. Explicit button flags replace the default.
 - Supported types are `string`, `bool`, `int`, `long`, `float`, `double`, `DateTime`, enums and nullable scalar forms.
   Use `FlowBloxFieldSelection.Supports(PropertyInfo)` as the shared eligibility check; do not duplicate type/flag checks.
 - Read enabled configuration with `this.Resolve(x => x.Property)` before use, including validation, modifiers,
@@ -60,7 +60,7 @@ This file summarizes core project conventions for AI/coding agents working in th
   Failure creates the notification and completes the block: result blocks generate an empty result; other blocks execute
   their next blocks. The caller must still return. Preserve intentional optional-value/fallback behavior.
 - Use low-level `FlowBloxFieldHelper` methods for arbitrary text rather than property access; preserve existing specialized
-  SQL/math resolution. Do not assume every configuration consumer runs inside the shared scalar invocation scope.
+  SQL/math resolution. Resolve scalars at consumption time; runtime execution never temporarily overwrites configured properties.
 - Scalar assignments use `PropertySelectedFieldMap`; strings keep inline placeholders. No companion properties or
   per-property conversion logic. Preserve selection attributes and flexible runtime conversions.
   Legacy import and AI updates use the central implementation; see `docs/field-references.md`.
@@ -116,10 +116,11 @@ This file summarizes core project conventions for AI/coding agents working in th
 - For editable string content with optional code editor/suggestions use:
   - `[FlowBlockTextBox(...)]`
 - For association/linkable objects use:
-  - `[FlowBlockUI(Factory = UIFactory.Association, ...)]`
-- For list/grid rendering use:
-  - `[FlowBlockUI(Factory = UIFactory.ListView|GridView, ...)]`
-  - `[FlowBlockDataGrid(...)]` or `[FlowBlockListView(...)]` where needed.
+  - `[FlowBloxAssociation(...)]` and `[FlowBloxItemsSource(...)]` where choices are supplied.
+- For list/grid rendering use `[FlowBloxDataGrid(...)]` or `[FlowBloxListView(...)]`; both share `ColumnMemberNames` and `IsMovable`.
+- Object operations, creatable types and item factories belong to `[FlowBloxAssociation(...)]`, including collection items.
+- Resolve general UI defaults through `property.GetFlowBloxUIAttribute()` and editor kinds through `property.GetFlowBloxUIFactory()`
+  in `FlowBlox.Core.Extensions`. Attribute initializers are the single source of truth. See `docs/ui-annotations.md`.
 
 ## FlowBlock Card Summaries (`GetDisplayableProperties`)
 - Every concrete FlowBlock with meaningful user configuration should override `GetDisplayableProperties()`.
@@ -151,7 +152,9 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Define a block-specific enum with `FlowBloxNotificationAttribute` on each entry.
 - Register it via `NotificationTypes` override in the FlowBlock.
 - Trigger it with `CreateNotification(runtime, ...)`.
-- Keep notification display texts short and action-oriented.
+- Keep notification enum identifiers and display names in compact English, directly in `Display(Name = "...")`; do not localize them.
+- Keep notification display texts short and action-oriented. Put installation instructions and technical details in the exception, not the node summary.
+- Extensions can use `ExecutionPrerequisites.RequireExecutable<TQuickStartTarget>` and `ExecutionPrerequisiteException`; see `docs/execution-prerequisites.md`.
 
 ## Practical Agent Rules
 

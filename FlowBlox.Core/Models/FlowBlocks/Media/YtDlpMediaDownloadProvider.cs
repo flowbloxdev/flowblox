@@ -3,6 +3,8 @@ using System.Globalization;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Exceptions;
+using FlowBlox.Core.Util.Execution;
 using FlowBlox.Core.Util.Downloads;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Metadata;
@@ -18,17 +20,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [Required]
         [Display(Name = "YtDlpMediaDownloadProvider_ExecutablePath", Description = "YtDlpMediaDownloadProvider_ExecutablePath_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.FL)]
         public string ExecutablePath { get; set; } = OperatingSystem.IsWindows() ? "yt-dlp.exe" : "yt-dlp";
 
         [Display(Name = "YtDlpMediaDownloadProvider_DenoPath", Description = "YtDlpMediaDownloadProvider_DenoPath_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.FL)]
         public string DenoPath { get; set; } = string.Empty;
 
         [Display(Name = "YtDlpMediaDownloadProvider_DownloadPlaylist", Description = "YtDlpMediaDownloadProvider_DownloadPlaylist_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool DownloadPlaylist { get; set; }
 
         public override bool SupportsFormat(MediaDownloadFormat format) => format switch
@@ -41,6 +42,40 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             _ => false
         };
 
+        protected override string? AdditionalBinaryDirectory => Path.GetDirectoryName(
+            ExecutionPrerequisites.FindExecutable(this.Resolve(provider => provider.ExecutablePath)));
+
+        /// <inheritdoc />
+        public override void ValidateExecutionPrerequisites()
+        {
+            ExecutionPrerequisites.RequireExecutable<YtDlpMediaDownloadProvider>(
+                "yt-dlp",
+                this.Resolve(provider => provider.ExecutablePath));
+            base.ValidateExecutionPrerequisites();
+
+            var denoPath = this.Resolve(provider => provider.DenoPath);
+            if (!string.IsNullOrWhiteSpace(denoPath))
+            {
+                ExecutionPrerequisites.RequireExecutable<YtDlpMediaDownloadProvider>("Deno", denoPath);
+            }
+        }
+
+        internal static Exception CreateDownloadFailure(string message, IEnumerable<string> errors)
+        {
+            var details = string.Join(Environment.NewLine, errors);
+            if (details.Contains("javascript runtime", StringComparison.OrdinalIgnoreCase)
+                || details.Contains("js runtime", StringComparison.OrdinalIgnoreCase))
+            {
+                return new ExecutionPrerequisiteException(
+                    "JavaScript runtime (Deno / Node.js / Bun / QuickJS)",
+                    typeof(YtDlpMediaDownloadProvider),
+                    "yt-dlp",
+                    new IOException(details));
+            }
+
+            return new IOException(message + details);
+        }
+
         protected override async Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
@@ -48,9 +83,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         {
             var outputDirectory = Path.GetFullPath(request.OutputDirectory);
             Directory.CreateDirectory(outputDirectory);
+            var executablePath = this.Resolve(provider => provider.ExecutablePath);
             var downloader = new YoutubeDL
             {
-                YoutubeDLPath = this.Resolve(provider => provider.ExecutablePath, required: true),
+                YoutubeDLPath = ExecutionPrerequisites.FindExecutable(executablePath) ?? executablePath,
                 FFmpegPath = ResolveFFmpegExecutablePath(),
                 OutputFolder = outputDirectory,
                 OutputFileTemplate = "%(title)s [%(id)s].%(ext)s",
@@ -90,7 +126,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 overrideOptions: discoveryOptions).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             if (!metadata.Success || metadata.Data == null)
-                throw new IOException("yt-dlp media discovery failed: " + string.Join(Environment.NewLine, metadata.ErrorOutput));
+                throw CreateDownloadFailure("yt-dlp media discovery failed: ", metadata.ErrorOutput);
 
             return await DownloadDiscoveredMediaAsync(
                 metadata.Data,
@@ -146,7 +182,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
 
             cancellationToken.ThrowIfCancellationRequested();
             if (!result.Success)
-                throw new IOException("yt-dlp media download failed: " + string.Join(Environment.NewLine, result.ErrorOutput));
+                throw CreateDownloadFailure("yt-dlp media download failed: ", result.ErrorOutput);
 
             return result.Data;
         }
@@ -227,7 +263,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     results.Add(new MediaDownloadResult
                     {
                         SourceUrl = string.IsNullOrWhiteSpace(sourceUrl) ? playlistUrl : sourceUrl,
-                        FailureReason = MediaDownloadFailureReason.DownloadFailed,
+                        PrerequisiteFailure = exception as ExecutionPrerequisiteException,
+                        FailureReason = exception is ExecutionPrerequisiteException
+                            ? MediaDownloadFailureReason.RequiredComponentMissing
+                            : MediaDownloadFailureReason.DownloadFailed,
                         ErrorMessage = exception.Message
                     });
                 }

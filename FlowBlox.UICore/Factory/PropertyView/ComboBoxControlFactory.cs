@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -26,6 +27,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
         private readonly object _parent;
         private readonly bool _readOnly;
         private readonly FlowBloxUIAttribute _ui;
+        private readonly FlowBloxItemsSourceAttribute _itemsSource;
         private readonly FlowBloxComboBoxAttribute _combo;
         private readonly FlowBloxTextBoxAttribute _text;
 
@@ -41,7 +43,8 @@ namespace FlowBlox.UICore.Factory.PropertyView
             _target = target;
             _parent = parent;
             _readOnly = readOnly;
-            _ui = property.GetCustomAttribute<FlowBloxUIAttribute>();
+            _ui = property.GetFlowBloxUIAttribute();
+            _itemsSource = property.GetFlowBloxItemsSourceAttribute();
             _combo = property.GetCustomAttribute<FlowBloxComboBoxAttribute>() ?? new FlowBloxComboBoxAttribute();
             _text = property.GetCustomAttribute<FlowBloxTextBoxAttribute>();
         }
@@ -70,13 +73,13 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 required = SelectionItemsSourceResolver.IsRequired(_property, _target);
                 dynamicallyReadOnly = FlowBlockUIAttributeHelper.IsDynamicallyReadOnly(_target, _ui);
                 var source = SelectionMethodResolver.ResolveSelectionFilterMethodFromTargetOrParent(
-                    _target, _parent, _ui?.SelectionFilterMethod);
+                    _target, _parent, _itemsSource?.Method);
                 var rawItems = source?.Method?.Invoke(source.InvocationTarget, null) as IEnumerable;
                 observedItems = rawItems as INotifyCollectionChanged;
                 if (host.IsLoaded && observedItems != null)
                     CollectionChangedEventManager.AddHandler(observedItems, ItemsChanged);
                 var valueType = Nullable.GetUnderlyingType(_property.PropertyType) ?? _property.PropertyType;
-                var items = valueType.IsEnum && string.IsNullOrWhiteSpace(_ui?.SelectionFilterMethod)
+                var items = valueType.IsEnum && string.IsNullOrWhiteSpace(_itemsSource?.Method)
                     ? EnumerationDropDown.CreateItems(valueType, !required && Nullable.GetUnderlyingType(_property.PropertyType) != null)
                     : CreateItems(rawItems, required);
                 host.Content = BuildEditor(mode, password, items);
@@ -87,7 +90,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 if (mode != ResolveMode() || password != IsPassword()
                     || required != SelectionItemsSourceResolver.IsRequired(_property, _target)
                     || dynamicallyReadOnly != FlowBlockUIAttributeHelper.IsDynamicallyReadOnly(_target, _ui)
-                    || args.PropertyName == _ui?.SelectionFilterDependency)
+                    || args.PropertyName == _itemsSource?.Dependency)
                     Refresh();
             }
 
@@ -156,7 +159,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 var value = ReadMember(item, _combo.SelectionValueMember);
                 if (value == null && required)
                     continue;
-                var display = ReadMember(item, _ui?.SelectionDisplayMember)?.ToString();
+                var display = ReadMember(item, _itemsSource?.DisplayMember)?.ToString();
                 if (string.IsNullOrWhiteSpace(display))
                     display = item.ToString();
                 items.Add(new SelectionDropDown.Item(display, value, null));
@@ -186,8 +189,8 @@ namespace FlowBlox.UICore.Factory.PropertyView
             if (readOnly && !PropertyTypeHelper.IsSimpleType(_property.PropertyType))
             {
                 var displayPath = _property.Name;
-                if (!string.IsNullOrWhiteSpace(_ui?.SelectionDisplayMember))
-                    displayPath += "." + _ui.SelectionDisplayMember;
+                if (!string.IsNullOrWhiteSpace(_itemsSource?.DisplayMember))
+                    displayPath += "." + _itemsSource.DisplayMember;
                 var display = new TextBlock { VerticalAlignment = VerticalAlignment.Center };
                 display.SetBinding(TextBlock.TextProperty, new Binding(displayPath)
                 {

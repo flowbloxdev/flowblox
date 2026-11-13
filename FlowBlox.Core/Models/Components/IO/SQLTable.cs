@@ -26,32 +26,31 @@ namespace FlowBlox.Core.Models.Components.IO
 
         private List<Action> _readableTableDataSourceChangedHandler = new List<Action>();
 
-        [Required()]
+        [Required]
         [Display(Name = "SQLTable_DbType",
                  Description = "SQLTable_DbType_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DbTypes DbType { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "SQLTable_SQLConnectionstring",
                  Description = "SQLTable_SQLConnectionstring_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.DBConnection), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.DBConnection))]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true)]
         public string SQLConnectionstring { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "SQLTable_SQLStatement",
                  Description = "SQLTable_SQLStatement_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlighting = "SQL")]
         public string SQLStatement { get; set; }
 
         [Display(Name = "SQLTable_UseFieldValuesAsParameters",
                  Description = "SQLTable_UseFieldValuesAsParameters_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UseFieldValuesAsParameters { get; set; } = true;
 
         public bool CanRead(BaseRuntime runtime = null)

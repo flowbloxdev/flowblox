@@ -22,19 +22,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
 
         [Display(Name = "TextBuilderAppendFlowBlock_AssociatedTextBuilder", Description = "TextBuilderAppendFlowBlock_AssociatedTextBuilder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [AssociatedFlowBlockResolvable]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleTextBuilderFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleTextBuilderFlowBlocks), DisplayMember = nameof(Name))]
         public TextBuilderFlowBlock AssociatedTextBuilder { get; set; }
 
         [Required]
         [Display(Name = "TextBuilderAppendFlowBlock_Text", Description = "TextBuilderAppendFlowBlock_Text_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string Text { get; set; }
 
         [Display(Name = "TextBuilderAppendFlowBlock_AppendLine", Description = "TextBuilderAppendFlowBlock_AppendLine_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AppendLine { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_box_plus_outline, 16, SKColors.SlateBlue);
@@ -64,7 +61,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
                     throw new InvalidOperationException("No initialized text builder source is assigned.");
 
                 var text = this.Resolve(owner => owner.Text);
-                if (AppendLine)
+                if (this.Resolve(x => x.AppendLine))
                     textBuilder.InternalStringBuilder.AppendLine(text);
                 else
                     textBuilder.InternalStringBuilder.Append(text);

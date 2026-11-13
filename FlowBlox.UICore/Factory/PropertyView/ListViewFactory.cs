@@ -1,4 +1,5 @@
-﻿using ListViewFactoryResources = FlowBlox.UICore.Resources.ClassResources.ListViewFactory;
+﻿using FlowBlox.Core.Extensions;
+using ListViewFactoryResources = FlowBlox.UICore.Resources.ClassResources.ListViewFactory;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Interfaces;
@@ -88,7 +89,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
             var listViewProperties = _listItemType
                 .GetProperties()
-                .Where(x => _listViewAttribute.LVColumnMemberNames.Contains(x.Name));
+                .Where(x => _listViewAttribute.ColumnMemberNames.Contains(x.Name));
 
             foreach (var prop in listViewProperties)
             {
@@ -146,11 +147,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
             var container = new System.Windows.Controls.Grid();
             container.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            container.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             container.Children.Add(listView);
             container.Children.Add(_emptyMessage);
 
             System.Windows.Controls.Grid.SetRow(listView, 0);
-            System.Windows.Controls.Grid.SetRow(_emptyMessage, 0);
+            System.Windows.Controls.Grid.SetRow(_emptyMessage, 1);
 
             stackPanel.Children.Add(toolBar);
             stackPanel.Children.Add(container);
@@ -158,7 +160,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             // RelayCommands with central enable logic
             var addCommand = new RelayCommand(ExecuteCreate, CanAdd);
             var editCommand = new RelayCommand(() => ExecuteEdit(listView.SelectedItem),
-                () => _uiAttribute?.Operations.HasFlag(UIOperations.Edit) == true && CanEdit(listView.SelectedItem));
+                () => _associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true && CanEdit(listView.SelectedItem));
             listView.MouseDoubleClick += (s, e) =>
             {
                 if (e.ChangedButton != MouseButton.Left)
@@ -177,19 +179,19 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var unlinkCommand = new RelayCommand(() => ExecuteUnlink(listView.SelectedItem), () => CanUnlink(listView.SelectedItem));
             var linkCommand = new RelayCommand(async () => await ExecuteLink(), CanLink);
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Create) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Create) == true)
                 toolBar.Items.Add(CreateButton(PackIconMaterialKind.Plus, FlowBloxResourceUtil.GetLocalizedString("Buttons_Add", typeof(ListViewFactoryResources)), addCommand, Brushes.Green));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Link) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Link) == true)
                 toolBar.Items.Add(CreateButton(PackIconMaterialKind.Link, FlowBloxResourceUtil.GetLocalizedString("Buttons_Link", typeof(ListViewFactoryResources)), linkCommand, Brushes.Blue));
 
-            if (ShouldShowEditButton && _uiAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
+            if (ShouldShowEditButton && _associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
                 toolBar.Items.Add(CreateButton(PackIconMaterialKind.Pencil, FlowBloxResourceUtil.GetLocalizedString("Buttons_Edit", typeof(ListViewFactoryResources)), editCommand, Brushes.Orange));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
                 toolBar.Items.Add(CreateButton(PackIconMaterialKind.Delete, FlowBloxResourceUtil.GetLocalizedString("Buttons_Remove", typeof(ListViewFactoryResources)), deleteCommand, Brushes.DarkRed));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Unlink) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Unlink) == true)
                 toolBar.Items.Add(CreateButton(PackIconMaterialKind.LinkOff, FlowBloxResourceUtil.GetLocalizedString("Buttons_Unlink", typeof(ListViewFactoryResources)), unlinkCommand, Brushes.DarkRed));
 
             var moveUpCommand = new RelayCommand(() => MoveItem(listView, -1), () => CanMoveUp(listView.SelectedIndex));
@@ -269,7 +271,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         protected override Type GetExplicitItemFactoryType(Type type)
         {
-            return _listItemType.IsAssignableFrom(type) ? _listViewAttribute.ItemFactory : null;
+            return _listItemType.IsAssignableFrom(type) ? _associationAttribute.ItemFactory : null;
         }
 
         protected virtual void ExecuteCreate()
@@ -293,7 +295,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         private async Task ExecuteLink()
         {
-            if (string.IsNullOrEmpty(_uiAttribute?.SelectionFilterMethod))
+            if (string.IsNullOrEmpty(_itemsSourceAttribute?.Method))
             {
                 await MessageBoxHelper.ShowMessageBoxAsync(
                     (MetroWindow)_window,
@@ -305,7 +307,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var selectionMethodResolution = SelectionMethodResolver.ResolveSelectionFilterMethodFromTargetOrParent(
                 _target,
                 _parent,
-                _uiAttribute.SelectionFilterMethod);
+                _itemsSourceAttribute.Method);
 
             if (selectionMethodResolution?.Method == null)
                 return;

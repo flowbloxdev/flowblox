@@ -26,7 +26,7 @@ public static class FlowBlockFieldResolverExtensions
             return true;
 
         block.CreateNotification(runtime, notification);
-        block.CompleteFailedResolution(runtime);
+        block.CompleteFailedExecution(runtime);
         return false;
     }
 }

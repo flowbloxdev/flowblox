@@ -18,15 +18,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     {
         [Required]
         [Display(Name = "PropertyNames_DataSource", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-                     SelectionFilterMethod = nameof(GetPossibleDataSources),
-                     SelectionDisplayMember = nameof(DataObjectBase.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDataSources), DisplayMember = nameof(DataObjectBase.Name))]
         public DataObjectBase DataSource { get; set; }
 
         [ActivationCondition(MemberName = nameof(ResultField), ActivationMethod = nameof(IsEncodingNameActive))]
-        [ConditionallyRequired()]
+        [ConditionallyRequired]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         private bool IsEncodingNameActive()

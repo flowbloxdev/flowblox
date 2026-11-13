@@ -770,4 +770,27 @@
       <DependentUpon>PropertyViewSchemaResolver.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="PopUp\Resources\AIPromptPopUpTexts.Designer.cs">
+      <DependentUpon>AIPromptPopUpTexts.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="PopUp\Resources\AIPromptPopUpImages.Designer.cs">
+      <DependentUpon>AIPromptPopUpImages.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <EmbeddedResource Update="PopUp\Resources\AIPromptPopUpTexts.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AIPromptPopUpTexts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="PopUp\Resources\AIPromptPopUpTexts.de.resx">
+      <DependentUpon>AIPromptPopUpTexts.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="PopUp\Resources\AIPromptPopUpImages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AIPromptPopUpImages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

@@ -366,16 +366,6 @@ namespace FlowBloxTest.FlowBlocks.Base
         }
 
         [TestMethod]
-        public void LegacyLoad_EnablesRulesWithoutChangingConfiguredBehaviors()
-        {
-            var target = JsonConvert.DeserializeObject<ExecutionOrderTestFlowBlock>(
-                "{\"InputBehaviorAssignments\":[{\"Behavior\":\"Last\"}]}");
-            target.OnAfterLoad();
-            Assert.IsTrue(target.AutomaticInputBehaviorAssignment);
-            Assert.AreEqual(InputBehavior.Last, target.InputBehaviorAssignments.Single().Behavior);
-        }
-
-        [TestMethod]
         public void ReactiveObjectAfterLoad_HandlesNestedSharedObjectsAndCycles()
         {
             var root = new LoadTrackingReactiveObject();

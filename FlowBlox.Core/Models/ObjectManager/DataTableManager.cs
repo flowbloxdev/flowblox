@@ -46,18 +46,21 @@ namespace FlowBlox.Core.Models.ObjectManager
         }
 
         [Display(ResourceType = typeof(FlowBloxTexts), GroupName = "DataTableManager_Groups_CsvTables")]
-        [FlowBloxUI(Factory = UIFactory.ListView, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(CsvTable.Name), nameof(CsvTable.DataSource) })]
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(CsvTable.Name), nameof(CsvTable.DataSource) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<CsvTable> CsvTables { get; set; }
 
         [Display(ResourceType = typeof(FlowBloxTexts), GroupName = "DataTableManager_Groups_SqlTables")]
-        [FlowBloxUI(Factory = UIFactory.ListView, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(SQLTable.Name), nameof(SQLTable.DbType) })]
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(SQLTable.Name), nameof(SQLTable.DbType) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<SQLTable> SqlTables { get; set; }
 
         [Display(ResourceType = typeof(FlowBloxTexts), GroupName = "DataTableManager_Groups_ExcelTables")]
-        [FlowBloxUI(Factory = UIFactory.ListView, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(ExcelTable.Name), nameof(ExcelTable.DataSource) })]
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(ExcelTable.Name), nameof(ExcelTable.DataSource) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<ExcelTable> ExcelTables { get; set; }
     }
 }

@@ -11,7 +11,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
     public sealed class OpenAIProvider : OpenAICompatibleProviderBase
     {
         [Display(Name = "OpenAIProvider_OrganizationId", Description = "OpenAIProvider_OrganizationId_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 10)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public string OrganizationId { get; set; }
 
 

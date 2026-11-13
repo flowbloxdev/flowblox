@@ -24,7 +24,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.link, 32, SKColors.DarkViolet);
 
         [Display(Name = "ConcatUriFlowBlock_UriParts", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
         [FlowBloxDataGrid(IsMovable = true)]
         public ObservableCollection<UriPartDefinition> UriParts { get; set; }
 

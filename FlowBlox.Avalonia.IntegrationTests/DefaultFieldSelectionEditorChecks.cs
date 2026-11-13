@@ -66,7 +66,7 @@ internal sealed partial class WorkspaceIntegrationChecks
         var literalOnlyProperty = settings.GetType().GetProperty(nameof(settings.LiteralOnly));
         var literalOnlyEditor = resolver.Resolve(literalOnlyProperty, settings, false, null, context);
         check(FindFieldSelectionVisual<Button>(literalOnlyEditor.Control) == null,
-            "Scalar property without EnableFieldSelection retains only its literal editor");
+            "Scalar property with selection buttons disabled retains only its literal editor");
 
         var passwordProperty = settings.GetType().GetProperty(nameof(settings.Password));
         var passwordEditor = new PasswordBox();

@@ -9,10 +9,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
     public abstract class BasePipeFlowBlock : BaseSingleResultFlowBlock
     {
         private FieldElement _inputField;
-        
+
         [Display(Name = "Global_InputField", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleInputFields), SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), Operations = UIOperations.Link | UIOperations.Unlink)]
-        [Required()]
+        [Required]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleInputFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement InputField
         {
             get => _inputField;

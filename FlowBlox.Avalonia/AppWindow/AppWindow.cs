@@ -287,6 +287,7 @@ namespace FlowBlox.AppWindow
             var isProjectActive = project != null;
 
             UpdateWorkspaceVisibility();
+            UpdateQuickStartsMenu();
 
 
             itmCreateProject.Enabled = !isRuntimeActive;

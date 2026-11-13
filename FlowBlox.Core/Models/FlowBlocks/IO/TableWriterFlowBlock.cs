@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Models.Components;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Provider;
@@ -30,24 +31,24 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         private Action _readableTableDataSourceChangedListener;
         private BaseRuntime _deferredWriteRuntime;
 
-        [Required()]
+        [Required]
         [Display(Name = "TableWriterFlowBlock_ReferencedTable", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleWritableTables), SelectionDisplayMember = nameof(IWritableTable.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleWritableTables), DisplayMember = nameof(IWritableTable.Name))]
         public IWritableTable ReferencedTable { get; set; }
 
         [Display(Name = "TableWriterFlowBlock_CreateNewDatasets", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public bool CreateNewDatasets { get; set; } = true;
 
         [Display(Name = "TableWriterFlowBlock_UpdateExistingDatasets", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public bool UpdateExistingDatasets { get; set; } = true;
 
         [Display(Name = "TableWriterFlowBlock_ClearOnRuntimeStart", Description = "TableWriterFlowBlock_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool ClearOnRuntimeStart { get; set; }
 
         [Display(Name = "TableWriterFlowBlock_WriteOnRuntimeFinished", Description = "TableWriterFlowBlock_WriteOnRuntimeFinished_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool WriteOnRuntimeFinished { get; set; }
 
         public List<IWritableTable> GetPossibleWritableTables()
@@ -59,7 +60,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Display(Name = "TableWriterFlowBlock_TableColumnDefinitions", ResourceType = typeof(FlowBloxTexts), GroupName = "TableWriterFlowBlock_Groups_Schema", Order = 0)]
         [CustomValidation(typeof(TableWriterFlowBlock), nameof(ValidateTableColumnDefinitions))]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid(IsMovable = true)]
         public ObservableCollection<TableColumnDefinition> TableColumnDefinitions
         {
@@ -116,16 +117,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         private bool CanAppend(IList<TableColumnDefinition> columnDefinitions)
         {
             if (!columnDefinitions.Any(x => x.IsKeyColumn))
-                return CreateNewDatasets;
+                return this.Resolve(x => x.CreateNewDatasets);
 
             string rowKey = string.Join(GlobalConstants.KeyCacheSeparator, columnDefinitions
                 .Where(x => x.IsKeyColumn)
                 .Select(x => x.Field.Value));
 
             if (_rowKeyCache.ContainsKey(rowKey))
-                return UpdateExistingDatasets;
+                return this.Resolve(x => x.UpdateExistingDatasets);
 
-            return CreateNewDatasets;
+            return this.Resolve(x => x.CreateNewDatasets);
         }
 
         private string GetRowKey(DataRow row)

@@ -51,7 +51,7 @@ Enum and attribute-driven value selection use `FlowBlox.SelectionDropDown`: the 
 but compact spacing, a three-DIP radius, control-aligned width and no floating
 shadow margin. Its typography continues to follow the property or grid editor.
 
-Property and grid editors use `UIFactory.ComboBox` with `SelectionFilterMethod`
+Property and grid editors use `FlowBloxComboBox` with `FlowBloxItemsSource.Method`
 to obtain choices. `FlowBloxComboBoxAttribute` selects `DropDownMode.SelectionOnly`
 (the default) or `Suggestion`; `DropDownModeMethod` can determine the mode on the
 target or parent. Suggestions support scalar values and retain the configured
@@ -59,7 +59,7 @@ text or AvalonEdit editor. Complex properties always select existing objects.
 Suggestion selectors show a muted badge and an explicit selection prompt when
 the current value matches no example. A matching suggestion uses an amber badge;
 custom text remains freely editable in the value editor below.
-`SelectionDisplayMember` supplies labels, and `SelectionValueMember` optionally
+`FlowBloxItemsSource.DisplayMember` supplies labels, and `SelectionValueMember` optionally
 maps each choice to its stored value. `Required` and `RequiredIf` determine
 whether an empty choice is offered. Password masking is configured through
 `FlowBloxTextBoxAttribute.IsPassword` or `IsPasswordMethod`.

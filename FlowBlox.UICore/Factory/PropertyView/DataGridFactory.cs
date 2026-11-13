@@ -70,12 +70,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
         {
             var all = listItemType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            if (_dataGridAttribute?.GridColumnMemberNames != null &&
-                _dataGridAttribute.GridColumnMemberNames.Length > 0)
+            if (_dataGridAttribute?.ColumnMemberNames != null &&
+                _dataGridAttribute.ColumnMemberNames.Length > 0)
             {
                 var map = all.ToDictionary(p => p.Name, p => p);
 
-                foreach (var name in _dataGridAttribute.GridColumnMemberNames)
+                foreach (var name in _dataGridAttribute.ColumnMemberNames)
                 {
                     if (string.IsNullOrWhiteSpace(name))
                         continue;
@@ -110,7 +110,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 AutoGenerateColumns = false,
                 IsReadOnly = _readOnly || _uiAttribute?.ReadOnly == true,
                 CanUserAddRows = false,
-                CanUserDeleteRows = _uiAttribute?.Operations.HasFlag(UIOperations.Delete) ?? false,
+                CanUserDeleteRows = _associationAttribute?.Operations.HasFlag(UIOperations.Delete) ?? false,
                 CanUserSortColumns = _dataGridAttribute?.IsMovable != true,
                 SelectionMode = DataGridSelectionMode.Extended,
                 ColumnWidth = DataGridLength.Auto
@@ -143,11 +143,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 if (displayAttr == null)
                     continue;
 
-                var uiAttribute = childProperty.GetCustomAttribute<FlowBloxUIAttribute>();
+                var uiAttribute = childProperty.GetFlowBloxUIAttribute();
+                var factoryType = childProperty.GetFlowBloxUIFactory();
 
                 // Wenn die Grid-Columms automatisch ermittelt wurden, werden nicht sichtbare Member nicht als Spalten angezeigt:
-                if (_dataGridAttribute?.GridColumnMemberNames == null ||
-                    _dataGridAttribute.GridColumnMemberNames.Length == 0)
+                if (_dataGridAttribute?.ColumnMemberNames == null ||
+                    _dataGridAttribute.ColumnMemberNames.Length == 0)
                 {
                     if (uiAttribute?.Visible == false)
                         continue;
@@ -155,13 +156,13 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
                 string headerText = FlowBloxResourceUtil.GetDisplayName(displayAttr);
 
-                if (PropertyTypeHelper.IsSimpleType(childProperty.PropertyType) || uiAttribute?.Factory == UIFactory.ComboBox)
+                if (PropertyTypeHelper.IsSimpleType(childProperty.PropertyType) || factoryType == UIFactory.ComboBox)
                 {
                     dataGrid.Columns.Add(CreateScalarColumn(headerText, childProperty, uiAttribute));
                     continue;
                 }
                 // Association (Create/Edit Button)
-                if (uiAttribute?.Factory == UIFactory.Association)
+                if (factoryType == UIFactory.Association)
                 {
                     var buttonColumn = new DataGridTemplateColumn
                     {
@@ -206,7 +207,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     if (success)
                         FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
                 }
-            }, () => dataGrid.SelectedItems.Count == 1 && _uiAttribute?.Operations.HasFlag(UIOperations.Edit) == true);
+            }, () => dataGrid.SelectedItems.Count == 1 && _associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true);
 
             dataGrid.MouseDoubleClick += (s, e) =>
             {
@@ -249,19 +250,19 @@ namespace FlowBlox.UICore.Factory.PropertyView
             // Toolbar for Create, Delete, MoveUp, MoveDown
             var toolBar = new ToolBar();
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Create) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Create) == true)
             {
                 var addButton = CreateButton(PackIconMaterialKind.Plus, FlowBloxResourceUtil.GetLocalizedString("Buttons_Add", typeof(DataGridFactoryResources)), _addCommand, Brushes.Green);
                 toolBar.Items.Add(addButton);
             }
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
             {
                 var editButton = CreateButton(PackIconMaterialKind.Pencil, FlowBloxResourceUtil.GetLocalizedString("Buttons_Edit", typeof(DataGridFactoryResources)), _editCommand, Brushes.Orange);
                 toolBar.Items.Add(editButton);
             }
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
             {
                 var removeButton = CreateButton(PackIconMaterialKind.Delete, FlowBloxResourceUtil.GetLocalizedString("Buttons_Remove", typeof(DataGridFactoryResources)), _deleteCommand, Brushes.DarkRed);
                 toolBar.Items.Add(removeButton);
@@ -374,7 +375,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         private FrameworkElementFactory CreateAssociationButtonTemplate(PropertyInfo property)
         {
-            var readOnly = IsPropertyReadOnly(property, property.GetCustomAttribute<FlowBloxUIAttribute>());
+            var readOnly = IsPropertyReadOnly(property, property.GetFlowBloxUIAttribute());
             var factory = new FrameworkElementFactory(typeof(Button));
             factory.SetValue(Button.ContentProperty, new Binding(property.Name)
             {
@@ -425,7 +426,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
         protected override Type GetExplicitItemFactoryType(Type type)
         {
             var itemType = _property.PropertyType.GetGenericArguments()[0];
-            return itemType.IsAssignableFrom(type) ? _dataGridAttribute?.ItemFactory : null;
+            return itemType.IsAssignableFrom(type) ? _associationAttribute.ItemFactory : null;
         }
 
         private void AddNewItem(IList list, Type listItemType, DataGrid dataGrid)

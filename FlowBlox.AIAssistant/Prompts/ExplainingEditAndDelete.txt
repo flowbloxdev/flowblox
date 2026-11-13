@@ -47,7 +47,7 @@ Link/Unlink (reference components only):
 - Single reference:
   - /Property/Link + resolver
   - /Property/Unlink (resolver optional)
-- Scalar field reference (EnableFieldSelection / uiFlags [FLD], including nested reactive properties):
+- Scalar field reference (UISelectionButtons.FLD / uiFlags [FLD], including nested reactive properties):
   - /Property/Link + field resolver
   - /Property/Unlink
 - Collection reference:

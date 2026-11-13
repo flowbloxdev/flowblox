@@ -24,9 +24,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         [CustomValidation(typeof(FieldComparisonCondition), nameof(FieldComparisonCondition.ValidateFieldElement))]
         [DependsOnProperty(MemberName = nameof(Operator))]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(FlowBloxComponent.GetPossibleFieldElements))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         public FieldElement FieldElement
         {
             get => _fieldElement;

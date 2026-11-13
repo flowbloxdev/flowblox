@@ -29,6 +29,7 @@ namespace FlowBlox.Core.Models.Base
         [Required()]
         [Display(Name = "PropertyNames_Name", ResourceType = typeof(FlowBloxTexts), Order = -1)]
         [CustomValidation(typeof(FlowBloxComponent), nameof(ValidateName))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public virtual string Name
         {
             get
@@ -71,11 +72,10 @@ namespace FlowBlox.Core.Models.Base
 
         [ActivationCondition(MemberName = nameof(HandleRequirements), Value = true)]
         [Display(Name = "FlowBloxComponent_RequiredFields", Description = "FlowBloxComponent_RequiredFields_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Requirements", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(GetPossibleFieldElements))]
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true)]
-        [FlowBloxListView(LVColumnMemberNames = [nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name)])]
+        [FlowBloxListView(ColumnMemberNames = [nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name)])]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(DisplayMember = nameof(FieldElement.FullyQualifiedName), Method = nameof(GetPossibleFieldElements))]
         public ObservableCollection<FieldElement> RequiredFields { get; set; } = new ObservableCollection<FieldElement>();
 
         public virtual List<FieldElement> GetPossibleFieldElements()
@@ -133,6 +133,7 @@ namespace FlowBlox.Core.Models.Base
                     OnPropertyChanged(n);
         }
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public string Version { get; set; }
 
         [JsonIgnore]
@@ -193,7 +194,7 @@ namespace FlowBlox.Core.Models.Base
             var reflectionData = FlowBlockObjectCollector.CollectStringPropertiesContainingFields(this);
             foreach (var (property, instance) in reflectionData)
             {
-                
+
                 var currentValue = (string)property.GetValue(instance);
                 if (string.IsNullOrWhiteSpace(currentValue))
                     continue;
@@ -222,11 +223,54 @@ namespace FlowBlox.Core.Models.Base
         /// </summary>
         public IEnumerable<IManagedObject> GetAssociatedManagedObjects() => FlowBlockObjectCollector.CollectManagedObjectsRecursive(this);
 
+        /// <summary>
+        /// Checks the installations or external components required to execute this component.
+        /// The default implementation has no execution prerequisites.
+        /// </summary>
+        /// <remarks>
+        /// The execution boundary evaluates the FlowBlock and its associated managed objects automatically
+        /// before running the action. Override this method and read field-backed configuration with Resolve;
+        /// do not call it from an Execute/Invoke delegate or DownloadCoreAsync implementation.
+        /// Throw ExecutionPrerequisiteException to report actionable setup guidance. Do not create normal
+        /// results, navigate successors, or change configuration here. Existing RuntimeStarted initialization
+        /// keeps its original lifecycle; adopting this hook does not move initialization into execution.
+        /// </remarks>
+        /// <exception cref="FlowBlox.Core.Exceptions.ExecutionPrerequisiteException">
+        /// A required installation is missing or an execution component cannot be initialized.
+        /// </exception>
+        public virtual void ValidateExecutionPrerequisites()
+        {
+        }
+
+        /// <summary>
+        /// Selects the components whose prerequisites are required for this execution.
+        /// </summary>
+        /// <remarks>
+        /// The default includes this component and GetAssociatedManagedObjects recursively. Override only
+        /// when an execution path does not use an associated component, such as reusing an existing file.
+        /// Selection and validation run before the action; the shared evaluator de-duplicates by reference.
+        /// </remarks>
+        protected virtual IEnumerable<FlowBloxComponent> GetExecutionPrerequisiteComponents()
+        {
+            return GetAssociatedManagedObjects()
+                .OfType<FlowBloxComponent>()
+                .Prepend(this);
+        }
+
+        internal void EvaluateExecutionPrerequisites()
+        {
+            foreach (var component in GetExecutionPrerequisiteComponents()
+                .Distinct<FlowBloxComponent>(ReferenceEqualityComparer.Instance))
+            {
+                component.ValidateExecutionPrerequisites();
+            }
+        }
+
         public virtual List<string> GetDisplayableProperties() => [nameof(Name)];
 
         public virtual void OnAfterCreate()
         {
-            
+
         }
 
         /// <summary>

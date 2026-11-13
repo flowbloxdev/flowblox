@@ -18,14 +18,12 @@ namespace FlowBlox.Core.Models.Components.IO
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_delimited_outline, 16, new SKColor(37, 99, 235));
 
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_delimited_outline, 32, new SKColor(37, 99, 235));
-        [Required()]
+        [Required]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "CsvTable_Separator", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         public CsvTable() : base()

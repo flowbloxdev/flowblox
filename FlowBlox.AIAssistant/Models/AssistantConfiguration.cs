@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core;
 using FlowBlox.Core.Enums;
@@ -27,8 +28,10 @@ namespace FlowBlox.AIAssistant.Models
         }
 
         [Display(Name = "AssistantConfiguration_SelectedProviderName", Description = "AssistantConfiguration_SelectedProviderName_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetProviderNames), SelectionFilterDependency = nameof(Providers))]
         [CustomValidation(typeof(AssistantConfiguration), nameof(ValidateSelectedProviderName))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(Method = nameof(GetProviderNames), Dependency = nameof(Providers))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string SelectedProviderName
         {
             get => _selectedProviderName;
@@ -53,8 +56,8 @@ namespace FlowBlox.AIAssistant.Models
         }
 
         [Display(Name = "AssistantConfiguration_Providers", Description = "AssistantConfiguration_Providers_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = -1)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(AIProviderBase.Name), nameof(AIProviderBase.DefaultModel) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(AIProviderBase.Name), nameof(AIProviderBase.DefaultModel) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<AIProviderBase> Providers
         {
             get => _providers;
@@ -97,49 +100,63 @@ namespace FlowBlox.AIAssistant.Models
         }
 
         [Display(Name = "AssistantConfiguration_Temperature", Description = "AssistantConfiguration_Temperature_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public double? Temperature { get; set; }
 
         [Display(Name = "AssistantConfiguration_EnableCommunicationProtocol", Description = "AssistantConfiguration_EnableCommunicationProtocol_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool EnableCommunicationProtocol { get; set; }
 
         [Display(Name = "AssistantConfiguration_EnableAutomaticAdjustment", Description = "AssistantConfiguration_EnableAutomaticAdjustment_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool EnableAutomaticAdjustment { get; set; } = true;
 
         [Display(Name = "AssistantConfiguration_AttachProjectJsonAutomatically", Description = "AssistantConfiguration_AttachProjectJsonAutomatically_Tooltip", GroupName = "AssistantConfiguration_Groups_General", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AttachProjectJsonAutomatically { get; set; } = false;
 
         [Display(Name = "AssistantConfiguration_OptionsAccessLevel", Description = "AssistantConfiguration_OptionsAccessLevel_Tooltip", GroupName = "AssistantConfiguration_Groups_Permissions", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public AssistantOptionsAccessLevel OptionsAccessLevel { get; set; } = AssistantOptionsAccessLevel.None;
 
         [Display(Name = "AssistantConfiguration_MaxTokens", Description = "AssistantConfiguration_MaxTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int? MaxTokens { get; set; }
 
         [Display(Name = "AssistantConfiguration_MaxToolRounds", Description = "AssistantConfiguration_MaxToolRounds_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MaxToolRounds { get; set; } = 100;
 
         [Display(Name = "AssistantConfiguration_MaxLatestMessages", Description = "AssistantConfiguration_MaxLatestMessages_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [Range(AssistantConfigurationLimits.MinLatestMessages, AssistantConfigurationLimits.MaxLatestMessages)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MaxLatestMessages { get; set; } = 16;
 
         [Display(Name = "AssistantConfiguration_MinLatestMessages", Description = "AssistantConfiguration_MinLatestMessages_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [Range(AssistantConfigurationLimits.MinLatestMessages, AssistantConfigurationLimits.MaxLatestMessages)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MinLatestMessages { get; set; } = 2;
 
         [Display(Name = "AssistantConfiguration_SummaryCompactionRate", Description = "AssistantConfiguration_SummaryCompactionRate_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 4)]
         [Range(AssistantConfigurationLimits.MinSummaryCompactionRate, AssistantConfigurationLimits.MaxSummaryCompactionRate)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public double SummaryCompactionRate { get; set; } = 1d;
 
         [Display(Name = "AssistantConfiguration_MaxContextTokens", Description = "AssistantConfiguration_MaxContextTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 6)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MaxContextTokens { get; set; } = 32000;
 
         [Display(Name = "AssistantConfiguration_ReservedResponseTokens", Description = "AssistantConfiguration_ReservedResponseTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 7)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int ReservedResponseTokens { get; set; } = 4096;
 
         [Display(Name = "AssistantConfiguration_ApproximateCharactersPerToken", Description = "AssistantConfiguration_ApproximateCharactersPerToken_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 8)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int ApproximateCharactersPerToken { get; set; } = 5;
 
         [Display(Name = "AssistantConfiguration_MaxFieldValuesTokensPerResponse", Description = "AssistantConfiguration_MaxFieldValuesTokensPerResponse_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 9)]
         [Range(1, 20000)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MaxFieldValuesTokensPerResponse { get; set; } = 4000;
     }
 }

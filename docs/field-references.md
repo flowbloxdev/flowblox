@@ -7,11 +7,12 @@ and reuses those field objects; it never caches their values. Each invocation re
 current matches through `runtime.Report(..., Warning)` without pausing or blocking.
 There is no separate runtime-level reference scan or warning deduplication cache.
 
-Enable field selection on business configuration with
-`[FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]`. Read enabled properties with
-`this.Resolve(x => x.Property)` before use, preserving configured text and
-existing specialized SQL/math resolvers. Leave identifiers, declarations, flow-logic and
-UI metadata unenabled; no disable annotation is needed.
+Field selection defaults to `UISelectionButtons.FLD` on supported scalar business configuration;
+no field-only annotation is needed. Read enabled properties with `this.Resolve(x => x.Property)`
+before use, preserving configured text and existing specialized SQL/math resolvers. Disable selection
+explicitly for identifiers, declarations, flow-logic and UI metadata with
+`[FlowBloxUI(UISelectionButtons.None)]`. See [ui-annotations.md](ui-annotations.md)
+for the specialized editor attributes and central default resolution.
 
 `FlowBloxFieldSelection.Supports(PropertyInfo)` is the shared eligibility check for UI,
 collectors, runtime, legacy import and AI metadata. It requires the enable flag and a supported
@@ -24,13 +25,10 @@ Selection replaces an existing entry; unlink removes it and preserves the config
 literal. Existing field selection attributes continue to restrict offered choices.
 Do not infer restrictions from the field's CLR type: runtime conversions stay flexible.
 
-The runtime resolves scalar selections before validating and invoking a FlowBlock,
-including owned reactive configuration and referenced managed objects. It restores
-configured literals on exit, including failures. The `Resolve` extension also covers consumers outside invocation,
-such as modifiers, lifecycle initialization, validation callbacks, standalone providers,
-generators and managed-object I/O. These paths must resolve properties at consumption time;
-direct property reads can return the configured literal outside the invocation scope. Field collectors,
-rename tracking, deletion review and AI metadata use the same support rules.
+Consumers resolve scalar selections at the point of use with `Resolve` or `TryResolve`, including FlowBlocks,
+owned reactive configuration, providers, modifiers, validation callbacks and lifecycle initialization.
+Configured properties retain their literal values throughout execution, including failures. Repeated calls read current field values.
+Field collectors, rename tracking, deletion review and AI metadata use the same support rules.
 
 Use `FlowBlox.Core.Extensions` for a single property-resolution API:
 

@@ -15,14 +15,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     public class EnumerationFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "EnumerationFlowBlock_Parameters", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(GetPossibleFieldElements))]
         [FlowBloxCardList(
             ItemDisplayName = "EnumerationFlowBlock_Parameter",
             DisplayPropertyNames = [nameof(FieldElement.Name), nameof(FieldElement.FieldType)])]
         [FlowBloxFieldSelection(DefaultRequiredValue = false)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name) })]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(DisplayMember = nameof(FieldElement.FullyQualifiedName), Method = nameof(GetPossibleFieldElements))]
         public ObservableCollection<FieldElement> Parameters { get; set; } = new();
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.format_list_bulleted, 16, SKColors.Teal);

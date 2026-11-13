@@ -23,67 +23,52 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
 
         [Required]
         [Display(Name = "SMTPFlowBlock_Host", Description = "SMTPFlowBlock_Host_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Host { get; set; }
 
         [Display(Name = "SMTPFlowBlock_Port", Description = "SMTPFlowBlock_Port_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Port { get; set; } = 25;
 
         [Display(Name = "SMTPFlowBlock_UseSsl", Description = "SMTPFlowBlock_UseSsl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseSsl { get; set; }
 
         [Display(Name = "SMTPFlowBlock_AcceptInvalidCertificates", Description = "SMTPFlowBlock_AcceptInvalidCertificates_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AcceptInvalidCertificates { get; set; } = true;
 
         [Display(Name = "SMTPFlowBlock_UseAuthentication", Description = "SMTPFlowBlock_UseAuthentication_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseAuthentication { get; set; }
 
         [Display(Name = "SMTPFlowBlock_UserName", Description = "SMTPFlowBlock_UserName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string UserName { get; set; }
 
         [Display(Name = "SMTPFlowBlock_Password", Description = "SMTPFlowBlock_Password_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string Password { get; set; }
 
         [Required]
         [Display(Name = "SMTPFlowBlock_FromAddress", Description = "SMTPFlowBlock_FromAddress_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string FromAddress { get; set; }
 
         [Required]
         [Display(Name = "SMTPFlowBlock_ToAddresses", Description = "SMTPFlowBlock_ToAddresses_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 7)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ToAddresses { get; set; }
 
         [Display(Name = "SMTPFlowBlock_CcAddresses", Description = "SMTPFlowBlock_CcAddresses_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 8)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string CcAddresses { get; set; }
 
         [Display(Name = "SMTPFlowBlock_BccAddresses", Description = "SMTPFlowBlock_BccAddresses_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 9)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BccAddresses { get; set; }
 
         [Display(Name = "SMTPFlowBlock_Subject", Description = "SMTPFlowBlock_Subject_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 10)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Subject { get; set; }
 
         [Display(Name = "SMTPFlowBlock_Body", Description = "SMTPFlowBlock_Body_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 11)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true)]
         public string Body { get; set; }
 
         [Display(Name = "SMTPFlowBlock_IsBodyHtml", Description = "SMTPFlowBlock_IsBodyHtml_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 12)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool IsBodyHtml { get; set; }
 
         [Display(Name = "SMTPFlowBlock_Attachments", Description = "SMTPFlowBlock_Attachments_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 13)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
         [FlowBloxDataGrid]
         public ObservableCollection<SmtpAttachmentMappingEntry> Attachments { get; set; } = new();
 
@@ -156,8 +141,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                         Host = host,
                         Port = port,
                         UseSsl = useSsl,
-                        AcceptInvalidCertificates = AcceptInvalidCertificates,
-                        UseAuthentication = UseAuthentication,
+                        AcceptInvalidCertificates = this.Resolve(x => x.AcceptInvalidCertificates),
+                        UseAuthentication = this.Resolve(x => x.UseAuthentication),
                         UserName = userName ?? string.Empty,
                         Password = password ?? string.Empty
                     }, new SmtpMailRequest
@@ -168,7 +153,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                         BccAddresses = bccAddresses,
                         Subject = subject,
                         Body = body,
-                        IsBodyHtml = IsBodyHtml,
+                        IsBodyHtml = this.Resolve(x => x.IsBodyHtml),
                         Attachments = BuildAttachments()
                     });
                     runtime.Report($"SMTP mail sent successfully via '{host}:{port}'.");

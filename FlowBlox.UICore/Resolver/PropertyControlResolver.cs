@@ -47,9 +47,9 @@ namespace FlowBlox.UICore.Resolver
                 throw new ArgumentNullException(nameof(target));
 
             var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
-            var uiAttribute = property.GetCustomAttribute<FlowBloxUIAttribute>();
+            var uiAttribute = property.GetFlowBloxUIAttribute();
 
-            if (displayAttribute == null || (uiAttribute != null && !uiAttribute.Visible))
+            if (displayAttribute == null || !uiAttribute.Visible)
                 return null;
 
             var displayName = FlowBloxResourceUtil.GetDisplayName(displayAttribute, false) ?? property.Name;
@@ -112,7 +112,7 @@ namespace FlowBlox.UICore.Resolver
             FlowBloxUIAttribute uiAttribute)
         {
             // If DisplayLabel is explicitly set to false, never show a label.
-            bool displayLabel = uiAttribute?.DisplayLabel ?? true;
+            bool displayLabel = uiAttribute.DisplayLabel;
             if (!displayLabel)
                 return (false, string.Empty);
 
@@ -122,7 +122,7 @@ namespace FlowBlox.UICore.Resolver
         internal PropertyControlWithFactoryResult CreateControl(
             PropertyInfo property, 
             object target, 
-            string displayName, 
+            string displayName,
             FlowBloxUIAttribute uiAttribute, 
             bool readOnly, 
             object preselectedInstance)
@@ -136,11 +136,12 @@ namespace FlowBlox.UICore.Resolver
                 ValidatesOnExceptions = true
             };
 
+            var factoryType = property.GetFlowBloxUIFactory();
             var useDefaultEnumEditor = EnumHelper.IsEnumType(property)
-                && string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterMethod)
+                && string.IsNullOrWhiteSpace(property.GetFlowBloxItemsSourceAttribute().Method)
                 && property.GetCustomAttribute<FlowBloxComboBoxAttribute>() == null;
 
-            if (uiAttribute?.Factory == UIFactory.ComboBox && !useDefaultEnumEditor)
+            if (factoryType == UIFactory.ComboBox && !useDefaultEnumEditor)
             {
                 var factory = new ComboBoxControlFactory(_window, property, target, _parent, readOnly);
                 if (FlowBloxFieldSelection.SupportsScalar(property.PropertyType))
@@ -169,27 +170,27 @@ namespace FlowBlox.UICore.Resolver
                         readOnly));
             }
 
-            if (uiAttribute?.Factory == UIFactory.Association)
+            if (factoryType == UIFactory.Association)
             {
                 AssociationControlFactory associationControlFactory = new AssociationControlFactory(_window, property, target, readOnly, _parent);
                 return new PropertyControlWithFactoryResult(associationControlFactory.Create(), associationControlFactory);
             }
 
-            if (uiAttribute?.Factory == UIFactory.GridView)
+            if (factoryType == UIFactory.GridView)
             {
                 DataGridFactory dataGridFactory = new DataGridFactory(_window, property, target, readOnly, _parent);
                 dataGridFactory.SetPreselectedInstance(preselectedInstance);
                 return new PropertyControlWithFactoryResult(dataGridFactory.Create(), dataGridFactory);
             }
 
-            if (uiAttribute?.Factory == UIFactory.ListView)
+            if (factoryType == UIFactory.ListView)
             {
                 ListViewFactory listViewFactory = new ListViewFactory(_window, property, target, readOnly, _parent);
                 listViewFactory.SetPreselectedInstance(preselectedInstance);
                 return new PropertyControlWithFactoryResult(listViewFactory.Create(), listViewFactory);
             }
 
-            if (uiAttribute?.Factory == UIFactory.ListViewSplitMode)
+            if (factoryType == UIFactory.ListViewSplitMode)
             {
                 ListViewSplitModeFactory listViewSplitModeFactory = new ListViewSplitModeFactory(_window, property, target, readOnly, _parent);
                 return new PropertyControlWithFactoryResult(listViewSplitModeFactory.Create(), listViewSplitModeFactory);

@@ -24,10 +24,6 @@ namespace FlowBlox.UICore.PopUp.Implementations
             var window = new ComponentPopupWindow(Text("Window_Title"), CreateItems())
             {
                 Owner = owner,
-                Width = Math.Min(820, SystemParameters.WorkArea.Width - 40),
-                Height = Math.Min(1000, SystemParameters.WorkArea.Height - 40),
-                ResizeMode = ResizeMode.CanResizeWithGrip,
-                ShowMaxRestoreButton = true,
                 WindowStartupLocation = owner != null
                     ? WindowStartupLocation.CenterOwner
                     : WindowStartupLocation.CenterScreen

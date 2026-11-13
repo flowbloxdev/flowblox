@@ -35,7 +35,12 @@ internal sealed partial class WorkspaceIntegrationChecks
     public WorkspaceIntegrationChecks(MainWindow window) => _window = window;
 
     // Runs inside the real desktop lifecycle, with an isolated workspace and project copy.
-    public async Task<bool> RunAsync(string directory, string sourceProjectPath, bool fieldSelectionOnly = false, bool launcherOnly = false)
+    public async Task<bool> RunAsync(
+        string directory,
+        string sourceProjectPath,
+        bool fieldSelectionOnly = false,
+        bool launcherOnly = false,
+        bool quickStartsOnly = false)
     {
         var results = new List<string>();
         string error = null;
@@ -49,6 +54,12 @@ internal sealed partial class WorkspaceIntegrationChecks
         try
         {
             Directory.CreateDirectory(directory);
+            if (quickStartsOnly)
+            {
+                CheckQuickStartMenu(Check, directory);
+                return true;
+            }
+
             if (launcherOnly)
             {
                 await CheckProjectLauncherAsync(Check, directory, sourceProjectPath);
@@ -78,6 +89,8 @@ internal sealed partial class WorkspaceIntegrationChecks
             CheckSimplePropertyFieldSelection(Check);
             await CheckEnabledFieldSelectionEditorsAsync(Check);
             await CheckLiteralGridRenderingAsync(Check);
+            await CheckManageInputFilesRemovalAsync(Check);
+            CheckQuickStartMenu(Check, directory);
             await CheckManagedObjectActionsDropDownAsync(directory, Check);
             await CheckAssistantProviderSelectionAsync(Check);
             CheckProjectSpaceCards(Check, directory);

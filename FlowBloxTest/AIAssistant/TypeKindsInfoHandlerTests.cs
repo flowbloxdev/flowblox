@@ -186,6 +186,52 @@ namespace FlowBloxTest.AIAssistant
             CollectionAssert.DoesNotContain(propertyNames, "Version");
         }
 
+        [TestMethod]
+        [DataRow(false)]
+        [DataRow(true)]
+        public async Task ScalarMetadata_ReportsSelectionDefaultsWithoutObjectOperations(bool managedObjectTool)
+        {
+            FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject();
+            ToolHandlerUtilities.ClearSessionCache();
+            ToolHandlerBase handler = managedObjectTool
+                ? new GetManagedObjectKindsInfoHandler()
+                : new GetTypeKindsInfoHandler();
+
+            var response = await handler.HandleAsync(
+                new JObject { ["typeFullName"] = typeof(SQLTable).FullName },
+                CancellationToken.None);
+
+            Assert.IsTrue(response.Ok, response.Error);
+            var properties = response.Result["kind"]!["properties"]!.Children<JObject>()
+                .ToDictionary(property => property.Value<string>("name")!);
+            Assert.AreEqual("[FLD]", properties[nameof(SQLTable.SQLStatement)].Value<string>("uiFlags"));
+            Assert.AreEqual("[FLD]", properties[nameof(SQLTable.DbType)].Value<string>("uiFlags"));
+            Assert.IsNull(properties[nameof(SQLTable.UseFieldValuesAsParameters)]["uiFlags"]);
+            Assert.AreEqual("DBConnection", properties[nameof(SQLTable.SQLConnectionstring)]["ui"]?["toolboxCategory"]?.Value<string>());
+        }
+
+        [TestMethod]
+        public async Task AssociationMetadata_RetainsExplicitOperationsAndCollectionDefaultsWithoutGeneralUiAnnotation()
+        {
+            FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject();
+            ToolHandlerUtilities.ClearSessionCache();
+            var response = await new GetTypeKindsInfoHandler().HandleAsync(
+                new JObject { ["typeFullName"] = typeof(TableReaderFlowBlock).FullName },
+                CancellationToken.None);
+
+            Assert.IsTrue(response.Ok, response.Error);
+            var properties = response.Result["kind"]!["properties"]!.Children<JObject>().ToArray();
+            var reference = properties.Single(property => property.Value<string>("name") == nameof(TableReaderFlowBlock.ReferencedTable));
+            var collection = properties.Single(property => property.Value<string>("name") == nameof(TableReaderFlowBlock.MappingEntries));
+            Assert.AreEqual("CLUED", reference.Value<string>("uiFlags"));
+            Assert.AreEqual("CLUED", collection.Value<string>("uiFlags"));
+            var nested = response.Result["additionalTypeKindsInfo"]!.Children<JObject>()
+                .Single(type => type.Value<string>("fullName") == Compact(typeof(TableSelectorColumnCondition)));
+            var columnType = nested["properties"]!.Children<JObject>()
+                .Single(property => property.Value<string>("name") == nameof(TableSelectorColumnCondition.ColumnType));
+            Assert.AreEqual("E", columnType.Value<string>("uiFlags"));
+        }
+
         private static string Compact(Type type) =>
             AiAssistantTypeAliasHelper.CompressTypeName(type.FullName!);
 

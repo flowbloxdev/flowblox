@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -18,17 +19,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Logic
     {
         [Display(Name = "FieldCopyFlowBlock_InputFieldScope", Description = "FieldCopyFlowBlock_InputFieldScope_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = -1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public FieldCopyInputScope InputFieldScope { get; set; }
 
         private FieldElement _inputField;
 
         [Display(Name = "Global_InputField", Description = "FieldCopyFlowBlock_InputField_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, 
-            SelectionFilterMethod = nameof(GetPossibleInputFields), 
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), Operations = UIOperations.Link | UIOperations.Unlink)]
-        [Required()]
+        [Required]
         [DependsOnProperty(MemberName = nameof(InputFieldScope))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleInputFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement InputField 
         {
             get => _inputField;
@@ -50,9 +50,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Logic
         }
 
         [Display(Name = "FieldCopyFlowBlock_CopiedFields", Description = "FieldCopyFlowBlock_CopiedFields_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         [FlowBloxCardList(DisplayPropertyNames = [nameof(FieldElement.Name), nameof(FieldElement.FieldType)])]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<FieldElement> CopiedFields { get; set; }
 
         [JsonProperty("DisributedFields")]

@@ -14,13 +14,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             "InputBehaviorAssignment_DisplayName",
             typeof(FlowBloxTexts));
 
-        [Required()]
+        [Required]
         [Display(Name = "Global_FlowBlock", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, ReadOnly = true)]
+        [FlowBloxUI(ReadOnly = true)]
+        [FlowBloxComboBox]
         public BaseFlowBlock FlowBlock { get; set; }
 
 
         [Display(Name = "InputBehaviorAssignment_Behavior", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public InputBehavior Behavior { get; set; } = InputBehavior.First;
 
         public override string ToString() =>

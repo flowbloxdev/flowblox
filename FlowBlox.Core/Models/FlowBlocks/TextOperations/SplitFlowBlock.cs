@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
@@ -16,13 +17,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     public class SplitFlowBlock : BasePipeFlowBlock
     {
         [Display(Name = "SplitFlowBlock_Separators", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(SplitSeparatorDefinition.Separator), nameof(SplitSeparatorDefinition.SpecialSeparator) })]
+        [FlowBloxListView(
+            ColumnMemberNames = new[] { nameof(SplitSeparatorDefinition.Separator), nameof(SplitSeparatorDefinition.SpecialSeparator) })]
         [MinLength(1)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<SplitSeparatorDefinition> Separators { get; set; } = new();
 
         [Display(Name = "SplitFlowBlock_RemoveEmptyEntries", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool RemoveEmptyEntries { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.call_split, 16, SKColors.SeaGreen);
@@ -60,7 +61,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
                 if (separators.Length == 0)
                     throw new InvalidOperationException(FlowBloxResourceUtil.GetLocalizedString("SplitFlowBlock_Validation_NoSeparatorDefined"));
 
-                var options = RemoveEmptyEntries
+                var options = this.Resolve(x => x.RemoveEmptyEntries)
                     ? StringSplitOptions.RemoveEmptyEntries
                     : StringSplitOptions.None;
 

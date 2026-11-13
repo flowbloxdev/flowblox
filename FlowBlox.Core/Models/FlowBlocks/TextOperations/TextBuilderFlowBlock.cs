@@ -27,7 +27,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public StringBuilder InternalStringBuilder { get; protected set; }
 
         [Display(Name = "TextBuilderFlowBlock_InitialText", Description = "TextBuilderFlowBlock_InitialText_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string InitialText { get; set; }
 

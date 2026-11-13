@@ -23,10 +23,9 @@ namespace FlowBlox.Core.Models.FlowBlocks
         private FieldElement _inputField;
 
         [Display(Name = "Global_InputField", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleInputFields), 
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName))]
-        [Required()]
+        [Required]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleInputFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement InputField
         {
             get => _inputField;
@@ -36,12 +35,9 @@ namespace FlowBlox.Core.Models.FlowBlocks
         public List<FieldElement> GetPossibleInputFields() => FlowBloxFieldsResolver.GetFieldsOfAssociatedFlowBlocks(this);
 
         [Display(Name = "ProjectOutputIteratorFlowBlock_AssociatedExecuteProjectFlowBlock", Description = "ProjectOutputIteratorFlowBlock_AssociatedExecuteProjectFlowBlock_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "ProjectOutputIteratorFlowBlock_Groups_Source", Order = 1)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleExecuteProjectFlowBlocks),
-            SelectionDisplayMember = nameof(BaseFlowBlock.Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleExecuteProjectFlowBlocks), DisplayMember = nameof(BaseFlowBlock.Name))]
         public ExecuteProjectFlowBlock AssociatedExecuteProjectFlowBlock { get; set; }
 
         public IEnumerable<ExecuteProjectFlowBlock> GetPossibleExecuteProjectFlowBlocks()
@@ -52,13 +48,13 @@ namespace FlowBlox.Core.Models.FlowBlocks
 
         [Required]
         [Display(Name = "ProjectOutputIteratorFlowBlock_OutputName", ResourceType = typeof(FlowBloxTexts), GroupName = "ProjectOutputIteratorFlowBlock_Groups_Source", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetOutputNames),
-            SelectionFilterDependency = nameof(AssociatedExecuteProjectFlowBlock))]
         [FlowBloxComboBox(DropDownMode = DropDownMode.Suggestion)]
+        [FlowBloxItemsSource(Method = nameof(GetOutputNames), Dependency = nameof(AssociatedExecuteProjectFlowBlock))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string OutputName { get; set; }
 
         [Display(Name = "ProjectOutputIteratorFlowBlock_OutputMappings", ResourceType = typeof(FlowBloxTexts), GroupName = "ProjectOutputIteratorFlowBlock_Groups_Mapping", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid(IsMovable = true)]
         public ObservableCollection<ExecuteProjectOutputMappingEntry> OutputMappings { get; set; }
 

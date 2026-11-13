@@ -24,20 +24,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         }
 
         [Display(Name = "CounterFlowBlock_CounterType", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public CounterTypes CounterType { get; set; }
 
         [Display(Name = "CounterFlowBlock_Format", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.CounterFormat), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.CounterFormat))]
         public string Format { get; set; }
 
         [Display(Name = "CounterFlowBlock_StartValue", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(CounterFlowBlock), nameof(ValidateStartValue))]
         public new string StartValue { get; set; }
 
         [Display(Name = "CounterFlowBlock_FinalValue", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(CounterFlowBlock), nameof(ValidateEndValue))]
         public string FinalValue { get; set; }
 
@@ -83,7 +80,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         }
 
         [Display(Name = "CounterFlowBlock_AlphaRange", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string AlphaRange { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.counter, 16, SKColors.DarkCyan);
@@ -108,7 +104,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
             properties.Add(nameof(StartValue));
             properties.Add(nameof(FinalValue));
             properties.Add(nameof(Format));
-            if (CounterType == CounterTypes.Alphanumeric)
+            if (this.Resolve(x => x.CounterType) == CounterTypes.Alphanumeric)
                 properties.Add(nameof(AlphaRange));
             return properties;
         }
@@ -118,7 +114,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
             return Invoke(runtime, data, () =>
             {
 
-                if (CounterType == CounterTypes.Integer)
+                if (this.Resolve(x => x.CounterType) == CounterTypes.Integer)
                 {
                     ExecuteIntegerCounter(runtime);
                 }

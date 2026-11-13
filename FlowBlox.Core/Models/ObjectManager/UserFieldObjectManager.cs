@@ -62,13 +62,19 @@ namespace FlowBlox.Core.Models.ObjectManager
         }
 
         [Display(Name = "UserFieldObjectManager_InputFields", GroupName = "UserFieldObjectManager_InputFields", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ListViewSplitMode, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete, Maximize = true)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FieldElement.Name) }, ItemFactory = typeof(UserFieldInputItemFactory))]
+        [FlowBloxUI(DisplayLabel = false, Maximize = true)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name) }, SplitMode = true)]
+        [FlowBloxAssociation(
+            Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete,
+            ItemFactory = typeof(UserFieldInputItemFactory))]
         public ObservableCollection<FieldElement> InputFields { get; set; }
 
         [Display(Name = "UserFieldObjectManager_MemoryFields", GroupName = "UserFieldObjectManager_MemoryFields", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ListViewSplitMode, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete, Maximize = true)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FieldElement.Name) }, ItemFactory = typeof(UserFieldMemoryItemFactory))]
+        [FlowBloxUI(DisplayLabel = false, Maximize = true)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name) }, SplitMode = true)]
+        [FlowBloxAssociation(
+            Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete,
+            ItemFactory = typeof(UserFieldMemoryItemFactory))]
         public ObservableCollection<FieldElement> MemoryFields { get; set; }
     }
 }

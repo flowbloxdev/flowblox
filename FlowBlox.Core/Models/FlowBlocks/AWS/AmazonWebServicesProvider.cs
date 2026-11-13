@@ -24,27 +24,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         [Required]
         [Display(Name = "AmazonWebServicesProvider_ApiKey", Description = "AmazonWebServicesProvider_ApiKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string ApiKey { get; set; }
 
         [Required]
         [Display(Name = "AmazonWebServicesProvider_SecretKey", Description = "AmazonWebServicesProvider_SecretKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string SecretKey { get; set; }
 
         [Required]
         [Display(Name = "AmazonWebServicesProvider_Region", Description = "AmazonWebServicesProvider_Region_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Region { get; set; } = "eu-central-1";
 
         [Display(Name = "AmazonWebServicesProvider_S3ServiceUrl", Description = "AmazonWebServicesProvider_S3ServiceUrl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string S3ServiceUrl { get; set; }
 
         [Display(Name = "AmazonWebServicesProvider_S3ForcePathStyle", Description = "AmazonWebServicesProvider_S3ForcePathStyle_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool S3ForcePathStyle { get; set; }
 
         public TClient CreateClient<TClient>()

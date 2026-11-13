@@ -34,7 +34,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
         private string _projectCacheKey;
         private FlowBloxProject _projectCache;
 
-        [ConditionallyRequired()]
+        [ConditionallyRequired]
         [ActivationCondition(ActivationMethod = nameof(IsProjectFileVisible))]
         [Display(
             Name = "ExecuteProjectFlowBlock_ProjectFile",
@@ -42,13 +42,13 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Project",
             Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.FL)]
         [FlowBloxUIFileSelection("FlowBlox project (*.fbprj)|*.fbprj|All files (*.*)|*.*")]
         public string ProjectFile { get; set; }
 
         private bool IsProjectFileVisible() => string.IsNullOrWhiteSpace(ProjectSpaceGuid);
 
-        [ConditionallyRequired()]
+        [ConditionallyRequired]
         [ActivationCondition(ActivationMethod = nameof(IsProjectSpaceGuidVisible))]
         [Display(
             Name = "ExecuteProjectFlowBlock_ProjectSpaceGuid",
@@ -56,7 +56,6 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Project",
             Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ProjectSpaceGuid { get; set; }
 
         private bool IsProjectSpaceGuidVisible() => string.IsNullOrWhiteSpace(ProjectFile);
@@ -68,7 +67,6 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Project",
             Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? ProjectSpaceVersion { get; set; }
 
         [Display(
@@ -77,7 +75,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Project",
             Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AbortOnError { get; set; } = true;
 
         [Display(
@@ -86,7 +84,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Project",
             Order = 4)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AbortOnWarning { get; set; } = false;
 
         [Display(
@@ -95,7 +93,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
             ResourceType = typeof(FlowBloxTexts),
             GroupName = "ExecuteProjectFlowBlock_Groups_Parameters",
             Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid(IsMovable = true)]
         public ObservableCollection<ExecuteProjectParameterMappingEntry> ParameterMappings { get; set; } = new();
 
@@ -210,7 +208,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
                     ? null
                     : this.Resolve(owner => owner.ProjectSpaceGuid),
 
-                ProjectSpaceVersion = ProjectSpaceVersion,
+                ProjectSpaceVersion = this.Resolve(x => x.ProjectSpaceVersion),
 
                 AutoRestart = false, // hard requirement
                 AbortOnError = AbortOnError,
@@ -316,7 +314,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
         {
             var projectFile = this.Resolve(owner => owner.ProjectFile);
             var projectSpaceGuid = this.Resolve(owner => owner.ProjectSpaceGuid);
-            var versionPart = ProjectSpaceVersion?.ToString();
+            var versionPart = this.Resolve(x => x.ProjectSpaceVersion)?.ToString();
 
             if (!string.IsNullOrWhiteSpace(projectFile))
                 return $"FILE|{projectFile}";
@@ -346,7 +344,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
                 return Task.Run(async () => await FlowBloxProject
                     .FromProjectSpaceGuidAsync(
                         projectSpaceGuid,
-                        ProjectSpaceVersion,
+                        this.Resolve(x => x.ProjectSpaceVersion),
                         token,
                         webApi))
                     .GetAwaiter()

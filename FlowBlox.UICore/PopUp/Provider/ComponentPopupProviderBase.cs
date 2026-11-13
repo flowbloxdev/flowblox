@@ -1,3 +1,4 @@
+using FlowBlox.Core.Util.Execution;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Util;
 using FlowBlox.UICore.PopUp.Views;
@@ -21,6 +22,28 @@ namespace FlowBlox.UICore.PopUp.Provider
         {
             return target is TTarget && popupEvent == this.PopupEvent;
         }
+
+        /// <summary>
+        /// Open guidance is listed automatically in Help. Instance-specific providers can opt out.
+        /// </summary>
+        public virtual bool IsQuickStart => PopupEvent == ComponentPopupEvent.Open;
+
+        public virtual string QuickStartTitle => ExecutionPrerequisites.GetQuickStartName(typeof(TTarget), WindowTitle);
+
+        /// <summary>
+        /// Manual guidance is independent of a configured component and does not change onboarding state.
+        /// Override CreateQuickStartItems when guidance normally depends on instance data.
+        /// </summary>
+        public Window CreateQuickStartWindow()
+        {
+            if (!IsQuickStart)
+                return null;
+
+            var items = CreateQuickStartItems();
+            return items.Count == 0 ? null : CreateWindow(items, null);
+        }
+
+        protected virtual IReadOnlyList<ComponentPopupItem> CreateQuickStartItems() => CreateItems(default);
 
         public bool Show(object target, Window owner = null, bool force = false)
         {

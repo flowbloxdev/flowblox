@@ -4739,6 +4739,15 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="MediaDownloadNotifications_OutputFileMissing" xml:space="preserve"><value>Medien-Ausgabedatei fehlt.</value></data>
   <data name="MediaDownloadNotifications_Timeout" xml:space="preserve"><value>Zeitlimit beim Mediendownload überschritten.</value></data>
   <data name="MediaDownloadProviderBase_UnsupportedFormat" xml:space="preserve"><value>Der gewählte Anbieter unterstützt das Ausgabeformat „{0}“ nicht.</value></data>
+  <data name="QuickStarts_MenuTitle" xml:space="preserve">
+    <value>Quick Starts</value>
+  </data>
+  <data name="ExecutionPrerequisite_Missing" xml:space="preserve">
+    <value>{0} konnte unter '{1}' nicht gefunden werden. Eine erforderliche Ausführungskomponente fehlt. Öffnen Sie Hilfe → Quick Starts → {2} für die Installations- und Einrichtungsanleitung. Prüfen Sie den konfigurierten Pfad und die Umgebungsvariable PATH.</value>
+  </data>
+  <data name="ExecutionPrerequisite_InitializationFailed" xml:space="preserve">
+    <value>{0} konnte nicht initialisiert werden ('{1}'). Prüfen Sie Installation und Konfiguration unter Hilfe → Quick Starts → {2}. Details: {3}</value>
+  </data>
 </root>
 
 

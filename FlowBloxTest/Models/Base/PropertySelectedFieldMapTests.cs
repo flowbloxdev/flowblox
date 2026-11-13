@@ -6,13 +6,10 @@ using FlowBlox.Core.Provider;
 using FlowBlox.Core.Provider.Registry;
 using FlowBlox.Core.Util.DeepCopier;
 using FlowBlox.Core.Util.Fields;
-using FlowBlox.Core.Util.Json;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.Deletion;
 using FlowBlox.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using FlowBlox.Core.Models.FlowBlocks.TextOperations;
 using FlowBloxTest.Runtime;
 
@@ -22,65 +19,6 @@ namespace FlowBloxTest.Models.Base
     [TestCategory(FlowBloxTestCategories.UnitTest)]
     public sealed class PropertySelectedFieldMapTests
     {
-        [TestMethod]
-        public void LegacyProject_ImportsIntoMapAndExportsOnlyMap()
-        {
-            const string legacyJson = "{\"EncodingName_SelectedField\":{\"Name\":\"Encoding\",\"UserField\":true}}";
-            var block = JsonConvert.DeserializeObject<FileReaderFlowBlock>(legacyJson, JsonSettings.ProjectImport(new()))!;
-
-            Assert.AreEqual("$User::Encoding", block.GetPropertySelectedFieldName(nameof(block.EncodingName)));
-            var exported = JObject.Parse(JsonConvert.SerializeObject(block, JsonSettings.ProjectExport()));
-            Assert.IsNull(exported["EncodingName_SelectedField"]);
-            Assert.AreEqual("$User::Encoding", (string?)exported[nameof(block.PropertySelectedFieldMap)]?[nameof(block.EncodingName)]);
-
-            var reloaded = JsonConvert.DeserializeObject<FileReaderFlowBlock>(exported.ToString(), JsonSettings.ProjectImport(new()))!;
-            Assert.AreEqual(block.GetPropertySelectedFieldName(nameof(block.EncodingName)), reloaded.GetPropertySelectedFieldName(nameof(block.EncodingName)));
-        }
-
-        [TestMethod]
-        public void LegacyImport_ReplacesExistingMapAssignment()
-        {
-            var registry = new FlowBloxRegistry();
-            var field = registry.CreateUserField(UserFieldTypes.Memory, FieldTypes.Text, "Port");
-            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(registry);
-            var block = new SMTPFlowBlock();
-            block.SetPropertySelectedFieldName(nameof(block.Port), "$User::PreviousPort");
-
-            JsonConvert.PopulateObject(
-                "{\"Port_SelectedField\":{\"Name\":\"Port\",\"UserField\":true}}",
-                block,
-                JsonSettings.ProjectImport(new()));
-
-            Assert.AreEqual(1, block.PropertySelectedFieldMap.Count);
-            Assert.AreEqual(field.FullyQualifiedName, block.GetPropertySelectedFieldName(nameof(block.Port)));
-            Assert.AreSame(field, block.GetPropertySelectedField(nameof(block.Port)));
-        }
-
-        [TestMethod]
-        public void LegacyImport_ResolvesJsonReferencesWithoutCompanionProperties()
-        {
-            var document = new JArray
-            {
-                new JObject
-                {
-                    ["$id"] = "port",
-                    ["$type"] = typeof(FieldElement).AssemblyQualifiedName,
-                    ["Name"] = "Port",
-                    ["UserField"] = true
-                },
-                new JObject
-                {
-                    ["$type"] = typeof(SMTPFlowBlock).AssemblyQualifiedName,
-                    ["Port_SelectedField"] = new JObject { ["$ref"] = "port" }
-                }
-            };
-
-            var objects = JsonConvert.DeserializeObject<object[]>(document.ToString(), JsonSettings.ProjectImport(new()))!;
-            var field = (FieldElement)objects[0];
-            var block = (SMTPFlowBlock)objects[1];
-            Assert.AreEqual(field.FullyQualifiedName, block.GetPropertySelectedFieldName(nameof(block.Port)));
-        }
-
         [TestMethod]
         public void DeletionReview_TracksSelectionsOnNullablePropertiesWithNullLiterals()
         {

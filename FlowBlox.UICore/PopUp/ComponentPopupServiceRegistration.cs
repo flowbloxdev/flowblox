@@ -10,6 +10,12 @@ namespace FlowBlox.UICore.PopUp
     {
         public void RegisterServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton<AIPromptPopUpProvider>();
+            serviceCollection.AddSingleton<IComponentPopupProvider>(sp =>
+                sp.GetRequiredService<AIPromptPopUpProvider>());
+            serviceCollection.AddSingleton<IOptionsRegistration>(sp =>
+                sp.GetRequiredService<AIPromptPopUpProvider>());
+
             serviceCollection.AddSingleton<SequenceDetectionPopUpProvider>();
             serviceCollection.AddSingleton<IComponentPopupProvider>(sp =>
                 sp.GetRequiredService<SequenceDetectionPopUpProvider>());

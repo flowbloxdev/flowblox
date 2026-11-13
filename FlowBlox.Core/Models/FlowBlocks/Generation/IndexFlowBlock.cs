@@ -22,7 +22,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         private bool _initialized;
 
         [Display(Name = "IndexFlowBlock_InitialIndex", Description = "IndexFlowBlock_InitialIndex_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int InitialIndex { get; set; } = 0;
 
         /// <summary>
@@ -30,9 +29,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         /// If not set, the index is global for the whole runtime execution (never reset).
         /// </summary>
         [Display(Name = "IndexFlowBlock_Context", Description = "IndexFlowBlock_Context_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleContextFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleContextFlowBlocks), DisplayMember = nameof(Name))]
         public BaseFlowBlock AssociatedContextualObject { get; set; }
 
         public IEnumerable<BaseFlowBlock> GetPossibleContextFlowBlocks()
@@ -46,8 +44,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Generation
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.identifier, 32, SKColors.DarkSlateBlue);
 
         public IndexFlowBlock() : base() 
-        { 
-            
+        {
+
         }
 
         public override FlowBlockCardinalities GetInputCardinality() => FlowBlockCardinalities.One;

@@ -11,14 +11,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ExecuteProject
     {
         [Required]
         [Display(Name = "ExecuteProjectOutputMappingEntry_OutputPropertyName", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionFilterMethod = nameof(ProjectOutputIteratorFlowBlock.GetOutputPropertyNames))]
         [FlowBloxComboBox(DropDownMode = DropDownMode.Suggestion)]
+        [FlowBloxItemsSource(Method = nameof(ProjectOutputIteratorFlowBlock.GetOutputPropertyNames))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string OutputPropertyName { get; set; }
 
         [Required]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association,  Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public FieldElement Field { get; set; }
 
         public override string ToString() => $"{OutputPropertyName} → {Field}";

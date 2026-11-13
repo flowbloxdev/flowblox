@@ -13,20 +13,16 @@ namespace FlowBlox.Core.Models.Components.Modifier
     public class HmacModifier : ModifierBase
     {
         [Display(Name = "HmacModifier_Algorithm", Description = "HmacModifier_Algorithm_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicHashAlgorithm Algorithm { get; set; } = CryptographicHashAlgorithm.SHA256;
 
         [Required]
         [Display(Name = "HmacModifier_SecretKey", Description = "HmacModifier_SecretKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string SecretKey { get; set; }
 
         [Display(Name = "HmacModifier_KeyEncoding", Description = "HmacModifier_KeyEncoding_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicKeyEncoding KeyEncoding { get; set; } = CryptographicKeyEncoding.Text;
 
         [Display(Name = "HashModifier_OutputEncoding", Description = "HashModifier_OutputEncoding_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public CryptographicOutputEncoding OutputEncoding { get; set; } = CryptographicOutputEncoding.HexLowerCase;
 
         public override string Modify(BaseRuntime runtime, string value)

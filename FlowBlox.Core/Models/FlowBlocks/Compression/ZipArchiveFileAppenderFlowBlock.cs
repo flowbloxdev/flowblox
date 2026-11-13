@@ -22,9 +22,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
 
         [Required]
         [Display(Name = "ZipArchiveFileAppenderFlowBlock_ZipArchiveObject", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleZipArchiveObjects),
-            SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleZipArchiveObjects), DisplayMember = nameof(Name))]
         public ZipArchiveObject ZipArchiveObject { get; set; }
 
         private IEnumerable<ZipArchiveObject> GetPossibleZipArchiveObjects()
@@ -33,16 +32,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
         }
 
         [Display(Name = "ZipArchiveFileAppenderFlowBlock_ArchivePath", Description = "ZipArchiveFileAppenderFlowBlock_ArchivePath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ArchivePath { get; set; }
 
         [Required]
         [Display(Name = "ZipArchiveFileAppenderFlowBlock_FileName", Description = "ZipArchiveFileAppenderFlowBlock_FileName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string FileName { get; set; }
 
         [Display(Name = "ZipArchiveFileAppenderFlowBlock_Password", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string Password { get; set; }
 
@@ -50,10 +46,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
 
         [Required]
         [Display(Name = "ZipArchiveFileAppenderFlowBlock_ContentField", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleFieldElements),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement ContentField
         {
             get => _contentField;
@@ -63,7 +57,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
         [ActivationCondition(MemberName = nameof(ContentField), ActivationMethod = nameof(IsEncodingNameActive))]
         [ConditionallyRequired]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         private bool IsEncodingNameActive()

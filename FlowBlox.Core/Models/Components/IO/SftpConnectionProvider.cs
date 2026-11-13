@@ -17,44 +17,44 @@ namespace FlowBlox.Core.Models.Components.IO
     {
         [Required]
         [Display(Name = "SftpConnectionProvider_Host", Description = "SftpConnectionProvider_Host_Tooltip", GroupName = "SftpConnectionProvider_Groups_Connection", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Host { get; set; }
 
         [Display(Name = "SftpConnectionProvider_Port", Description = "SftpConnectionProvider_Port_Tooltip", GroupName = "SftpConnectionProvider_Groups_Connection", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Port { get; set; } = 22;
 
         [Display(Name = "SftpConnectionProvider_AuthenticationMethod", Description = "SftpConnectionProvider_AuthenticationMethod_Tooltip", GroupName = "SftpConnectionProvider_Groups_Authentication", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public SftpAuthenticationMethod AuthenticationMethod { get; set; } = SftpAuthenticationMethod.Password;
 
         [Required]
         [Display(Name = "SftpConnectionProvider_UserName", Description = "SftpConnectionProvider_UserName_Tooltip", GroupName = "SftpConnectionProvider_Groups_Authentication", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string UserName { get; set; }
 
-        [ActivationCondition(MemberName = nameof(AuthenticationMethod), Values = [SftpAuthenticationMethod.Password, SftpAuthenticationMethod.PasswordAndPrivateKey], IsRequired = true)]
+        [ActivationCondition(
+            MemberName = nameof(AuthenticationMethod),
+            Values = [SftpAuthenticationMethod.Password, SftpAuthenticationMethod.PasswordAndPrivateKey],
+            IsRequired = true)]
         [Display(Name = "SftpConnectionProvider_Password", Description = "SftpConnectionProvider_Password_Tooltip", GroupName = "SftpConnectionProvider_Groups_PasswordAuthentication", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Password { get; set; }
 
-        [ActivationCondition(MemberName = nameof(AuthenticationMethod), Values = [SftpAuthenticationMethod.PrivateKey, SftpAuthenticationMethod.PasswordAndPrivateKey], IsRequired = true)]
+        [ActivationCondition(
+            MemberName = nameof(AuthenticationMethod),
+            Values = [SftpAuthenticationMethod.PrivateKey, SftpAuthenticationMethod.PasswordAndPrivateKey],
+            IsRequired = true)]
         [Display(Name = "SftpConnectionProvider_PrivateKey", Description = "SftpConnectionProvider_PrivateKey_Tooltip", GroupName = "SftpConnectionProvider_Groups_PrivateKeyAuthentication", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFileSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.FL)]
         [FlowBloxTextBox(MultiLine = true)]
         public string PrivateKey { get; set; }
 
-        [ActivationCondition(MemberName = nameof(AuthenticationMethod), Values = [SftpAuthenticationMethod.PrivateKey, SftpAuthenticationMethod.PasswordAndPrivateKey])]
+        [ActivationCondition(
+            MemberName = nameof(AuthenticationMethod),
+            Values = [SftpAuthenticationMethod.PrivateKey, SftpAuthenticationMethod.PasswordAndPrivateKey])]
         [Display(Name = "SftpConnectionProvider_PrivateKeyPassphrase", Description = "SftpConnectionProvider_PrivateKeyPassphrase_Tooltip", GroupName = "SftpConnectionProvider_Groups_PrivateKeyAuthentication", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string PrivateKeyPassphrase { get; set; }
 
         [Display(Name = "SftpConnectionProvider_HostKeyFingerprint", Description = "SftpConnectionProvider_HostKeyFingerprint_Tooltip", GroupName = "SftpConnectionProvider_Groups_HostKeyVerification", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string HostKeyFingerprint { get; set; }
 
         [Display(Name = "SftpConnectionProvider_TrustAnyHostKey", Description = "SftpConnectionProvider_TrustAnyHostKey_Tooltip", GroupName = "SftpConnectionProvider_Groups_HostKeyVerification", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool TrustAnyHostKey { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cube_outline, 16, SKColors.Teal);

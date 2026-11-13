@@ -45,27 +45,31 @@ namespace FlowBlox.Core.Models.Components
 
         [Required]
         [Display(Name = "TypeElement_FieldType", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public FieldTypes FieldType { get; set; }
 
         [ActivationCondition(MemberName = nameof(FieldType), Value = FieldTypes.DateTime)]
-        [ConditionallyRequired()]
+        [ConditionallyRequired]
         [Display(Name = "TypeElement_DateFormat", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Format))]
+        [FlowBloxUI(UISelectionButtons.None, ToolboxCategory = nameof(FlowBloxToolboxCategory.Format))]
         public string DateFormat { get; set; }
 
         [ActivationCondition(MemberName = nameof(FieldType), Values = new object[] { FieldTypes.Float, FieldTypes.Double })]
         [ConditionallyRequired()]
         [Display(Name = "TypeElement_DecimalSeparator", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string DecimalSeparator { get; set; }
 
         [ActivationCondition(MemberName = nameof(FieldType), Values = new object[] { FieldTypes.Float, FieldTypes.Double })]
         [ConditionallyRequired()]
         [Display(Name = "TypeElement_GroupSeparator", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string GroupSeparator { get; set; }
 
         [ActivationCondition(MemberName = nameof(HasNullableInfo), Value = true)]
         [DependsOnProperty(MemberName = nameof(FieldType))]
         [Display(Name = "TypeElement_IsNullable", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool IsNullable { get; set; }
 
         public FieldElement GetReferencedField()

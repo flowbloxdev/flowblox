@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Exceptions;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Util.Downloads;
 using FlowBlox.Core.Util.Resources;
@@ -16,7 +17,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [Range(1, 86400)]
         [Display(Name = "MediaDownloadProviderBase_TimeoutSeconds", Description = "MediaDownloadProviderBase_TimeoutSeconds_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TimeoutSeconds { get; set; } = 900;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.download, 16, SKColors.SteelBlue);
@@ -60,7 +60,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
 
             try
             {
-                var results = await DownloadCoreAsync(request, progress, timeout.Token).ConfigureAwait(false);
+                var results = TryReuseExistingOutput(request);
+                if (results == null)
+                {
+                    EvaluateExecutionPrerequisites();
+                    results = await DownloadCoreAsync(request, progress, timeout.Token).ConfigureAwait(false);
+                }
+                else
+                {
+                    progress.Report("Using existing media file");
+                }
                 timeout.Token.ThrowIfCancellationRequested();
                 var validatedResults = results
                     .Select(result => ValidateResult(result, request.Url))
@@ -70,6 +79,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     progress.Complete();
 
                 return validatedResults;
+            }
+            catch (System.ComponentModel.Win32Exception exception) when (this is FFmpegMediaDownloadProviderBase)
+            {
+                throw new ExecutionPrerequisiteException(
+                    this is YtDlpMediaDownloadProvider ? "yt-dlp" : "FFmpeg",
+                    GetType(),
+                    Name ?? string.Empty,
+                    exception);
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested && timeout.IsCancellationRequested)
             {
@@ -103,10 +120,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 Success = success,
                 FilePath = success ? Path.GetFullPath(result.FilePath) : string.Empty,
                 SourceUrl = string.IsNullOrWhiteSpace(result.SourceUrl) ? sourceUrl : result.SourceUrl,
+                PrerequisiteFailure = result.PrerequisiteFailure,
                 FailureReason = failureReason,
                 ErrorMessage = errorMessage
             };
         }
+
+        /// <summary>
+        /// Returns reusable output before external prerequisites are evaluated, or null when work is required.
+        /// </summary>
+        /// <remarks>
+        /// This is an execution-boundary decision. Implementations must not launch tools or change configuration.
+        /// The boundary validates the request first and evaluates prerequisites before calling DownloadCoreAsync.
+        /// </remarks>
+        protected virtual IReadOnlyList<MediaDownloadResult>? TryReuseExistingOutput(MediaDownloadRequest request) => null;
 
         protected abstract Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,

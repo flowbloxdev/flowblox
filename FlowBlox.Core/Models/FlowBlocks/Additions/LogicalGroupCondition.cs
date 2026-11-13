@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Provider;
@@ -26,15 +27,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         }
 
         [Display(Name = "LogicalGroupCondition_Conditions", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(
-            Factory = UIFactory.GridView,
-            CreatableTypes = new[] { 
-                typeof(FieldLogicalComparisonCondition), 
-                typeof(LogicalGroupCondition) })]
-        [FlowBloxDataGrid(GridColumnMemberNames = [
+        [FlowBloxDataGrid(
+            ColumnMemberNames = [
             nameof(LogicalCondition.LogicalOperator),
             nameof(LogicalCondition.DisplayName)
             ])]
+        [FlowBloxAssociation(
+            CreatableTypes = new[] {
+                typeof(FieldLogicalComparisonCondition),
+                typeof(LogicalGroupCondition) })]
         public ObservableCollection<LogicalCondition> Conditions { get; set; }
 
         public override string DisplayName

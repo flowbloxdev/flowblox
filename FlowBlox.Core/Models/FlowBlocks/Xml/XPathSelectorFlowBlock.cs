@@ -16,18 +16,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
     public class XPathSelectorFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "XPathSelectorFlowBlock_XmlContent", Description = "XPathSelectorFlowBlock_XmlContent_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true, SyntaxHighlighting = "XML")]
         [Required]
         public string XmlContent { get; set; }
 
         [Display(Name = "XPathSelectorFlowBlock_XPath", Description = "XPathSelectorFlowBlock_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.XPath))]
         [Required]
         public string XPath { get; set; }
 
         [Display(Name = "XPathSelectorFlowBlock_ResultMode", Description = "XPathSelectorFlowBlock_ResultMode_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public XPathResultMode ResultMode { get; set; } = XPathResultMode.InnerXml;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_search, 16, SKColors.MediumSeaGreen);
@@ -76,7 +74,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
                 var xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(xmlContent);
 
-                var values = XPathSelector.SelectValues(xmlDocument, xpath, ResultMode);
+                var values = XPathSelector.SelectValues(xmlDocument, xpath, this.Resolve(x => x.ResultMode));
                 if (values.Count == 0)
                     CreateNotification(runtime, XPathSelectorNotifications.NoMatchingValuesFound);
 

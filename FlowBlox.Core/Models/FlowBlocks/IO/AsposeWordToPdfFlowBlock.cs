@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using Aspose.Words;
 using Aspose.Words.Saving;
@@ -39,10 +40,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Required]
         [Display(Name = "AsposeWordToPdfFlowBlock_WordDocumentField", Description = "AsposeWordToPdfFlowBlock_WordDocumentField_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleFieldElements),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement WordDocumentField
         {
             get => _wordDocumentField;
@@ -50,7 +49,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         }
 
         [Display(Name = "AsposeWordToPdfFlowBlock_Compliance", Description = "AsposeWordToPdfFlowBlock_Compliance_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public AsposePdfCompliance Compliance { get; set; } = AsposePdfCompliance.Pdf;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_pdf_box, 16, SKColors.Firebrick);
@@ -92,7 +90,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
                 var saveOptions = new PdfSaveOptions
                 {
-                    Compliance = ToAsposeCompliance(Compliance)
+                    Compliance = ToAsposeCompliance(this.Resolve(x => x.Compliance))
                 };
 
                 using var outputStream = new MemoryStream();

@@ -9,15 +9,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ExecuteProject
     {
         [Required]
         [Display(Name = "ExecuteProjectParameterMappingEntry_TargetType", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public ExecuteProjectTargetType TargetType { get; set; } = ExecuteProjectTargetType.UserField;
 
         [Required]
         [Display(Name = "ExecuteProjectParameterMappingEntry_TargetKey", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string TargetKey { get; set; }
 
         [Required]
         [Display(Name = "ExecuteProjectParameterMappingEntry_TargetValue", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string TargetValue { get; set; }
 
         public override string ToString() => $"{TargetType}: {TargetKey}";

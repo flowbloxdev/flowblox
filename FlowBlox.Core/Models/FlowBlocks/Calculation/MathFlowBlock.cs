@@ -24,7 +24,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Calculation
 
         [Required]
         [Display(Name = "MathFlowBlock_Expression", Description = "MathFlowBlock_Expression_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
         public string MathExpression { get; set; }
 

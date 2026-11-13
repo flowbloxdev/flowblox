@@ -17,11 +17,10 @@ namespace FlowBlox.Core.Models.Components.IO
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.table_large, 16, new SKColor(21, 101, 192));
 
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.table_large, 32, new SKColor(21, 101, 192));
-        [Required()]
+        [Required]
         [Display(Name = "PropertyNames_DataSource", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleDataSources),
-            SelectionDisplayMember = nameof(DataObjectBase.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDataSources), DisplayMember = nameof(DataObjectBase.Name))]
         public DataObjectBase DataSource { get; set; }
 
         protected IEnumerable<DataObjectBase> GetPossibleDataSources()
@@ -32,7 +31,6 @@ namespace FlowBlox.Core.Models.Components.IO
         }
 
         [Display(Name = "DataTableBase_FirstRowHeader", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool FirstRowHeader { get; set; } = true;
 
         protected DataTableBase()

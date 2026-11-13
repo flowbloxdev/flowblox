@@ -23,21 +23,21 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Required]
         [Display(Name = "SftpFlowBlock_Connection", Description = "SftpFlowBlock_Connection_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleConnections), SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleConnections), DisplayMember = nameof(Name))]
         public SftpConnectionProvider Connection { get; set; }
 
         [Required]
         [Display(Name = "SftpFlowBlock_RemotePath", Description = "SftpFlowBlock_RemotePath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string RemotePath { get; set; }
 
         [Required]
         [Display(Name = "SftpUploadFlowBlock_ContentField", Description = "SftpUploadFlowBlock_ContentField_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleFieldElements), SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement ContentField { get => _contentField; set => SetRequiredInputField(ref _contentField, value); }
 
         [Display(Name = "SftpUploadFlowBlock_Overwrite", Description = "SftpUploadFlowBlock_Overwrite_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Overwrite { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cloud_upload_outline, 16, SKColors.Teal);
@@ -65,7 +65,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
             using var input = new MemoryStream(content, writable: false);
             using var client = Connection.CreateClient();
             client.Connect();
-            client.UploadFile(input, remotePath, Overwrite);
+            client.UploadFile(input, remotePath, this.Resolve(x => x.Overwrite));
             GenerateResult(runtime, bool.TrueString.ToLowerInvariant());
         });
     }

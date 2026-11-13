@@ -7,7 +7,7 @@ namespace FlowBlox.Core.Attributes
     }
 
     /// <summary>
-    /// Configures value selection for UIFactory.ComboBox. Suggestion mode permits
+    /// Selects and configures a combo box editor. Suggestion mode permits
     /// custom scalar values; complex properties always select existing objects.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]

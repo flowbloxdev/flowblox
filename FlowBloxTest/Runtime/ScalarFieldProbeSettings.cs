@@ -5,8 +5,8 @@ namespace FlowBloxTest.Runtime;
 
 public sealed class ScalarFieldProbeSettings : FlowBloxReactiveObject
 {
-    [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
     public int Limit { get; set; } = 10;
 
+    [FlowBloxUI(UISelectionButtons.None)]
     public int LiteralOnly { get; set; } = 15;
 }

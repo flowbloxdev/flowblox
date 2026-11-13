@@ -1,3 +1,4 @@
+using FlowBlox.Core.Exceptions;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
@@ -37,14 +38,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [Required]
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_ModelFolder", Description = "OnnxRuntimeGenAIFlowBlock_ModelFolder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.DI)]
         [FlowBloxFieldSelection(AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties)]
         [FlowBloxOpenFromFileSystem(InitialDirectoryMethod = nameof(GetInitialModelDirectory))]
         public string ModelFolder { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_Prompt", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
         [Required]
         public string Prompt { get; set; }
 
@@ -52,11 +53,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         #region Tab: Extended settings
 
-        [JsonIgnore()]
-        [DeepCopierIgnore()]
+        [JsonIgnore]
+        [DeepCopierIgnore]
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_AiExecutionProvider", Description = "OnnxRuntimeGenAIFlowBlock_AiExecutionProvider_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, ReadOnly = true)]
+        [FlowBloxUI(ReadOnly = true)]
         [Required]
         public AiExecutionProviders AiExecutionProvider
         {
@@ -79,47 +80,41 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TokenSelectionStrategy", Description = "OnnxRuntimeGenAIFlowBlock_TokenSelectionStrategy_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public TokenSelectionStrategy TokenSelectionStrategy { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_MaxNewTokens", Description = "OnnxRuntimeGenAIFlowBlock_MaxNewTokens_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings",
             ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxNewTokens { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_Temperature", Description = "OnnxRuntimeGenAIFlowBlock_Temperature_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public float Temperature { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TopP", Description = "OnnxRuntimeGenAIFlowBlock_TopP_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public float TopP { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TopK", Description = "OnnxRuntimeGenAIFlowBlock_TopK_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TopK { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_UseChatTemplate", Description = "OnnxRuntimeGenAIFlowBlock_UseChatTemplate_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseChatTemplate { get; set; }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_SystemPrompt", Description = "OnnxRuntimeGenAIFlowBlock_SystemPrompt_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 7)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
         public string SystemPrompt { get; set; }
 
         [ActivationCondition(MemberName = nameof(UseChatTemplate), Value = true)]
-        [ConditionallyRequired()]
+        [ConditionallyRequired]
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_ChatTemplate", Description = "OnnxRuntimeGenAIFlowBlock_ChatTemplate_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 8)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.ChatTemplates), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.ChatTemplates))]
         public string ChatTemplate { get; set; }
 
         #endregion
@@ -167,7 +162,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
                 if (string.IsNullOrWhiteSpace(modelFolder) || !Directory.Exists(modelFolder))
                 {
-                    CreateNotification(runtime, OnnxRuntimeGenAiNotifications.ModelFolderMissing);
+                    var failure = new ExecutionPrerequisiteException("ONNX GenAI", typeof(OnnxGenAIFlowBlock), modelFolder);
+                    CreateNotification(runtime, OnnxRuntimeGenAiNotifications.ModelFolderMissing, failure.NotificationMessage, failure);
                     GenerateResult(runtime);
                     return;
                 }
@@ -182,14 +178,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                 string userPrompt = this.Resolve(owner => owner.Prompt);
                 string systemPrompt = this.Resolve(owner => owner.SystemPrompt);
 
-                string finalPrompt = UseChatTemplate
+                string finalPrompt = this.Resolve(x => x.UseChatTemplate)
                     ? ApplyChatTemplate(systemPrompt, userPrompt)
                     : userPrompt;
 
                 string result;
                 try
                 {
-                    result = RunGenAI(runtime, modelFolder, finalPrompt, MaxNewTokens);
+                    result = RunGenAI(runtime, modelFolder, finalPrompt, this.Resolve(x => x.MaxNewTokens));
                 }
                 catch (Exception ex)
                 {
@@ -217,7 +213,26 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         public override void RuntimeStarted(BaseRuntime runtime)
         {
             base.RuntimeStarted(runtime);
+            EnsureModelInitialized(runtime);
+        }
 
+        private void EnsureModelInitialized(BaseRuntime runtime)
+        {
+            try
+            {
+                InitializeModel(runtime);
+            }
+            catch (Exception exception)
+            {
+                var failure = new ExecutionPrerequisiteException(
+                    "ONNX GenAI", typeof(OnnxGenAIFlowBlock), this.Resolve(owner => owner.ModelFolder), exception);
+                CreateNotification(runtime, OnnxRuntimeGenAiNotifications.SetupRequired, failure.NotificationMessage, failure);
+                throw failure;
+            }
+        }
+
+        private void InitializeModel(BaseRuntime runtime)
+        {
             // Ensure ONNX runtime native binaries are loaded:
             FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
 
@@ -336,7 +351,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         private string RunGenAI(BaseRuntime runtime, string modelFolder, string prompt, int maxNewTokens)
         {
-            
+
             using var stream = _tokenizer.CreateStream();
 
             // Encode -> Sequences
@@ -422,8 +437,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
             // - If Temperature <= 0 or strategy is ArgMax => deterministic
             // - Else sampling with top_k/top_p/temperature
             bool deterministic =
-                TokenSelectionStrategy == TokenSelectionStrategy.ArgMax ||
-                Temperature <= 0.0f;
+                this.Resolve(x => x.TokenSelectionStrategy) == TokenSelectionStrategy.ArgMax ||
+                this.Resolve(x => x.Temperature) <= 0.0f;
 
             if (deterministic)
             {
@@ -435,9 +450,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
             }
 
             genParams.SetSearchOption("do_sample", true);
-            genParams.SetSearchOption("top_k", (double)Math.Max(1, TopK));
-            genParams.SetSearchOption("top_p", (double)Math.Clamp(TopP, 0.0f, 1.0f));
-            genParams.SetSearchOption("temperature", (double)Math.Max(0.0f, Temperature));
+            genParams.SetSearchOption("top_k", (double)Math.Max(1, this.Resolve(x => x.TopK)));
+            genParams.SetSearchOption("top_p", (double)Math.Clamp(this.Resolve(x => x.TopP), 0.0f, 1.0f));
+            genParams.SetSearchOption("temperature", (double)Math.Max(0.0f, this.Resolve(x => x.Temperature)));
         }
 
         public override List<string> GetDisplayableProperties()
@@ -461,7 +476,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
     public enum OnnxRuntimeGenAiNotifications
     {
         [FlowBloxNotification(NotificationType = NotificationType.Error)]
-        [Display(Name = "Model folder path is empty or does not exist.")]
+        [Display(Name = "Model folder missing")]
         ModelFolderMissing,
 
         [FlowBloxNotification(NotificationType = NotificationType.Error)]
@@ -470,6 +485,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [FlowBloxNotification(NotificationType = NotificationType.Error)]
         [Display(Name = "Failed to execute prompt using ONNX Runtime GenAI.")]
-        ExecutionFailed
+        ExecutionFailed,
+
+        [FlowBloxNotification(NotificationType = NotificationType.Error)]
+        [Display(Name = "Setup required")]
+        SetupRequired
     }
 }

@@ -6,6 +6,7 @@ using FlowBlox.Core.Enums;
 using FlowBlox.Core.Exceptions;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Models.Components;
+using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider;
@@ -23,25 +24,23 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [Required]
         [Display(Name = "MediaDownloadFlowBlock_Provider", Description = "MediaDownloadFlowBlock_Provider_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleProviders),
-            SelectionDisplayMember = nameof(MediaDownloadProviderBase.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleProviders), DisplayMember = nameof(MediaDownloadProviderBase.Name))]
         public MediaDownloadProviderBase? Provider { get; set; }
 
         [Required]
         [Display(Name = "MediaDownloadFlowBlock_Url", Description = "MediaDownloadFlowBlock_Url_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Url { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "MediaDownloadFlowBlock_OutputDirectory", Description = "MediaDownloadFlowBlock_OutputDirectory_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.DI)]
         public string OutputDirectory { get; set; } = string.Empty;
 
         [Display(Name = "MediaDownloadFlowBlock_Format", Description = "MediaDownloadFlowBlock_Format_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [DependsOnProperty(MemberName = nameof(Provider))]
         [CustomValidation(typeof(MediaDownloadFlowBlock), nameof(ValidateFormat))]
         public MediaDownloadFormat Format { get; set; } = MediaDownloadFormat.Video;
@@ -50,16 +49,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         [Display(Name = "MediaDownloadFlowBlock_AudioBitrateKbps", Description = "MediaDownloadFlowBlock_AudioBitrateKbps_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 4)]
         [ActivationCondition(ActivationMethod = nameof(IsAudioBitrateActive))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? AudioBitrateKbps { get; set; }
 
         [Display(Name = "MediaDownloadFlowBlock_OverwriteFiles", Description = "MediaDownloadFlowBlock_OverwriteFiles_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool OverwriteFiles { get; set; }
 
         [Display(Name = "MediaDownloadFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<MediaDownloadDestinations>> ResultFields { get; set; } = [];
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.download, 16, SKColors.SteelBlue);
@@ -119,6 +116,38 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             base.OnAfterCreate();
         }
 
+        /// <inheritdoc />
+        protected override IEnumerable<FlowBloxComponent> GetExecutionPrerequisiteComponents()
+        {
+            if (Provider is FFmpegMediaDownloadProvider ffmpeg && ffmpeg.CanReuseExistingOutput(CreateDownloadRequest()))
+                return new[] { this };
+
+            return base.GetExecutionPrerequisiteComponents();
+        }
+
+        /// <inheritdoc />
+        protected override void OnExecutionPrerequisiteFailure(
+            BaseRuntime runtime,
+            ExecutionPrerequisiteException exception)
+        {
+            CompleteDownload(runtime, new[]
+            {
+                CreateFailureResult(exception, this.Resolve(block => block.Url).Trim())
+            });
+        }
+
+        private MediaDownloadRequest CreateDownloadRequest()
+        {
+            return new MediaDownloadRequest
+            {
+                Url = this.Resolve(block => block.Url).Trim(),
+                OutputDirectory = this.Resolve(block => block.OutputDirectory),
+                Format = this.Resolve(block => block.Format),
+                AudioBitrateKbps = IsAudioBitrateActive() ? this.Resolve(block => block.AudioBitrateKbps) : null,
+                OverwriteFiles = this.Resolve(block => block.OverwriteFiles)
+            };
+        }
+
         public override bool Execute(BaseRuntime runtime, object data)
         {
             return Invoke(runtime, data, () =>
@@ -130,14 +159,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     if (Provider == null)
                         throw new ValidationException("No media download provider has been configured.");
 
-                    var request = new MediaDownloadRequest
-                    {
-                        Url = url,
-                        OutputDirectory = this.Resolve(block => block.OutputDirectory),
-                        Format = this.Resolve(block => block.Format),
-                        AudioBitrateKbps = IsAudioBitrateActive() ? this.Resolve(block => block.AudioBitrateKbps) : null,
-                        OverwriteFiles = this.Resolve(block => block.OverwriteFiles)
-                    };
+                    var request = CreateDownloadRequest();
                     var progress = new TransferProgressReporter(message => runtime.Report(message, FlowBloxLogLevel.Info));
                     results = Provider.DownloadAsync(request, progress, runtime.GetCancellationToken()).GetAwaiter().GetResult();
                 }
@@ -147,32 +169,51 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 }
                 catch (Exception exception)
                 {
-                    runtime.Report("Media download failed.", FlowBloxLogLevel.Warning, exception);
-                    results =
-                    [
-                        new MediaDownloadResult
-                        {
-                            SourceUrl = url,
-                            FailureReason = exception is TimeoutException
-                                ? MediaDownloadFailureReason.Timeout
-                                : MediaDownloadFailureReason.DownloadFailed,
-                            ErrorMessage = exception.Message
-                        }
-                    ];
+                    if (exception is not ExecutionPrerequisiteException)
+                        runtime.Report("Media download failed.", FlowBloxLogLevel.Warning, exception);
+                    results = new[] { CreateFailureResult(exception, url) };
                 }
 
-                foreach (var result in results.Where(result => !result.Success))
-                    runtime.Report("Media download entry failed: " + result.SourceUrl + ". " + result.ErrorMessage, FlowBloxLogLevel.Warning);
-
-                foreach (var reason in results.Where(result => !result.Success).Select(result => result.FailureReason).Distinct())
-                    CreateNotification(runtime, GetFailureNotification(reason));
-
-                if (results.Count == 0)
-                    CreateNotification(runtime, MediaDownloadNotifications.NoMediaFound);
-
-                var rows = results.Select(CreateResultRow).ToArray();
-                GenerateResult(runtime, rows);
+                CompleteDownload(runtime, results);
             });
+        }
+
+        private static MediaDownloadResult CreateFailureResult(Exception exception, string url)
+        {
+            return new MediaDownloadResult
+            {
+                SourceUrl = url,
+                PrerequisiteFailure = exception as ExecutionPrerequisiteException,
+                FailureReason = exception is ExecutionPrerequisiteException
+                    ? MediaDownloadFailureReason.RequiredComponentMissing
+                    : exception is TimeoutException
+                    ? MediaDownloadFailureReason.Timeout
+                    : MediaDownloadFailureReason.DownloadFailed,
+                ErrorMessage = exception.Message
+            };
+        }
+
+        private void CompleteDownload(BaseRuntime runtime, IReadOnlyList<MediaDownloadResult> results)
+        {
+            foreach (var result in results.Where(result => !result.Success))
+                runtime.Report("Media download entry failed: " + result.SourceUrl + ". " + result.ErrorMessage, FlowBloxLogLevel.Warning);
+
+            var prerequisiteFailures = results
+                .Where(result => !result.Success && result.PrerequisiteFailure != null)
+                .Select(result => result.PrerequisiteFailure!)
+                .DistinctBy(failure => (failure.ComponentName, failure.QuickStartTargetType));
+            foreach (var failure in prerequisiteFailures)
+                CreateNotification(runtime, MediaDownloadNotifications.SetupRequired, failure.NotificationMessage, failure);
+
+            foreach (var reason in results.Where(result => !result.Success && result.PrerequisiteFailure == null)
+                .Select(result => result.FailureReason).Distinct())
+                CreateNotification(runtime, GetFailureNotification(reason));
+
+            if (results.Count == 0)
+                CreateNotification(runtime, MediaDownloadNotifications.NoMediaFound);
+
+            var rows = results.Select(CreateResultRow).ToArray();
+            GenerateResult(runtime, rows);
         }
 
         private Dictionary<FieldElement, string> CreateResultRow(MediaDownloadResult result)
@@ -227,7 +268,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             OutputFileMissing,
             [FlowBloxNotification(NotificationType = NotificationType.Warning)]
             [Display(Name = "MediaDownloadNotifications_Timeout", ResourceType = typeof(FlowBloxTexts))]
-            Timeout
+            Timeout,
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "Setup required")]
+            SetupRequired
         }
     }
 }

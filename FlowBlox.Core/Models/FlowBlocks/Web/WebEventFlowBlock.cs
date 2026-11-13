@@ -41,40 +41,34 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         }
 
         [Display(Name = "WebEventFlowBlock_WebBrowserEventType", Description = "WebEventFlowBlock_WebBrowserEventType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebBrowserEventTypes WebBrowserEventType { get; set; } = WebBrowserEventTypes.Click;
 
         [Display(Name = "WebEventFlowBlock_XPath", Description = "WebEventFlowBlock_XPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public override string XPath { get; set; }
 
         [Display(Name = "WebEventFlowBlock_CSSSelector", Description = "WebEventFlowBlock_CSSSelector_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public override string CSSSelector { get; set; }
 
         [Display(Name = "WebEventFlowBlock_InputText", Description = "WebEventFlowBlock_InputText_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string InputText { get; set; }
 
         [ActivationCondition(MemberName = nameof(WebBrowserEventType), Values = new object[] { WebBrowserEventTypes.SendSpecialKey })]
         [Display(Name = "WebEventFlowBlock_SpecialKey", Description = "WebEventFlowBlock_SpecialKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebSpecialKey SpecialKey { get; set; } = WebSpecialKey.Enter;
 
         [ActivationCondition(MemberName = nameof(WebBrowserEventType), Values = new object[] { WebBrowserEventTypes.SendSpecialKey })]
         [Display(Name = "WebEventFlowBlock_SpecialKeyModifier", Description = "WebEventFlowBlock_SpecialKeyModifier_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public WebSpecialKeyModifier SpecialKeyModifier { get; set; } = WebSpecialKeyModifier.None;
 
         [Display(Name = "WebEventFlowBlock_WaitingTimeAfterExecution", Description = "WebEventFlowBlock_WaitingTimeAfterExecution_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebEventFlowBlock_Groups_Advanced", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public int WaitingTimeAfterExecution { get; set; }
 
         [Display(Name = "WebEventFlowBlock_ElementDeterminationRequired", Description = "WebEventFlowBlock_ElementDeterminationRequired_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebEventFlowBlock_Groups_Advanced", Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool ElementDeterminationRequired { get; set; }
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public int LatestScrollRectangleHeight { get; private set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.lightning_bolt_outline, 16, SKColors.MediumPurple);
@@ -104,7 +98,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             if (UsesInputText())
                 properties.Add(nameof(InputText));
 
-            if (WebBrowserEventType == WebBrowserEventTypes.SendSpecialKey)
+            if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.SendSpecialKey)
             {
                 properties.Add(nameof(SpecialKey));
                 properties.Add(nameof(SpecialKeyModifier));
@@ -115,20 +109,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         private bool RequiresElementSelector()
         {
-            return WebBrowserEventType == WebBrowserEventTypes.Click ||
-                   WebBrowserEventType == WebBrowserEventTypes.ClickAll ||
-                   WebBrowserEventType == WebBrowserEventTypes.Enter ||
-                   WebBrowserEventType == WebBrowserEventTypes.UpdateDOM ||
-                   WebBrowserEventType == WebBrowserEventTypes.UploadFile ||
-                   WebBrowserEventType == WebBrowserEventTypes.SendSpecialKey;
+            return this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.Click ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.ClickAll ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.Enter ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.UpdateDOM ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.UploadFile ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.SendSpecialKey;
         }
 
         private bool UsesInputText()
         {
-            return WebBrowserEventType == WebBrowserEventTypes.Enter ||
-                   WebBrowserEventType == WebBrowserEventTypes.UpdateDOM ||
-                   WebBrowserEventType == WebBrowserEventTypes.UploadFile ||
-                   WebBrowserEventType == WebBrowserEventTypes.SwitchToUrl;
+            return this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.Enter ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.UpdateDOM ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.UploadFile ||
+                   this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.SwitchToUrl;
         }
 
         public override bool Execute(BaseRuntime runtime, object data)
@@ -142,8 +136,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
                 WebEventSelectionMode mode;
                 string selector;
-                
-                if (WebBrowserEventType == WebBrowserEventTypes.Enter)
+
+                if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.Enter)
                 {
                     if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                         return;
@@ -163,7 +157,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         }
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.Click)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.Click)
                 {
                     if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                         return;
@@ -183,7 +177,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         }
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.ClickAll)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.ClickAll)
                 {
                     if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                         return;
@@ -203,7 +197,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         }
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.Scroll)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.Scroll)
                 {
                     if (LatestScrollRectangleHeight < webBrowser.Height)
                     {
@@ -224,7 +218,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         HandleFailure(runtime, WebEventNotifications.FurtherScrollActionsNotPossible);
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.UpdateDOM)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.UpdateDOM)
                 {
                     if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                         return;
@@ -244,7 +238,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         }
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.UploadFile)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.UploadFile)
                 {
                     if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                         return;
@@ -264,7 +258,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         }
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.SwitchToUrl)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.SwitchToUrl)
                 {
                     if (string.IsNullOrWhiteSpace(inputText))
                     {
@@ -288,17 +282,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                         }
                     }
                 }
-                else if (WebBrowserEventType == WebBrowserEventTypes.SendSpecialKey)
+                else if (this.Resolve(x => x.WebBrowserEventType) == WebBrowserEventTypes.SendSpecialKey)
                 {
                     if (!TryRequireAndGetSelector(runtime, out mode, out selector))
                         return;
 
-                    var keyResult = webBrowser.SendSpecialKey(selector, mode, SpecialKey, SpecialKeyModifier);
+                    var keyResult = webBrowser.SendSpecialKey(selector, mode, this.Resolve(x => x.SpecialKey), this.Resolve(x => x.SpecialKeyModifier));
                     if (runtime != null)
                     {
                         if (keyResult.Success)
                         {
-                            runtime.Report($"Special key action successfully executed for selector \"{selector}\" (Key={SpecialKey}, Modifier={SpecialKeyModifier}).");
+                            runtime.Report($"Special key action successfully executed for selector \"{selector}\" (Key={this.Resolve(x => x.SpecialKey)}, Modifier={this.Resolve(x => x.SpecialKeyModifier)}).");
                             WaitAfterExecution();
                             GenerateResult(runtime, webBrowser.DOMContent);
                         }
@@ -338,8 +332,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         private void WaitAfterExecution()
         {
-            if (WaitingTimeAfterExecution > 0)
-                Thread.Sleep(WaitingTimeAfterExecution);
+            if (this.Resolve(x => x.WaitingTimeAfterExecution) > 0)
+                Thread.Sleep(this.Resolve(x => x.WaitingTimeAfterExecution));
         }
     }
 }

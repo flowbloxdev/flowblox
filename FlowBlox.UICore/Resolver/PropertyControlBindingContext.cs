@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.ViewModels.PropertyView;
 using System.ComponentModel;
@@ -94,10 +95,7 @@ namespace FlowBlox.UICore.Resolver
 
         private void UpdateIsEnabled(PropertyInfo property, PropertyControlViewModel viewModel)
         {
-            var uiAttr = property.GetCustomAttribute<FlowBloxUIAttribute>();
-            if (uiAttr == null)
-                return;
-
+            var uiAttr = property.GetFlowBloxUIAttribute();
             viewModel.IsEnabled = !FlowBlockUIAttributeHelper.IsDynamicallyReadOnly(_target, uiAttr);
         }
     }

@@ -8,21 +8,25 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 {
     public class TableColumnDefinition : FieldRequiredDefinitionBase
     {
-        [Required()]
+        [Required]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), 
-            SelectionFilterMethod = nameof(FlowBloxComponent.GetPossibleFieldElements))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         public override FieldElement Field { get; set; }
 
         [Display(Name = "TableColumnDefinition_IsRequired", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public override bool IsRequired { get; set; }
 
         [Display(Name = "TableColumnDefinition_IsKeyColumn", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool IsKeyColumn { get; set; }
 
         [Required()]
         [Display(Name = "TableColumnDefinition_ColumnName", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string ColumnName { get; set; }
 
         public override string ToString() =>

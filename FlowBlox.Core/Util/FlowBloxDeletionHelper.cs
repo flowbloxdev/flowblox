@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using System.Collections;
 using System.Reflection;
 using FlowBlox.Core.Actions;
@@ -416,8 +417,7 @@ namespace FlowBlox.Core.Util
                 if (!property.CanRead || property.GetIndexParameters().Length > 0)
                     continue;
 
-                var uiAttribute = property.GetCustomAttribute<FlowBloxUIAttribute>();
-                if (!IsRowManagedAssociation(uiAttribute))
+                if (!IsRowManagedAssociation(property))
                     continue;
 
                 var propertyValue = property.GetValue(instance);
@@ -437,12 +437,12 @@ namespace FlowBlox.Core.Util
             }
         }
 
-        private static bool IsRowManagedAssociation(FlowBloxUIAttribute? uiAttribute)
+        private static bool IsRowManagedAssociation(PropertyInfo property)
         {
-            if (uiAttribute?.Factory != UIFactory.Association)
+            if (property.GetFlowBloxUIFactory() != UIFactory.Association)
                 return false;
 
-            var operations = uiAttribute.Operations;
+            var operations = property.GetFlowBloxAssociationAttribute().Operations;
             var supportsCreate = operations.HasFlag(UIOperations.Create);
             var supportsDelete = operations.HasFlag(UIOperations.Delete);
             var supportsLink = operations.HasFlag(UIOperations.Link);

@@ -69,6 +69,7 @@ namespace FlowBlox.Core.Constants
         public const string PathsToolboxDir = "Paths.ToolboxDir";
         public const string PathsToolboxUserFile = "Paths.ToolboxUserFile";
 
+        public const string PopUpAIPromptQuickStartCompleted = "PopUp.AIPrompt.QuickStartCompleted";
         public const string PopUpAiAssistantQuickStartCompleted = "PopUp.AiAssistant.QuickStartCompleted";
         public const string PopUpComponentValidationGuidanceCompleted = "PopUp.Component.ValidationGuidanceCompleted";
         public const string PopUpOnnxGenAIQuickStartCompleted = "PopUp.OnnxGenAI.QuickStartCompleted";

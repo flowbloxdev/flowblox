@@ -22,6 +22,9 @@ namespace FlowBlox.UICore.PopUp.Views
         {
             InitializeComponent();
 
+            Width = Math.Min(Width, SystemParameters.WorkArea.Width - 40);
+            Height = Math.Min(Height, SystemParameters.WorkArea.Height - 40);
+
             DescriptionMarkdown.Engine.HyperlinkCommand = new RelayCommand(parameter =>
                 OpenLink(parameter?.ToString() ?? string.Empty));
 

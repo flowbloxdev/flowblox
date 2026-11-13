@@ -11,7 +11,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
     {
         [Display(Name = "MediaToolBase_BinaryDirectory", Description = "MediaToolBase_BinaryDirectory_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.DI)]
         public string BinaryDirectory { get; set; } = string.Empty;
 
         protected abstract string ExecutableName { get; }

@@ -28,19 +28,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         [Required]
         [Display(Name = "AWSCompareFacesFlowBlock_Provider", Description = "AWSCompareFacesFlowBlock_Provider_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleProviders),
-            SelectionDisplayMember = nameof(AmazonWebServicesProvider.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleProviders), DisplayMember = nameof(AmazonWebServicesProvider.Name))]
         public AmazonWebServicesProvider Provider { get; set; }
 
         [Required]
         [Display(Name = "AWSCompareFacesFlowBlock_ComparisonImage", Description = "AWSCompareFacesFlowBlock_ComparisonImage_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleFieldElements),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement ComparisonImage
         {
             get => _comparisonImage;
@@ -49,21 +44,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         [Range(0d, 100d)]
         [Display(Name = "AWSCompareFacesFlowBlock_SimilarityThreshold", Description = "AWSCompareFacesFlowBlock_SimilarityThreshold_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public double SimilarityThreshold { get; set; } = 90d;
 
         [Display(Name = "AWSCompareFacesFlowBlock_QualityFilter", Description = "AWSCompareFacesFlowBlock_QualityFilter_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public AWSCompareFacesQualityFilter QualityFilter { get; set; } = AWSCompareFacesQualityFilter.Auto;
 
         [Range(1, 1000)]
         [Display(Name = "AWSCompareFacesFlowBlock_MaxResults", Description = "AWSCompareFacesFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxResults { get; set; } = 100;
 
         [Display(Name = "AWSCompareFacesFlowBlock_InputImageMappings", Description = "AWSCompareFacesFlowBlock_InputImageMappings_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AWSCompareFacesFlowBlock_Groups_InputImages", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
-        [FlowBloxDataGrid(GridColumnMemberNames =
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxDataGrid(
+            ColumnMemberNames =
             [
                 nameof(InputImageMappingEntry.FieldElement),
                 nameof(InputImageMappingEntry.Key)
@@ -71,7 +64,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
         public ObservableCollection<InputImageMappingEntry> InputImageMappings { get; set; } = new();
 
         [Display(Name = "AWSCompareFacesFlowBlock_ResultFields", Description = "AWSCompareFacesFlowBlock_ResultFields_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AWSCompareFacesFlowBlock_Groups_ResultFields", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<AWSCompareFacesDestinations>> ResultFields { get; set; } = new();
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.magnify_scan, 16, new SKColor(35, 92, 148));
@@ -161,15 +154,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
                     var response = CompareFaces(
                         sourceImage,
                         targetImage,
-                        SimilarityThreshold,
-                        QualityFilter);
+                        this.Resolve(x => x.SimilarityThreshold),
+                        this.Resolve(x => x.QualityFilter));
 
                     var bestSimilarity = response.FaceMatches?
                         .Select(x => x?.Similarity ?? 0f)
                         .DefaultIfEmpty(0f)
                         .Max() ?? 0f;
 
-                    if (bestSimilarity >= SimilarityThreshold)
+                    if (bestSimilarity >= this.Resolve(x => x.SimilarityThreshold))
                     {
                         matches.Add(new CompareFacesMatch(
                             PersonKey: key,
@@ -186,7 +179,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
                 var limitedMatches = matches
                     .OrderByDescending(x => x.Similarity)
-                    .Take(Math.Max(1, MaxResults))
+                    .Take(Math.Max(1, this.Resolve(x => x.MaxResults)))
                     .ToList();
 
                 var matchCount = limitedMatches.Count.ToString(CultureInfo.InvariantCulture);

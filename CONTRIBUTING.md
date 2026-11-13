@@ -57,6 +57,12 @@ For desktop hosting, docking, or WPF integration changes, also run the [Avalonia
 
 Use meaningful tests for behavior changes and describe manual UI checks when applicable. Documentation-only changes need link and formatting checks rather than an application build. Follow the existing code style, keep changes focused, and localize new user-facing text in English and German. See [agent and coding conventions](AGENT_CONVENTIONS.md) and the [Avalonia application guide](FlowBlox.Avalonia/README.md) for project-specific details.
 
+## Extension setup guidance
+
+For components that need a local executable, browser or model installation, use the open
+[execution prerequisite and Quick Start API](docs/execution-prerequisites.md). Registered popup providers
+appear automatically in Help.
+
 ## Reviews and repository access
 
 Opening a PR does not grant write access. Maintainers review the implementation, relevant checks, and consistency with the agreed issue before merging.

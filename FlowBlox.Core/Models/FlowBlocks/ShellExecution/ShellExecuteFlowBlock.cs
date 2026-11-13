@@ -21,25 +21,26 @@ namespace FlowBlox.Core.Models.FlowBlocks.ShellExecution
     {
         [Required]
         [Display(Name = "ShellExecuteFlowBlock_Command", Description = "ShellExecuteFlowBlock_Command_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.ShellExecution), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.ShellExecution))]
         public string Command { get; set; }
 
         [Display(Name = "ShellExecuteFlowBlock_WorkingDirectory", Description = "ShellExecuteFlowBlock_WorkingDirectory_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.DI)]
         public string WorkingDirectory { get; set; }
 
         [Display(Name = "ShellExecuteFlowBlock_TimeoutMilliseconds", Description = "ShellExecuteFlowBlock_TimeoutMilliseconds_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? TimeoutMilliseconds { get; set; }
 
         [Display(Name = "ShellExecuteFlowBlock_FailOnNonZeroExitCode", Description = "ShellExecuteFlowBlock_FailOnNonZeroExitCode_Description", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool FailOnNonZeroExitCode { get; set; } = false;
 
         [Display(Name = "ShellExecuteFlowBlock_ReportStandardOutput", Description = "ShellExecuteFlowBlock_ReportStandardOutput_Description", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool ReportStandardOutput { get; set; } = false;
 
         [Display(Name = "ShellExecuteFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<ShellExecuteDestinations>> ResultFields { get; set; } = new();
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.code_tags, 16, SKColors.DarkSlateBlue);
@@ -98,7 +99,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.ShellExecution
                 {
                     Command = command,
                     WorkingDirectory = workingDirectory,
-                    TimeoutMilliseconds = TimeoutMilliseconds,
+                    TimeoutMilliseconds = this.Resolve(x => x.TimeoutMilliseconds),
                     CancellationToken = runtime.GetCancellationToken(),
                     OnStandardOutputLine = line =>
                     {
@@ -126,7 +127,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.ShellExecution
                     throw new RuntimeCancellationException();
 
                 if (executionResult.TimedOut)
-                    throw new InvalidOperationException($"Command execution timed out after {TimeoutMilliseconds} ms.");
+                    throw new InvalidOperationException($"Command execution timed out after {this.Resolve(x => x.TimeoutMilliseconds)} ms.");
 
                 if (!string.IsNullOrWhiteSpace(executionResult.ExceptionMessage))
                     throw new InvalidOperationException(executionResult.ExceptionMessage);

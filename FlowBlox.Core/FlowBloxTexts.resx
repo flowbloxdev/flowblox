@@ -4737,6 +4737,15 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="MediaDownloadNotifications_OutputFileMissing" xml:space="preserve"><value>Media output file missing.</value></data>
   <data name="MediaDownloadNotifications_Timeout" xml:space="preserve"><value>Media download timed out.</value></data>
   <data name="MediaDownloadProviderBase_UnsupportedFormat" xml:space="preserve"><value>The selected provider does not support the output format '{0}'.</value></data>
+  <data name="QuickStarts_MenuTitle" xml:space="preserve">
+    <value>Quick Starts</value>
+  </data>
+  <data name="ExecutionPrerequisite_Missing" xml:space="preserve">
+    <value>{0} could not be found at '{1}'. A required execution component is missing. Open Help → Quick Starts → {2} for installation and configuration instructions. Check the configured path and PATH environment variable.</value>
+  </data>
+  <data name="ExecutionPrerequisite_InitializationFailed" xml:space="preserve">
+    <value>{0} could not be initialized ('{1}'). Check its installation and configuration under Help → Quick Starts → {2}. Details: {3}</value>
+  </data>
 </root>
 
 

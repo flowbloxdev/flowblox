@@ -12,6 +12,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         private LogicalOperator _logicalOperator;
 
         [Display(Name = "LogicalCondition_LogicalOperator", ResourceType = typeof(FlowBloxTexts), Order = -10)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public LogicalOperator LogicalOperator
         {
             get => _logicalOperator;

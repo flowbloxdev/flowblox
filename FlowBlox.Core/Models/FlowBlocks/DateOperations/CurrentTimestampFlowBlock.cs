@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -14,7 +15,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
     public class CurrentTimestampFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "CurrentTimestampFlowBlock_UseUtc", Description = "CurrentTimestampFlowBlock_UseUtc_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseUtc { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.calendar_clock, 16, SKColors.DarkSlateBlue);
@@ -42,7 +42,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
             return Invoke(runtime, data, () =>
             {
 
-                var timestamp = UseUtc ? DateTime.UtcNow : DateTime.Now;
+                var timestamp = this.Resolve(x => x.UseUtc) ? DateTime.UtcNow : DateTime.Now;
                 var resultString = FieldResultFormatter.FormatResult(ResultField, timestamp);
                 GenerateResult(runtime, resultString);
             });

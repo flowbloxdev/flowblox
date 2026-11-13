@@ -17,6 +17,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
     {
         [Display(Name = "NoteFlowBlock_Note", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [FlowBloxTextBox(MultiLine = true)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string Note { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.note_text, 16, SKColors.Gold);
@@ -25,7 +26,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
         public NoteFlowBlock()
             : base()
         {
-            
+
         }
 
         public override FlowBlockCardinalities GetInputCardinality() => FlowBlockCardinalities.None;

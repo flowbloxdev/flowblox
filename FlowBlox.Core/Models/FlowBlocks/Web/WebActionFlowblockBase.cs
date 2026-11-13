@@ -16,10 +16,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
     public abstract class WebActionFlowblockBase : BaseSingleResultFlowBlock
     {
         [Display(Name = "WebActionFlowblockBase_AssociatedWebBrowser", Description = "WebActionFlowblockBase_AssociatedWebBrowser_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 100)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleWebBrowserFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleWebBrowserFlowBlocks), DisplayMember = nameof(Name))]
         public WebBrowserFlowBlock AssociatedWebBrowser { get; set; }
 
         public List<WebBrowserFlowBlock> GetPossibleWebBrowserFlowBlocks()
@@ -110,7 +109,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.WebBrowser
         {
             if (enumValue != null)
                 CreateNotification(runtime, enumValue, exception);
-            
+
             GenerateResult(runtime);
         }
 

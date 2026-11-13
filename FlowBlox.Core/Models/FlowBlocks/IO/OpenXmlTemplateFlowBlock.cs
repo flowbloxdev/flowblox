@@ -21,10 +21,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Required]
         [Display(Name = "OpenXmlTemplateFlowBlock_TemplateField", Description = "OpenXmlTemplateFlowBlock_TemplateField_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleFieldElements),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement TemplateField
         {
             get => _templateField;

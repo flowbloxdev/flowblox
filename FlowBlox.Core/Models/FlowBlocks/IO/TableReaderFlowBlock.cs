@@ -21,11 +21,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     {
         [Required()]
         [Display(Name = "TableSelectorMappingEntry_ColumnName", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string ColumnName { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public FieldElement Field { get; set; }
 
         public override string ToString() => $"{ColumnName} → {Field}";
@@ -45,11 +46,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     public class TableSelectorColumnCondition : ComparisonCondition
     {
         [Display(Name = "TableSelectorColumnCondition_ColumnType", Description = "TableSelectorColumnCondition_ColumnType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = -1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Edit)]
+        [FlowBloxAssociation(Operations = UIOperations.Edit)]
         public TypeElement ColumnType { get; set; }
 
         [Required()]
         [Display(Name = "TableSelectorColumnCondition_ColumnName", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string ColumnName { get; set; }
 
         public override bool Compare(object leftValue)
@@ -64,25 +66,27 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     public class TableReaderFlowBlock : BaseResultFlowBlock
     {
         [Display(Name = "TableReaderFlowBlock_MappingEntries", ResourceType = typeof(FlowBloxTexts), GroupName = "TableReaderFlowBlock_Groups_FieldColumnMapping", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxDataGrid]
         public ObservableCollection<TableSelectorMappingEntry> MappingEntries { get; set; }
 
         [Display(Name = "TableReaderFlowBlock_DatasetColumnConditions", ResourceType = typeof(FlowBloxTexts), GroupName = "TableReaderFlowBlock_Groups_DatasetColumnConditions", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid(
-            ItemFactory = typeof(TableSelectorColumnConditionItemFactory),
-            GridColumnMemberNames = new[]
+            ColumnMemberNames = new[]
             {
                 nameof(TableSelectorColumnCondition.ColumnType),
                 nameof(TableSelectorColumnCondition.ColumnName),
                 nameof(TableSelectorColumnCondition.Operator),
                 nameof(TableSelectorColumnCondition.Value)
             })]
+        [FlowBloxAssociation(ItemFactory = typeof(TableSelectorColumnConditionItemFactory))]
         public ObservableCollection<TableSelectorColumnCondition> ColumnConditions { get; set; }
 
         [Display(Name = "TableReaderFlowBlock_ReferencedTable", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [Required]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleReadableTables), SelectionDisplayMember = nameof(IReadableTable.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleReadableTables), DisplayMember = nameof(IReadableTable.Name))]
         public IReadableTable ReferencedTable { get; set; }
 
         public List<IReadableTable> GetPossibleReadableTables()
@@ -181,7 +185,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
                             ? string.Empty
                             : FieldResultFormatter.FormatResult(fieldElement, rawValue);
                         resultEntry[fieldElement] = fieldValue;
-                        
+
                     }
                     resultMap.Add(resultEntry);
                 }

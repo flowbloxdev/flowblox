@@ -5,9 +5,9 @@ namespace FlowBlox.Core.Models.Components.Modifier
 {
     public abstract class RegexModifierBase : ModifierBase
     {
-        [Required()]
+        [Required]
         [Display(Name = "RegexMatchModifier_Search", Order = 0, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex))]
         [FlowBloxTextBox(IsCodingMode = true)]
         public string Search { get; set; }
     }

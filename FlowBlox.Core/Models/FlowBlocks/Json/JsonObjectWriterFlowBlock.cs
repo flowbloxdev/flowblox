@@ -26,10 +26,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         public override string DefaultResultFieldName => GlobalConstants.SuccessFieldName;
 
         [Display(Name = "JsonObjectWriterFlowBlock_AssociatedJsonObject", Description = "JsonObjectWriterFlowBlock_AssociatedJsonObject_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleJsonObjectFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleJsonObjectFlowBlocks), DisplayMember = nameof(Name))]
         public JsonObjectFlowBlock AssociatedJsonObject { get; set; }
 
         public List<JsonObjectFlowBlock> GetPossibleJsonObjectFlowBlocks()
@@ -40,9 +39,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JsonObjectWriterFlowBlock_AssociatedJsonObjectWriter", Description = "JsonObjectWriterFlowBlock_AssociatedJsonObjectWriter_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-           SelectionFilterMethod = nameof(GetPossibleJsonObjectWriters),
-           SelectionDisplayMember = nameof(BaseFlowBlock.Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleJsonObjectWriters), DisplayMember = nameof(BaseFlowBlock.Name))]
         public JsonObjectWriterFlowBlock AssociatedJsonObjectWriter { get; set; }
 
         public List<JsonObjectWriterFlowBlock> GetPossibleJsonObjectWriters()
@@ -52,16 +50,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JsonObjectWriterFlowBlock_JsonAssignments", Description = "JsonObjectWriterFlowBlock_JsonAssignments_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 10)]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxDataGrid]
         public ObservableCollection<JsonPropertyValueAssignment> Assignments { get; set; } = new();
 
 
         [Display(Name = "JsonObjectWriterFlowBlock_Path", Description = "JsonObjectWriterFlowBlock_Path_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
         public string Path { get; set; }
 
         [Display(Name = "JsonObjectWriterFlowBlock_IsArray", Description = "JsonObjectWriterFlowBlock_IsArray_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool IsArray { get; set; }
 
         [JsonIgnore]
@@ -107,7 +105,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
                 var path = this.Resolve(owner => owner.Path);
                 var effectivePath = string.IsNullOrWhiteSpace(path) ? "$" : path.Trim();
-                var createdOrUpdatedObject = JPathEnsurer.EnsureObject(root, effectivePath, IsArray);
+                var createdOrUpdatedObject = JPathEnsurer.EnsureObject(root, effectivePath, this.Resolve(x => x.IsArray));
 
                 CreatedOrUpdatedObject = createdOrUpdatedObject;
                 ApplyAssignments(createdOrUpdatedObject);
@@ -127,7 +125,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
                     ? a.FieldValue.Value
                     : a.Resolve(owner => owner.Value);
 
-                if (a.IsArray)
+                if (a.Resolve(x => x.IsArray))
                 {
                     if (!jObject.TryGetValue(propertyName, out var token) || token.Type != JTokenType.Array)
                     {

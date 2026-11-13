@@ -42,7 +42,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         [Required]
         [Display(Name = "OpenApiRestFlowBlock_OpenApiSource", Description = "OpenApiRestFlowBlock_OpenApiSource_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFileSelection)]
+        [FlowBloxUI(UISelectionButtons.FL)]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlighting = "JSON")]
         public string OpenApiSource
         {
@@ -57,9 +57,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         [Required]
         [Display(Name = "OpenApiRestFlowBlock_Endpoint", Description = "OpenApiRestFlowBlock_Endpoint_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetEndpointSuggestions),
-            SelectionFilterDependency = nameof(EndpointSuggestions))]
         [FlowBloxComboBox(DropDownMode = DropDownMode.SelectionOnly)]
+        [FlowBloxItemsSource(Method = nameof(GetEndpointSuggestions), Dependency = nameof(EndpointSuggestions))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string Endpoint
         {
             get => _endpoint;
@@ -72,82 +72,84 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         }
 
         [Display(Name = "OpenApiRestFlowBlock_BaseUrl", Description = "OpenApiRestFlowBlock_BaseUrl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BaseUrl { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_EndpointDescription", Description = "OpenApiRestFlowBlock_EndpointDescription_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(ReadOnly = true)]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnly = true)]
         [FlowBloxTextBox(MultiLine = true)]
         public string EndpointDescription { get; private set; }
 
         [Display(Name = "OpenApiRestFlowBlock_DefinitionError", Description = "OpenApiRestFlowBlock_DefinitionError_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(ReadOnly = true)]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnly = true)]
         [FlowBloxTextBox(MultiLine = true)]
         public string DefinitionError { get; private set; }
 
         [Display(Name = "OpenApiRestFlowBlock_DefinitionWarnings", Description = "OpenApiRestFlowBlock_DefinitionWarnings_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(ReadOnly = true)]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnly = true)]
         [FlowBloxTextBox(MultiLine = true)]
         public string DefinitionWarnings { get; private set; }
 
         [Display(Name = "OpenApiRestFlowBlock_BearerToken", Description = "OpenApiRestFlowBlock_BearerToken_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BearerToken { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_UserName", Description = "OpenApiRestFlowBlock_UserName_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string UserName { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_Password", Description = "OpenApiRestFlowBlock_Password_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Password { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_FailOnHttpError", Description = "OpenApiRestFlowBlock_FailOnHttpError_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool FailOnHttpError { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_Paginate", Description = "OpenApiRestFlowBlock_Paginate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool Paginate { get; set; }
 
         [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
         [Display(Name = "OpenApiRestFlowBlock_PaginationItemsPath", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string PaginationItemsPath { get; set; } = "items";
 
         [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
         [Display(Name = "OpenApiRestFlowBlock_PaginationOffsetParameter", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string PaginationOffsetParameter { get; set; } = "startAt";
 
         [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
         [Display(Name = "OpenApiRestFlowBlock_PaginationTotalPath", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string PaginationTotalPath { get; set; } = "total";
 
         [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
         [Range(1, 10000)]
         [Display(Name = "OpenApiRestFlowBlock_MaximumPages", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MaximumPages { get; set; } = 1000;
 
         [Display(Name = "OpenApiRestFlowBlock_HeaderParameters", Description = "OpenApiRestFlowBlock_HeaderParameters_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Parameters", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.None)]
-        [FlowBloxDataGrid(GridColumnMemberNames = [nameof(OpenApiParameterValue.Name), nameof(OpenApiParameterValue.Required), nameof(OpenApiParameterValue.Description), nameof(OpenApiParameterValue.Value)])]
+        [FlowBloxDataGrid(
+            ColumnMemberNames = [nameof(OpenApiParameterValue.Name), nameof(OpenApiParameterValue.Required), nameof(OpenApiParameterValue.Description), nameof(OpenApiParameterValue.Value)])]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [FlowBloxAssociation(Operations = UIOperations.None)]
         public ObservableCollection<OpenApiParameterValue> HeaderParameters { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_RequestParameters", Description = "OpenApiRestFlowBlock_RequestParameters_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Parameters", Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.None)]
-        [FlowBloxDataGrid(GridColumnMemberNames = [nameof(OpenApiParameterValue.Name), nameof(OpenApiParameterValue.Location), nameof(OpenApiParameterValue.Required), nameof(OpenApiParameterValue.Description), nameof(OpenApiParameterValue.Value)])]
+        [FlowBloxDataGrid(
+            ColumnMemberNames = [nameof(OpenApiParameterValue.Name), nameof(OpenApiParameterValue.Location), nameof(OpenApiParameterValue.Required), nameof(OpenApiParameterValue.Description), nameof(OpenApiParameterValue.Value)])]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [FlowBloxAssociation(Operations = UIOperations.None)]
         public ObservableCollection<OpenApiParameterValue> RequestParameters { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_ContentType", Description = "OpenApiRestFlowBlock_ContentType_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Payload", Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ContentType { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_Payload", Description = "OpenApiRestFlowBlock_Payload_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Payload", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlighting = "JSON")]
         public string Payload { get; set; }
 
         [Display(Name = "OpenApiRestFlowBlock_ResultFields", Description = "OpenApiRestFlowBlock_ResultFields_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 10)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<OpenApiRestDestinations>> ResultFields { get; set; }
 
         [JsonIgnore]

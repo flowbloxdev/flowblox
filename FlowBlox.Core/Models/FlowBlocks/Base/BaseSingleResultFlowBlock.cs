@@ -22,6 +22,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [Display(Name = "PropertyNames_Name", ResourceType = typeof(FlowBloxTexts), Order = -10)]
         [CustomValidation(typeof(FlowBloxComponent), nameof(ValidateName))]
         [Required()]
+        [FlowBloxUI(UISelectionButtons.None)]
         public override string Name
         {
             get
@@ -39,8 +40,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         private FieldElement _resultField;
 
         [Display(Name = "Global_ResultField", ResourceType = typeof(FlowBloxTexts), Order = 100)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionDisplayMember = nameof(Name), Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [Required()]
+        [Required]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxItemsSource(DisplayMember = nameof(Name))]
         public FieldElement ResultField
         {
             get => _resultField;
@@ -53,7 +55,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         }
 
         [Display(Name = "BaseSingleResultFlowBlock_ResultFieldFieldType", ResourceType = typeof(FlowBloxTexts), Order = 101)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public FieldTypes ResultFieldFieldType
         {
             get => ResultField?.FieldType?.FieldType ?? DefaultResultFieldType;

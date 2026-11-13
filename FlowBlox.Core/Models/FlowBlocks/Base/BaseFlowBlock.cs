@@ -88,17 +88,28 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         }
 
         /// <summary>
-        /// Completes a failed property resolution without interrupting the flow contract.
+        /// Completes a handled execution failure without interrupting the flow contract.
         /// </summary>
-        internal virtual void CompleteFailedResolution(BaseRuntime runtime) => ExecuteNextFlowBlocks(runtime);
+        internal virtual void CompleteFailedExecution(BaseRuntime runtime) => ExecuteNextFlowBlocks(runtime);
 
         public void CreateNotification(BaseRuntime runtime, Enum notificationEnumValue, Exception e = null)
+        {
+            CreateNotification(runtime, notificationEnumValue, notificationEnumValue.GetDisplayName(), e);
+        }
+
+        /// <summary>
+        /// Creates a scoped notification with a contextual message.
+        /// The enum continues to control the notification's configured severity.
+        /// </summary>
+        public void CreateNotification(
+            BaseRuntime runtime,
+            Enum notificationEnumValue,
+            string message,
+            Exception e)
         {
             var notificationType = GetCurrentNotificationType(notificationEnumValue);
             if (notificationType == NotificationType.None)
                 return;
-
-            string message = notificationEnumValue.GetDisplayName();
 
             var memberInfo = notificationEnumValue.GetType().GetMember(notificationEnumValue.ToString()).Single();
             var attribute = memberInfo.GetCustomAttribute<FlowBloxNotificationAttribute>();
@@ -295,6 +306,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             }
         }
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public int ExecutionIndex { get; set; } = -1;
 
         [JsonProperty("ElementIndex")]
@@ -304,6 +316,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         }
 
         private bool _isNotExecuted;
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool IsNotExecuted
         {
             get => _isNotExecuted;
@@ -323,6 +336,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [JsonIgnore()]
         public virtual bool CanBeReferenced => true;
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool BreakPoint { get; set; }
 
         protected BaseFlowBlock()
@@ -347,6 +361,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [Display(Name = "BaseFlowBlock_Name", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Default", Order = -10)]
         [CustomValidation(typeof(FlowBloxComponent), nameof(ValidateName))]
         [Required()]
+        [FlowBloxUI(UISelectionButtons.None)]
         public override string Name
         {
             get
@@ -381,10 +396,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         /// Does not include flow blocks that are associated via property definitions — use <see cref="GetAssociatedFlowBlocks"/> for that.
         /// </summary>
         [Display(Name = "BaseFlowBlock_ReferencedElements", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseFlowBlock_Groups_Dependencies", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(BaseFlowBlock.GetPossibleReferencedElements),
-            SelectionDisplayMember = nameof(Name))]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(BaseFlowBlock.Name) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(BaseFlowBlock.Name) })]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(BaseFlowBlock.GetPossibleReferencedElements), DisplayMember = nameof(Name))]
         public virtual ObservableCollection<BaseFlowBlock> ReferencedFlowBlocks
         {
             get => _referencedFlowBlocks;
@@ -676,11 +690,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             Description = "BaseFlowBlock_AssociatedIterationContext_Tooltip", 
             ResourceType = typeof(FlowBloxTexts), 
             GroupName = "BaseFlowBlock_Groups_Input", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink, 
-            SelectionFilterMethod = nameof(GetPossibleIterationContexts), 
-            SelectionDisplayMember = nameof(Name))]
         [AssociatedFlowBlockResolvableCustom(nameof(IterationContext), nameof(CanDisplayAssociatedIterationContextHint))]
         [JsonProperty("AssociatedIterationContext")]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleIterationContexts), DisplayMember = nameof(Name))]
         public BaseFlowBlock AssociatedIterationContext
         {
             get => _associatedIterationContext;
@@ -764,16 +777,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         [Display(Name = "BaseFlowBlock_InputIgnoreDuplicates", Description = "BaseFlowBlock_InputIgnoreDuplicates_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseFlowBlock_Groups_Input", Order = 1)]
         [ActivationCondition(MemberName = nameof(HasIterationContext), Value = true)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool InputIgnoreDuplicates { get; set; }
 
         [Display(Name = "BaseFlowBlock_AutomaticInputBehaviorAssignment", Description = "BaseFlowBlock_AutomaticInputBehaviorAssignment_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseFlowBlock_Groups_Input", Order = 2)]
         [ActivationCondition(MemberName = nameof(HasIterationContext), Value = true)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AutomaticInputBehaviorAssignment { get; set; } = true;
 
         [Display(Name = "BaseFlowBlock_InputBehaviorAssignments", Description = "BaseFlowBlock_InputBehaviorAssignments_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseFlowBlock_Groups_Input", Order = 3)]
         [ActivationCondition(MemberName = nameof(HasIterationContext), Value = true)]
         [ConditionallyRequired]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.Edit)]
+        [FlowBloxAssociation(Operations = UIOperations.Edit)]
+        [FlowBloxDataGrid]
         public ObservableCollection<InputBehaviorAssignment> InputBehaviorAssignments { get; set; }
 
         public override DeletionReviewStatus GetDeletionReviewStatus(
@@ -789,28 +805,28 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         }
 
         [Display(Name = "BaseFlowBlock_InheritRequirementsNotMet", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Requirements", Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool InheritRequirementsNotMet { get; set; }
 
         [Display(Name = "BaseFlowBlock_ActivationConditions", Description = "BaseFlowBlock_ActivationConditions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Requirements", Order = 2)]
-        [FlowBloxUI(
-            Factory = UIFactory.GridView,
-            CreatableTypes = new[] { 
-                typeof(FieldLogicalComparisonCondition), 
-                typeof(LogicalGroupCondition) })]
-        [FlowBloxDataGrid(GridColumnMemberNames = [
+        [FlowBloxDataGrid(
+            ColumnMemberNames = [
             nameof(LogicalCondition.LogicalOperator),
             nameof(LogicalCondition.DisplayName)
             ])]
+        [FlowBloxAssociation(
+            CreatableTypes = new[] {
+                typeof(FieldLogicalComparisonCondition),
+                typeof(LogicalGroupCondition) })]
         public ObservableCollection<LogicalCondition> ActivationConditions { get; set; } = new ObservableCollection<LogicalCondition>();
 
         private ObservableCollection<FlowBloxTestDefinition> _testDefinitions = new();
 
         [Display(Name = "BaseFlowBlock_TestDefinitions", Description = "BaseFlowBlock_TestDefinitions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseFlowBlock_Groups_Tests", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ListView, 
-            Operations = UIOperations.Link | UIOperations.Unlink | UIOperations.Create | UIOperations.Edit | UIOperations.Delete,
-            SelectionFilterMethod = nameof(GetPossibleTestDefinitions),
-            SelectionDisplayMember = nameof(FlowBloxTestDefinition.Name))]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FlowBloxTestDefinition.Name) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FlowBloxTestDefinition.Name) })]
+        [FlowBloxAssociation(
+            Operations = UIOperations.Link | UIOperations.Unlink | UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleTestDefinitions), DisplayMember = nameof(FlowBloxTestDefinition.Name))]
         public ObservableCollection<FlowBloxTestDefinition> TestDefinitions
         {
             get => _testDefinitions;
@@ -857,9 +873,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         [Display(Name = "BaseFlowBlock_GenerationStrategies", Description = "BaseFlowBlock_GenerationStrategies_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseFlowBlock_Groups_Tests", Order = 1)]
         [ActivationCondition(ActivationMethod = nameof(IsGenerationStrategiesVisible))]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FlowBloxGenerationStrategyBase.Name) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FlowBloxGenerationStrategyBase.Name) })]
         [CustomValidation(typeof(BaseFlowBlock), nameof(ValidateGenerationStrategies))]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<FlowBloxGenerationStrategyBase> GenerationStrategies { get; set; }
 
         public bool IsGenerationStrategiesVisible()
@@ -1230,6 +1246,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                 runtime.Focus(this);
                 Wait(runtime);
                 SetParentElement(data);
+                if (!TryValidateExecutionPrerequisites(runtime))
+                    return;
+
                 executor();
             };
 
@@ -1265,7 +1284,43 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
             [FlowBloxNotification(NotificationType = NotificationType.Error)]
             [Display(Name = "An unexpected error has occurred.")]
-            UnexpectedError
+            UnexpectedError,
+
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "Setup required")]
+            SetupRequired
+        }
+
+        /// <summary>
+        /// Reports a failed execution prerequisite and completes the block without executing its action.
+        /// </summary>
+        /// <param name="runtime">The runtime whose notification and result/continuation contract must be preserved.</param>
+        /// <param name="exception">The prerequisite failure, including its Quick Start target and detailed cause.</param>
+        /// <remarks>
+        /// The default emits the compact SetupRequired error and generates an empty result for result blocks,
+        /// or schedules successors for non-result blocks. Override this hook when the block needs its own
+        /// notification enum or failure-result payload; complete its result/continuation contract exactly once.
+        /// </remarks>
+        protected virtual void OnExecutionPrerequisiteFailure(
+            BaseRuntime runtime,
+            ExecutionPrerequisiteException exception)
+        {
+            CreateNotification(runtime, BaseFlowBlockNotifications.SetupRequired, exception.NotificationMessage, exception);
+            CompleteFailedExecution(runtime);
+        }
+
+        private bool TryValidateExecutionPrerequisites(BaseRuntime runtime)
+        {
+            try
+            {
+                EvaluateExecutionPrerequisites();
+                return true;
+            }
+            catch (ExecutionPrerequisiteException exception)
+            {
+                OnExecutionPrerequisiteFailure(runtime, exception);
+                return false;
+            }
         }
 
         protected virtual bool InvokeExecutor(BaseRuntime runtime, Action executor)
@@ -1274,7 +1329,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
             try
             {
-                using var selectedProperties = runtime.ResolveSelectedFieldProperties(this);
                 return InvokeWithResolvedProperties(runtime, executor);
             }
             catch (RuntimeCancellationException)
@@ -1398,6 +1452,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         [JsonIgnore()]
         [DeepCopierIgnore()]
+        [FlowBloxUI(UISelectionButtons.None)]
         public FlowBlockFlags CurrentFlags { get; private set; }
 
         private void InputReference_IterationEnd(BaseRuntime runtime)

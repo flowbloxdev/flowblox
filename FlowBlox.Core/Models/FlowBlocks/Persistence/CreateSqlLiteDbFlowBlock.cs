@@ -17,7 +17,8 @@ public sealed class CreateSqlLiteDbFlowBlock : BaseSingleResultFlowBlock
 {
     [Required]
     [Display(Name = "CreateSqlLiteDbFlowBlock_DatabaseFile", Description = "CreateSqlLiteDbFlowBlock_DatabaseFile_Tooltip", ResourceType = typeof(FlowBloxTexts))]
-    [FlowBloxUI(Factory = UIFactory.Association, SelectionDisplayMember = nameof(FileObject.Name))]
+    [FlowBloxAssociation]
+    [FlowBloxItemsSource(DisplayMember = nameof(FileObject.Name))]
     public FileObject DatabaseFile { get; set; }
 
     public override string DefaultResultFieldName => "ConnectionString";

@@ -13,15 +13,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
     {
         [Required]
         [Display(Name = "InputImageMappingEntry_FieldElement", Description = "InputImageMappingEntry_FieldElement_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement FieldElement { get; set; }
 
         [Required]
         [Display(Name = "InputImageMappingEntry_Key", Description = "InputImageMappingEntry_Key_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Key { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

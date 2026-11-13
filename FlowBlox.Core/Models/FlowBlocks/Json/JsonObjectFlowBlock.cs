@@ -27,7 +27,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         public JObject InternalJsonObject { get; protected set; }
 
         [Display(Name = "JsonObjectFlowBlock_JsonContent", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true, SyntaxHighlighting = "JSON")]
         [Required]
         public string JsonContent { get; set; }

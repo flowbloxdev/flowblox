@@ -614,22 +614,6 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public void RestoreSession_DiscardsLegacyRuntimeExplanationBindings()
-        {
-            var service = CreateService(new RecordingAiExecutor(), CreateConfiguration(maxLatestMessages: 10));
-            service.RestoreSession(new AiAssistantHistoryDocument
-            {
-                LoadedExplanationKeys = [AssistantPromptCatalog.SpecialGeneratorsKey]
-            });
-
-            var restored = new AiAssistantHistoryDocument();
-            service.UpdateHistorySessionMetadata(restored);
-
-            Assert.AreEqual(0, restored.LoadedExplanationKeys.Count);
-            Assert.IsFalse(service.GetDebugSnapshot().SystemMessages.Any(x => x.IsRuntimeBound));
-        }
-
-        [TestMethod]
         public async Task RestoreSession_UsesPersistedSessionMessagesBeforeTranscriptFallback()
         {
             var executor = new RecordingAiExecutor();

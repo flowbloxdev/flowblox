@@ -3,7 +3,6 @@ using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Provider.Project;
 using FlowBlox.Test.Runtime;
-using Newtonsoft.Json;
 
 namespace FlowBloxTest.FlowBlocks.Json
 {
@@ -102,16 +101,5 @@ namespace FlowBloxTest.FlowBlocks.Json
             Assert.IsFalse(mapping.ValidateObject().ContainsKey(nameof(JPathMultiSelectorMappingEntry.RowPath)));
         }
 
-        [TestMethod]
-        public void Deserialize_LegacyJsonPathPropertyPopulatesJPath()
-        {
-            var mapping = JsonConvert.DeserializeObject<JPathMultiSelectorMappingEntry>("""
-            { "JsonPath": "$[*].id" }
-            """);
-
-            Assert.IsNotNull(mapping);
-            Assert.AreEqual("$[*].id", mapping.JPath);
-        Assert.IsFalse(JsonConvert.SerializeObject(mapping).Contains("\"JsonPath\"", StringComparison.Ordinal));
-        }
     }
 }

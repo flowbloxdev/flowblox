@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Base;
@@ -17,37 +18,45 @@ namespace FlowBlox.Core.Models.Notifications
     public sealed class RuntimeNotificationConfiguration : FlowBloxReactiveObject, IValidatableObject
     {
         [Display(Name = "RuntimeNotificationConfiguration_Notifications", Description = "RuntimeNotificationConfiguration_Notifications_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Notifications", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.None)]
-        [FlowBloxDataGrid(GridColumnMemberNames = [nameof(RuntimeNotificationRule.Type), nameof(RuntimeNotificationRule.Enabled)])]
+        [FlowBloxDataGrid(ColumnMemberNames = [nameof(RuntimeNotificationRule.Type), nameof(RuntimeNotificationRule.Enabled)])]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [FlowBloxAssociation(Operations = UIOperations.None)]
         public ObservableCollection<RuntimeNotificationRule> Notifications { get; set; } = CreateDefaultRules();
 
         [Display(Name = "RuntimeNotificationConfiguration_DoNotSendWhileDebugging", Description = "RuntimeNotificationConfiguration_DoNotSendWhileDebugging_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Notifications", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool DoNotSendWhileDebugging { get; set; } = true;
 
         [Display(Name = "RuntimeNotificationConfiguration_AttachRuntimeLog", Description = "RuntimeNotificationConfiguration_AttachRuntimeLog_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Notifications", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AttachRuntimeLog { get; set; } = true;
 
         [Display(Name = "RuntimeNotificationConfiguration_Host", Description = "RuntimeNotificationConfiguration_Host_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Server", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [Required(ErrorMessageResourceName = "RuntimeNotificationConfiguration_Validation_HostRequired", ErrorMessageResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string Host { get; set; } = string.Empty;
 
         [Range(1, 65535)]
         [Display(Name = "RuntimeNotificationConfiguration_Port", Description = "RuntimeNotificationConfiguration_Port_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Server", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int Port { get; set; } = 25;
 
         [Display(Name = "RuntimeNotificationConfiguration_UseSsl", Description = "RuntimeNotificationConfiguration_UseSsl_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Server", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UseSsl { get; set; }
 
         [Display(Name = "RuntimeNotificationConfiguration_AcceptInvalidCertificates", Description = "RuntimeNotificationConfiguration_AcceptInvalidCertificates_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Server", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AcceptInvalidCertificates { get; set; }
 
         [Display(Name = "RuntimeNotificationConfiguration_UseAuthentication", Description = "RuntimeNotificationConfiguration_UseAuthentication_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Authentication", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UseAuthentication { get; set; }
 
         [ActivationCondition(MemberName = nameof(UseAuthentication), Value = true)]
         [ConditionallyRequired]
         [Display(Name = "RuntimeNotificationConfiguration_UserName", Description = "RuntimeNotificationConfiguration_UserName_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Authentication", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string UserName { get; set; } = string.Empty;
 
         [JsonIgnore]
@@ -55,20 +64,25 @@ namespace FlowBlox.Core.Models.Notifications
         [ConditionallyRequired]
         [FlowBloxTextBox(IsPassword = true)]
         [Display(Name = "RuntimeNotificationConfiguration_Password", Description = "RuntimeNotificationConfiguration_Password_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Authentication", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string Password { get; set; } = string.Empty;
 
         [Display(Name = "RuntimeNotificationConfiguration_FromAddress", Description = "RuntimeNotificationConfiguration_FromAddress_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Recipients", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [Required(ErrorMessageResourceName = "RuntimeNotificationConfiguration_Validation_FromRequired", ErrorMessageResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string FromAddress { get; set; } = string.Empty;
 
         [Display(Name = "RuntimeNotificationConfiguration_ToAddresses", Description = "RuntimeNotificationConfiguration_ToAddresses_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Recipients", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [Required(ErrorMessageResourceName = "RuntimeNotificationConfiguration_Validation_ToRequired", ErrorMessageResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string ToAddresses { get; set; } = string.Empty;
 
         [Display(Name = "RuntimeNotificationConfiguration_CcAddresses", Description = "RuntimeNotificationConfiguration_CcAddresses_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Recipients", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string CcAddresses { get; set; } = string.Empty;
 
         [Display(Name = "RuntimeNotificationConfiguration_BccAddresses", Description = "RuntimeNotificationConfiguration_BccAddresses_Tooltip", GroupName = "RuntimeNotificationConfiguration_Groups_Recipients", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string BccAddresses { get; set; } = string.Empty;
 
         public override string ToString() => Host;

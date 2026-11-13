@@ -28,6 +28,7 @@ namespace FlowBlox.Core.Models.Testing
         public override string ToString() => FieldElement?.ToString() ?? string.Empty;
 
         [JsonIgnore]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UIRequiredForExecution
         {
             get => _uIRequiredForExecution;
@@ -77,6 +78,7 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [Display(Name = "FlowBloxTestConfiguration_SelectionMode", Description = "FlowBloxTestConfiguration_SelectionMode_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public FlowBloxTestConfigurationSelectionMode? SelectionMode
         {
             get => _selectionMode;
@@ -126,13 +128,14 @@ namespace FlowBlox.Core.Models.Testing
             }
         }
 
-        [ActivationCondition(MemberName = nameof(SelectionMode), Values = new object[]
+        [ActivationCondition(
+            MemberName = nameof(SelectionMode),
+            Values = new object[]
         {
             FlowBloxTestConfigurationSelectionMode.UserInput_ExpectedValue,
             FlowBloxTestConfigurationSelectionMode.UserInput
         })]
         [Display(Name = "FlowBloxTestConfiguration_UserInput", Description = "FlowBloxTestConfiguration_UserInput_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string UserInput
         {
@@ -149,9 +152,8 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [Display(Name = "FlowBloxTestConfiguration_ExpectationConditions", Description = "FlowBloxTestConfiguration_ExpectationConditions_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
         [FlowBloxDataGrid(
-            GridColumnMemberNames = new[]
+            ColumnMemberNames = new[]
             {
                 nameof(ExpectationCondition.ExpectationConditionTarget),
                 nameof(ExpectationCondition.Index),
@@ -201,6 +203,7 @@ namespace FlowBlox.Core.Models.Testing
             OnPropertyChanged(nameof(ExpectationConditions));
         }
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public int? Index
         {
             get => _index;

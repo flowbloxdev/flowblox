@@ -11,7 +11,7 @@ namespace FlowBlox.Core.Models.Testing
         private ExpectationConditionTarget _expectationConditionTarget;
 
         [Display(Name = "ExpectationCondition_ExpectationConditionTarget", Description = "ExpectationCondition_ExpectationConditionTarget_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public ExpectationConditionTarget ExpectationConditionTarget
         {
             get => _expectationConditionTarget;
@@ -29,6 +29,7 @@ namespace FlowBlox.Core.Models.Testing
 
         [ActivationCondition(MemberName = nameof(ExpectationConditionTarget), Value = ExpectationConditionTarget.ValueAtIndex)]
         [Display(Name = "ExpectationCondition_Index", Description = "ExpectationCondition_Index_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int Index
         {
             get => _index;

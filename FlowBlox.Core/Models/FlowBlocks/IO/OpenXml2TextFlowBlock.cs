@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -19,10 +20,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Required]
         [Display(Name = "OpenXml2TextFlowBlock_WordDocumentField", Description = "OpenXml2TextFlowBlock_WordDocumentField_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleFieldElements),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement WordDocumentField
         {
             get => _wordDocumentField;
@@ -30,19 +29,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         }
 
         [Display(Name = "OpenXml2TextFlowBlock_HeaderMode", Description = "OpenXml2TextFlowBlock_HeaderMode_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenXml2TextFlowBlock_Groups_Advanced", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public OpenXmlTextSectionMode HeaderMode { get; set; } = OpenXmlTextSectionMode.IncludeWithTags;
 
         [Display(Name = "OpenXml2TextFlowBlock_BodyMode", Description = "OpenXml2TextFlowBlock_BodyMode_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenXml2TextFlowBlock_Groups_Advanced", Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public OpenXmlTextSectionMode BodyMode { get; set; } = OpenXmlTextSectionMode.IncludeWithTags;
 
         [Display(Name = "OpenXml2TextFlowBlock_FooterMode", Description = "OpenXml2TextFlowBlock_FooterMode_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenXml2TextFlowBlock_Groups_Advanced", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public OpenXmlTextSectionMode FooterMode { get; set; } = OpenXmlTextSectionMode.IncludeWithTags;
 
         [Display(Name = "OpenXml2TextFlowBlock_SplitAtPageBreaks", Description = "OpenXml2TextFlowBlock_SplitAtPageBreaks_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenXml2TextFlowBlock_Groups_Advanced", Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool SplitAtPageBreaks { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_document_arrow_right_outline, 16, SKColors.RoyalBlue);
@@ -77,10 +72,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
                     var documentBytes = FlowBloxBinaryContentHelper.Resolve(WordDocumentField);
                     var pages = OpenXmlTextExtractor.Extract(documentBytes, new OpenXmlTextExtractionOptions
                     {
-                        HeaderMode = HeaderMode,
-                        BodyMode = BodyMode,
-                        FooterMode = FooterMode,
-                        SplitAtPageBreaks = SplitAtPageBreaks
+                        HeaderMode = this.Resolve(x => x.HeaderMode),
+                        BodyMode = this.Resolve(x => x.BodyMode),
+                        FooterMode = this.Resolve(x => x.FooterMode),
+                        SplitAtPageBreaks = this.Resolve(x => x.SplitAtPageBreaks)
                     });
                     GenerateResult(runtime, pages);
                 }

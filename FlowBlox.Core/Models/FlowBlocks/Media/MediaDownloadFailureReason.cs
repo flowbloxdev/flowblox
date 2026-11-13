@@ -6,6 +6,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         DownloadFailed,
         PlaylistNotSupported,
         OutputFileMissing,
-        Timeout
+        Timeout,
+        RequiredComponentMissing
     }
 }

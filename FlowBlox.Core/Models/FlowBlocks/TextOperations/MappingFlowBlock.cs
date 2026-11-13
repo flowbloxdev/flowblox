@@ -18,16 +18,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     public sealed class MappingFlowBlockEntry : FlowBloxReactiveObject, IValidatableObject
     {
         [Display(Name = "MappingFlowBlockEntry_Key", Description = "MappingFlowBlockEntry_Key_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Key { get; set; } = string.Empty;
 
         [Display(Name = "MappingFlowBlockEntry_RegularExpression", Description = "MappingFlowBlockEntry_RegularExpression_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxTextBox(IsCodingMode = true, SyntaxHighlighting = "FlowBlox.UICore.Resources.Highlighting.Regex.xshd")]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex))]
         public string RegularExpression { get; set; } = string.Empty;
 
         [Display(Name = "MappingFlowBlockEntry_Value", Description = "MappingFlowBlockEntry_Value_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Value { get; set; } = string.Empty;
 
         public override string ToString() =>
@@ -80,10 +78,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         }
 
         [Display(Name = "MappingFlowBlock_MappingEntries", Description = "MappingFlowBlock_MappingEntries_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "MappingFlowBlock_Groups_Mapping", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid(
             IsMovable = true,
-            GridColumnMemberNames =
+            ColumnMemberNames =
             [
                 nameof(MappingFlowBlockEntry.Key),
                 nameof(MappingFlowBlockEntry.RegularExpression),
@@ -92,7 +90,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public ObservableCollection<MappingFlowBlockEntry> MappingEntries { get; set; }
 
         [Display(Name = "MappingFlowBlock_DefaultValue", Description = "MappingFlowBlock_DefaultValue_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string DefaultValue { get; set; } = string.Empty;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.compare, 16, SKColors.MediumSeaGreen);

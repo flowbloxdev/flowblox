@@ -21,7 +21,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
 
         public SequenceDetectionFlowBlock() : base()
         {
-            
+
         }
 
         public override void OnAfterCreate()
@@ -37,16 +37,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
         }
 
         [Display(Name = "SequenceDetectionFlowBlock_MaxSequenceGenerationRuntimeSeconds", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.Default)]
-        [Range(1, int.MaxValue, 
+        [Range(
+            1,
+            int.MaxValue,
             ErrorMessageResourceName = "SequenceDetectionFlowBlock_Validation_MaxSequenceGenerationRuntimeSeconds", 
             ErrorMessageResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int MaxSequenceGenerationRuntimeSeconds { get; set; }
 
         private string _sequenceDetectionPattern;
 
         [Display(Name = "SequenceDetectionFlowBlock_SequenceDetectionPattern", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlighting = "JSON")]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string SequenceDetectionPattern
         {
             get => _sequenceDetectionPattern;
@@ -93,7 +96,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
                 }
 
                 var sequenceDetectionPattern = JsonConvert.DeserializeObject<SequenceDetectionPattern>(SequenceDetectionPattern);
-                
+
                 var matchValues = new List<string>();
                 SequenceSearch.Instance.SearchFor(InputField.StringValue, sequenceDetectionPattern, ref matchValues);
 

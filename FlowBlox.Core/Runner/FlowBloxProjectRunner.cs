@@ -1,3 +1,4 @@
+using FlowBlox.Core.Exceptions;
 ﻿using FlowBlox.Core.Authentication;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Constants;
@@ -129,9 +130,18 @@ namespace FlowBlox.Core.Runner
 
                 // Forward runtime logs and optionally abort on warnings/errors.
                 string abortReason = null;
+                string prerequisiteFailureMessage = null;
 
                 runtime.LogEntryCreated += (rt, msg, level, exception) =>
                 {
+                    var prerequisiteFailure = exception as ExecutionPrerequisiteException;
+                    var abortOnError = request.AbortOnError && level == FlowBloxLogLevel.Error;
+                    var abortOnWarning = request.AbortOnWarning && level == FlowBloxLogLevel.Warning;
+                    var isAborting = rt.Aborted || abortOnError || abortOnWarning;
+
+                    if (prerequisiteFailure != null && isAborting)
+                        prerequisiteFailureMessage ??= prerequisiteFailure.Message;
+
                     if (level == FlowBloxLogLevel.Warning)
                     {
                         lock (response.Warnings)
@@ -140,10 +150,10 @@ namespace FlowBlox.Core.Runner
 
                     if (abortReason == null)
                     {
-                        if (request.AbortOnError && level == FlowBloxLogLevel.Error)
+                        if (abortOnError)
                             abortReason = "Aborted due to an error log message.";
 
-                        if (request.AbortOnWarning && level == FlowBloxLogLevel.Warning)
+                        if (abortOnWarning)
                             abortReason = "Aborted due to a warning log message.";
 
                         if (abortReason != null)
@@ -153,10 +163,10 @@ namespace FlowBlox.Core.Runner
                         }
                     }
 
-                    if (request.AbortOnError && level == FlowBloxLogLevel.Error)
+                    if (abortOnError)
                         rt.CancelExecution(RuntimeCancellationKind.AbortOnWarningOrError, abortReason);
 
-                    if (request.AbortOnWarning && level == FlowBloxLogLevel.Warning)
+                    if (abortOnWarning)
                         rt.CancelExecution(RuntimeCancellationKind.AbortOnWarningOrError, abortReason);
                 };
 
@@ -188,7 +198,7 @@ namespace FlowBlox.Core.Runner
                     {
                         response.Success = false;
                         response.ExitCode = RunnerExitCodes.Aborted;
-                        response.ErrorMessage = abortReason ?? runtime.CancellationContext?.Reason ?? "Execution aborted.";
+                        response.ErrorMessage = prerequisiteFailureMessage ?? abortReason ?? runtime.CancellationContext?.Reason ?? "Execution aborted.";
                         Report(response.ErrorMessage, FlowBloxLogLevel.Warning);
                     }
 

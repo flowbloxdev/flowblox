@@ -152,6 +152,7 @@
                 </Button>
 
                 <Button Command="{Binding RemoveInputFileCommand}"
+                        CommandParameter="{Binding SelectedItems, ElementName=InputFilesGrid}"
                         IsEnabled="{Binding IsInputFileSelected}"
                         Margin="10,0,0,0"
                         ToolTip="{x:Static resources:ManageInputFilesWindow.Tooltip_RemoveTemplate}">

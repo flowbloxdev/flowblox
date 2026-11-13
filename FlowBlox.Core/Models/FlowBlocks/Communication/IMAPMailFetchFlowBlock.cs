@@ -25,71 +25,56 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
     {
         [Required]
         [Display(Name = "IMAPMailFetchFlowBlock_Host", Description = "IMAPMailFetchFlowBlock_Host_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Host { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_Port", Description = "IMAPMailFetchFlowBlock_Port_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Port { get; set; } = 993;
 
         [Display(Name = "IMAPMailFetchFlowBlock_UseSsl", Description = "IMAPMailFetchFlowBlock_UseSsl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UseSsl { get; set; } = true;
 
         [Display(Name = "IMAPMailFetchFlowBlock_AcceptInvalidCertificates", Description = "IMAPMailFetchFlowBlock_AcceptInvalidCertificates_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AcceptInvalidCertificates { get; set; }
 
         [Required]
         [Display(Name = "IMAPMailFetchFlowBlock_UserName", Description = "IMAPMailFetchFlowBlock_UserName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string UserName { get; set; }
 
         [Required]
         [Display(Name = "IMAPMailFetchFlowBlock_Password", Description = "IMAPMailFetchFlowBlock_Password_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string Password { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_Folder", Description = "IMAPMailFetchFlowBlock_Folder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Folder { get; set; } = "INBOX";
 
         [Display(Name = "IMAPMailFetchFlowBlock_OnlyUnread", Description = "IMAPMailFetchFlowBlock_OnlyUnread_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool OnlyUnread { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_StartDate", Description = "IMAPMailFetchFlowBlock_StartDate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTime? StartDate { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_EndDate", Description = "IMAPMailFetchFlowBlock_EndDate_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_SearchText", Description = "IMAPMailFetchFlowBlock_SearchText_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string SearchText { get; set; }
 
         [Range(1, 5000)]
         [Display(Name = "IMAPMailFetchFlowBlock_MaxResults", Description = "IMAPMailFetchFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxResults { get; set; } = 100;
 
         [Display(Name = "IMAPMailFetchFlowBlock_NewestFirst", Description = "IMAPMailFetchFlowBlock_NewestFirst_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool NewestFirst { get; set; } = true;
 
         [Display(Name = "IMAPMailFetchFlowBlock_MarkAsRead", Description = "IMAPMailFetchFlowBlock_MarkAsRead_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool MarkAsRead { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_DeleteAfterFetch", Description = "IMAPMailFetchFlowBlock_DeleteAfterFetch_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool DeleteAfterFetch { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 20)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<IMAPMailFetchDestinations>> ResultFields { get; set; } = new();
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.inbox_arrow_down_outline, 16, SKColors.CornflowerBlue);
@@ -199,10 +184,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                     folderName = "INBOX";
 
                 var cancellationToken = runtime.GetCancellationToken();
-                var canWrite = MarkAsRead || DeleteAfterFetch;
+                var canWrite = this.Resolve(x => x.MarkAsRead) || this.Resolve(x => x.DeleteAfterFetch);
 
                 using var client = new ImapClient();
-                if (AcceptInvalidCertificates)
+                if (this.Resolve(x => x.AcceptInvalidCertificates))
                     client.ServerCertificateValidationCallback = (_, _, _, _) => true;
 
                 client.Connect(host, port, useSsl, cancellationToken);
@@ -217,12 +202,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
 
                 folder.Open(canWrite ? FolderAccess.ReadWrite : FolderAccess.ReadOnly, cancellationToken);
 
-                var query = BuildSearchQuery(startDate, endDate, searchText, OnlyUnread);
+                var query = BuildSearchQuery(startDate, endDate, searchText, this.Resolve(x => x.OnlyUnread));
                 var uids = folder.Search(query, cancellationToken);
 
-                var orderedUids = (NewestFirst ? uids.Reverse() : uids).ToList();
-                if (MaxResults > 0)
-                    orderedUids = orderedUids.Take(MaxResults).ToList();
+                var orderedUids = (this.Resolve(x => x.NewestFirst) ? uids.Reverse() : uids).ToList();
+                if (this.Resolve(x => x.MaxResults) > 0)
+                    orderedUids = orderedUids.Take(this.Resolve(x => x.MaxResults)).ToList();
 
                 if (orderedUids.Count == 0)
                 {
@@ -282,10 +267,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                     resultMap.Add(row);
                 }
 
-                if (!MarkAsRead && canWrite && wasUnreadBeforeFetch.Count > 0)
+                if (!this.Resolve(x => x.MarkAsRead) && canWrite && wasUnreadBeforeFetch.Count > 0)
                     folder.RemoveFlags(wasUnreadBeforeFetch, MessageFlags.Seen, true, cancellationToken);
 
-                if (DeleteAfterFetch && canWrite && orderedUids.Count > 0)
+                if (this.Resolve(x => x.DeleteAfterFetch) && canWrite && orderedUids.Count > 0)
                 {
                     folder.AddFlags(orderedUids, MessageFlags.Deleted, true, cancellationToken);
                     folder.Expunge(cancellationToken);

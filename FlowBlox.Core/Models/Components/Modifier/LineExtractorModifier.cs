@@ -12,11 +12,9 @@ namespace FlowBlox.Core.Models.Components.Modifier
     {
         [Required]
         [Display(Name = "LineExtractorModifier_StartLine", Order = 0, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int StartLine { get; set; }
 
         [Display(Name = "LineExtractorModifier_LineCount", Order = 1, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? LineCount { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
@@ -37,7 +35,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
         public override string ToString()
         {
             var format = FlowBloxResourceUtil.GetLocalizedString(nameof(LineExtractorModifier), nameof(ObjectDisplayName));
-            return string.Format(format, this.StartLine, this.LineCount.HasValue ? this.StartLine + this.LineCount.Value : "*");
+            return string.Format(format, this.Resolve(x => x.StartLine), this.Resolve(x => x.LineCount).HasValue ? this.Resolve(x => x.StartLine) + this.Resolve(x => x.LineCount).Value : "*");
         }
     }
 }

@@ -16,14 +16,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
     {
         [Display(Name = "FFmpegMediaDownloadProvider_OutputName", Description = "FFmpegMediaDownloadProvider_OutputName_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string OutputName { get; set; } = string.Empty;
 
         [Range(1, 86400)]
         [Display(Name = "FFmpegMediaDownloadProvider_RecordingDurationSeconds",
             Description = "FFmpegMediaDownloadProvider_RecordingDurationSeconds_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? RecordingDurationSeconds { get; set; }
 
         public override bool SupportsFormat(MediaDownloadFormat format) => format switch
@@ -36,25 +34,59 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             _ => false
         };
 
+        internal bool CanReuseExistingOutput(MediaDownloadRequest request)
+        {
+            if (request.OverwriteFiles || string.IsNullOrWhiteSpace(request.OutputDirectory))
+                return false;
+
+            try
+            {
+                return File.Exists(GetOutputPath(request));
+            }
+            catch (ArgumentException)
+            {
+                // Invalid request data is reported by the normal download validation.
+                return false;
+            }
+            catch (ValidationException)
+            {
+                return false;
+            }
+        }
+
+        /// <inheritdoc />
+        protected override IReadOnlyList<MediaDownloadResult>? TryReuseExistingOutput(MediaDownloadRequest request)
+        {
+            ResolveRecordingDuration();
+            return CanReuseExistingOutput(request) ? CreateResult(GetOutputPath(request), request.Url) : null;
+        }
+
+        private string GetOutputPath(MediaDownloadRequest request)
+        {
+            return CreateOutputPath(
+                request,
+                Path.GetFullPath(request.OutputDirectory),
+                this.Resolve(provider => provider.OutputName).Trim());
+        }
+
+        private int? ResolveRecordingDuration()
+        {
+            var durationSeconds = this.Resolve(provider => provider.RecordingDurationSeconds);
+            if (durationSeconds.HasValue && (durationSeconds < 1 || durationSeconds > 86400))
+                throw new ValidationException("The recording duration must be between 1 and 86400 seconds.");
+
+            return durationSeconds;
+        }
+
         protected override async Task<IReadOnlyList<MediaDownloadResult>> DownloadCoreAsync(
             MediaDownloadRequest request,
             TransferProgressReporter progress,
             CancellationToken cancellationToken)
         {
-            var outputName = this.Resolve(provider => provider.OutputName).Trim();
-            var durationSeconds = this.Resolve(provider => provider.RecordingDurationSeconds);
-            if (durationSeconds.HasValue && (durationSeconds < 1 || durationSeconds > 86400))
-                throw new ValidationException("The recording duration must be between 1 and 86400 seconds.");
-
+            var durationSeconds = ResolveRecordingDuration();
             var outputDirectory = Path.GetFullPath(request.OutputDirectory);
             Directory.CreateDirectory(outputDirectory);
-            var outputPath = CreateOutputPath(request, outputDirectory, outputName);
-            if (!request.OverwriteFiles && File.Exists(outputPath))
-            {
-                progress.Report("Using existing media file");
-                return CreateResult(outputPath, request.Url);
-            }
-
+            var outputPath = GetOutputPath(request);
             var temporaryPath = Path.Combine(outputDirectory,
                 ".flowblox-" + Guid.NewGuid().ToString("N") + Path.GetExtension(outputPath));
             try

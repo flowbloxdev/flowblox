@@ -20,11 +20,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     {
         [Display(Name = "JoinFlowBlock_Separator", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [CustomValidation(typeof(JoinCollectorFlowBlock), nameof(ValidateSeparators))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         [Display(Name = "JoinFlowBlock_SpecialSeparator", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(JoinCollectorFlowBlock), nameof(ValidateSeparators))]
         public SpecialSeparator? SpecialSeparator { get; set; }
 
@@ -42,11 +40,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         }
 
         [Display(Name = "JoinFlowBlock_JoinedParameters", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(GetPossibleJoinedParameters))]
         [FlowBloxFieldSelection(DefaultRequiredValue = false)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name) })]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.FlowBlockName), nameof(FieldElement.Name) })]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(DisplayMember = nameof(FieldElement.FullyQualifiedName), Method = nameof(GetPossibleJoinedParameters))]
         public ObservableCollection<FieldElement> JoinedParameters { get; set; }
 
         public List<FieldElement> GetPossibleJoinedParameters() => FlowBloxFieldsResolver.GetFieldsOfAssociatedFlowBlocks(this);

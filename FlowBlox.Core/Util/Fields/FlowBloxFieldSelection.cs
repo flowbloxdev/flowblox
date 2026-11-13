@@ -1,10 +1,11 @@
+using FlowBlox.Core.Extensions;
 using System.Reflection;
 using FlowBlox.Core.Attributes;
 
 namespace FlowBlox.Core.Util.Fields
 {
     /// <summary>
-    /// Single source of truth for properties explicitly enabled for field references.
+    /// Single source of truth for properties eligible for field references.
     /// Selection attributes restrict the offered fields, never the CLR type of their values.
     /// </summary>
     public static class FlowBloxFieldSelection
@@ -21,8 +22,8 @@ namespace FlowBlox.Core.Util.Fields
             return property.CanRead
                 && property.CanWrite
                 && property.GetIndexParameters().Length == 0
-                && property.GetCustomAttribute<FlowBloxUIAttribute>(inherit: true)
-                    ?.UiOptions.HasFlag(UIOptions.EnableFieldSelection) == true
+                && property.GetFlowBloxUIAttribute()
+                    .SelectionButtons.HasFlag(UISelectionButtons.FLD)
                 && Supports(property.PropertyType);
         }
 

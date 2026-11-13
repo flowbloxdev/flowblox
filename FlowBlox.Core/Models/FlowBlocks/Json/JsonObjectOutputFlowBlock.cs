@@ -17,10 +17,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
     public class JsonObjectOutputFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "JsonObjectOutputFlowBlock_AssociatedJsonObject", Description = "JsonObjectOutputFlowBlock_AssociatedJsonObject_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleJsonObjectFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleJsonObjectFlowBlocks), DisplayMember = nameof(Name))]
         public JsonObjectFlowBlock AssociatedJsonObject { get; set; }
 
         private List<JsonObjectFlowBlock> GetPossibleJsonObjectFlowBlocks()
@@ -32,19 +31,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
         [Required]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; } = DotNetEncodingNames.Default;
 
         [Display(Name = "JsonObjectOutputFlowBlock_Indented", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Indented { get; set; } = true;
 
         [Display(Name = "JsonObjectOutputFlowBlock_NullValueHandling", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public NullValueHandling NullValueHandling { get; set; } = NullValueHandling.Include;
 
         [Display(Name = "JsonObjectOutputFlowBlock_DateFormatHandling", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public DateFormatHandling DateFormatHandling { get; set; } = DateFormatHandling.IsoDateFormat;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.code_braces, 16, SKColors.Orange);
@@ -76,7 +73,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
                 var serializerSettings = new JsonSerializerSettings
                 {
-                    Formatting = Indented ? Formatting.Indented : Formatting.None,
+                    Formatting = this.Resolve(x => x.Indented) ? Formatting.Indented : Formatting.None,
                     NullValueHandling = this.NullValueHandling,
                     DateFormatHandling = this.DateFormatHandling
                 };

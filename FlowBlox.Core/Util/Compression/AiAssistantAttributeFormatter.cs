@@ -12,6 +12,8 @@ namespace FlowBlox.Core.Util.Compression
         [
             typeof(DisplayAttribute),
             typeof(FlowBloxUIAttribute),
+            typeof(FlowBloxAssociationAttribute),
+            typeof(FlowBloxItemsSourceAttribute),
             typeof(FlowBloxListViewAttribute),
             typeof(FlowBloxDataGridAttribute),
             typeof(FlowBloxTextBoxAttribute)

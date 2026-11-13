@@ -16,9 +16,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     {
         [Display(Name = "TextBuilderOutputFlowBlock_AssociatedTextBuilder", Description = "TextBuilderOutputFlowBlock_AssociatedTextBuilder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [AssociatedFlowBlockResolvable]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleTextBuilderFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleTextBuilderFlowBlocks), DisplayMember = nameof(Name))]
         public TextBuilderFlowBlock AssociatedTextBuilder { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.text_box_check_outline, 16, SKColors.MediumSlateBlue);

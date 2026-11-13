@@ -19,9 +19,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
     {
         [Required]
         [Display(Name = "ZipArchiveFileIteratorFlowBlock_ZipArchiveObject", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleZipArchiveObjects),
-            SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleZipArchiveObjects), DisplayMember = nameof(Name))]
         public ZipArchiveObject ZipArchiveObject { get; set; }
 
         private IEnumerable<ZipArchiveObject> GetPossibleZipArchiveObjects()
@@ -30,18 +29,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
         }
 
         [Display(Name = "ZipArchiveFileIteratorFlowBlock_Password", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string Password { get; set; }
 
         [Display(Name = "ZipArchiveFileIteratorFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<ZipArchiveIteratorDestinations>> ResultFields { get; set; }
 
         [ActivationCondition(MemberName = nameof(ResultFields), ActivationMethod = nameof(IsEncodingNameActive))]
         [ConditionallyRequired]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         public ZipArchiveFileIteratorFlowBlock()

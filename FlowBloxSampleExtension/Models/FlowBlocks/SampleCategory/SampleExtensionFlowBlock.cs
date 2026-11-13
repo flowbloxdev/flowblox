@@ -36,7 +36,6 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
         /// Supports field placeholders via field selection UI.
         /// </summary>
         [Display(Name = "SampleExtensionMappingEntry_SourceValue", ResourceType = typeof(SampleExtensionResources), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string SourceValue { get; set; }
 
         /// <summary>
@@ -44,7 +43,6 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
         /// Supports field placeholders via field selection UI.
         /// </summary>
         [Display(Name = "SampleExtensionMappingEntry_ReplacementValue", ResourceType = typeof(SampleExtensionResources), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ReplacementValue { get; set; }
     }
 
@@ -59,8 +57,7 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
         /// Field placeholders are resolved at runtime before the result is generated.
         /// </summary>
         [Display(Name = "SampleExtensionFlowBlock_OutputText", ResourceType = typeof(SampleExtensionResources), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
-        [Required()]
+        [Required]
         public string OutputText { get; set; }
 
         /// <summary>
@@ -71,7 +68,6 @@ namespace FlowBloxSampleExtension.Models.FlowBlocks.SampleCategory
         /// The list is part of this flow block's configuration and does not exist independently.
         /// </remarks>
         [Display(Name = "SampleExtensionFlowBlock_ValueReplacements", Description = "SampleExtensionFlowBlock_ValueReplacements_Tooltip", ResourceType = typeof(SampleExtensionResources), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
         [FlowBloxDataGrid]
         public ObservableCollection<SampleExtensionMappingEntry> ValueReplacements { get; set; } = new();
 

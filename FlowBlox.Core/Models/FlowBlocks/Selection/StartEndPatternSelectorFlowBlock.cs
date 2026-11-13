@@ -20,7 +20,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
     public class StartEndPatternSelectorFlowBlock : BasePipeFlowBlock
     {
         [Display(Name = "StartEndPatternSelectorFlowBlock_StartEndPatterns", Description = "StartEndPatternSelectorFlowBlock_StartEndPatterns_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
         [FlowBloxDataGrid(IsMovable = true)]
         public ObservableCollection<StartEndPattern> StartEndPatterns { get; set; }
 
@@ -39,7 +38,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
         public override List<string> GetDisplayableProperties()
         {
             var properties = base.GetDisplayableProperties();
-            
+
             return properties;
         }
 
@@ -76,27 +75,27 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
                     results = PatternSelector.SelectPatternFromContext(results, startPattern, endPattern, true);
                     runtime.Report($"Found {results.Count} results for pattern combination \"{startEndPattern.StartPattern}\" and \"{startEndPattern.EndPattern}\"");
 
-                    if (startEndPattern.Index != null)
+                    if (startEndPattern.Resolve(x => x.Index) != null)
                     {
-                        if (results.Count > startEndPattern.Index)
+                        if (results.Count > startEndPattern.Resolve(x => x.Index))
                         {
                             results = new List<string>()
                         {
-                            results.ElementAt(startEndPattern.Index.Value)
+                            results.ElementAt(startEndPattern.Resolve(x => x.Index).Value)
                         };
-                            runtime.Report($"Selected index {startEndPattern.Index.Value} of {results.Count} results.");
+                            runtime.Report($"Selected index {startEndPattern.Resolve(x => x.Index).Value} of {results.Count} results.");
                         }
                         else
                         {
                             results = new List<string>();
-                            runtime.Report($"Index {startEndPattern.Index.Value} is out of range at {results.Count} results.");
+                            runtime.Report($"Index {startEndPattern.Resolve(x => x.Index).Value} is out of range at {results.Count} results.");
                         }
                     }
 
                 }
 
                 var lastPattern = StartEndPatterns.LastOrDefault();
-                results = ApplyReturnOptions(results, lastPattern?.ReturnOptions, lastStartPattern, lastEndPattern);
+                results = ApplyReturnOptions(results, lastPattern?.Resolve(x => x.ReturnOptions), lastStartPattern, lastEndPattern);
 
                 if (results.Count == 0)
                     CreateNotification(runtime, StartEndPatternSelectorNotifications.ReturnedNoMatches);
@@ -114,7 +113,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
                 return notificationTypes;
             }
         }
-        
+
         public enum StartEndPatternSelectorNotifications
         {
             [FlowBloxNotification(NotificationType = NotificationType.Warning)]

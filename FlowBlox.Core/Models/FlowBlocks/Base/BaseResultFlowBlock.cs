@@ -21,10 +21,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         public event OutputDatasetProcessingChangedEventHandler OutputDatasetProcessingChanged;
 
         [Display(Name = "BaseResultFlowBlock_IgnoreDuplicates", Description = "BaseResultFlowBlock_IgnoreDuplicates_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseResultFlowBlock_Groups_Output", Order = -1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool OutputIgnoreDuplicates { get; set; }
 
         [Display(Name = "BaseResultFlowBlock_OutputBehavior", Description = "BaseResultFlowBlock_OutputBehavior_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseResultFlowBlock_Groups_Output", Order = 0)]
         [CustomValidation(typeof(BaseResultFlowBlock), nameof(ValidateOutputBehavior))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public OutputBehavior OutputBehavior { get; set; }
 
         private string _startValue;
@@ -32,9 +34,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [Display(Name = "BaseResultFlowBlock_StartValue", Description = "BaseResultFlowBlock_StartValue_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "BaseResultFlowBlock_Groups_Output", Order = 0)]
         [ActivationCondition(ActivationMethod = nameof(IsStartValueActive))]
         [DependsOnProperty(MemberNames = [nameof(OutputBehavior), nameof(StartValue), nameof(StartIndex), nameof(EndIndex)])]
-        [FlowBloxUI(Factory = UIFactory.Default)]
         [FlowBloxFieldSelection(DefaultRequiredValue = false)]
         [FlowBloxTextBox(MultiLine = true)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string StartValue
         {
             get => _startValue;
@@ -61,6 +63,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [ActivationCondition(ActivationMethod = nameof(AreRangeIndicesActive))]
         [DependsOnProperty(MemberNames = [nameof(OutputBehavior), nameof(StartValue), nameof(StartIndex), nameof(EndIndex)])]
         [Range(0, int.MaxValue)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int? StartIndex
         {
             get => _startIndex;
@@ -70,7 +73,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                     return;
 
                 _startIndex = value;
-                
+
                 if (_startIndex != null && OutputBehavior != OutputBehavior.Range)
                 {
                     OutputBehavior = OutputBehavior.Range;
@@ -87,6 +90,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         [ActivationCondition(ActivationMethod = nameof(AreRangeIndicesActive))]
         [DependsOnProperty(MemberNames = [nameof(OutputBehavior), nameof(StartValue), nameof(StartIndex), nameof(EndIndex)])]
         [Range(0, int.MaxValue)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public int? EndIndex
         {
             get => _endIndex;
@@ -205,6 +209,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         [JsonIgnore()]
         [DeepCopierIgnore()]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool OutputDatasetProcessingCompleted { get; private set; }
 
         public override List<FieldElement> GetPossibleFieldElements()
@@ -244,7 +249,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
             });
         }
 
-        internal override void CompleteFailedResolution(BaseRuntime runtime) => GenerateResult(runtime);
+        internal override void CompleteFailedExecution(BaseRuntime runtime) => GenerateResult(runtime);
 
         protected void GenerateResult(BaseRuntime runtime, string content)
         {

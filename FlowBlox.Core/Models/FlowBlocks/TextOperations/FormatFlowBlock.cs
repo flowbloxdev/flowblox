@@ -29,6 +29,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.format_line_style, 32, SKColors.ForestGreen);
 
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public string FieldName { get; set; }
 
 
@@ -37,12 +38,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
             Description = "FormatFlowBlock_AllowEmptyFormatExpression_Tooltip",
             ResourceType = typeof(FlowBloxTexts),
             Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool AllowEmptyFormatExpression { get; set; } = false;
 
         [Display(Name = "FormatFlowBlock_FormatExpression", Description = "FormatFlowBlock_FormatExpression_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(
-            UiOptions = UIOptions.EnableFieldSelection,
-            ToolboxCategory = nameof(FlowBloxToolboxCategory.CompositeFormat))]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.CompositeFormat))]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true)]
         [CustomValidation(typeof(FormatFlowBlock), nameof(ValidateFormatExpression))]
         [RequiredIf(nameof(AllowEmptyFormatExpression), false)]
@@ -51,7 +51,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         private ObservableCollection<FormatParameterDefinition> _formatParameterDefinitions;
 
         [Display(Name = "FormatFlowBlock_FormatParameters", Description = "FormatFlowBlock_FormatParameters_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<FormatParameterDefinition> FormatParameterDefinitions
         {
             get

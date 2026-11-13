@@ -7,7 +7,6 @@ namespace FlowBloxTest.Runtime;
 
 public sealed class UnresolvedFieldProbeFlowBlock : StartFlowBlock
 {
-    [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
     public string Text { get; set; } = string.Empty;
 
     public Action? Observe { get; set; }

@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Provider.Placeholders;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Provider.Placeholders;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Enums;
@@ -133,7 +134,7 @@ namespace FlowBlox.Core.Models.Components
         {
             var oldFieldName = this.Name;
             var oldDerivedFieldName = GetDefaultFieldName(this.Source, this, oldSourceName, FieldNameGenerationMode.DeriveFromFlowBlock);
-            
+
             if (oldFieldName == oldDerivedFieldName)
             {
                 var newFieldName = GetDefaultFieldName(this.Source, this, newSourceName, FieldNameGenerationMode.DeriveFromFlowBlock);
@@ -163,6 +164,7 @@ namespace FlowBlox.Core.Models.Components
         [Required()]
         [Display(Name = "PropertyNames_Name", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [CustomValidation(typeof(FlowBloxComponent), nameof(ValidateName))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public override string Name
         {
             get
@@ -190,11 +192,13 @@ namespace FlowBlox.Core.Models.Components
         }
 
         [Display(Name = "FieldElement_FieldType", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public TypeElement FieldType { get; set; }
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UserField { get; set; }
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public UserFieldTypes UserFieldType { get; set; }
 
         public bool IsRegularField() => !UserField;
@@ -216,10 +220,6 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Values = [ UserFieldTypes.Input, UserFieldTypes.Memory])]
         [Display(Name = "FieldElement_StringValue", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionFilterMethod = nameof(GetPossibleValues),
-            SelectionFilterDependency = nameof(ListOfValues),
-            SelectionDisplayMember = nameof(ValueItem.DisplayName), UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxComboBox(DropDownModeMethod = nameof(GetValueDropDownMode), SelectionValueMember = nameof(ValueItem.Value))]
         [RequiredIf(nameof(IsRequiredAtRuntimeStartup), true)]
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true, 
@@ -227,6 +227,10 @@ namespace FlowBlox.Core.Models.Components
             AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true,
             IsPasswordMethod = nameof(ShouldMaskValue), SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
+        [FlowBloxItemsSource(
+            Method = nameof(GetPossibleValues),
+            Dependency = nameof(ListOfValues),
+            DisplayMember = nameof(ValueItem.DisplayName))]
         public string StringValue
         {
             get
@@ -269,7 +273,7 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_StoreValueLocally", Description = "FieldElement_StoreValueLocally_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 3)]
-        [FlowBloxUI(ReadOnlyMethod = nameof(IsStoreValueLocallyReadOnly))]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnlyMethod = nameof(IsStoreValueLocallyReadOnly))]
         public bool StoreValueLocally
         {
             get => IsPassword || (_storeValueLocally ?? false);
@@ -284,13 +288,13 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Value = UserFieldTypes.Memory)]
         [Display(Name = "FieldElement_ClearOnRuntimeStart", Description = "FieldElement_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 1)]
-        [FlowBloxUI(ReadOnlyMethod = nameof(IsClearOnRuntimeStartReadOnly))]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnlyMethod = nameof(IsClearOnRuntimeStartReadOnly))]
         [DependsOnProperty(MemberName = nameof(IsRequiredAtRuntimeStartup))]
         public bool ClearOnRuntimeStart { get; set; }
 
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_IsRequiredAtRuntimeStartup", Description = "FieldElement_IsRequiredAtRuntimeStartup_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 0)]
-        [FlowBloxUI(ReadOnlyMethod = nameof(IsStartupRequirementReadOnly))]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnlyMethod = nameof(IsStartupRequirementReadOnly))]
         [DependsOnProperty(MemberNames = [nameof(ClearOnRuntimeStart), nameof(UserFieldType)])]
         public bool IsRequiredAtRuntimeStartup { get; set; }
 
@@ -303,6 +307,7 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(ActivationMethod = nameof(IsUserInputField))]
         [Display(Name = "FieldElement_UsePasswordChar", Description = "FieldElement_UsePasswordChar_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 2)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool IsPassword
         {
             get => _isPassword;
@@ -326,8 +331,9 @@ namespace FlowBlox.Core.Models.Components
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_SyntaxHighlighting", Description = "FieldElement_SyntaxHighlighting_Tooltip",
             ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Advanced", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionFilterMethod = nameof(GetPossibleSyntaxHighlightings))]
         [FlowBloxComboBox(DropDownMode = DropDownMode.SelectionOnly)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleSyntaxHighlightings))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string? SyntaxHighlighting { get; set; } = "Text";
 
         public IEnumerable<string> GetPossibleSyntaxHighlightings() =>
@@ -377,11 +383,12 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_LoVType", Description = "FieldElement_LoVType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public LoVType LoVType { get; set; } = LoVType.Suggestion;
 
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_ListOfValues", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ValueItem> ListOfValues { get; set; }
 
         private BaseResultFlowBlock _source;
@@ -403,9 +410,8 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(ActivationMethod = nameof(IsRegularField))]
         [Display(Name = "FieldElement_Conditions", Description = "FieldElement_Conditions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Conditions", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = true)]
         [FlowBloxDataGrid(
-            GridColumnMemberNames = new[]
+            ColumnMemberNames = new[]
             {
                 nameof(ComparisonCondition.Operator),
                 nameof(ComparisonCondition.Value)
@@ -414,12 +420,13 @@ namespace FlowBlox.Core.Models.Components
 
         [ActivationCondition(ActivationMethod = nameof(IsRegularField))]
         [Display(Name = "FieldElement_Modifiers", Description = "FieldElement_Modifiers_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Modifiers", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ListView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete, DisplayLabel = true)]
-        [FlowBloxListView(IsMovable = true, LVColumnMemberNames = new[] { nameof(ModifierBase.ObjectDisplayName) })]
+        [FlowBloxListView(IsMovable = true, ColumnMemberNames = new[] { nameof(ModifierBase.ObjectDisplayName) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<ModifierBase> Modifiers { get; set; }
 
         public string FullyQualifiedName => GetFullyQualifiedName(Source, UserField, Name);
 
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool Pending { get; internal set; }
 
         public static bool IsFullyQualifiedName(string name)

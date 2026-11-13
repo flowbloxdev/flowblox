@@ -16,20 +16,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Selection
     public class RegexSelectorFlowBlock : BasePipeFlowBlock
     {
         [Display(Name = "RegexSelectorFlowBlock_RegularExpression", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.Regex))]
         [FlowBloxTextBox(IsCodingMode = true, SyntaxHighlighting = "FlowBlox.UICore.Resources.Highlighting.Regex.xshd")]
         public string RegularExpression { get; set; }
 
         [Display(Name = "RegexSelectorFlowBlock_Group", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public string Group { get; set; }
 
         [Display(Name = "RegexSelectorFlowBlock_CaseSensitive", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool CaseSensitive { get; set; }
 
         [Display(Name = "RegexSelectorFlowBlock_Multiline", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Multiline { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.regex, 16, SKColors.OrangeRed);

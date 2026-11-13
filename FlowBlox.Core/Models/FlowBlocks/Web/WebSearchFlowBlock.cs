@@ -20,36 +20,32 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
     {
         [Required]
         [Display(Name = "WebSearchFlowBlock_Provider", Description = "WebSearchFlowBlock_Provider_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleProviders), SelectionDisplayMember = nameof(WebSearchProviderBase.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleProviders), DisplayMember = nameof(WebSearchProviderBase.Name))]
         public WebSearchProviderBase Provider { get; set; }
 
         [Required]
         [Display(Name = "WebSearchFlowBlock_Query", Description = "WebSearchFlowBlock_Query_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Query { get; set; } = string.Empty;
 
         [Range(1, 20)]
         [Display(Name = "WebSearchFlowBlock_MaxResults", Description = "WebSearchFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxResults { get; set; } = 10;
 
         [ActivationCondition(ActivationMethod = nameof(IsCountryActive))]
         [Display(Name = "WebSearchFlowBlock_Country", Description = "WebSearchFlowBlock_Country_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Country { get; set; } = string.Empty;
 
         [ActivationCondition(ActivationMethod = nameof(IsSearchLanguageActive))]
         [Display(Name = "WebSearchFlowBlock_SearchLanguage", Description = "WebSearchFlowBlock_SearchLanguage_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string SearchLanguage { get; set; } = string.Empty;
 
         [ActivationCondition(ActivationMethod = nameof(IsSafeSearchActive))]
         [Display(Name = "WebSearchFlowBlock_SafeSearch", Description = "WebSearchFlowBlock_SafeSearch_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public WebSearchSafeSearch SafeSearch { get; set; } = WebSearchSafeSearch.Moderate;
 
         [Display(Name = "WebSearchFlowBlock_ResultFields", Description = "WebSearchFlowBlock_ResultFields_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 6)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<ResultFieldByEnumValue<WebSearchDestinations>> ResultFields { get; set; } = [];
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.search_web, 16, SKColors.SteelBlue);
@@ -112,10 +108,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                     new WebSearchRequest
                     {
                         Query = query,
-                        MaxResults = Math.Clamp(MaxResults, 1, 20),
+                        MaxResults = Math.Clamp(this.Resolve(x => x.MaxResults), 1, 20),
                         Country = this.Resolve(owner => owner.Country).Trim(),
                         SearchLanguage = this.Resolve(owner => owner.SearchLanguage).Trim(),
-                        SafeSearch = SafeSearch
+                        SafeSearch = this.Resolve(x => x.SafeSearch)
                     },
                     runtime.GetCancellationToken());
 

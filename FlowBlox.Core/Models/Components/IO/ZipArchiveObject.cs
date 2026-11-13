@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using SkiaSharp;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Attributes;
@@ -19,9 +20,8 @@ namespace FlowBlox.Core.Models.Components.IO
 
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.folder_zip_outline, 32, new SKColor(14, 116, 144));
         [Display(Name = "PropertyNames_DataSource", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-                     SelectionFilterMethod = nameof(GetPossibleDataSources),
-                     SelectionDisplayMember = nameof(DataObjectBase.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDataSources), DisplayMember = nameof(DataObjectBase.Name))]
         public DataObjectBase DataSource { get; set; }
 
         private IEnumerable<DataObjectBase> GetPossibleDataSources()
@@ -110,7 +110,7 @@ namespace FlowBlox.Core.Models.Components.IO
 
         public int GetCompressionLevel()
         {
-            return CompressionStrength switch
+            return this.Resolve(x => x.CompressionStrength) switch
             {
                 FlowBlocks.Compression.ZipCompressionStrength.None => 0,
                 FlowBlocks.Compression.ZipCompressionStrength.Low => 3,

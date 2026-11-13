@@ -113,7 +113,7 @@ namespace FlowBlox.UICore.Resolver
             int columnIndex = 1;
 
             // File Selection
-            if (uiAttribute?.UiOptions.HasFlag(UIOptions.EnableFileSelection) == true)
+            if (uiAttribute?.SelectionButtons.HasFlag(UISelectionButtons.FL) == true)
             {
                 var fileSelectionAttribute = property.GetCustomAttribute<FlowBloxUIFileSelectionAttribute>();
                 var filter = fileSelectionAttribute?.Filter ?? "All files (*.*)|*.*";
@@ -168,7 +168,7 @@ namespace FlowBlox.UICore.Resolver
             }
 
             // Folder Selection
-            if (uiAttribute?.UiOptions.HasFlag(UIOptions.EnableFolderSelection) == true)
+            if (uiAttribute?.SelectionButtons.HasFlag(UISelectionButtons.DI) == true)
             {
                 var folderButton = new Button
                 {

@@ -24,27 +24,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         [Required]
         [Display(Name = "S3StorageFlowBlock_Provider", Description = "S3StorageFlowBlock_Provider_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleProviders),
-            SelectionDisplayMember = nameof(AmazonWebServicesProvider.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleProviders), DisplayMember = nameof(AmazonWebServicesProvider.Name))]
         public AmazonWebServicesProvider Provider { get; set; }
 
         [Required]
         [Display(Name = "S3StorageFlowBlock_BucketName", Description = "S3StorageFlowBlock_BucketName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BucketName { get; set; }
 
         [Required]
         [Display(Name = "S3StorageFlowBlock_ObjectKey", Description = "S3StorageFlowBlock_ObjectKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ObjectKey { get; set; }
 
         [Required]
         [Display(Name = "S3UploadObjectFlowBlock_ContentField", Description = "S3UploadObjectFlowBlock_ContentField_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleFieldElements),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleFieldElements), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement ContentField
         {
             get => _contentField;
@@ -52,7 +47,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
         }
 
         [Display(Name = "S3UploadObjectFlowBlock_ContentType", Description = "S3UploadObjectFlowBlock_ContentType_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ContentType { get; set; } = "application/octet-stream";
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cloud_upload_outline, 16, new SKColor(35, 92, 148));

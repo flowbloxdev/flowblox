@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Services;
-using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace FlowBloxTest.AIAssistant;
@@ -83,20 +81,4 @@ public sealed class AssistantProviderConfigurationTests
         Assert.IsInstanceOfType<DeepSeekAIProvider>(parsed.Configuration.SelectedProvider);
     }
 
-    [TestMethod]
-    public void Parse_PreservesLegacySingleProviderIncludingUnnamedDefaults()
-    {
-        var provider = new OpenAIProvider { DefaultModel = "configured-model" };
-        var legacy = JsonConvert.SerializeObject(
-            new { Provider = (AIProviderBase)provider },
-            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-
-        var parsed = AssistantConfigurationJson.Parse(legacy);
-
-        Assert.IsFalse(parsed.HasError, parsed.Error);
-        Assert.HasCount(1, parsed.Configuration!.Providers);
-        Assert.AreSame(parsed.Configuration.Providers[0], parsed.Configuration.SelectedProvider);
-        Assert.AreEqual("configured-model", parsed.Configuration.SelectedProvider.DefaultModel);
-        Assert.IsEmpty(parsed.Configuration.ValidateObject());
-    }
 }

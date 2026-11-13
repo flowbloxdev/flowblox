@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using FlowBlox.Core.Extensions;
+using System.Text;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Runtime;
@@ -14,7 +15,6 @@ namespace FlowBlox.Core.Models.Components.Modifier
     {
         [Required]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
@@ -43,7 +43,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
         public override string ToString()
         {
             var format = FlowBloxResourceUtil.GetLocalizedString(nameof(Base64ToTextModifier), nameof(ObjectDisplayName));
-            return string.Format(format, EncodingName);
+            return string.Format(format, this.Resolve(x => x.EncodingName));
         }
     }
 }

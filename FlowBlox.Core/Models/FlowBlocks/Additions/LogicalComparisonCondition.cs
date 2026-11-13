@@ -21,6 +21,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         internal ComparisonCore ComparisonCore { get; } = new ComparisonCore();
 
         [Display(Name = "ComparisonCondition_Operator", ResourceType = typeof(FlowBloxTexts), Order = 10)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public ComparisonOperator Operator
         {
             get => _operator;
@@ -34,7 +35,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
         }
 
         [Display(Name = "ComparisonCondition_Value", ResourceType = typeof(FlowBloxTexts), Order = 20)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string Value
         {

@@ -1,18 +1,14 @@
-﻿namespace FlowBlox.Core.Attributes
+namespace FlowBlox.Core.Attributes
 {
+    /// <summary>
+    /// Selects a list editor and configures its columns and manual item ordering.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class FlowBloxListViewAttribute : Attribute
+    public class FlowBloxListViewAttribute : FlowBloxCollectionViewAttribute
     {
-        public string[] LVColumnMemberNames { get; set; }
-
-        public Type ItemFactory { get; set; }
-
-        public bool IsMovable { get; set; }
-
-        public FlowBloxListViewAttribute()
-        {
-            LVColumnMemberNames = [];
-            ItemFactory = null;
-        }
+        /// <summary>
+        /// Shows the selected item's property editor beside the list.
+        /// </summary>
+        public bool SplitMode { get; set; }
     }
 }

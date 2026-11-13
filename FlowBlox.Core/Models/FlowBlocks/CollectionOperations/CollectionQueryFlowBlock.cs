@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Interfaces;
@@ -21,15 +22,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
     {
         [Required]
         [Display(Name = "CollectionQueryFieldMapping_InputField", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, 
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), 
-            SelectionFilterMethod = nameof(CollectionQueryFlowBlock.GetPossibleInputFields), 
-            SelectionFilterDependency = nameof(CollectionQueryFlowBlock.ReferencedFlowBlocks))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(CollectionQueryFlowBlock.GetPossibleInputFields),
+            Dependency = nameof(CollectionQueryFlowBlock.ReferencedFlowBlocks))]
         public FieldElement InputField { get; set; }
 
         [Required]
         [Display(Name = "CollectionQueryFieldMapping_OutputField", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public FieldElement OutputField { get; set; }
 
         public override string ToString() => $"{InputField} → {OutputField}";
@@ -54,7 +56,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
         private CollectionQueryOperation _operation;
 
         [Display(Name = "CollectionQueryFlowBlock_Operation", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public CollectionQueryOperation Operation
         {
             get => _operation;
@@ -71,28 +72,27 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
         [ActivationCondition(MemberName = nameof(Operation), Value = CollectionQueryOperation.ElementAt)]
         [Range(0, int.MaxValue)]
         [Display(Name = "CollectionQueryFlowBlock_ElementIndex", Description = "CollectionQueryFlowBlock_ElementIndex_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int ElementIndex { get; set; }
 
         [Display(Name = "CollectionQueryFlowBlock_Predicates", Description = "CollectionQueryFlowBlock_Predicates_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.GridView, CreatableTypes = [typeof(FieldLogicalComparisonCondition), typeof(LogicalGroupCondition)])]
         [FlowBloxCardList(ItemDisplayName = "CollectionQueryFlowBlock_Predicate")]
-        [FlowBloxDataGrid(GridColumnMemberNames = [nameof(LogicalCondition.LogicalOperator), nameof(LogicalCondition.DisplayName)])]
+        [FlowBloxDataGrid(ColumnMemberNames = [nameof(LogicalCondition.LogicalOperator), nameof(LogicalCondition.DisplayName)])]
+        [FlowBloxAssociation(CreatableTypes = [typeof(FieldLogicalComparisonCondition), typeof(LogicalGroupCondition)])]
         public ObservableCollection<LogicalCondition> Predicates { get; set; }
 
         [ActivationCondition(ActivationMethod = nameof(UsesOutputMappings))]
         [DependsOnProperty(MemberName = nameof(Operation))]
         [Display(Name = "CollectionQueryFlowBlock_OutputMappings", Description = "CollectionQueryFlowBlock_OutputMappings_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_OutputMappings", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
+        [FlowBloxDataGrid]
         public ObservableCollection<CollectionQueryFieldMapping> OutputMappings { get; set; }
 
         [ActivationCondition(ActivationMethod = nameof(UsesPredicateResultField))]
         [DependsOnProperty(MemberName = nameof(Operation))]
         [Display(Name = "CollectionQueryFlowBlock_PredicateResultField", ResourceType = typeof(FlowBloxTexts), GroupName = "CollectionQueryFlowBlock_Groups_Query", Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public FieldElement PredicateResultField { get; set; }
 
-        public bool UsesPredicateResultField() => Operation is CollectionQueryOperation.Any or CollectionQueryOperation.All;
+        public bool UsesPredicateResultField() => this.Resolve(x => x.Operation) is CollectionQueryOperation.Any or CollectionQueryOperation.All;
 
         public bool UsesOutputMappings() => !UsesPredicateResultField();
 
@@ -211,7 +211,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
         {
             if (UsesPredicateResultField())
             {
-                var result = Operation == CollectionQueryOperation.Any
+                var result = this.Resolve(x => x.Operation) == CollectionQueryOperation.Any
                     ? _stagedPredicateResults.Any(x => x)
                     : _stagedPredicateResults.All(x => x);
                 GenerateResult(runtime, new[] { new Dictionary<FieldElement, string> { [PredicateResultField] = result.ToString().ToLowerInvariant() } });
@@ -223,9 +223,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
                 .ToList();
 
             if (candidates.Count == 0) { GenerateResult(runtime); return; }
-            if (Operation is CollectionQueryOperation.First or CollectionQueryOperation.Last or CollectionQueryOperation.ElementAt)
+            if (this.Resolve(x => x.Operation) is CollectionQueryOperation.First or CollectionQueryOperation.Last or CollectionQueryOperation.ElementAt)
             {
-                var selected = Operation == CollectionQueryOperation.First ? candidates.FirstOrDefault() : Operation == CollectionQueryOperation.Last ? candidates.LastOrDefault() : candidates.ElementAtOrDefault(ElementIndex);
+                var selected = this.Resolve(x => x.Operation) == CollectionQueryOperation.First ? candidates.FirstOrDefault() : this.Resolve(x => x.Operation) == CollectionQueryOperation.Last ? candidates.LastOrDefault() : candidates.ElementAtOrDefault(this.Resolve(x => x.ElementIndex));
                 if (selected == null) { GenerateResult(runtime); return; }
                 GenerateResult(runtime, new[] { selected });
                 return;
@@ -240,7 +240,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
                 var numbers = candidates.Select(x => Convert.ToDouble(
                     x.GetValueOrDefault(outputField),
                     System.Globalization.CultureInfo.InvariantCulture));
-                var result = Operation == CollectionQueryOperation.Minimum ? numbers.Min() : Operation == CollectionQueryOperation.Maximum ? numbers.Max() : numbers.Average();
+                var result = this.Resolve(x => x.Operation) == CollectionQueryOperation.Minimum ? numbers.Min() : this.Resolve(x => x.Operation) == CollectionQueryOperation.Maximum ? numbers.Max() : numbers.Average();
                 resultMap[outputField] = FieldResultFormatter.FormatResult(outputField, result);
             }
             GenerateResult(runtime, new[] { resultMap });
@@ -256,7 +256,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.CollectionOperations
         {
             var properties = base.GetDisplayableProperties();
             properties.Add(nameof(Operation));
-            if (Operation == CollectionQueryOperation.ElementAt)
+            if (this.Resolve(x => x.Operation) == CollectionQueryOperation.ElementAt)
                 properties.Add(nameof(ElementIndex));
             properties.Add(nameof(Predicates));
             return properties;

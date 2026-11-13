@@ -14,14 +14,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Format
             this.IsRequired = true;
         }
 
-        [Required()]
+        [Required]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), 
-            SelectionFilterMethod = nameof(FlowBloxComponent.GetPossibleFieldElements))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         public override FieldElement Field { get; set; }
 
         [Display(Name = "FormatParameterDefinition_IsRequired", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public override bool IsRequired { get; set; }
 
         public override string ToString() => Field?.ToString() ?? string.Empty;

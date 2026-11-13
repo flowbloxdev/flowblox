@@ -26,10 +26,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_AssociatedXmlDocument", Description = "XmlDocumentNodeWriterFlowBlock_AssociatedXmlDocument_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink, 
-            SelectionFilterMethod = nameof(GetPossibleXmlDocumentFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleXmlDocumentFlowBlocks), DisplayMember = nameof(Name))]
         public XmlDocumentFlowBlock AssociatedXmlDocument { get; set; }
 
         public List<XmlDocumentFlowBlock> GetPossibleXmlDocumentFlowBlocks()
@@ -41,9 +40,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_AssociatedNodeWriter", Description = "XmlDocumentNodeWriterFlowBlock_AssociatedNodeWriter_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-           SelectionFilterMethod = nameof(GetPossibleSourceNodes),
-           SelectionDisplayMember = nameof(BaseFlowBlock.Name))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleSourceNodes), DisplayMember = nameof(BaseFlowBlock.Name))]
         public XmlDocumentNodeWriterFlowBlock AssociatedNodeWriter { get; set; }
 
         public List<XmlDocumentNodeWriterFlowBlock> GetPossibleSourceNodes()
@@ -55,24 +53,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_XPath", Description = "XmlDocumentNodeWriterFlowBlock_XPath_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string XPath { get; set; }
 
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_NodeName", Description = "XmlDocumentNodeWriterFlowBlock_NodeName_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [Required()]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
+        [Required]
         public string NodeName { get; set; }
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_UpdateExistingNode_DisplayName", Description = "XmlDocumentNodeWriterFlowBlock_UpdateExistingNode_Tooltip", 
             ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool UpdateExistingNode { get; set; }
 
         [Display(Name = "XmlDocumentNodeWriterFlowBlock_Assignments", Description = "XmlDocumentNodeWriterFlowBlock_Assignments_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxDataGrid]
         public ObservableCollection<XmlAssignment> Assignments { get; set; }
 
         public XmlDocumentNodeWriterFlowBlock()
@@ -190,7 +186,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
                 XmlNode newOrUpdatedNode = null;
 
-                if (UpdateExistingNode)
+                if (this.Resolve(x => x.UpdateExistingNode))
                     newOrUpdatedNode = parent.SelectSingleNode(nodeName);
 
                 if (newOrUpdatedNode == null)

@@ -12,11 +12,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
     {
         [Display(Name = "SplitSeparatorDefinition_Separator", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [CustomValidation(typeof(SplitSeparatorDefinition), nameof(ValidateSeparator))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         [Display(Name = "SplitSeparatorDefinition_SpecialSeparator", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         [CustomValidation(typeof(SplitSeparatorDefinition), nameof(ValidateSeparator))]
         public SpecialSeparator? SpecialSeparator { get; set; }
 
@@ -33,7 +31,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.TextOperations
         }
 
         public override string ToString() =>
-            SpecialSeparator?.ToString() ?? Separator ?? string.Empty;
+            this.Resolve(x => x.SpecialSeparator)?.ToString() ?? Separator ?? string.Empty;
 
         public static ValidationResult ValidateSeparator(object value, ValidationContext validationContext)
         {

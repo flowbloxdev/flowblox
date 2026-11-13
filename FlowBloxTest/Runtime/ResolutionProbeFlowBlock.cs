@@ -8,7 +8,6 @@ namespace FlowBloxTest.Runtime;
 
 public sealed class ResolutionProbeFlowBlock : StartFlowBlock
 {
-    [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
     public string Text { get; set; } = null!;
 
     public int Continuations { get; private set; }

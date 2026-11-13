@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -16,19 +17,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
     {
         [Required]
         [Display(Name = "DateTimeArithmeticFlowBlock_SourceDate", Description = "DateTimeArithmeticFlowBlock_SourceDate_Description", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleDateTimeFields),
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDateTimeFields), DisplayMember = nameof(FieldElement.FullyQualifiedName))]
         public FieldElement SourceDate { get; set; }
 
         [Display(Name = "DateTimeArithmeticFlowBlock_Unit", Description = "DateTimeArithmeticFlowBlock_Unit_Description", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DateTimeOperationUnit Unit { get; set; } = DateTimeOperationUnit.Days;
 
         [Display(Name = "DateTimeArithmeticFlowBlock_Offset", Description = "DateTimeArithmeticFlowBlock_Offset_Description", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Offset { get; set; } = 1;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.calendar_plus, 16, SKColors.DarkOrange);
@@ -61,7 +57,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.DateOperations
             {
 
                 var sourceDate = DateTimeFlowBlockHelper.ResolveDateTime(SourceDate, nameof(SourceDate));
-                var resultDate = ApplyOperation(sourceDate, Unit, Offset);
+                var resultDate = ApplyOperation(sourceDate, this.Resolve(x => x.Unit), this.Resolve(x => x.Offset));
                 var resultString = FieldResultFormatter.FormatResult(ResultField, resultDate);
                 GenerateResult(runtime, resultString);
             });

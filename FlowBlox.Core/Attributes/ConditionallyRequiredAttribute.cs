@@ -1,4 +1,5 @@
 ﻿using FlowBlox.Core.Util.FlowBlocks;
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Util.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
@@ -65,12 +66,7 @@ namespace FlowBlox.Core.Attributes
 
         private static bool IsDynamicallyReadOnly(object target, PropertyInfo property)
         {
-            var uiAttr = property.GetCustomAttributes(typeof(FlowBloxUIAttribute), true)
-                                 .Cast<FlowBloxUIAttribute>()
-                                 .FirstOrDefault();
-
-            if (uiAttr == null)
-                return false;
+            var uiAttr = property.GetFlowBloxUIAttribute();
 
             return FlowBlockUIAttributeHelper.IsDynamicallyReadOnly(target, uiAttr);
         }

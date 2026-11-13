@@ -20,12 +20,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Required]
         [Display(Name = "SftpFlowBlock_Connection", Description = "SftpFlowBlock_Connection_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleConnections), SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleConnections), DisplayMember = nameof(Name))]
         public SftpConnectionProvider Connection { get; set; }
 
         [Required]
         [Display(Name = "SftpFlowBlock_RemotePath", Description = "SftpFlowBlock_RemotePath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string RemotePath { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cloud_download_outline, 16, SKColors.Teal);

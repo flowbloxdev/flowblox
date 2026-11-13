@@ -41,13 +41,15 @@ namespace FlowBlox.Core.Models.ObjectManager
         }
 
         [Display(ResourceType = typeof(FlowBloxTexts), GroupName = "DataObjectManager_Groups_FileObjects")]
-        [FlowBloxUI(Factory = UIFactory.ListView, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(FileObject.FilePath) })]
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FileObject.FilePath) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<FileObject> FileObjects { get; set; }
 
         [Display(ResourceType = typeof(FlowBloxTexts), GroupName = "DataObjectManager_Groups_MemoryObjects")]
-        [FlowBloxUI(Factory = UIFactory.ListView, DisplayLabel = false, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
-        [FlowBloxListView(LVColumnMemberNames = new[] { nameof(MemoryObject.Field), nameof(MemoryObject.FileName) })]
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(MemoryObject.Field), nameof(MemoryObject.FileName) })]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public ObservableCollection<MemoryObject> MemoryObjects { get; set; }
     }
 }

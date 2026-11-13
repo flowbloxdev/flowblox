@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using System.Collections;
 using System.Reflection;
 using FlowBlox.AIAssistant.Models;
@@ -990,21 +991,21 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (value == null)
                 return;
 
-            var uiAttribute = property.GetCustomAttribute<FlowBloxUIAttribute>();
-            if (string.IsNullOrWhiteSpace(uiAttribute?.SelectionFilterMethod))
+            var itemsSource = property.GetFlowBloxItemsSourceAttribute();
+            if (string.IsNullOrWhiteSpace(itemsSource?.Method))
                 return;
 
             if (!IsReferenceComponentType(value.GetType()))
                 return;
 
-            if (!TryResolveSelectionFilterMethod(target, parent, uiAttribute.SelectionFilterMethod, out var invocationTarget, out var selectionMethod))
+            if (!TryResolveSelectionFilterMethod(target, parent, itemsSource.Method, out var invocationTarget, out var selectionMethod))
                 return;
 
             var selectionResult = selectionMethod.Invoke(invocationTarget, null);
             if (selectionResult is not IEnumerable selectableValues)
             {
                 throw new InvalidOperationException(
-                    $"Path '{path}' cannot validate property '{property.Name}' because selection filter method '{uiAttribute.SelectionFilterMethod}' did not return a selectable list.");
+                    $"Path '{path}' cannot validate property '{property.Name}' because selection filter method '{itemsSource.Method}' did not return a selectable list.");
             }
 
             var selectableList = selectableValues
@@ -1017,7 +1018,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 return;
 
             throw new InvalidOperationException(
-                BuildNotSelectableMessage(path, target, property, uiAttribute.SelectionFilterMethod, value, selectableList));
+                BuildNotSelectableMessage(path, target, property, itemsSource.Method, value, selectableList));
         }
 
         private static bool TryResolveSelectionFilterMethod(

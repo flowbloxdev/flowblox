@@ -7,8 +7,6 @@ using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider.Project;
-using FlowBlox.Core.Services;
-using FlowBlox.Core.Util.Json.SerializationBinder;
 
 namespace FlowBloxTest.FlowBlocks.ControlFlow
 {
@@ -57,17 +55,6 @@ namespace FlowBloxTest.FlowBlocks.ControlFlow
 
         [TestInitialize]
         public void Initialize() => FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject();
-
-        [TestMethod]
-        public void LegacyRecursiveCallType_DeserializesAsInjection()
-        {
-            var mappings = new FlowBloxCoreLegacyTypeMappingService().GetLegacyTypeMappings();
-            var binder = new FlowBloxSerializationBinder([], mappings);
-
-            var resolved = binder.BindToType("FlowBlox.Core", "FlowBlox.Core.Models.FlowBlocks.ControlFlow.RecursiveCallFlowBlock");
-
-            Assert.AreEqual(typeof(InjectionFlowBlock), resolved);
-        }
 
         [TestMethod]
         public void PossibleTargets_ContainsOnlyBlocksOnIncomingPath()

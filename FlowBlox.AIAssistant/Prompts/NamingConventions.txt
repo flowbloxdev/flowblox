@@ -13,7 +13,7 @@ FlowBlox naming conventions for AI-generated changes:
 - Placeholder pattern for result fields always follows $<FlowBlockName>::<FieldName>.
 
 3) Placeholder-aware updates
-- Properties enabled with EnableFieldSelection have [FLD] in their uiFlags.
+- Properties enabled with UISelectionButtons.FLD have [FLD] in their uiFlags.
   Enabled strings accept fully qualified field names inline, e.g. "Output: $FlowBlock::FieldName";
   enabled scalars accept one field reference. Other properties remain literal configuration.
 - Link the scalar property through /Property/Link with the resolver:

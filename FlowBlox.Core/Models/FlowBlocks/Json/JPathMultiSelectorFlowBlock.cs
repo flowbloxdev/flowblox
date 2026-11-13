@@ -24,7 +24,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
         [Required]
         [Display(Name = "JPathMultiSelectorMappingEntry_JPath", Description = "JPathMultiSelectorMappingEntry_JPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
         public string JPath { get; set; }
 
         [JsonProperty("JsonPath")]
@@ -38,7 +38,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JPathMultiSelectorMappingEntry_RowPath", Description = "JPathMultiSelectorMappingEntry_RowPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
         [CustomValidation(typeof(JPathRowPathValidator), nameof(JPathRowPathValidator.ValidateRowPath))]
         [DependsOnProperty(MemberName = nameof(FallbackValue))]
         public string RowPath
@@ -55,7 +55,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JPathMultiSelectorMappingEntry_FallbackValue", Description = "JPathMultiSelectorMappingEntry_FallbackValue_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string FallbackValue
         {
             get => _fallbackValue;
@@ -71,7 +70,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
 
         [Required]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public FieldElement Field { get; set; }
 
         public override string ToString() =>
@@ -85,13 +84,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
     {
         [Required]
         [Display(Name = "JPathMultiSelectorFlowBlock_JsonContent", Description = "JPathMultiSelectorFlowBlock_JsonContent_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true, SyntaxHighlighting = "JSON")]
         public string JsonContent { get; set; }
 
         [Display(Name = "JPathMultiSelectorFlowBlock_MappingEntries", ResourceType = typeof(FlowBloxTexts), GroupName = "JPathMultiSelectorFlowBlock_Groups_Mappings", Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
-        [FlowBloxDataGrid(GridColumnMemberNames =
+        [FlowBloxUI(DisplayLabel = false)]
+        [FlowBloxDataGrid(
+            ColumnMemberNames =
             [
                 nameof(JPathMultiSelectorMappingEntry.JPath),
                 nameof(JPathMultiSelectorMappingEntry.RowPath),

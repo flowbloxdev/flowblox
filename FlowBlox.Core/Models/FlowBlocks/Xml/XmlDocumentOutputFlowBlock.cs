@@ -17,10 +17,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
     public class XmlDocumentOutputFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "XmlDocumentOutputFlowBlock_AssociatedXmlDocument", Description = "XmlDocumentOutputFlowBlock_AssociatedXmlDocument_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [AssociatedFlowBlockResolvable()]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleXmlDocumentFlowBlocks),
-            SelectionDisplayMember = nameof(Name))]
+        [AssociatedFlowBlockResolvable]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleXmlDocumentFlowBlocks), DisplayMember = nameof(Name))]
         public XmlDocumentFlowBlock AssociatedXmlDocument { get; set; }
 
         private List<XmlDocumentFlowBlock> GetPossibleXmlDocumentFlowBlocks()
@@ -32,19 +31,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
         [Required]
         [Display(Name = "PropertyNames_EncodingName", Description = "PropertyNames_EncodingName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public DotNetEncodingNames EncodingName { get; set; }
 
         [Display(Name = "XmlDocumentOutputFlowBlock_Indent", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool Indent { get; set; }
 
         [Display(Name = "XmlDocumentOutputFlowBlock_NewLineOnAttributes", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool NewLineOnAttributes { get; set; }
 
         [Display(Name = "XmlDocumentOutputFlowBlock_OmitXmlDeclaration", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool OmitXmlDeclaration { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.code_braces, 16, SKColors.Peru);
@@ -85,9 +80,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Xml
 
                 var settings = new XmlWriterSettings
                 {
-                    Indent = Indent,
-                    NewLineOnAttributes = NewLineOnAttributes,
-                    OmitXmlDeclaration = OmitXmlDeclaration,
+                    Indent = this.Resolve(x => x.Indent),
+                    NewLineOnAttributes = this.Resolve(x => x.NewLineOnAttributes),
+                    OmitXmlDeclaration = this.Resolve(x => x.OmitXmlDeclaration),
                     Encoding = EncodingName.ToEncoding()
                 };
 

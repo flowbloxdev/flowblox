@@ -32,12 +32,10 @@ namespace FlowBlox.Core.Models.Components.Modifier
     {
         [Required]
         [Display(Name = "HttpEncodeDecodeModifier_Mode", Order = 0, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public HttpEncodeMode Mode { get; set; }
 
         [Required]
         [Display(Name = "HttpEncodeDecodeModifier_Direction", Order = 1, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public Direction Direction { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
@@ -86,7 +84,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
         public override string ToString()
         {
             var format = FlowBloxResourceUtil.GetLocalizedString(nameof(HttpEncodeDecodeModifier), nameof(ObjectDisplayName));
-            return string.Format(format, this.Mode.GetDisplayName(), this.Direction.GetDisplayName());
+            return string.Format(format, this.Resolve(x => x.Mode).GetDisplayName(), this.Resolve(x => x.Direction).GetDisplayName());
         }
     }
 }

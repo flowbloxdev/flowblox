@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>AI Prompt: Quick Start</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>Connect an AI provider</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Select or create an **AI provider** and configure its API key and default model. Set the base URL if required. Leave **Model override** empty to use the default.
+
+Requests and input data are sent to that provider.</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Write the prompt and define the output</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Enter the task in **Prompt**. Use the **field selection button** to insert input fields into your prompt. FlowBlox fills in their current values when the block runs.
+
+Use **System instruction** for general rules and the requested response format. The default instruction requests **JSON**; you can adapt it for other formats.
+
+For example: ask the model to extract a title and a short summary from the referenced input text.</value></data>
+  <data name="Option_Completed_Name" xml:space="preserve"><value>AI Prompt: Quick-Start completed</value></data>
+  <data name="Option_Completed_Description" xml:space="preserve"><value>Tracks whether the AI Prompt quick-start guidance has been completed.</value></data>
+</root>

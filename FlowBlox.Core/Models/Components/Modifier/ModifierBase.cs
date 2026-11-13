@@ -27,7 +27,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
 
     public abstract class ModifierBase : FlowBloxReactiveObject
     {
-        [Required()]
+        [Required]
         [Display(Name = "PropertyNames_Name", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxUI(Visible = false)]
         public string ObjectDisplayName => this.ToString();

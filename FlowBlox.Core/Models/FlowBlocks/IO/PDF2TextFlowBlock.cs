@@ -20,9 +20,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
     {
         [Required]
         [Display(Name = "PropertyNames_DataSource", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-                     SelectionFilterMethod = nameof(GetPossibleDataSources),
-                     SelectionDisplayMember = nameof(DataObjectBase.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleDataSources), DisplayMember = nameof(DataObjectBase.Name))]
         public DataObjectBase DataSource { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.file_pdf_box, 16);

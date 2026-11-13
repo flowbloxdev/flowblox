@@ -75,7 +75,7 @@ namespace FlowBlox.UICore.ViewModels
             UploadInputFileCommand = new RelayCommand(UploadInputFile, () => IsInputFileSelected && !IsReadOnly);
             DownloadInputFileCommand = new RelayCommand(DownloadInputFile, () => IsInputFileSelected);
             OpenInputFileInExplorerCommand = new RelayCommand(OpenInputFileInExplorer, () => IsInputFileSelected);
-            RemoveInputFileCommand = new RelayCommand(RemoveInputFile, () => IsInputFileSelected && !IsReadOnly);
+            RemoveInputFileCommand = new RelayCommand(RemoveInputFiles, _ => IsInputFileSelected && !IsReadOnly);
             ExecuteInputFileCommandCommand = new RelayCommand(ExecuteSelectedInputFileCommand, () => IsInputFileSelected && !IsReadOnly);
         }
 
@@ -218,17 +218,31 @@ namespace FlowBlox.UICore.ViewModels
             }
         }
 
-        private void RemoveInputFile()
+        private void RemoveInputFiles(object selection)
         {
-            if (SelectedInputFile == null || _project == null || IsReadOnly)
+            if (_project == null || IsReadOnly)
                 return;
 
             try
             {
-                var toRemove = SelectedInputFile;
+                // Removing rows changes the grid's live selection, so capture every selected entry first.
+                FlowBloxInputFile[] filesToRemove;
+                if (selection is System.Collections.IEnumerable selectedItems)
+                {
+                    filesToRemove = selectedItems.OfType<FlowBloxInputFile>().ToArray();
+                }
+                else
+                {
+                    filesToRemove = SelectedInputFile == null
+                        ? Array.Empty<FlowBloxInputFile>()
+                        : new[] { SelectedInputFile };
+                }
 
-                InputFiles.Remove(toRemove);
-                _project.InputFiles?.Remove(toRemove);
+                foreach (var inputFile in filesToRemove)
+                {
+                    InputFiles.Remove(inputFile);
+                    _project.InputFiles?.Remove(inputFile);
+                }
 
                 SelectedInputFile = null;
 

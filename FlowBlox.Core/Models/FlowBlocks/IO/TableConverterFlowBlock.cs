@@ -21,12 +21,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
         [Required]
         [Display(Name = "TableConverterFlowBlock_SourceTable", Description = "TableConverterFlowBlock_SourceTable_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleSourceTables), SelectionDisplayMember = nameof(IReadableTable.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleSourceTables), DisplayMember = nameof(IReadableTable.Name))]
         public IReadableTable SourceTable { get; set; }
 
         [Required]
         [Display(Name = "TableConverterFlowBlock_TargetTable", Description = "TableConverterFlowBlock_TargetTable_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, SelectionFilterMethod = nameof(GetPossibleTargetTables), SelectionDisplayMember = nameof(IWritableTable.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleTargetTables), DisplayMember = nameof(IWritableTable.Name))]
         public IWritableTable TargetTable { get; set; }
 
         public List<IReadableTable> GetPossibleSourceTables() =>

@@ -400,4 +400,8 @@
     <value>Resources\file-import-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/file-import-outline/ (Apache-2.0).</comment>
   </data>
+  <data name="rocket_launch_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\rocket-launch-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/rocket-launch-outline/ (Apache-2.0).</comment>
+  </data>
 </root>

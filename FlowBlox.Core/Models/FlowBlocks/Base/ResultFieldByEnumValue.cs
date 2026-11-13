@@ -11,16 +11,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         where TEnum : struct, Enum
     {
         [Display(Name = "Global_ResultField", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(
-            Factory = UIFactory.Association,
-            SelectionDisplayMember = nameof(FieldElement.Name),
-            Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         [Required]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
+        [FlowBloxItemsSource(DisplayMember = nameof(FieldElement.Name))]
         public FieldElement ResultField { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "ResultFieldByEnumValue_EnumValue", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public TEnum? EnumValue { get; set; }
 
         public override string ToString()

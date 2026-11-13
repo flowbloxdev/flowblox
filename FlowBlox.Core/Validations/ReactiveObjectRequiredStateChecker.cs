@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Util.FlowBlocks;
 using System.ComponentModel.DataAnnotations;
@@ -36,7 +37,7 @@ namespace FlowBlox.Core.Validations
         {
             if (attribute.CheckReadOnly)
             {
-                var uiAttribute = property.GetCustomAttribute<FlowBloxUIAttribute>(true);
+                var uiAttribute = property.GetFlowBloxUIAttribute();
                 if (FlowBlockUIAttributeHelper.IsDynamicallyReadOnly(target, uiAttribute))
                     return false;
             }

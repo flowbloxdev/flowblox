@@ -55,14 +55,13 @@ namespace FlowBlox.Core.Models.Generators
 
         [Required]
         [Display(Name = "AIPropertyValueGenerationStrategy_Provider", Description = "AIPropertyValueGenerationStrategy_Provider_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleProviders),
-            SelectionDisplayMember = nameof(ManagedObject.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleProviders), DisplayMember = nameof(ManagedObject.Name))]
         public AIProviderBase Provider { get; set; }
 
         [Required]
         [Display(Name = "AIPropertyValueGenerationStrategy_PromptTemplate", Description = "AIPropertyValueGenerationStrategy_PromptTemplate_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
         [FlowBloxFieldSelection(AllowedFieldSelectionModes =
             FieldSelectionModes.Fields |
             FieldSelectionModes.ProjectProperties |
@@ -72,24 +71,20 @@ namespace FlowBlox.Core.Models.Generators
         public string PromptTemplate { get; set; }
 
         [Display(Name = "AIPropertyValueGenerationStrategy_SystemInstruction", Description = "AIPropertyValueGenerationStrategy_SystemInstruction_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.AIPromptTemplates))]
         [FlowBloxTextBox(MultiLine = true)]
         public string SystemInstruction { get; set; }
 
         [Display(Name = "AIPropertyValueGenerationStrategy_ModelOverride", Description = "AIPropertyValueGenerationStrategy_ModelOverride_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPropertyValueGenerationStrategy_Groups_AdditionalSettings", Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ModelOverride { get; set; }
 
         [Display(Name = "AIPropertyValueGenerationStrategy_Temperature", Description = "AIPropertyValueGenerationStrategy_Temperature_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPropertyValueGenerationStrategy_Groups_AdditionalSettings", Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public double? Temperature { get; set; } = null;
 
         [Display(Name = "AIPropertyValueGenerationStrategy_MaxTokens", Description = "AIPropertyValueGenerationStrategy_MaxTokens_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPropertyValueGenerationStrategy_Groups_AdditionalSettings", Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? MaxTokens { get; set; }
 
         [Display(Name = "AIPropertyValueGenerationStrategy_TimeoutSecondsOverride", Description = "AIPropertyValueGenerationStrategy_TimeoutSecondsOverride_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "AIPropertyValueGenerationStrategy_Groups_AdditionalSettings", Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int? TimeoutSecondsOverride { get; set; }
 
         public List<AIProviderBase> GetPossibleProviders()

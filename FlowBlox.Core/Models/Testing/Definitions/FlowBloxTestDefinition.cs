@@ -122,6 +122,7 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [Display(Name = "FlowBloxTestDefinition_RequiredForExecution", Description = "FlowBloxTestDefinition_RequiredForExecution_Description", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool RequiredForExecution { get; set; }
 
         public FlowBloxTestDefinition()

@@ -14,18 +14,21 @@ namespace FlowBlox.Core.Models.FlowBlocks.SequenceFlow
     [Display(Name = "ProjectOutputMappingEntry_DisplayName", ResourceType = typeof(FlowBloxTexts))]
     public class ProjectOutputMappingEntry : FieldRequiredDefinitionBase
     {
-        [Required()]
+        [Required]
         [Display(Name = "Global_FieldElement", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(FlowBloxComponent.GetPossibleFieldElements))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         public override FieldElement Field { get; set; }
 
         [Display(Name = "ProjectOutputMappingEntry_IsRequired", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public override bool IsRequired { get; set; }
 
         [Required]
         [Display(Name = "ProjectOutputMappingEntry_OutputPropertyName", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string OutputPropertyName { get; set; }
 
         public override string ToString() =>
@@ -42,7 +45,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.SequenceFlow
         private ObservableCollection<ProjectOutputMappingEntry> _mappingEntries;
 
         [Display(Name = "ProjectOutputFlowBlock_MappingEntries", ResourceType = typeof(FlowBloxTexts), GroupName = "ProjectOutputFlowBlock_Groups_Mapping", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, DisplayLabel = false)]
+        [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid]
         public ObservableCollection<ProjectOutputMappingEntry> MappingEntries
         {

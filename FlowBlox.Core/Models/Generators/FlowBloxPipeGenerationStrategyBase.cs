@@ -23,10 +23,11 @@ namespace FlowBlox.Core.Models.Generators
         }
 
         [Display(Name = "Global_InputField", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName),
-            SelectionFilterMethod = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         [Required]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(FlowBloxComponent.GetPossibleFieldElements))]
         public FieldElement InputField { get; set; }
 
         protected override void OnAfterSourceChanged()

@@ -45,7 +45,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         protected override Type GetExplicitItemFactoryType(Type type)
         {
-            return _property.PropertyType.IsAssignableFrom(type) ? _uiAttribute?.ItemFactory : null;
+            return _property.PropertyType.IsAssignableFrom(type) ? _associationAttribute?.ItemFactory : null;
         }
 
         private string _resolvedFlowBlockHintText;
@@ -157,19 +157,19 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
             stackPanel.Children.Add(_textBox);
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Create) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Create) == true)
                 stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Plus, _createCommand, Brushes.Green));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Link) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Link) == true)
                 stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Link, _linkCommand, Brushes.Blue));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Unlink) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Unlink) == true)
                 stackPanel.Children.Add(CreateButton(PackIconMaterialKind.LinkOff, _unlinkCommand, Brushes.DarkRed));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true)
                 stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Pencil, _editCommand, Brushes.Orange));
 
-            if (_uiAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
+            if (_associationAttribute?.Operations.HasFlag(UIOperations.Delete) == true)
                 stackPanel.Children.Add(CreateButton(PackIconMaterialKind.Delete, _deleteCommand, Brushes.DarkRed));
 
             AppendResolvedFlowBlockHint(stackPanel);
@@ -222,7 +222,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         private async void ExecuteLink()
         {
-            if (string.IsNullOrEmpty(_uiAttribute?.SelectionFilterMethod))
+            if (string.IsNullOrEmpty(_itemsSourceAttribute?.Method))
             {
                 await MessageBoxHelper.ShowMessageBoxAsync(
                     (MetroWindow)_window,
@@ -237,7 +237,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var selectionMethodResolution = SelectionMethodResolver.ResolveSelectionFilterMethodFromTargetOrParent(
                 _target,
                 _parent,
-                _uiAttribute.SelectionFilterMethod);
+                _itemsSourceAttribute.Method);
 
             if (selectionMethodResolution?.Method == null)
             {
@@ -246,7 +246,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     FlowBloxResourceUtil.GetLocalizedString("FilterMethodNotFound_Title", typeof(AssociationControlFactoryResources)),
                     string.Format(
                         FlowBloxResourceUtil.GetLocalizedString("FilterMethodNotFound_Message", typeof(AssociationControlFactoryResources)),
-                        _uiAttribute.SelectionFilterMethod,
+                        _itemsSourceAttribute.Method,
                         _target.GetType().Name));
 
                 return;

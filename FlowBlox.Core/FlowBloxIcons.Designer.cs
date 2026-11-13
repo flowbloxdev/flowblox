@@ -840,6 +840,18 @@ namespace FlowBlox.Core
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        public static byte[] rocket_launch_outline
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("rocket_launch_outline", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         public static byte[] safe_square_outline
         {
             get

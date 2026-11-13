@@ -1,4 +1,5 @@
-﻿using FlowBlox.Core.Attributes;
+﻿using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
@@ -20,17 +21,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
 
         [Display(Name = "ExecuteSQLFlowBlock_DbType", ResourceType = typeof(FlowBloxTexts), Order = 0)]
         [Required]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public DbTypes DbType { get; set; }
 
         [Display(Name = "ExecuteSQLFlowBlock_ConnectionString", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.DBConnection), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.DBConnection))]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true)]
         [Required]
         public string SQLConnectionstring { get; set; }
 
         [Display(Name = "ExecuteSQLFlowBlock_SQLStatement", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.SQL), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.SQL))]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true, SyntaxHighlighting = "FlowBlox.UICore.Resources.Highlighting.SQL.xshd")]
         [Required]
         public string SQLStatement { get; set; }
@@ -38,6 +38,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
         [Display(Name = "ExecuteSQLFlowBlock_UseFieldValuesAsParameters",
                  Description = "ExecuteSQLFlowBlock_UseFieldValuesAsParameters_Tooltip",
                  ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UseFieldValuesAsParameters { get; set; } = true;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.database_cog, 16, SKColors.IndianRed);
@@ -66,7 +67,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
 
         public int ExecuteSQL()
         {
-            return ExecuteSQL(DbType, SQLConnectionstring, SQLStatement);
+            return ExecuteSQL(this.Resolve(x => x.DbType), SQLConnectionstring, SQLStatement);
         }
 
         public override List<string> GetDisplayableProperties()

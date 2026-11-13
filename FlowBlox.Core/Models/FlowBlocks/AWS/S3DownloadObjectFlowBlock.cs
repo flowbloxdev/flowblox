@@ -20,19 +20,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.AWS
 
         [Required]
         [Display(Name = "S3StorageFlowBlock_Provider", Description = "S3StorageFlowBlock_Provider_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-            SelectionFilterMethod = nameof(GetPossibleProviders),
-            SelectionDisplayMember = nameof(AmazonWebServicesProvider.Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleProviders), DisplayMember = nameof(AmazonWebServicesProvider.Name))]
         public AmazonWebServicesProvider Provider { get; set; }
 
         [Required]
         [Display(Name = "S3StorageFlowBlock_BucketName", Description = "S3StorageFlowBlock_BucketName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BucketName { get; set; }
 
         [Required]
         [Display(Name = "S3StorageFlowBlock_ObjectKey", Description = "S3StorageFlowBlock_ObjectKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string ObjectKey { get; set; }
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.cloud_download_outline, 16, new SKColor(35, 92, 148));

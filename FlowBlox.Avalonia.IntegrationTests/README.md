@@ -35,6 +35,10 @@ isolated workspace and a copy of the supplied project, skips interactive startup
 and online services, and returns a nonzero exit code if a check or startup fails.
 A second run reuses the isolated saved layout to exercise restoration at startup.
 
+For focused Quick Start checks, append `--quick-starts-only` to the direct runner command.
+This opens every registered Quick Start from Help without a configured target, navigates both AI Prompt pages,
+and writes `ai-prompt-quick-start-1.png` through `ai-prompt-quick-start-2.png` into the result directory.
+
 For focused property editor checks, append `--field-selection-only` to the direct
 runner command. This runs the real desktop lifecycle and checks explicitly enabled field
 buttons, scalar selection/unlink, password and combobox editors, grid cells and Project Space project cards

@@ -20,9 +20,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.ControlFlow
 
         [Required]
         [Display(Name = "RecursiveTargetFlowBlockBase_TargetFlowBlock", Description = "RecursiveTargetFlowBlockBase_TargetFlowBlock_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association, Operations = UIOperations.Link | UIOperations.Unlink,
-            SelectionFilterMethod = nameof(GetPossibleTargetFlowBlocks), SelectionDisplayMember = nameof(Name))]
         [CustomValidation(typeof(RecursiveTargetFlowBlockBase), nameof(ValidateTargetFlowBlock))]
+        [FlowBloxAssociation(Operations = UIOperations.Link | UIOperations.Unlink)]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleTargetFlowBlocks), DisplayMember = nameof(Name))]
         public BaseFlowBlock TargetFlowBlock
         {
             get => _targetFlowBlock;
@@ -106,12 +106,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.ControlFlow
     {
         [Required]
         [Display(Name = "InvocationFieldTransferConfig_TransferFrom", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), SelectionFilterMethod = nameof(InjectionFlowBlock.GetPossibleTransferFromFieldElements), SelectionFilterDependency = nameof(InjectionFlowBlock.ReferencedFlowBlocks))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(InjectionFlowBlock.GetPossibleTransferFromFieldElements),
+            Dependency = nameof(InjectionFlowBlock.ReferencedFlowBlocks))]
         public FieldElement TransferFrom { get; set; }
 
         [Required]
         [Display(Name = "InvocationFieldTransferConfig_TransferTo", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, SelectionDisplayMember = nameof(FieldElement.FullyQualifiedName), SelectionFilterMethod = nameof(InjectionFlowBlock.GetPossibleTransferToFieldElements), SelectionFilterDependency = nameof(InjectionFlowBlock.TargetFlowBlock))]
+        [FlowBloxComboBox]
+        [FlowBloxItemsSource(
+            DisplayMember = nameof(FieldElement.FullyQualifiedName),
+            Method = nameof(InjectionFlowBlock.GetPossibleTransferToFieldElements),
+            Dependency = nameof(InjectionFlowBlock.TargetFlowBlock))]
         public FieldElement TransferTo { get; set; }
 
         public override string ToString() => $"{TransferFrom} → {TransferTo}";
@@ -127,8 +135,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.ControlFlow
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.call_merge, 32, SKColors.MediumSlateBlue);
 
         [Display(Name = "InjectionFlowBlock_FieldTransferConfigs", ResourceType = typeof(FlowBloxTexts), GroupName = "InjectionFlowBlock_Groups_FieldTransfers", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView, Operations = UIOperations.Create | UIOperations.Delete)]
         [CustomValidation(typeof(InjectionFlowBlock), nameof(ValidateFieldTransferConfigs))]
+        [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Delete)]
+        [FlowBloxDataGrid]
         public ObservableCollection<InvocationFieldTransferConfig> FieldTransferConfigs { get; set; }
 
         protected override void OnTargetFlowBlockChanged() => OnPropertyChanged(nameof(FieldTransferConfigs));

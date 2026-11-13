@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>KI-Prompt: Quick Start</value></data>
+  <data name="Step1_Headline" xml:space="preserve"><value>Einen KI-Provider verbinden</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Wähle oder erstelle einen **KI-Provider** und hinterlege API-Schlüssel und Standardmodell. Passe bei Bedarf die Basis-URL an. Lass **Modell überschreiben** leer, um das Standardmodell zu verwenden.
+
+Anfragen und Eingabedaten werden an diesen Provider gesendet.</value></data>
+  <data name="Step2_Headline" xml:space="preserve"><value>Prompt schreiben und Ausgabe festlegen</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Beschreibe die Aufgabe unter **Prompt**. Über die **Feldauswahl** kannst du Eingabefelder in den Prompt einfügen. Bei der Ausführung setzt FlowBlox die aktuellen Feldwerte ein.
+
+Die **System-Anweisung** enthält allgemeine Regeln und das gewünschte Antwortformat. Die Standardanweisung fordert **JSON** an; du kannst sie für andere Formate anpassen.
+
+Beispiel: Lass aus dem ausgewählten Eingabetext einen Titel und eine kurze Zusammenfassung extrahieren.</value></data>
+  <data name="Option_Completed_Name" xml:space="preserve"><value>KI-Prompt: Quick Start abgeschlossen</value></data>
+  <data name="Option_Completed_Description" xml:space="preserve"><value>Speichert, ob die Quick-Start-Anleitung für KI-Prompt abgeschlossen wurde.</value></data>
+</root>

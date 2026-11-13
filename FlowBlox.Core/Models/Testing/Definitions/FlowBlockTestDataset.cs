@@ -1,3 +1,4 @@
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using Newtonsoft.Json;
@@ -34,6 +35,7 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [Display(Name = "FlowBlockTestDataset_Execute", Description = "FlowBlockTestDataset_Execute_Description", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool Execute
         {
             get => _execute;
@@ -51,6 +53,7 @@ namespace FlowBlox.Core.Models.Testing
 
         [JsonIgnore]
         [Display(Name = "FlowBlockTestDataset_UIRequiredForExecution", Description = "FlowBlockTestDataset_UIRequiredForExecution_Description", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UIAssociatedFlowBlockRequiredForExecution
         {
             get => _uIAssociatedFlowBlockRequiredForExecution;
@@ -70,6 +73,7 @@ namespace FlowBlox.Core.Models.Testing
             !UIAssociatedFlowBlockRequiredForExecution || Execute;
 
         [JsonIgnore]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UIIsTargetFlowBlock
         {
             get => _uIIsTargetFlowBlock;
@@ -84,6 +88,7 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [JsonIgnore]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UIIsTargetNeighbour
         {
             get => _uIIsTargetNeighbour;
@@ -98,6 +103,7 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [JsonIgnore]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UIIsVisibleInCurrentContext
         {
             get => _uIIsVisibleInCurrentContext;
@@ -112,6 +118,7 @@ namespace FlowBlox.Core.Models.Testing
         }
 
         [JsonIgnore]
+        [FlowBloxUI(UISelectionButtons.None)]
         public bool UIHasFlowBlockValidationErrors
         {
             get => _uIHasFlowBlockValidationErrors;

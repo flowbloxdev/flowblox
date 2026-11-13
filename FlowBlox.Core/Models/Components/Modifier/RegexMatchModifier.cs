@@ -15,11 +15,9 @@ namespace FlowBlox.Core.Models.Components.Modifier
     public class RegexMatchModifier : RegexModifierBase
     {
         [Display(Name = "RegexMatchModifier_Behavior", Order = 1, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public RegexMatchModifierBehavior Behavior { get; set; }
 
         [Display(Name = "RegexMatchModifier_Separator", Order = 2, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Separator { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
@@ -64,7 +62,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
 
             return string.Format(format,
                 !string.IsNullOrEmpty(this.Search) ? this.Search : "?",
-                this.Behavior.GetDisplayName());
+                this.Resolve(x => x.Behavior).GetDisplayName());
         }
     }
 }

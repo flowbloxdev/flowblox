@@ -21,18 +21,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         private string _fallbackValue;
 
         [Display(Name = "JPathSelectorFlowBlock_JsonContent", Description = "JPathSelectorFlowBlock_JsonContent_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsCodingMode = true, MultiLine = true, SyntaxHighlighting = "JSON")]
         [Required]
         public string JsonContent { get; set; }
 
         [Display(Name = "JPathSelectorFlowBlock_Path", Description = "JPathSelectorFlowBlock_Path_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
         [Required]
         public string Path { get; set; }
 
         [Display(Name = "JPathSelectorFlowBlock_RowPath", Description = "JPathSelectorFlowBlock_RowPath_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath), UiOptions = UIOptions.EnableFieldSelection)]
+        [FlowBloxUI(ToolboxCategory = nameof(FlowBloxToolboxCategory.JPath))]
         [CustomValidation(typeof(JPathRowPathValidator), nameof(JPathRowPathValidator.ValidateRowPath))]
         [DependsOnProperty(MemberName = nameof(FallbackValue))]
         public string RowPath
@@ -49,7 +48,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.Json
         }
 
         [Display(Name = "JPathSelectorFlowBlock_FallbackValue", Description = "JPathSelectorFlowBlock_FallbackValue_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         public string FallbackValue
         {
             get => _fallbackValue;

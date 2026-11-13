@@ -41,6 +41,7 @@ namespace FlowBlox.Core.Models.Generators
         }
 
         [Display(Name = "Global_Name", ResourceType = typeof(FlowBloxTexts), Order = 0)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public string Name { get; set; }
 
         private BaseFlowBlock _source;

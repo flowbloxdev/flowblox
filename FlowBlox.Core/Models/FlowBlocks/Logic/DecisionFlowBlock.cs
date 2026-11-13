@@ -19,19 +19,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.Logic
     public class DecisionFlowBlock : BaseSingleResultFlowBlock
     {
         [Display(Name = "DecisionFlowBlock_Decisions", Description = "DecisionFlowBlock_Decisions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "DecisionFlowBlock_Groups_Decisions", Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.GridView)]
         [FlowBloxDataGrid(
-            GridColumnMemberNames = new[]
+            ColumnMemberNames = new[]
             {
                 nameof(FieldComparisonCondition.FieldElement),
                 nameof(FieldComparisonCondition.Operator),
                 nameof(FieldComparisonCondition.Value),
                 nameof(FieldComparisonCondition.OutputValue)
-            }, IsMovable = true)]
+            },
+            IsMovable = true)]
         public ObservableCollection<FieldComparisonCondition> Decisions { get; set; }
 
         [Display(Name = "DecisionFlowBlock_FallbackValue", Description = "DecisionFlowBlock_FallbackValue_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "DecisionFlowBlock_Groups_Decisions", Order = 2)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(MultiLine = true)]
         public string FallbackValue { get; set; }
 

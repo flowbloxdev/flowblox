@@ -22,9 +22,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
 
         [Required]
         [Display(Name = "ZipArchiveCreatorFlowBlock_ZipArchiveObject", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.Association,
-                     SelectionFilterMethod = nameof(GetPossibleZipArchiveObjects),
-                     SelectionDisplayMember = nameof(Name))]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleZipArchiveObjects), DisplayMember = nameof(Name))]
         public ZipArchiveObject ZipArchiveObject { get; set; }
 
         private IEnumerable<ZipArchiveObject> GetPossibleZipArchiveObjects()
@@ -33,11 +32,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
         }
 
         [Display(Name = "ZipArchiveCreatorFlowBlock_CompressionStrength", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, UiOptions = UIOptions.EnableFieldSelection)]
         public ZipCompressionStrength CompressionStrength { get; set; }
 
         [Display(Name = "ZipArchiveCreatorFlowBlock_Password", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string Password { get; set; }
 
@@ -72,7 +69,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Compression
                 try
                 {
                     var password = this.Resolve(owner => owner.Password);
-                    ZipArchiveObject.CreateNewArchive(CompressionStrength, password);
+                    ZipArchiveObject.CreateNewArchive(this.Resolve(x => x.CompressionStrength), password);
                     GenerateResult(runtime, bool.TrueString.ToLowerInvariant());
                 }
                 catch (Exception e)

@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -19,7 +20,7 @@ internal sealed partial class WorkspaceIntegrationChecks
         var grid = (System.Windows.Controls.Grid)editor.CreateSimplePropertyInputControlWithOptionalButtons(
             property,
             settings,
-            property.GetCustomAttribute<FlowBloxUIAttribute>(),
+            property.GetFlowBloxUIAttribute(),
             new Binding(property.Name) { Source = settings },
             false);
         var host = (System.Windows.Controls.Grid)grid.Children[0];

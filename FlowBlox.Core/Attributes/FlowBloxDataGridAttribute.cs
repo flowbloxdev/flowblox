@@ -1,23 +1,10 @@
-﻿using System;
-
 namespace FlowBlox.Core.Attributes
 {
+    /// <summary>
+    /// Selects a grid editor and configures its columns and manual item ordering.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class FlowBloxDataGridAttribute : Attribute
+    public class FlowBloxDataGridAttribute : FlowBloxCollectionViewAttribute
     {
-        public FlowBloxDataGridAttribute()
-        {
-            GridColumnMemberNames = Array.Empty<string>();
-        }
-
-        public bool IsMovable { get; set; }
-
-        public Type ItemFactory { get; set; }
-
-        /// <summary>
-        /// If set, only these item properties are rendered as columns (whitelist).
-        /// If empty, all eligible public instance properties are considered.
-        /// </summary>
-        public string[] GridColumnMemberNames { get; set; }
     }
 }

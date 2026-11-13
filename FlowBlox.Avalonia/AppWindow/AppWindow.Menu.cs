@@ -3,6 +3,9 @@ using System;
 using FlowBlox.AvaloniaDesktop.ViewModels;
 using Avalonia;
 using Avalonia.Media;
+using FlowBlox.Core;
+using FlowBlox.Core.Util.Resources;
+using SkiaSharp;
 namespace FlowBlox.AppWindow;
 public partial class AppWindow {
 private readonly MenuEntry mnItmMisc = new();
@@ -228,6 +231,7 @@ mnItmHelp.DropDownItems.Add(itmCheckForNewVersion);
 mnItmHelp.DropDownItems.Add(itmReportProblem);
 mnItmHelp.DropDownItems.Add(toolStripSeparator15);
 mnItmHelp.DropDownItems.Add(itmAbout);
+InitializeQuickStartsMenu();
 itmManageInputFiles.Icon = LoadAsset("itmManageInputFiles.png");
 itmUserFields.Icon = LoadAsset("itmUserFields.png");
 itmFbProjects.Icon = LoadAsset("project-space-16.png");
@@ -238,6 +242,10 @@ itmOpenOutputDir.Icon = LoadAsset("itmOpenOutputDir.png");
 itmOpenProjectDir.Icon = LoadAsset("itmOpenProjectDir.png");
 itmOpenProjectInputDir.Icon = LoadAsset("itmOpenProjectInputDir.png");
 itmOpenProjectOutputDir.Icon = LoadAsset("itmOpenProjectOutputDir.png");
+var neutralIconColor = new SKColor(0xE3, 0xE5, 0xE8);
+itmOpenOnnxQaModelRootDirectory.Icon = LoadAsset("onnx-qa-16.png");
+itmOpenOnnxGenAiModelRootDirectory.Icon = LoadAsset("onnx-genai-16.png");
+_quickStartsMenu.Icon = CreateMenuSvgIcon(FlowBloxIcons.rocket_launch_outline, neutralIconColor);
 itmOpenRuntimeLogDirectory.Icon = LoadAsset("itmOpenRuntimeLogDirectory.png");
 itmOpenApplicationLogDirectory.Icon = LoadAsset("itmOpenApplicationLogDirectory.png");
 itmCreateProject.Icon = LoadAsset("itmCreateProject.png");
@@ -256,10 +264,7 @@ itmPaste.Icon = LoadAsset("itmPaste.png");
 itmFlowBloxTaskManagement.Icon = LoadAsset("itmFlowBloxTaskManagement.png");
 itmResetDockablePanels.Icon = LoadAsset("itmResetDockablePanels.png");
 itmToolbox.Icon = LoadAsset("itmToolbox.png");
-var vaultIcon = FlowBlox.Core.Util.Resources.FlowBloxIconUtil.CreateFromSVG(FlowBlox.Core.FlowBloxIcons.safe_square_outline, 16, new SkiaSharp.SKColor(0x22, 0xB8, 0xCF));
-using (var iconData = vaultIcon.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
-using (var iconStream = iconData.AsStream())
-    itmVault.Icon = new global::Avalonia.Media.Imaging.Bitmap(iconStream);
+itmVault.Icon = CreateMenuSvgIcon(FlowBloxIcons.safe_square_outline, new SKColor(0x22, 0xB8, 0xCF));
 itmVisitOnline.Icon = LoadAsset("itmVisitOnline.png");
 itmGitHub.Icon = LoadAsset("itmGitHub.png");
 itmCheckForNewVersion.Icon = LoadAsset("itmCheckForNewVersion.png");
@@ -267,6 +272,15 @@ itmReportProblem.Icon = LoadAsset("itmReportProblem.png");
 itmAbout.Icon = LoadAsset("itmAbout.png");
 itmOpenExampleProject.Icon = LoadAsset("itmOpenExampleProject.png");
 }
+
+    private static IImage CreateMenuSvgIcon(byte[] svg, SKColor color)
+    {
+        // The SVG utility owns and caches this image.
+        var image = FlowBloxIconUtil.CreateFromSVG(svg, 16, color);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = data.AsStream();
+        return new global::Avalonia.Media.Imaging.Bitmap(stream);
+    }
 
     private static IImage CreateProjectSpaceSaveIcon()
     {

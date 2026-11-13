@@ -1,3 +1,4 @@
+using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
@@ -318,7 +319,13 @@ namespace FlowBlox.AIAssistant.Tools.Util
             var nullable = IsNullable(property);
             var majorTypeDescriptor = GetMajorTypeDescriptor(nonNullableType, "SimpleProperty");
 
-            var flowBlockUi = property.GetCustomAttribute<FlowBloxUIAttribute>();
+            var flowBlockUi = property.GetFlowBloxUIAttribute();
+            var factory = property.GetFlowBloxUIFactory();
+            var hasObjectOperations = factory == UIFactory.Association
+                || factory == UIFactory.GridView
+                || factory == UIFactory.ListView
+                || factory == UIFactory.ListViewSplitMode;
+            var association = hasObjectOperations ? property.GetFlowBloxAssociationAttribute() : null;
 
             var propertyInfo = new JObject
             {
@@ -336,27 +343,28 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (!string.IsNullOrWhiteSpace(description))
                 propertyInfo["description"] = description;
 
-            if (flowBlockUi != null)
+            var uiFlags = BuildUiFlags(
+                association?.Operations ?? UIOperations.None,
+                flowBlockUi.SelectionButtons,
+                FlowBloxFieldSelection.Supports(property));
+            if (!string.IsNullOrEmpty(uiFlags))
+                propertyInfo["uiFlags"] = uiFlags;
+
+            var uiInfo = new JObject();
+            if (association?.CreatableTypes?.Length > 0)
             {
-                var uiFlags = BuildUiFlags(flowBlockUi.Operations, flowBlockUi.UiOptions, FlowBloxFieldSelection.Supports(property));
-                if (!string.IsNullOrEmpty(uiFlags))
-                    propertyInfo["uiFlags"] = uiFlags;
-
-                var uiInfo = new JObject();
-
-                var creatableTypes = new JArray((flowBlockUi.CreatableTypes ?? Array.Empty<Type>()).Select(x => x.FullName ?? x.Name));
-                if (creatableTypes.Count > 0)
-                    uiInfo["creatableTypes"] = creatableTypes;
-
-                if (flowBlockUi.ReadOnly)
-                    uiInfo["readOnly"] = true;
-
-                if (!string.IsNullOrWhiteSpace(flowBlockUi.ToolboxCategory))
-                    uiInfo["toolboxCategory"] = flowBlockUi.ToolboxCategory;
-
-                if (uiInfo.HasValues)
-                    propertyInfo["ui"] = uiInfo;
+                uiInfo["creatableTypes"] = new JArray(
+                    association.CreatableTypes.Select(type => type.FullName ?? type.Name));
             }
+
+            if (flowBlockUi.ReadOnly)
+                uiInfo["readOnly"] = true;
+
+            if (!string.IsNullOrWhiteSpace(flowBlockUi.ToolboxCategory))
+                uiInfo["toolboxCategory"] = flowBlockUi.ToolboxCategory;
+
+            if (uiInfo.HasValues)
+                propertyInfo["ui"] = uiInfo;
 
             if (isFlowBlockReference)
                 propertyInfo["isFlowBlockReference"] = true;
@@ -423,7 +431,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             return flags;
         }
 
-        internal static string BuildUiFlags(UIOperations operations, UIOptions options, bool supportsFields = false)
+        internal static string BuildUiFlags(UIOperations operations, UISelectionButtons options, bool supportsFields = false)
         {
             var flags = string.Empty;
 
@@ -440,9 +448,9 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
             if (supportsFields)
                 flags += "[FLD]";
-            if (options.HasFlag(UIOptions.EnableFileSelection))
+            if (options.HasFlag(UISelectionButtons.FL))
                 flags += "[FL]";
-            if (options.HasFlag(UIOptions.EnableFolderSelection))
+            if (options.HasFlag(UISelectionButtons.DI))
                 flags += "[DI]";
 
             return flags;

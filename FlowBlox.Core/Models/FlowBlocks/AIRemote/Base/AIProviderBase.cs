@@ -24,29 +24,25 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.robot_outline, 32, new SKColor(3, 105, 161));
         [Required]
         [Display(Name = "AIProvider_ApiKey", Description = "AIProvider_ApiKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox]
         public string ApiKey { get; set; }
 
         [Display(Name = "AIProvider_DefaultModel", Description = "AIProvider_DefaultModel_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string DefaultModel { get; set; }
 
         [Display(Name = "AIProvider_EstimatedSystemPromptCacheSavingsRate", Description = "AIProvider_EstimatedSystemPromptCacheSavingsRate_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [Range(0d, 1d)]
+        [FlowBloxUI(UISelectionButtons.None)]
         public double EstimatedSystemPromptCacheSavingsRate { get; set; }
 
         [Display(Name = "AIProvider_ReasoningEffort", Description = "AIProvider_ReasoningEffort_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [ActivationCondition(ActivationMethod = nameof(IsReasoningEffortActive))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public AIReasoningEffort ReasoningEffort { get; set; }
 
         [Display(Name = "AIProvider_TimeoutSeconds", Description = "AIProvider_TimeoutSeconds_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TimeoutSeconds { get; set; }
 
         [Display(Name = "AIProvider_BaseUrl", Description = "AIProvider_BaseUrl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BaseUrl { get; set; }
 
         public abstract string ProviderType { get; }

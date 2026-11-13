@@ -1,3 +1,4 @@
+using FlowBlox.Core.Exceptions;
 using FlowBlox.Core.Extensions;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Attributes;
@@ -37,7 +38,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [Required]
         [Display(Name = "OnnxQAFlowBlock_ModelFolder", Description = "OnnxQAFlowBlock_ModelFolder_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(Factory = UIFactory.Default, UiOptions = UIOptions.EnableFieldSelection | UIOptions.EnableFolderSelection)]
+        [FlowBloxUI(UISelectionButtons.FLD | UISelectionButtons.DI)]
         [FlowBloxFieldSelection(AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties)]
         [FlowBloxOpenFromFileSystem(InitialDirectoryMethod = nameof(GetInitialModelDirectory))]
         public string ModelFolder { get; set; }
@@ -45,13 +46,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         [Required]
         [Display(Name = "OnnxQAFlowBlock_Question", Description = "OnnxQAFlowBlock_Question_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
         [FlowBloxTextBox(MultiLine = false)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Question { get; set; }
 
         [Required]
         [Display(Name = "OnnxQAFlowBlock_Context", Description = "OnnxQAFlowBlock_Context_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [FlowBloxTextBox(MultiLine = true)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string Context { get; set; }
 
         #endregion
@@ -63,7 +62,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         [Required]
         [Display(Name = "OnnxQAFlowBlock_AiExecutionProvider", Description = "OnnxQAFlowBlock_AiExecutionProvider_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(Factory = UIFactory.ComboBox, ReadOnly = true)]
+        [FlowBloxUI(ReadOnly = true)]
         public AiExecutionProviders AiExecutionProvider
         {
             get
@@ -78,30 +77,25 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         [Range(16, 4096)]
         [Display(Name = "OnnxQAFlowBlock_MaxSequenceLength", Description = "OnnxQAFlowBlock_MaxSequenceLength_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxSequenceLength { get; set; }
 
         [Range(0, 4095)]
         [Display(Name = "OnnxQAFlowBlock_DocumentStride", Description = "OnnxQAFlowBlock_DocumentStride_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int DocumentStride { get; set; }
 
         [Range(1, 512)]
         [Display(Name = "OnnxQAFlowBlock_MaxAnswerLength", Description = "OnnxQAFlowBlock_MaxAnswerLength_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 3)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int MaxAnswerLength { get; set; }
 
         [Display(Name = "OnnxQAFlowBlock_AllowNoAnswer", Description = "OnnxQAFlowBlock_AllowNoAnswer_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 4)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public bool AllowNoAnswer { get; set; }
 
         [ActivationCondition(MemberName = nameof(AllowNoAnswer), Value = true)]
         [Display(Name = "OnnxQAFlowBlock_NoAnswerThreshold", Description = "OnnxQAFlowBlock_NoAnswerThreshold_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 5)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public float NoAnswerThreshold { get; set; }
 
         #endregion
@@ -136,7 +130,26 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         public override void RuntimeStarted(BaseRuntime runtime)
         {
             base.RuntimeStarted(runtime);
+            EnsureModelInitialized(runtime);
+        }
 
+        private void EnsureModelInitialized(BaseRuntime runtime)
+        {
+            try
+            {
+                InitializeModel(runtime);
+            }
+            catch (Exception exception)
+            {
+                var failure = new ExecutionPrerequisiteException(
+                    "ONNX QA", typeof(OnnxQAFlowBlock), this.Resolve(owner => owner.ModelFolder), exception);
+                CreateNotification(runtime, OnnxQANotifications.SetupRequired, failure.NotificationMessage, failure);
+                throw failure;
+            }
+        }
+
+        private void InitializeModel(BaseRuntime runtime)
+        {
             FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
             _resolvedModelFolder = ResolveModelFolder();
             ValidateModelFolder(_resolvedModelFolder);
@@ -174,7 +187,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                 var modelFolder = !string.IsNullOrWhiteSpace(_resolvedModelFolder) ? _resolvedModelFolder : ResolveModelFolder();
                 if (string.IsNullOrWhiteSpace(modelFolder) || !Directory.Exists(modelFolder))
                 {
-                    CreateNotification(runtime, OnnxQANotifications.ModelFolderMissing);
+                    var failure = new ExecutionPrerequisiteException("ONNX QA", typeof(OnnxQAFlowBlock), modelFolder);
+                    CreateNotification(runtime, OnnxQANotifications.ModelFolderMissing, failure.NotificationMessage, failure);
                     GenerateResult(runtime);
                     return;
                 }
@@ -245,15 +259,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
             var questionTokens = _tokenizer.EncodeTokens(question);
             var contextTokens = _tokenizer.EncodeTokens(context);
-            var contextCapacity = _tokenizer.GetAvailableContextTokenCount(questionTokens.Count, MaxSequenceLength);
+            var contextCapacity = _tokenizer.GetAvailableContextTokenCount(questionTokens.Count, this.Resolve(x => x.MaxSequenceLength));
             if (contextCapacity <= 0)
                 throw new InvalidOperationException("The question is too long for the configured maximum sequence length.");
-            if (DocumentStride >= contextCapacity)
+            if (this.Resolve(x => x.DocumentStride) >= contextCapacity)
                 throw new InvalidOperationException("DocumentStride must be smaller than the number of context tokens in a window.");
 
             OnnxQASpanCandidate bestSpan = null;
             var bestNullScore = float.PositiveInfinity;
-            var windowStep = Math.Max(1, contextCapacity - DocumentStride);
+            var windowStep = Math.Max(1, contextCapacity - this.Resolve(x => x.DocumentStride));
 
             for (var contextOffset = 0; contextOffset < contextTokens.Count; contextOffset += windowStep)
             {
@@ -269,7 +283,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                     endLogits,
                     window,
                     contextTokens,
-                    MaxAnswerLength);
+                    this.Resolve(x => x.MaxAnswerLength));
                 if (candidate != null && (bestSpan == null || candidate.Score > bestSpan.Score))
                     bestSpan = candidate;
 
@@ -278,7 +292,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
             }
 
             if (bestSpan == null ||
-                (AllowNoAnswer && bestNullScore - bestSpan.Score > NoAnswerThreshold))
+                (this.Resolve(x => x.AllowNoAnswer) && bestNullScore - bestSpan.Score > this.Resolve(x => x.NoAnswerThreshold)))
                 return string.Empty;
 
             var start = Math.Clamp(bestSpan.CharacterStart, 0, context.Length);
@@ -418,7 +432,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
     public enum OnnxQANotifications
     {
         [FlowBloxNotification(NotificationType = NotificationType.Error)]
-        [Display(Name = "The ONNX QA model folder is missing.")]
+        [Display(Name = "Model folder missing")]
         ModelFolderMissing,
 
         [FlowBloxNotification(NotificationType = NotificationType.Error)]
@@ -427,6 +441,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         [FlowBloxNotification(NotificationType = NotificationType.Error)]
         [Display(Name = "Failed to execute the ONNX question answering model.")]
-        ExecutionFailed
+        ExecutionFailed,
+
+        [FlowBloxNotification(NotificationType = NotificationType.Error)]
+        [Display(Name = "Setup required")]
+        SetupRequired
     }
 }

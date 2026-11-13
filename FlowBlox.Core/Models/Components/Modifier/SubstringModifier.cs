@@ -10,14 +10,12 @@ namespace FlowBlox.Core.Models.Components.Modifier
     [Display(Name = "SubstringModifier_DisplayName", ResourceType = typeof(FlowBloxTexts))]
     public class SubstringModifier : ModifierBase
     {
-        [Required()]
+        [Required]
         [Display(Name = "SubstringModifier_Index", Order = 0, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Index { get; set; }
 
-        [Required()]
+        [Required]
         [Display(Name = "SubstringModifier_Length", Order = 1, ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int Length { get; set; }
 
         public override string Modify(BaseRuntime runtime, string value)
@@ -30,7 +28,7 @@ namespace FlowBlox.Core.Models.Components.Modifier
         public override string ToString()
         {
             var format = FlowBloxResourceUtil.GetLocalizedString(nameof(SubstringModifier), nameof(ObjectDisplayName));
-            return string.Format(format, this.Index, this.Index + this.Length);
+            return string.Format(format, this.Resolve(x => x.Index), this.Resolve(x => x.Index) + this.Resolve(x => x.Length));
         }
     }
 }

@@ -19,18 +19,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.WebSearch
 
         [Required]
         [Display(Name = "WebSearchProviderBase_ApiKey", Description = "WebSearchProviderBase_ApiKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         [FlowBloxTextBox(IsPassword = true)]
         public string ApiKey { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "WebSearchProviderBase_BaseUrl", Description = "WebSearchProviderBase_BaseUrl_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public string BaseUrl { get; set; } = string.Empty;
 
         [Range(1, 300)]
         [Display(Name = "WebSearchProviderBase_TimeoutSeconds", Description = "WebSearchProviderBase_TimeoutSeconds_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [FlowBloxUI(UiOptions = UIOptions.EnableFieldSelection)]
         public int TimeoutSeconds { get; set; } = 30;
 
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.web, 16, SKColors.SteelBlue);
