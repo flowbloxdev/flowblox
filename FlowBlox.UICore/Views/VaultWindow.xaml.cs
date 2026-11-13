@@ -129,7 +129,7 @@ public partial class VaultWindow : MetroWindow, INotifyPropertyChanged
             FlowBloxResourceUtil.GetLocalizedString(key, typeof(Texts)),
             FlowBloxResourceUtil.GetLocalizedString("Title", typeof(Texts)), type);
 
-    private void Close_Click(object sender, RoutedEventArgs e) => Close();
+    private void Back_Click(object sender, RoutedEventArgs e) => Close();
 
     protected override void OnClosing(CancelEventArgs e)
     {

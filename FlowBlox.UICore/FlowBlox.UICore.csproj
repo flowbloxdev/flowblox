@@ -27,7 +27,6 @@
     <EmbeddedResource Include="Resources\Highlighting\SQL.xshd" />
     <EmbeddedResource Include="Resources\Highlighting\JQL.xshd" />
     <Resource Include="Resources\Images\FlowBloxLogo.png" />
-    <Resource Include="Resources\Images\FlowBloxStartup.gif" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />

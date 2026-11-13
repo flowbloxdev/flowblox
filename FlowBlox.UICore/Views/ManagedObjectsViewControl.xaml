@@ -138,31 +138,45 @@
                                 <iconPacks:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource HostedControlToolbarIconBase}" />
                             </Button>
 
-                            <Menu VerticalAlignment="Center"
-                                  Margin="4,0,0,0"
-                                  IsEnabled="{Binding HasSelectedEntryActions}">
-                                <MenuItem Header="{x:Static resources:ManagedObjectsView.Toolbar_Actions}"
-                                          FontSize="12"
-                                          ItemsSource="{Binding SelectedEntryActions}">
-                                    <MenuItem.ItemContainerStyle>
-                                        <Style TargetType="MenuItem">
-                                            <Setter Property="Header" Value="{Binding}" />
-                                            <Setter Property="HeaderTemplate">
-                                                <Setter.Value>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="{Binding Icon}" Width="14" Height="14" Margin="0,0,6,0" />
-                                                            <TextBlock Text="{Binding DisplayName}" />
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Setter Property="Command" Value="{Binding Command}"/>
-                                            <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
-                                        </Style>
-                                    </MenuItem.ItemContainerStyle>
-                                </MenuItem>
-                            </Menu>
+                            <Button x:Name="ActionsDropDownButton"
+                                    Height="28"
+                                    Margin="4,0,0,0"
+                                    Padding="8,3"
+                                    FontSize="12"
+                                    IsEnabled="{Binding HasSelectedEntryActions}"
+                                    Click="ActionsDropDownButton_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource FlowBlox.ToolbarButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ContextMenu.IsOpen, RelativeSource={RelativeSource Self}}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.ToolbarButtonPressed}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{x:Static resources:ManagedObjectsView.Toolbar_Actions}" VerticalAlignment="Center" />
+                                    <iconPacks:PackIconMaterial Kind="ChevronDown" Width="14" Height="14" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Button.ContextMenu>
+                                    <ContextMenu Style="{StaticResource FlowBlox.ContextMenu}"
+                                                 DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                                                 ItemsSource="{Binding SelectedEntryActions}"
+                                                 Placement="Bottom"
+                                                 HorizontalOffset="-8"
+                                                 VerticalOffset="-4"
+                                                 MenuItem.Click="ActionsDropDownMenu_Click">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource FlowBlox.ContextMenuItem}">
+                                                <Setter Property="Header" Value="{Binding DisplayName}" />
+                                                <Setter Property="Icon" Value="{Binding Icon}" />
+                                                <Setter Property="Command" Value="{Binding Command}" />
+                                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
                         </ToolBar>
                     </ToolBarTray>
                 </Border>

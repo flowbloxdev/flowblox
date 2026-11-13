@@ -13,5 +13,5 @@ public partial class AboutWindow : MetroWindow
         DataContext = new AboutViewModel(Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly());
     }
 
-    private void Close_Click(object sender, RoutedEventArgs e) => Close();
+    private void Back_Click(object sender, RoutedEventArgs e) => Close();
 }

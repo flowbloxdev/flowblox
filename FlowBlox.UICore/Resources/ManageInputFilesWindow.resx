@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -107,8 +107,8 @@
 	<data name="Header_Description_Main" xml:space="preserve">
 		<value>Manage project input files. These files can be used as fixed inputs, mocks or templates (e.g. XML, JSON, XLSX). With sync mode CreateIfNotExists they act like templates. Commands can be configured per input file for manual execution or before runtime start.</value>
 	</data>
-	<data name="Button_Close" xml:space="preserve">
-		<value>Close</value>
+	<data name="Button_Back" xml:space="preserve">
+		<value>Back</value>
 	</data>
 	<data name="Tooltip_OpenInputDirectory" xml:space="preserve">
 		<value>Open input directory</value>

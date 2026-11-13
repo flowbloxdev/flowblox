@@ -1,6 +1,0 @@
-{
-  "$type": "FlowBlox.Core.Models.Project.FlowBloxProjectLocalData, FlowBlox.Core",
-  "LocalUserFieldValues": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.String, System.Private.CoreLib]], System.Private.CoreLib"
-  }
-}

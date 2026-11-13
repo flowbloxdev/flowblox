@@ -9,7 +9,7 @@ public static class AboutWindow
 {
     public static ResourceManager ResourceManager { get; } = new("FlowBlox.UICore.Resources.AboutWindow", typeof(AboutWindow).Assembly);
     public static CultureInfo? Culture { get; set; }
-    public static string Close => ResourceManager.GetString(nameof(Close), Culture) ?? nameof(Close);
+    public static string Button_Back => ResourceManager.GetString(nameof(Button_Back), Culture) ?? nameof(Button_Back);
     public static string DefaultCopyright => ResourceManager.GetString(nameof(DefaultCopyright), Culture) ?? nameof(DefaultCopyright);
     public static string DefaultDescription => ResourceManager.GetString(nameof(DefaultDescription), Culture) ?? nameof(DefaultDescription);
     public static string ProductInformation => ResourceManager.GetString(nameof(ProductInformation), Culture) ?? nameof(ProductInformation);

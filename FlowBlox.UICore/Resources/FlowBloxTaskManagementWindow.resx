@@ -72,7 +72,7 @@
   <data name="Header_SessionId" xml:space="preserve"><value>Unique ID</value></data>
   <data name="Header_SessionLogFile" xml:space="preserve"><value>Log file</value></data>
   <data name="Header_SessionMessage" xml:space="preserve"><value>Message</value></data>
-  <data name="Button_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Button_Back" xml:space="preserve"><value>Back</value></data>
   <data name="Error_LoadTasksFailed" xml:space="preserve"><value>Tasks could not be loaded.</value></data>
   <data name="Error_LoadProjectFailed" xml:space="preserve"><value>Project could not be loaded.</value></data>
   <data name="Error_LoadInputParametersFailed" xml:space="preserve"><value>Input parameters could not be loaded.</value></data>

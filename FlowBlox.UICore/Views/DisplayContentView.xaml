@@ -23,12 +23,9 @@
         </Grid.RowDefinitions>
         <views:InnerContentView />
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button Command="{Binding CloseCommand}" IsDefault="True" IsCancel="True">
-                <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial Kind="Check" Width="16" Height="16" Margin="0,0,6,0" />
-                    <TextBlock Text="{x:Static resources:DisplayContentView.Button_Close}" />
-                </StackPanel>
-            </Button>
+            <Button Command="{Binding CloseCommand}" IsDefault="True" IsCancel="True"
+                    Content="{x:Static resources:DisplayContentView.Button_Back}"
+                    Style="{StaticResource FlowBlox.WindowActionButton.Back}" />
         </StackPanel>
     </Grid>
 </mah:MetroWindow>

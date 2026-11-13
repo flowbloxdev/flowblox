@@ -70,13 +70,13 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
-        public static string Button_Close
+        public static string Button_Back
         {
             get
             {
-                return ResourceManager.GetString("Button_Close", resourceCulture);
+                return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
         

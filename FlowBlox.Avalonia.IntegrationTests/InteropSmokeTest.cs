@@ -78,6 +78,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             CheckSimplePropertyFieldSelection(Check);
             await CheckEnabledFieldSelectionEditorsAsync(Check);
             await CheckLiteralGridRenderingAsync(Check);
+            await CheckManagedObjectActionsDropDownAsync(directory, Check);
             await CheckAssistantProviderSelectionAsync(Check);
             CheckProjectSpaceCards(Check, directory);
             await CheckMissingProjectSpaceGuidAsync(Check);

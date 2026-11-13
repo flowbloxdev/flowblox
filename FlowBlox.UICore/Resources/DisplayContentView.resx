@@ -50,7 +50,7 @@
   <data name="Button_Copy" xml:space="preserve">
     <value>Copy</value>
   </data>
-  <data name="Button_Close" xml:space="preserve">
-    <value>Close</value>
+  <data name="Button_Back" xml:space="preserve">
+    <value>Back</value>
   </data>
 </root>

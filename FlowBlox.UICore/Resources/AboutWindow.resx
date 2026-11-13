@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -12,8 +12,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
   </resheader>
-  <data name="Close" xml:space="preserve">
-    <value>_Close</value>
+  <data name="Button_Back" xml:space="preserve">
+    <value>Back</value>
   </data>
   <data name="DefaultCopyright" xml:space="preserve">
     <value>© {0} Marcel Scheitza and contributors. Licensed under MIT.</value>

@@ -62,19 +62,8 @@
             Margin="10">
             <Button
                 IsCancel="True"
-                MinWidth="112"
-                MinHeight="32"
-                Padding="12,5"
-                Margin="5">
-                <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial
-                        Kind="Close"
-                        Style="{StaticResource FlowBlox.WindowActionIcon.Back}" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Text="{x:Static resources:ProblemTraceWindow.Button_Close}" />
-                </StackPanel>
-            </Button>
+                Content="{x:Static resources:ProblemTraceWindow.Button_Back}"
+                Style="{StaticResource FlowBlox.WindowActionButton.Back}" />
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">

@@ -92,13 +92,13 @@ namespace FlowBlox.UICore.Resources
         }
 
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
-        public static string Button_Close
+        public static string Button_Back
         {
             get
             {
-                return ResourceManager.GetString("Button_Close", resourceCulture);
+                return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
         
@@ -114,7 +114,11 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die The path to the editor does not exist. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die The path to the editor does not exist.
+        ///
+        ///Configured path: {0}
+        ///
+        ///You can configure the default editor used by FlowBlox under &quot;Options&quot; → &quot;Editor&quot; → &quot;Default Path&quot;. ähnelt.
         /// </summary>
         public static string EditorPathError_Message
         {

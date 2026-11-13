@@ -80,5 +80,17 @@ namespace FlowBlox.UICore.Views
             if (vm.EditCommand.CanExecute(null))
                 vm.EditCommand.Execute(null);
         }
+
+        private void ActionsDropDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            button.ContextMenu.PlacementTarget = button;
+            button.ContextMenu.IsOpen = true;
+        }
+
+        private void ActionsDropDownMenu_Click(object sender, RoutedEventArgs e)
+        {
+            ((ContextMenu)sender).IsOpen = false;
+        }
     }
 }

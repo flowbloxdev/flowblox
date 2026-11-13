@@ -17,7 +17,23 @@ internal sealed partial class WorkspaceIntegrationChecks
 {
     private async Task CheckLiteralGridRenderingAsync(Action<bool, string> check)
     {
+        await CheckPatternGridDirtyTrackingAsync(check);
+
         using var registryScope = FlowBloxRegistryProvider.BeginScopedRegistry(new FlowBloxProject().FlowBloxRegistry);
+        // WPF Loaded callbacks do not inherit the AsyncLocal registry scope.
+        var transaction = FlowBloxRegistryProvider.OpenTransaction(detached: true);
+        try
+        {
+            await CheckLiteralGridRenderingInTransactionAsync(check);
+        }
+        finally
+        {
+            FlowBloxRegistryProvider.CancelTransaction(transaction);
+        }
+    }
+
+    private async Task CheckLiteralGridRenderingInTransactionAsync(Action<bool, string> check)
+    {
         var writer = new TableWriterFlowBlock { Name = "Writer" };
         var schemaProperty = writer.GetType().GetProperty(nameof(writer.TableColumnDefinitions));
         var schemaControl = new DataGridFactory(null, schemaProperty, writer, false).Create();

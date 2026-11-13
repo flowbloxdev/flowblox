@@ -321,8 +321,23 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     return;
 
                 var resolver = new PropertyControlResolver(_window, _target, isGridCell: true);
-                host.Content = resolver.CreateControl(
+                var control = resolver.CreateControl(
                     property, host.DataContext, header, attribute, readOnly, null).FrameworkElement;
+
+                // Editors are also interactive outside DataGrid edit mode.
+                // Their bindings notify the row, so relay those changes to the owning collection property.
+                if (!readOnly && host.DataContext is INotifyPropertyChanged row)
+                {
+                    PropertyChangedEventHandler handler = (_, args) =>
+                    {
+                        if (string.IsNullOrEmpty(args.PropertyName) || args.PropertyName == property.Name)
+                            FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
+                    };
+                    row.PropertyChanged += handler;
+                    control.Unloaded += (_, _) => row.PropertyChanged -= handler;
+                }
+
+                host.Content = control;
             }));
             var activation = property.GetCustomAttribute<ActivationConditionAttribute>();
             if (activation != null)

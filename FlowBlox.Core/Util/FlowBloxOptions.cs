@@ -97,9 +97,9 @@ namespace FlowBlox.Core.Util
                 new OptionElement(
                     "UI.PropertyView.MaskPasswordValues",
                     "false",
-                    FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_MaskPasswordValues_Description", typeof(FlowBloxTexts)),
+                    "Mask password field values in property editors. Disabled by default for readability. Reopen an editor after changing this option. Field-view masking and protection from logs and the AI Assistant remain active.",
                     OptionElement.OptionType.Boolean,
-                    FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_MaskPasswordValues_DisplayName", typeof(FlowBloxTexts))),
+                    "Mask password values in property editors"),
                 new OptionElement("FieldView.MaxDisplayLength", "3000", "Maximum number of characters displayed per field value in the FieldView UI. Full content remains available when opening/editing the field value.", OptionElement.OptionType.Integer),
                 new OptionElement("FieldView.ShowFlowBlock", "false", "Show or hide the Flow Block column in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: Show Flow Block"),
                 new OptionElement("FieldView.SingleLineFieldValues", "true", "Show field values in single-line mode in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: 1 Line Values"),

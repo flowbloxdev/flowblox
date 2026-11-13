@@ -71,7 +71,8 @@
         </ListView>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button Content="{x:Static resources:GenerationView.Button_Close}" IsCancel="True" Click="CloseButton_Click" Margin="5"/>
+            <Button Content="{x:Static resources:GenerationView.Button_Back}" IsCancel="True" Click="BackButton_Click"
+                    Style="{StaticResource FlowBlox.WindowActionButton.Back}" />
         </StackPanel>
     </Grid>
 </mah:MetroWindow>

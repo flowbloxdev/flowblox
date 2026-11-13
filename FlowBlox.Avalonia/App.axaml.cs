@@ -26,7 +26,6 @@ public partial class App : Application
             {
                 try
                 {
-                    await splash.PlayIntroAsync();
                     await Task.Run(AppWindow.AppWindow.InitApp);
                     await Task.Delay(500);
                     if (StartupOptions.EnableInteractiveStartup) await new FlowBloxAutoLoginExecutor().TryAutoLoginAsync();

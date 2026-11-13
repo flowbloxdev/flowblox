@@ -127,8 +127,8 @@
 	<data name="Header_Description_Main" xml:space="preserve">
 		<value>Verwalte projektbezogene Eingabedateien. Diese können als feste Eingaben, Mocks oder Vorlagen (z.B. XML, JSON, XLSX) genutzt werden. Mit dem Synchronisationsmodus "Erstellen, falls nicht vorhanden" können Sie als Dateivorlage verwendet werden. Pro Eingabedatei kann ein Command für die manuelle Ausführung oder vor Laufzeitbeginn hinterlegt werden.</value>
 	</data>
-	<data name="Button_Close" xml:space="preserve">
-		<value>Schließen</value>
+	<data name="Button_Back" xml:space="preserve">
+		<value>Zurück</value>
 	</data>
 	<data name="Tooltip_OpenInputDirectory" xml:space="preserve">
 		<value>Eingabeverzeichnis öffnen</value>

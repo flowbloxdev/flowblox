@@ -147,8 +147,8 @@
 	<data name="Column_Details" xml:space="preserve">
     <value>Details</value>
   </data>
-	<data name="Button_Close" xml:space="preserve">
-    <value>Schließen</value>
+	<data name="Button_Back" xml:space="preserve">
+    <value>Zurück</value>
   </data>
 	<data name="EmptyState_NoFieldValues" xml:space="preserve">
     <value>Für dieses Problem wurden keine Feldwerte aufgezeichnet.</value>

@@ -6,7 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AddOption_Description" xml:space="preserve"><value>Geben Sie den Namen der neuen Option ein.</value></data>
   <data name="Button_Apply" xml:space="preserve"><value>Übernehmen</value></data>
-  <data name="Button_Close" xml:space="preserve"><value>Schließen</value></data>
+  <data name="Button_Back" xml:space="preserve"><value>Zurück</value></data>
   <data name="CloseUnsavedChanges_Message" xml:space="preserve"><value>Die ausgewählte Option enthält ungespeicherte Änderungen. Möchten Sie das Fenster wirklich schließen und die Änderungen verwerfen?</value></data>
   <data name="EditorPathError_Message" xml:space="preserve"><value>Der Pfad zum Editor ist nicht vorhanden.
 
