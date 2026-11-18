@@ -100,26 +100,15 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        MaxWidth="280">
-                <iconPacks:PackIconMaterial Kind="MessageTextClockOutline"
-                                            Width="48"
-                                            Height="48"
-                                            Foreground="#FF8AA0B2"
-                                            HorizontalAlignment="Center" />
-                <TextBlock Text="{x:Static resources:AiAssistantHistoryView.Empty_Title}"
-                           FontWeight="SemiBold"
-                           FontSize="14"
-                           Foreground="#FF1F2937"
-                           TextAlignment="Center"
-                           Margin="0,14,0,0" />
-                <TextBlock Text="{x:Static resources:AiAssistantHistoryView.Empty_Description}"
-                           Foreground="#FF6B7280"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           Margin="0,6,0,0" />
-            </StackPanel>
+            <ContentControl Style="{StaticResource FlowBlox.EmptyState}" MaxWidth="280"
+                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ContentControl.Content>
+                    <MultiBinding StringFormat="{}{0}&#10;{1}">
+                        <Binding Source="{x:Static resources:AiAssistantHistoryView.Empty_Title}" />
+                        <Binding Source="{x:Static resources:AiAssistantHistoryView.Empty_Description}" />
+                    </MultiBinding>
+                </ContentControl.Content>
+            </ContentControl>
         </Border>
     </Grid>
 </UserControl>

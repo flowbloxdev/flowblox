@@ -8,13 +8,137 @@
         <ResourceDictionary Source="ContextMenuStyles.xaml" />
         <!-- Makes the explicit MahApps button base style available inside this standalone dictionary. -->
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Expander.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <!-- ====================== -->
     <!-- FlowBlox Custom Styles -->
     <!-- ====================== -->
 
+    <Style x:Key="FlowBlox.ProgressBar.Indeterminate" TargetType="ProgressBar">
+        <Setter Property="Height" Value="4" />
+        <Setter Property="IsIndeterminate" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.ProgressForeground}" />
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.ProgressBackground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid ClipToBounds="True">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="2" />
+                        <!-- A normalized canvas keeps the marquee proportional at any width. -->
+                        <Viewbox Stretch="Fill">
+                            <Canvas Width="1000" Height="4">
+                                <Border x:Name="Marquee" Width="300" Height="4" CornerRadius="2"
+                                        Background="{TemplateBinding Foreground}">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform X="-300" />
+                                    </Border.RenderTransform>
+                                </Border>
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsIndeterminate" Value="True" />
+                                <Condition Property="IsVisible" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard x:Name="MarqueeAnimation">
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation Storyboard.TargetName="Marquee"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                         From="-300" To="1000" Duration="0:0:1.5" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <StopStoryboard BeginStoryboardName="MarqueeAnimation" />
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FlowBlox.NotificationBox" TargetType="{x:Type Border}">
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12" />
+    </Style>
+    <Style x:Key="FlowBlox.NotificationBox.Information" TargetType="{x:Type Border}" BasedOn="{StaticResource FlowBlox.NotificationBox}">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.Notification.Information.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.Notification.Information.Border}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.Notification.Information.Text}" />
+    </Style>
+    <Style x:Key="FlowBlox.NotificationBox.Success" TargetType="{x:Type Border}" BasedOn="{StaticResource FlowBlox.NotificationBox}">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.Notification.Success.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.Notification.Success.Border}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.Notification.Success.Text}" />
+    </Style>
+    <Style x:Key="FlowBlox.NotificationBox.Error" TargetType="{x:Type Border}" BasedOn="{StaticResource FlowBlox.NotificationBox}">
+        <Setter Property="Background" Value="{DynamicResource FlowBlox.Brush.Notification.Error.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.Notification.Error.Border}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource FlowBlox.Brush.Notification.Error.Text}" />
+    </Style>
+    <Style x:Key="FlowBlox.NotificationText" TargetType="{x:Type TextBlock}">
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource AncestorType=Border}}" />
+    </Style>
+    <Style x:Key="FlowBlox.NotificationTitle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource FlowBlox.NotificationText}">
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style x:Key="FlowBlox.NotificationIcon" TargetType="{x:Type iconPacks:PackIconMaterial}">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Margin" Value="0,2,10,0" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Foreground" Value="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource AncestorType=Border}}" />
+    </Style>
+
+    <Style x:Key="FlowBlox.EmptyStateIconStyle" TargetType="{x:Type iconPacks:PackIconMaterial}">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.EmptyStateText}" />
+    </Style>
+    <Style x:Key="FlowBlox.EmptyStateTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.EmptyStateText}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style x:Key="FlowBlox.EmptyState" TargetType="{x:Type ContentControl}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContentControl}">
+                    <Grid Margin="{TemplateBinding Padding}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <iconPacks:PackIconMaterial Kind="AlertCircleOutline" Margin="0,0,10,0"
+                                                   VerticalAlignment="Center" Style="{StaticResource FlowBlox.EmptyStateIconStyle}" />
+                        <TextBlock Grid.Column="1" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                   VerticalAlignment="Center" Style="{StaticResource FlowBlox.EmptyStateTextStyle}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Shared interaction colors for dialog actions and hosted toolbar buttons. -->
+    <Style x:Key="FlowBlox.InformationExpander" TargetType="{x:Type Expander}"
+           BasedOn="{StaticResource MahApps.Styles.Expander}">
+        <Setter Property="BorderBrush" Value="{DynamicResource FlowBlox.Brush.Border}" />
+        <Setter Property="mah:HeaderedControlHelper.HeaderBackground" Value="{DynamicResource FlowBlox.Brush.InformationHeader}" />
+        <Setter Property="mah:HeaderedControlHelper.HeaderForeground" Value="{DynamicResource FlowBlox.Brush.InformationHeaderText}" />
+        <Setter Property="IsExpanded" Value="False" />
+    </Style>
+
     <Style x:Key="FlowBlox.ToolbarButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource FlowBlox.Brush.Text}" />
@@ -344,4 +468,34 @@
         </Setter>
     </Style>
 
+    <Style x:Key="FlowBlox.CardListItem" TargetType="ListBoxItem">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="Background" Value="#FFF7F9FB" />
+        <Setter Property="BorderBrush" Value="#FFD5DEE7" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="CardBorder" Padding="{TemplateBinding Padding}" CornerRadius="6"
+                            Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Stretch" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CardBorder" Property="Background" Value="#FFF0F5FA" />
+                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="#FFA7C0D8" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="CardBorder" Property="Background" Value="#FFE8F1FA" />
+                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="#FF3A6EA5" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Accent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

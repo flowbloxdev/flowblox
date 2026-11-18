@@ -69,5 +69,12 @@
         <Setter Property="BorderThickness" Value="1.2"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="8,0,0,0"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                <Setter Property="Opacity" Value="0.6"/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

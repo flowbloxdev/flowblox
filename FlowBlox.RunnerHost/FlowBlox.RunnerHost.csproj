@@ -11,6 +11,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="FlowBloxMainIcon.ico" />
+    <Content Include="..\FlowBlox.Avalonia\log4net.runtime.config" Link="log4net.runtime.config" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\FlowBlox.Avalonia\log4net.application.config" Link="log4net.application.config" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />

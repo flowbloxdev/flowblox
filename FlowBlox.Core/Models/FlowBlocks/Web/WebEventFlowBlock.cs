@@ -147,7 +147,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                     {
                         if (enterResult.Success)
                         {
-                            runtime.Report($"Enter action successfully executed for selector \"{selector}\" and text \"{inputText}\".");
+                            runtime.Report($"Enter action successfully executed for selector \"{selector}\" and text \"{GetInputTextForLogging(inputText)}\".");
                             WaitAfterExecution();
                             GenerateResult(runtime, webBrowser.DOMContent);
                         }
@@ -328,6 +328,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             [FlowBloxNotification(NotificationType = NotificationType.Warning)]
             [Display(Name = "Requested URL is empty")]
             UrlIsEmpty
+        }
+
+        internal string GetInputTextForLogging(string resolvedInputText)
+        {
+            var containsPasswordField = FlowBloxFieldHelper.GetFieldElementsFromString(InputText)
+                .Any(field => field.IsPassword);
+
+            return containsPasswordField ? "<<hidden>>" : resolvedInputText;
         }
 
         private void WaitAfterExecution()

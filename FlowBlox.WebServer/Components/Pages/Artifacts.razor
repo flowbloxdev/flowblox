@@ -1,0 +1,49 @@
+@page "/projects/{Id}/artifacts"
+@attribute [Authorize]
+@inherits DashboardPageBase
+@inject DashboardService Dashboard
+<PageTitle>@T["Artifacts"] · FlowBlox</PageTitle>
+<a class="back" href="@($"/projects/{Id}")">← @T["Project"]</a>
+<div class="heading"><h1>@T["Artifacts"] <span class="badge">@_count</span></h1><button @onclick="RefreshAsync"><MdiIcon Name="refresh" /> @T["Refresh"]</button></div>
+<p class="muted">@_name</p>
+@if (_error) { <p class="notice error">@T["OperationFailed"]</p> }
+<section class="panel files">
+    <nav class="breadcrumbs"><button class="quiet" @onclick="() => OpenAsync(string.Empty)">@T["OutputDirectory"]</button><span>/ @_directory</span></nav>
+    @if (!string.IsNullOrEmpty(_directory)) { <button class="file-row" @onclick="() => OpenAsync(Parent)">↰ ..</button> }
+    @foreach (var item in _entries)
+    {
+        @if (item.IsDirectory) { <button class="file-row" @onclick="() => OpenAsync(item.RelativePath)"><span class="folder">▰</span><span>@item.Name</span><span>›</span></button> }
+        else { <a class="file-row" href="@DownloadUrl(item.RelativePath)"><img class="file-icon" src="file.svg" alt="" /><span>@item.Name</span><small>@FormatSize(item.Size)</small><MdiIcon Name="download" /></a> }
+    }
+    @if (_entries.Count == 0) { <p class="empty">ⓘ @T["NoArtifacts"]</p> }
+    <div class="pagination"><button disabled="@(_page == 0)" @onclick="() => ChangePageAsync(-1)">&lt; @T["Previous"]</button><span>@(_page + 1)</span><button disabled="@(!_hasNext)" @onclick="() => ChangePageAsync(1)">@T["Next"] &gt;</button></div>
+</section>
+@if (_inUse) { <p class="notice info">@T["ArtifactsInUse"]</p> }
+<footer class="actions">
+    @if (!_confirm) { <button class="danger" disabled="@(_count == 0 || _inUse || _busy)" @onclick="() => _confirm = true"><MdiIcon Name="delete" /> @T["ResetArtifacts"]</button> }
+    else { <p>@T["ConfirmReset"]</p><button class="danger" disabled="@(_busy || _inUse)" @onclick="ClearAsync">@T["Confirm"]</button><button @onclick="() => _confirm = false">@T["Cancel"]</button> }
+</footer>
+@code {
+    [Parameter] public string Id { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] public Guid? ExecutionId { get; set; }
+    private IReadOnlyList<ProjectArtifactEntry> _entries = [];
+    private string _directory = string.Empty, _name = string.Empty;
+    private int _count;
+    private bool _confirm, _error, _inUse, _busy, _hasNext;
+    private int _page;
+    private string Parent => _directory.Contains('/') ? _directory[.._directory.LastIndexOf('/')] : string.Empty;
+    protected override void OnInitialized() => BeginRefreshing(RefreshAsync);
+    private async Task ChangePageAsync(int direction) { _page += direction; await RefreshAsync(); }
+    protected override async Task OnParametersSetAsync() { if (Dashboard.Projects.Count == 0) await Dashboard.RefreshProjectsAsync(); _name = Dashboard.GetProject(Id).Shortcut.Name; await RefreshAsync(); }
+    private async Task OpenAsync(string path) { _directory = path; _page = 0; await RefreshAsync(); }
+    private async Task RefreshAsync()
+    {
+        if (!await HasSessionAsync()) return;
+        _error = false;
+        try { var artifacts = await Dashboard.ArtifactsAsync(Id, ExecutionId); var page = artifacts.List(_directory, _page * 100, 101); _entries = page.Take(100).ToList(); _hasNext = page.Count > 100; _count = artifacts.Count(); _inUse = Dashboard.Executions.IsArtifactDirectoryInUse(artifacts.RootDirectory); }
+        catch { _error = true; }
+    }
+    private async Task ClearAsync() { if (!await HasSessionAsync()) return; _busy = true; try { await Dashboard.ClearArtifactsAsync(Id, ExecutionId); _directory = string.Empty; _confirm = false; _page = 0; await RefreshAsync(); } catch { _error = true; } finally { _busy = false; } }
+    private string DownloadUrl(string path) => $"/download/{Id}?path={Uri.EscapeDataString(path)}" + (ExecutionId.HasValue ? $"&executionId={ExecutionId}" : string.Empty);
+    private static string FormatSize(long size) => size >= 1048576 ? $"{size / 1048576d:0.#} MB" : $"{size / 1024d:0.#} KB";
+}

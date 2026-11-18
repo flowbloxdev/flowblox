@@ -63,7 +63,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 var results = TryReuseExistingOutput(request);
                 if (results == null)
                 {
-                    EvaluateExecutionPrerequisites();
+                    EvaluateExecutionEnvironmentPrerequisites();
                     results = await DownloadCoreAsync(request, progress, timeout.Token).ConfigureAwait(false);
                 }
                 else
@@ -82,7 +82,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             }
             catch (System.ComponentModel.Win32Exception exception) when (this is FFmpegMediaDownloadProviderBase)
             {
-                throw new ExecutionPrerequisiteException(
+                throw new ExecutionEnvironmentPrerequisiteException(
                     this is YtDlpMediaDownloadProvider ? "yt-dlp" : "FFmpeg",
                     GetType(),
                     Name ?? string.Empty,
@@ -120,7 +120,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 Success = success,
                 FilePath = success ? Path.GetFullPath(result.FilePath) : string.Empty,
                 SourceUrl = string.IsNullOrWhiteSpace(result.SourceUrl) ? sourceUrl : result.SourceUrl,
-                PrerequisiteFailure = result.PrerequisiteFailure,
+                ExecutionEnvironmentPrerequisiteFailure = result.ExecutionEnvironmentPrerequisiteFailure,
                 FailureReason = failureReason,
                 ErrorMessage = errorMessage
             };

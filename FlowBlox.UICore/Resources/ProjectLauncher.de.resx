@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -103,7 +103,7 @@
     <value>Gestartet: {0}</value>
   </data>
   <data name="Readonly" xml:space="preserve">
-    <value>Diese Ausführung wurde gestartet. Ihre Konfiguration ist schreibgeschützt.</value>
+    <value>Die Ausführungskonfiguration kann nicht mehr geändert werden.</value>
   </data>
   <data name="DuplicateOption" xml:space="preserve">
     <value>Wählen Sie jede Option nur einmal.</value>
@@ -126,4 +126,16 @@
   <data name="LogUnavailable" xml:space="preserve">
     <value>Für diese Ausführung ist keine Protokolldatei verfügbar.</value>
   </data>
+  <data name="History" xml:space="preserve"><value>Ausführungsverlauf</value></data>
+  <data name="HistoryExecution" xml:space="preserve"><value>Ausführung am {0:g}</value></data>
+  <data name="ClearInputs" xml:space="preserve"><value>Zurücksetzen</value></data>
+  <data name="ClearInputsTooltip" xml:space="preserve"><value>Projektvorgaben wiederherstellen und Optionsüberschreibungen entfernen. Gespeicherte Ausführungen bleiben im Verlauf.</value></data>
+  <data name="ProjectNotice" xml:space="preserve">
+    <value>Projektnotiz</value>
+  </data>
+  <data name="NoOptionOverrides" xml:space="preserve">
+    <value>Keine Optionsüberschreibungen festgelegt.</value>
+  </data>
+  <data name="TerminateProcess" xml:space="preserve"><value>Prozess beenden</value></data>
+  <data name="ProcessId" xml:space="preserve"><value>Prozess-ID: {0}</value></data>
 </root>

@@ -1,5 +1,7 @@
 ﻿using FlowBlox.Core.Models.Runtime.Debugging;
 
+using FlowBlox.Core.Models.Runtime;
+
 namespace FlowBlox.Core.Runner.Contracts
 {
     public sealed class RunnerResponse
@@ -14,6 +16,7 @@ namespace FlowBlox.Core.Runner.Contracts
         public int ExitCode { get; set; }
 
         public List<string> Warnings { get; set; }
+        public List<ExecutionEnvironmentPrerequisiteFailure> ExecutionEnvironmentPrerequisiteFailures { get; set; } = new();
         public string ErrorMessage { get; set; }
         public string Exception { get; set; }
         public string AbortMessage { get; set; }

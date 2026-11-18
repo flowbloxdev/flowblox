@@ -43,20 +43,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         };
 
         protected override string? AdditionalBinaryDirectory => Path.GetDirectoryName(
-            ExecutionPrerequisites.FindExecutable(this.Resolve(provider => provider.ExecutablePath)));
+            ExecutionEnvironmentPrerequisites.FindExecutable(this.Resolve(provider => provider.ExecutablePath)));
 
         /// <inheritdoc />
-        public override void ValidateExecutionPrerequisites()
+        public override void ValidateExecutionEnvironmentPrerequisites()
         {
-            ExecutionPrerequisites.RequireExecutable<YtDlpMediaDownloadProvider>(
+            ExecutionEnvironmentPrerequisites.RequireExecutable<YtDlpMediaDownloadProvider>(
                 "yt-dlp",
                 this.Resolve(provider => provider.ExecutablePath));
-            base.ValidateExecutionPrerequisites();
+            base.ValidateExecutionEnvironmentPrerequisites();
 
             var denoPath = this.Resolve(provider => provider.DenoPath);
             if (!string.IsNullOrWhiteSpace(denoPath))
             {
-                ExecutionPrerequisites.RequireExecutable<YtDlpMediaDownloadProvider>("Deno", denoPath);
+                ExecutionEnvironmentPrerequisites.RequireExecutable<YtDlpMediaDownloadProvider>("Deno", denoPath);
             }
         }
 
@@ -66,7 +66,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             if (details.Contains("javascript runtime", StringComparison.OrdinalIgnoreCase)
                 || details.Contains("js runtime", StringComparison.OrdinalIgnoreCase))
             {
-                return new ExecutionPrerequisiteException(
+                return new ExecutionEnvironmentPrerequisiteException(
                     "JavaScript runtime (Deno / Node.js / Bun / QuickJS)",
                     typeof(YtDlpMediaDownloadProvider),
                     "yt-dlp",
@@ -86,7 +86,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             var executablePath = this.Resolve(provider => provider.ExecutablePath);
             var downloader = new YoutubeDL
             {
-                YoutubeDLPath = ExecutionPrerequisites.FindExecutable(executablePath) ?? executablePath,
+                YoutubeDLPath = ExecutionEnvironmentPrerequisites.FindExecutable(executablePath) ?? executablePath,
                 FFmpegPath = ResolveFFmpegExecutablePath(),
                 OutputFolder = outputDirectory,
                 OutputFileTemplate = "%(title)s [%(id)s].%(ext)s",
@@ -263,8 +263,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                     results.Add(new MediaDownloadResult
                     {
                         SourceUrl = string.IsNullOrWhiteSpace(sourceUrl) ? playlistUrl : sourceUrl,
-                        PrerequisiteFailure = exception as ExecutionPrerequisiteException,
-                        FailureReason = exception is ExecutionPrerequisiteException
+                        ExecutionEnvironmentPrerequisiteFailure = exception as ExecutionEnvironmentPrerequisiteException,
+                        FailureReason = exception is ExecutionEnvironmentPrerequisiteException
                             ? MediaDownloadFailureReason.RequiredComponentMissing
                             : MediaDownloadFailureReason.DownloadFailed,
                         ErrorMessage = exception.Message

@@ -53,29 +53,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         #region Tab: Extended settings
 
-        [JsonIgnore]
-        [DeepCopierIgnore]
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_AiExecutionProvider", Description = "OnnxRuntimeGenAIFlowBlock_AiExecutionProvider_Tooltip",
             GroupName = "OnnxRuntimeGenAIFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(ReadOnly = true)]
-        [Required]
-        public AiExecutionProviders AiExecutionProvider
+        public AiExecutionProviders? AiExecutionProvider { get; set; }
+
+        internal AiExecutionProviders GetResolvedExecutionProvider()
         {
-            get
-            {
-                var providerOption = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIOnnxProvider);
-                if (providerOption == null)
-                    return AiExecutionProviders.Default;
+            var selectedProvider = this.Resolve(block => block.AiExecutionProvider);
+            if (selectedProvider.HasValue)
+                return selectedProvider.Value;
 
-                var providerName = providerOption.Value?.Trim();
-                if (string.IsNullOrWhiteSpace(providerName))
-                    return AiExecutionProviders.Default;
-
-                if (Enum.TryParse<AiExecutionProviders>(providerName, ignoreCase: true, out var parsed))
-                    return parsed;
-
-                return AiExecutionProviders.Default;
-            }
+            var providerName = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIOnnxProvider)?.Value?.Trim();
+            return Enum.TryParse<AiExecutionProviders>(providerName, ignoreCase: true, out var provider)
+                ? provider
+                : AiExecutionProviders.Default;
         }
 
         [Display(Name = "OnnxRuntimeGenAIFlowBlock_TokenSelectionStrategy", Description = "OnnxRuntimeGenAIFlowBlock_TokenSelectionStrategy_Tooltip",
@@ -162,8 +153,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
                 if (string.IsNullOrWhiteSpace(modelFolder) || !Directory.Exists(modelFolder))
                 {
-                    var failure = new ExecutionPrerequisiteException("ONNX GenAI", typeof(OnnxGenAIFlowBlock), modelFolder);
-                    CreateNotification(runtime, OnnxRuntimeGenAiNotifications.ModelFolderMissing, failure.NotificationMessage, failure);
+                    var failure = string.IsNullOrWhiteSpace(modelFolder)
+                        ? null
+                        : new ExecutionEnvironmentPrerequisiteException("ONNX GenAI", typeof(OnnxGenAIFlowBlock), modelFolder);
+                    CreateNotification(runtime, OnnxRuntimeGenAiNotifications.ModelFolderMissing, failure);
                     GenerateResult(runtime);
                     return;
                 }
@@ -218,35 +211,35 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         private void EnsureModelInitialized(BaseRuntime runtime)
         {
+            var modelFolder = ResolveModelFolder();
+            if (string.IsNullOrWhiteSpace(modelFolder))
+                throw new InvalidOperationException("ONNX Runtime GenAI initialization failed: ModelFolder is null or empty.");
+            var executionProvider = GetResolvedExecutionProvider();
+
             try
             {
-                InitializeModel(runtime);
+                InitializeModel(runtime, modelFolder, executionProvider);
             }
             catch (Exception exception)
             {
-                var failure = new ExecutionPrerequisiteException(
-                    "ONNX GenAI", typeof(OnnxGenAIFlowBlock), this.Resolve(owner => owner.ModelFolder), exception);
-                CreateNotification(runtime, OnnxRuntimeGenAiNotifications.SetupRequired, failure.NotificationMessage, failure);
+                var failure = new ExecutionEnvironmentPrerequisiteException(
+                    "ONNX GenAI", typeof(OnnxGenAIFlowBlock), modelFolder, exception);
+                CreateNotification(runtime, OnnxRuntimeGenAiNotifications.SetupRequired, failure);
                 throw failure;
             }
         }
 
-        private void InitializeModel(BaseRuntime runtime)
+        private void InitializeModel(BaseRuntime runtime, string modelFolder, AiExecutionProviders executionProvider)
         {
+            _resolvedModelFolder = modelFolder;
+            if (!Directory.Exists(modelFolder))
+                throw new DirectoryNotFoundException($"ONNX Runtime GenAI model folder does not exist: '{modelFolder}'.");
+
             // Ensure ONNX runtime native binaries are loaded:
-            FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
+            FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(executionProvider, runtime);
 
             // Ensure GenAI native binaries are loaded:
-            FlowBloxOnnxRuntimeGenAiLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
-
-            var modelFolder = ResolveModelFolder();
-            _resolvedModelFolder = modelFolder;
-
-            if (string.IsNullOrWhiteSpace(modelFolder))
-                throw new InvalidOperationException("ONNX Runtime GenAI initialization failed: ModelFolder is null or empty.");
-
-            if (!Directory.Exists(modelFolder))
-                throw new InvalidOperationException($"ONNX Runtime GenAI initialization failed: ModelFolder does not exist: '{modelFolder}'");
+            FlowBloxOnnxRuntimeGenAiLoader.Instance.EnsureLoaded(executionProvider, runtime);
 
             try
             {

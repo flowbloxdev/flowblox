@@ -36,6 +36,7 @@ public partial class AppWindow
         this.FindControl<ItemsControl>("ShortcutBoxes").ItemsSource = ShortcutSections;
         _shortcutTimer.Tick += ShortcutTimer_Tick;
         ProjectSpaceFavorites.Instance.Changed += Favorites_Changed;
+        ProjectExecutions.Instance.ExecutionCompleted += Execution_Completed;
         Activated += Shortcuts_Activated;
         _shortcutTimer.Start();
         _ = RefreshShortcutsAsync();
@@ -47,6 +48,7 @@ public partial class AppWindow
         _shortcutTimer.Stop();
         _shortcutTimer.Tick -= ShortcutTimer_Tick;
         ProjectSpaceFavorites.Instance.Changed -= Favorites_Changed;
+        ProjectExecutions.Instance.ExecutionCompleted -= Execution_Completed;
         Activated -= Shortcuts_Activated;
     }
 
@@ -208,7 +210,11 @@ public partial class AppWindow
             else if (execute)
             {
                 var project = await item.Project.LoadAsync();
-                WpfDialogHost.ShowDialog(new ProjectExecutionWindow(item.Project, project), this);
+                var projectNames = ShortcutSections
+                    .SelectMany(section => section.Items)
+                    .Where(shortcut => !shortcut.IsExecution)
+                    .Select(shortcut => shortcut.Project.Name);
+                WpfDialogHost.ShowDialog(new ProjectExecutionWindow(item.Project, project, projectNames: projectNames), this);
             }
             else
             {

@@ -15,7 +15,15 @@ namespace FlowBlox.Core.Runner.Serialization
         public static T ReadFile<T>(string path)
         {
             var json = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<T>(json, Options);
+            var value = JsonSerializer.Deserialize<T>(json, Options);
+            if (value is Contracts.RunnerRequest request)
+                return (T)(object)RunnerRequestProtection.FromStorage(request);
+            return value;
+        }
+
+        public static void WriteProtectedRequestFile(string path, Contracts.RunnerRequest request)
+        {
+            WriteFile(path, RunnerRequestProtection.ForStorage(request));
         }
 
         public static void WriteFile<T>(string path, T obj)

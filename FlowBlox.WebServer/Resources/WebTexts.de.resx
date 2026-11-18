@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+<resheader name="version"><value>2.0</value></resheader>
+<data name="Remote" xml:space="preserve"><value>Remote-Dashboard</value></data>
+<data name="Navigation" xml:space="preserve"><value>Navigation</value></data>
+<data name="Projects" xml:space="preserve"><value>Projekte</value></data>
+<data name="Project" xml:space="preserve"><value>Projekt</value></data>
+<data name="Executions" xml:space="preserve"><value>Ausführungen</value></data>
+<data name="Execution" xml:space="preserve"><value>Ausführung</value></data>
+<data name="SignIn" xml:space="preserve"><value>Anmelden</value></data>
+<data name="SignOut" xml:space="preserve"><value>Abmelden</value></data>
+<data name="Username" xml:space="preserve"><value>Benutzername</value></data>
+<data name="Password" xml:space="preserve"><value>App-Passwort</value></data>
+<data name="LoginDescription" xml:space="preserve"><value>Das auf Ihrem FlowBlox-Rechner konfigurierte App-Passwort eingeben.</value></data>
+<data name="InvalidLogin" xml:space="preserve"><value>Das App-Passwort ist falsch.</value></data>
+<data name="NotFound" xml:space="preserve"><value>Diese Seite wurde nicht gefunden.</value></data>
+<data name="ConnectionLost" xml:space="preserve"><value>Die Verbindung wurde unterbrochen.</value></data>
+<data name="Reload" xml:space="preserve"><value>Neu laden</value></data>
+<data name="Error" xml:space="preserve"><value>Ein Fehler ist aufgetreten</value></data>
+<data name="OperationFailed" xml:space="preserve"><value>Die Aktion konnte nicht abgeschlossen werden. Konfiguration und Serverprotokoll prüfen und erneut versuchen.</value></data>
+<data name="Running" xml:space="preserve"><value>Wird ausgeführt</value></data>
+<data name="Succeeded" xml:space="preserve"><value>Erfolgreich abgeschlossen</value></data>
+<data name="Failed" xml:space="preserve"><value>Fehlgeschlagen</value></data>
+<data name="Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+<data name="Loading" xml:space="preserve"><value>Wird geladen</value></data>
+<data name="DashboardDescription" xml:space="preserve"><value>Ihre lokalen Flows. Bereit, wo Sie sind.</value></data>
+<data name="Local" xml:space="preserve"><value>Lokale Projekte</value></data>
+<data name="Loaded" xml:space="preserve"><value>Zuletzt geladene Projekte</value></data>
+<data name="ProjectSpace" xml:space="preserve"><value>Project-Space-Projekte</value></data>
+<data name="NoProjects" xml:space="preserve"><value>Keine Projekte verfügbar. Projektverzeichnis und Project-Space-Anmeldung in FlowBlox prüfen.</value></data>
+<data name="Artifacts" xml:space="preserve"><value>Artefakte</value></data>
+<data name="ProjectNotes" xml:space="preserve"><value>Projektnotizen</value></data>
+<data name="InputDirectory" xml:space="preserve"><value>Eingabeverzeichnis</value></data>
+<data name="OutputDirectory" xml:space="preserve"><value>Ausgabeverzeichnis</value></data>
+<data name="InputParameters" xml:space="preserve"><value>Eingabeparameter</value></data>
+<data name="History" xml:space="preserve"><value>Ausführungshistorie</value></data>
+<data name="NoInputs" xml:space="preserve"><value>Dieses Projekt hat keine Eingabeparameter.</value></data>
+<data name="Clear" xml:space="preserve"><value>Zurücksetzen</value></data>
+<data name="OptionOverrides" xml:space="preserve"><value>Optionsüberschreibungen</value></data>
+<data name="NoOverrides" xml:space="preserve"><value>Keine Optionsüberschreibungen definiert.</value></data>
+<data name="SelectOption" xml:space="preserve"><value>Option auswählen</value></data>
+<data name="Add" xml:space="preserve"><value>Hinzufügen</value></data>
+<data name="Remove" xml:space="preserve"><value>Entfernen</value></data>
+<data name="Back" xml:space="preserve"><value>Zurück</value></data>
+<data name="RunProject" xml:space="preserve"><value>Projekt ausführen</value></data>
+<data name="NoExecutions" xml:space="preserve"><value>Noch keine Ausführungen.</value></data>
+<data name="Started" xml:space="preserve"><value>Gestartet:</value></data>
+<data name="ReadOnly" xml:space="preserve"><value>Die Ausführungskonfiguration kann nicht mehr geändert werden.</value></data>
+<data name="RuntimeLog" xml:space="preserve"><value>Laufzeitprotokoll</value></data>
+<data name="NoLog" xml:space="preserve"><value>Noch kein Laufzeitprotokoll verfügbar.</value></data>
+<data name="StopProcess" xml:space="preserve"><value>Prozess beenden</value></data>
+<data name="ConfirmStop" xml:space="preserve"><value>Diese Ausführung und ihre Unterprozesse beenden?</value></data>
+<data name="Confirm" xml:space="preserve"><value>Bestätigen</value></data>
+<data name="Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+<data name="NoArtifacts" xml:space="preserve"><value>In diesem Ordner sind keine Dateien vorhanden.</value></data>
+<data name="ResetArtifacts" xml:space="preserve"><value>Artefakte zurücksetzen</value></data>
+<data name="ConfirmReset" xml:space="preserve"><value>Alle Dateien und Unterordner in diesem Projektausgabeverzeichnis endgültig löschen?</value></data>
+<data name="Paste" xml:space="preserve"><value>Einfügen</value></data>
+<data name="PasteUnavailable" xml:space="preserve"><value>Kein Zugriff auf die Zwischenablage. Bitte die Einfügen-Funktion Ihres Geräts verwenden.</value></data>
+<data name="Suggestions" xml:space="preserve"><value>Vorschläge</value></data>
+<data name="UseHistory" xml:space="preserve"><value>Als Vorlage verwenden</value></data>
+<data name="ArtifactsInUse" xml:space="preserve"><value>Eine Ausführung verwendet diesen Ausgabeordner. Vor dem Zurücksetzen warten, bis sie abgeschlossen ist, oder die Ausführung stoppen.</value></data>
+<data name="Previous" xml:space="preserve"><value>Zurück</value></data>
+<data name="Next" xml:space="preserve"><value>Weiter</value></data>
+</root>

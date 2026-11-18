@@ -17,8 +17,15 @@ Properties participate in generated property views through `DisplayAttribute`. U
 
 ListView and DataGrid inherit `ColumnMemberNames` and `IsMovable` from `FlowBloxCollectionViewAttribute`.
 Empty-column behavior is editor-specific: grids show eligible properties; list views show only the item icon.
-Grid column order follows `ColumnMemberNames`; list views use reflected property order.
+Grid and list column order follows `ColumnMemberNames`. List columns require a `Display` annotation.
 `IsMovable` allows manual collection reordering and disables grid column sorting.
+
+List views render `SKImage` properties as compact, read-only icon columns. An optional
+`FlowBloxImageColumn(typeof(FlowBloxIcons), nameof(FlowBloxIcons.content_save))` supplies the header icon.
+`IconColor` controls its color; `ToolTipMemberName` can bind each row's tooltip to another property.
+The image annotation is only consumed by list views. Use `Display` for localized header/tooltip metadata,
+`FlowBloxUI(Visible = false)` to omit the computed property from regular editors, and `JsonIgnore`/`DeepCopierIgnore`
+to exclude presentation-only properties from serialization and copying.
 
 ## Defaults and resolution
 

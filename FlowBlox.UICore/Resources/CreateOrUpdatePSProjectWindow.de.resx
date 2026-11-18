@@ -222,4 +222,7 @@ Beispiele (max. {1}):
     <value>Projekt wird gespeichert und Inhalt hochgeladen. Bitte warten...</value>
   </data>
   <data name="Hint_ProjectNotFound" xml:space="preserve"><value>Unter der GUID {0} wurde kein Projekt im Project Space gefunden. Es wurde möglicherweise gelöscht. Zum Speichern mit einer neuen GUID auf „{1}“ wechseln.</value></data>
+  <data name="Loading_FreeServiceNotice" xml:space="preserve">
+    <value>Unsere Cloud-API stellen wir kostenlos bereit. Deshalb kann ein Upload gelegentlich etwas länger dauern. Ihre Sicherheit steht an erster Stelle: Alle hochgeladenen Dateien werden auf Viren geprüft. Auch dafür nutzen wir einen kostenlosen Dienst, der etwas mehr Zeit benötigen kann. Vielen Dank für Ihre Geduld!</value>
+  </data>
 </root>

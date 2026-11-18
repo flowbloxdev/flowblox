@@ -225,20 +225,23 @@ namespace FlowBlox.Core.Models.Base
 
         /// <summary>
         /// Checks the installations or external components required to execute this component.
-        /// The default implementation has no execution prerequisites.
+        /// The default implementation has no execution-environment prerequisites.
         /// </summary>
         /// <remarks>
         /// The execution boundary evaluates the FlowBlock and its associated managed objects automatically
         /// before running the action. Override this method and read field-backed configuration with Resolve;
         /// do not call it from an Execute/Invoke delegate or DownloadCoreAsync implementation.
-        /// Throw ExecutionPrerequisiteException to report actionable setup guidance. Do not create normal
+        /// Throw ExecutionEnvironmentPrerequisiteException only for unavailable environment dependencies, such as
+        /// executables, native libraries or model files. Missing properties and associations belong to standard
+        /// annotation validation and ordinary errors/notifications; they must not request environment setup.
+        /// Do not create normal
         /// results, navigate successors, or change configuration here. Existing RuntimeStarted initialization
         /// keeps its original lifecycle; adopting this hook does not move initialization into execution.
         /// </remarks>
-        /// <exception cref="FlowBlox.Core.Exceptions.ExecutionPrerequisiteException">
+        /// <exception cref="FlowBlox.Core.Exceptions.ExecutionEnvironmentPrerequisiteException">
         /// A required installation is missing or an execution component cannot be initialized.
         /// </exception>
-        public virtual void ValidateExecutionPrerequisites()
+        public virtual void ValidateExecutionEnvironmentPrerequisites()
         {
         }
 
@@ -250,19 +253,19 @@ namespace FlowBlox.Core.Models.Base
         /// when an execution path does not use an associated component, such as reusing an existing file.
         /// Selection and validation run before the action; the shared evaluator de-duplicates by reference.
         /// </remarks>
-        protected virtual IEnumerable<FlowBloxComponent> GetExecutionPrerequisiteComponents()
+        protected virtual IEnumerable<FlowBloxComponent> GetExecutionEnvironmentPrerequisiteComponents()
         {
             return GetAssociatedManagedObjects()
                 .OfType<FlowBloxComponent>()
                 .Prepend(this);
         }
 
-        internal void EvaluateExecutionPrerequisites()
+        internal void EvaluateExecutionEnvironmentPrerequisites()
         {
-            foreach (var component in GetExecutionPrerequisiteComponents()
+            foreach (var component in GetExecutionEnvironmentPrerequisiteComponents()
                 .Distinct<FlowBloxComponent>(ReferenceEqualityComparer.Instance))
             {
-                component.ValidateExecutionPrerequisites();
+                component.ValidateExecutionEnvironmentPrerequisites();
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using FlowBlox.Core.Constants;
 using System.Text;
+using FlowBlox.Core;
 using FlowBlox.AIAssistant.Builder;
 using FlowBlox.AIAssistant.Constants;
 using FlowBlox.AIAssistant.Models;
@@ -15,6 +16,7 @@ using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Compression;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.Core.Util.Json;
+using FlowBlox.Core.Util.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -262,6 +264,8 @@ namespace FlowBlox.AIAssistant.Services
                 AssistantConfigurationLimits.MaxSummaryCompactionRate);
             var tokenBudget = BuildTokenBudget(config);
             var session = GetOrCreateSession();
+            lock (_sessionSync)
+                session.LastSummaryCompactionAttemptKey = string.Empty;
             _outputFormatFeedbackQueue.ClearIncorrectOutputFormatData();
             ToolHandlerUtilities.SetCurrentSessionGuid(session.SessionId);
             var currentProjectJson = GetCurrentProjectJson();
@@ -339,7 +343,7 @@ namespace FlowBlox.AIAssistant.Services
                             chatRequestResult.FirstIncludedHistoryMessageIndex,
                             minLatestMessages,
                             summaryCompactionRate));
-                    await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, ct).ConfigureAwait(false);
+                    await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
 
                     // Summarization can take long enough for the user to add further instructions.
                     if (runControl != null)
@@ -414,7 +418,7 @@ namespace FlowBlox.AIAssistant.Services
                         AddTranscript(result, AssistantTranscriptKind.Error,
                             "Invalid response format repeated after correction. Aborting.");
                         UpdateKnownProjectJsonHash(session);
-                        await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, ct).ConfigureAwait(false);
+                        await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
                         return result;
                     }
 
@@ -449,7 +453,7 @@ namespace FlowBlox.AIAssistant.Services
                         result.AssistantText = instruction.AssistantMessage;
                         result.Summary = "Assistant response generated.";
                         UpdateKnownProjectJsonHash(session);
-                        await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, ct).ConfigureAwait(false);
+                        await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
 
                         // Keep accepting messages until all asynchronous completion work is finished.
                         if (runControl != null && !runControl.TryCompleteWhenNoMessagesAreStaged())
@@ -566,7 +570,7 @@ namespace FlowBlox.AIAssistant.Services
                 AddTranscript(result, AssistantTranscriptKind.Error,
                     $"Reached max tool rounds ({maxToolRounds}) without a final response.");
                 UpdateKnownProjectJsonHash(session);
-                await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, ct).ConfigureAwait(false);
+                await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
                 return result;
             }
             finally
@@ -775,6 +779,17 @@ namespace FlowBlox.AIAssistant.Services
             AssistantSessionState session,
             int targetSummarizedMessageCount,
             AssistantConfiguration config,
+            string currentTask,
+            CancellationToken ct)
+        {
+            await TryMergeConversationSummaryAsync(session, targetSummarizedMessageCount, config, ct).ConfigureAwait(false);
+            await TryCompactConversationSummaryAsync(session, config, currentTask, ct).ConfigureAwait(false);
+        }
+
+        private async Task TryMergeConversationSummaryAsync(
+            AssistantSessionState session,
+            int targetSummarizedMessageCount,
+            AssistantConfiguration config,
             CancellationToken ct)
         {
             if (session == null || session.Messages.Count == 0)
@@ -835,6 +850,107 @@ namespace FlowBlox.AIAssistant.Services
             {
                 _logger?.Warn($"AI Assistant summary update failed: {ex.Message}");
             }
+        }
+
+        private async Task TryCompactConversationSummaryAsync(
+            AssistantSessionState session,
+            AssistantConfiguration config,
+            string currentTask,
+            CancellationToken ct)
+        {
+            var tokenBudget = BuildTokenBudget(config);
+            var maxSummaryTokens = Math.Max(1, config.MaxSummaryTokens);
+            var targetRatio = Math.Clamp(config.SummaryCompactionTargetRatio, 0.1d, 0.9d);
+            var targetTokens = Math.Max(1, (int)Math.Floor(maxSummaryTokens * targetRatio));
+            string summary;
+            string attemptKey;
+            lock (_sessionSync)
+            {
+                summary = session.ConversationSummary;
+                if (tokenBudget.EstimateTokens(summary) <= maxSummaryTokens)
+                    return;
+
+                attemptKey = BuildSummaryCompactionAttemptKey(summary, currentTask, maxSummaryTokens, targetTokens);
+                if (attemptKey == session.LastSummaryCompactionAttemptKey)
+                    return;
+
+                session.LastSummaryCompactionAttemptKey = attemptKey;
+            }
+
+            var compactedSummary = summary;
+            try
+            {
+                // One compaction attempt plus at most one corrective retry. Never cut summary text to enforce the budget.
+                for (var attempt = 0; attempt < 2; attempt++)
+                {
+                    var request = AssistantCompactionRequestBuilder.Build(
+                        compactedSummary,
+                        currentTask,
+                        tokenBudget.EstimateTokens(compactedSummary),
+                        maxSummaryTokens,
+                        targetTokens,
+                        Math.Max(1, config.ApproximateCharactersPerToken));
+                    var response = await ExecuteChatWithCommunicationStatusAsync(
+                        request,
+                        config,
+                        FlowBloxResourceUtil.GetLocalizedString("AiAssistantService_CompactingContext", typeof(FlowBloxTexts)),
+                        ct).ConfigureAwait(false);
+                    AddEstimatedTokenUsage(session, EstimateTokenUsage(request, response, tokenBudget, config.SelectedProvider));
+                    if (!response.Success || string.IsNullOrWhiteSpace(response.OutputText))
+                    {
+                        _logger?.Warn($"AI Assistant context compaction failed: {response.Error}");
+                        break;
+                    }
+
+                    var candidate = response.OutputText.Trim();
+                    if (tokenBudget.EstimateTokens(candidate) < tokenBudget.EstimateTokens(compactedSummary))
+                        compactedSummary = candidate;
+
+                    if (tokenBudget.EstimateTokens(compactedSummary) <= targetTokens)
+                        break;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger?.Warn("AI Assistant context compaction failed.", ex);
+            }
+
+            lock (_sessionSync)
+            {
+                // Compaction replaces only the summary. It never consumes messages or advances the summary checkpoint.
+                if (session.ConversationSummary != summary)
+                    return;
+
+                session.ConversationSummary = compactedSummary;
+                session.LastSummaryCompactionAttemptKey = BuildSummaryCompactionAttemptKey(
+                    compactedSummary,
+                    currentTask,
+                    maxSummaryTokens,
+                    targetTokens);
+            }
+
+            if (tokenBudget.EstimateTokens(compactedSummary) > targetTokens)
+                _logger?.Warn($"AI Assistant context compaction did not reach its target of {targetTokens} estimated tokens.");
+
+            if (compactedSummary != summary)
+            {
+                ConversationSummaryChanged?.Invoke(this, EventArgs.Empty);
+                DebugStateChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private static string BuildSummaryCompactionAttemptKey(
+            string summary,
+            string currentTask,
+            int maxSummaryTokens,
+            int targetTokens)
+        {
+            return HashHelper.ComputeSHA256Hash(Encoding.UTF8.GetBytes(
+                FormattableString.Invariant($"{maxSummaryTokens}:{targetTokens}:{currentTask.Length}:{currentTask}{summary}")));
         }
 
         private int CalculateSummaryCompactionTarget(
@@ -1261,6 +1377,7 @@ namespace FlowBlox.AIAssistant.Services
             public bool RuntimeBindingsReset { get; set; }
             public string SessionId { get; set; } = Guid.NewGuid().ToString("N");
             public string ConversationSummary { get; set; } = string.Empty;
+            public string LastSummaryCompactionAttemptKey { get; set; } = string.Empty;
             public int SummarizedMessageCount { get; set; }
             public string LastProjectJsonHash { get; set; } = string.Empty;
             public int EstimatedUsedTokens { get; set; }

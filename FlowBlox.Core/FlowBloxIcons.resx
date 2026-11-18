@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -404,4 +404,61 @@
     <value>Resources\rocket-launch-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/rocket-launch-outline/ (Apache-2.0).</comment>
   </data>
+  <data name="account_key_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\account-key-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/account-key-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="sitemap_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\sitemap-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/sitemap-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="content_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\content-save.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/content-save/ (Apache-2.0).</comment>
+  </data>
+  <data name="attachment" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\attachment.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/attachment/ (Apache-2.0).</comment>
+  </data>
+  <data name="server_network" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\server-network.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/server-network/ (Apache-2.0).</comment>
+  </data>
+  <data name="view_dashboard_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\view-dashboard-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/view-dashboard-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="play" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\play.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/play/ (Apache-2.0).</comment>
+  </data>
+  <data name="stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\stop.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/stop/ (Apache-2.0).</comment>
+  </data>
+  <data name="restart" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\restart.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/restart/ (Apache-2.0).</comment>
+  </data>
+  <data name="cog_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\cog-outline.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/cog-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="power_settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\power-settings.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/power-settings/ (Apache-2.0).</comment>
+  </data>
+  <data name="content_paste" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\content-paste.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/content-paste/ (Apache-2.0).</comment>
+  </data>
+  <data name="backup_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\backup-restore.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/backup-restore/ (Apache-2.0).</comment>
+  </data>
+  <data name="delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\delete.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/delete/ (Apache-2.0).</comment>
+  </data>
+  <data name="folder_upload_outline" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\folder-upload-outline.svg;System.Byte[], mscorlib</value></data>
 </root>

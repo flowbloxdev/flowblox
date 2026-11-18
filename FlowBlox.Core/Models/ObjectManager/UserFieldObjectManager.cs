@@ -63,7 +63,7 @@ namespace FlowBlox.Core.Models.ObjectManager
 
         [Display(Name = "UserFieldObjectManager_InputFields", GroupName = "UserFieldObjectManager_InputFields", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxUI(DisplayLabel = false, Maximize = true)]
-        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name) }, SplitMode = true)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.ValueStorageIcon), nameof(FieldElement.Name) }, SplitMode = true)]
         [FlowBloxAssociation(
             Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete,
             ItemFactory = typeof(UserFieldInputItemFactory))]

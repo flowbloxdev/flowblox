@@ -182,21 +182,30 @@
         </Grid>
         </DockPanel>
 
-        <Border Background="#80000000"
+        <Border Background="#660F2433"
                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Border HorizontalAlignment="Center"
+            <Border HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Background="White"
-                    Margin="20"
-                    Padding="20">
+                    MaxWidth="500"
+                    CornerRadius="12"
+                    BorderBrush="{DynamicResource FlowBlox.Brush.Border}"
+                    BorderThickness="1"
+                    Margin="24"
+                    Padding="24">
                 <StackPanel>
-                <mah:ProgressRing IsActive="True"
-                                  Width="40"
-                                  Height="40"
-                                  HorizontalAlignment="Center" />
-                <TextBlock Text="{x:Static resources:CreateOrUpdatePSProjectWindow.Loading_SaveInProgress}"
-                           Margin="0,12,0,0"
-                           HorizontalAlignment="Center" />
+                    <DockPanel Margin="0,0,0,16">
+                        <iconPacks:PackIconMaterial Kind="CloudUploadOutline" Width="24" Height="24"
+                                                    Foreground="{DynamicResource FlowBlox.Brush.ProgressForeground}" Margin="0,0,12,0" />
+                        <TextBlock Text="{x:Static resources:CreateOrUpdatePSProjectWindow.Loading_SaveInProgress}"
+                                   FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource FlowBlox.Brush.Text}" />
+                    </DockPanel>
+                    <ProgressBar Style="{StaticResource FlowBlox.ProgressBar.Indeterminate}" Margin="0,0,0,16" />
+                    <Border Style="{StaticResource FlowBlox.NotificationBox.Information}">
+                        <TextBlock Text="{x:Static resources:CreateOrUpdatePSProjectWindow.Loading_FreeServiceNotice}"
+                                   Style="{StaticResource FlowBlox.NotificationText}" />
+                    </Border>
                 </StackPanel>
             </Border>
         </Border>

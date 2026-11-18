@@ -232,6 +232,7 @@ mnItmHelp.DropDownItems.Add(itmReportProblem);
 mnItmHelp.DropDownItems.Add(toolStripSeparator15);
 mnItmHelp.DropDownItems.Add(itmAbout);
 InitializeQuickStartsMenu();
+InitializeWebServerMenu();
 itmManageInputFiles.Icon = LoadAsset("itmManageInputFiles.png");
 itmUserFields.Icon = LoadAsset("itmUserFields.png");
 itmFbProjects.Icon = LoadAsset("project-space-16.png");

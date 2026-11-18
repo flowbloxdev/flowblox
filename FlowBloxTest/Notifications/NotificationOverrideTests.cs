@@ -1,11 +1,16 @@
 using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Extensions;
+using FlowBlox.Core.Interceptors;
 using FlowBlox.Core.Models.FlowBlocks.Calculation;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Runtime;
+using FlowBlox.Core.Models.Runtime.Debugging;
 using FlowBlox.Core.Provider.Project;
+using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util.DistributedData;
+using FlowBlox.Test.Runtime;
 
 namespace FlowBloxTest.Notifications
 {
@@ -85,6 +90,42 @@ namespace FlowBloxTest.Notifications
                 flowBlock.CreateNotification(runtime, MathFlowBlock.MathFlowBlockNotifications.ExpressionEmpty);
 
                 Assert.IsFalse(notificationRaised);
+            }
+        }
+
+        [TestMethod]
+        [DataRow(NotificationType.Warning)]
+        [DataRow(NotificationType.Error)]
+        public void CreateNotification_UsesEnumDisplayNameAndRetainsExceptionDetails(NotificationType notificationType)
+        {
+            var project = new FlowBloxProject();
+            project.FlowBloxRegistry.RegisterFlowBlock(new StartFlowBlock { Name = "Start" });
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var flowBlock = new MathFlowBlock();
+            using (var runtime = new FlowBloxUnitTestRuntime(project))
+            {
+                var notification = MathFlowBlock.MathFlowBlockNotifications.EvaluationFailed;
+                var expectedMessage = notification.GetDisplayName();
+                var exception = new InvalidOperationException("Detailed setup instructions and failed component path.");
+                string eventMessage = null;
+                flowBlock.OnWarn += (_, message) => eventMessage = message;
+                flowBlock.OnError += (_, message) => eventMessage = message;
+                flowBlock.OverrideNotificationType(notification, notificationType);
+                runtime.ExternalDebuggingInformation = new RuntimeExternalDebuggingInformation();
+                var debugger = runtime.Interceptors.OfType<RuntimeDebuggingInterceptor>().Single();
+                debugger.NotifyBeforeRuntimeStarted();
+
+                flowBlock.CreateNotification(runtime, notification, exception);
+
+                debugger.NotifyRuntimeFinished();
+                var result = runtime.GetDebuggingResult();
+                var notifications = notificationType == NotificationType.Warning
+                    ? result.WarningNotifications
+                    : result.ErrorNotifications;
+                var capturedNotification = notifications.Single();
+                Assert.AreEqual(expectedMessage, eventMessage);
+                Assert.AreEqual(expectedMessage, capturedNotification.Message);
+                Assert.AreEqual(exception.ToString(), capturedNotification.Exception);
             }
         }
 

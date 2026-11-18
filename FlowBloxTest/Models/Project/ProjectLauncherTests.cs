@@ -86,7 +86,18 @@ public class ProjectLauncherTests
         });
 
         var restarted = new ProjectExecutions(path);
-        Assert.IsTrue(restarted.Refresh());
+        var completed = new List<ProjectExecutionEntry>();
+        restarted.ExecutionCompleted += completed.Add;
+        var changes = 0;
+        Parallel.For(0, 8, _ =>
+        {
+            if (restarted.Refresh())
+                Interlocked.Increment(ref changes);
+        });
+        Assert.AreEqual(1, changes);
+        Assert.AreEqual(entry.Id, completed.Single().Id);
+        Assert.IsFalse(restarted.Refresh());
+        Assert.HasCount(1, completed);
         Assert.IsFalse(restarted.GetAll().Single().IsRunning);
         Assert.AreEqual("Project validation failed", restarted.GetAll().Single().Response!.ErrorMessage);
         Assert.IsFalse(restarted.Refresh());

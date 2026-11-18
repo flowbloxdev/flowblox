@@ -26,6 +26,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         UniqueId = 6,
 
         [Display(Name = "IMAPMailFetchDestinations_IsRead", ResourceType = typeof(FlowBloxTexts))]
-        IsRead = 7
+        IsRead = 7,
+
+        [Display(Name = "IMAPMailFetchDestinations_OriginalMessage", ResourceType = typeof(FlowBloxTexts))]
+        OriginalMessage = 8,
+
+        [Display(Name = "IMAPMailFetchDestinations_UidValidity", ResourceType = typeof(FlowBloxTexts))]
+        UidValidity = 9
     }
 }

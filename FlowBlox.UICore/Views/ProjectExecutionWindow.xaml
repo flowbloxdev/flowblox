@@ -6,7 +6,7 @@
     x:Class="FlowBlox.UICore.Views.ProjectExecutionWindow"
     Title="{x:Static resources:ProjectLauncher.Title}"
     Style="{DynamicResource FlowBlox.Window}"
-    Width="760" Height="740" MinWidth="540" MinHeight="420"
+    Width="1020" Height="780" MinWidth="760" MinHeight="480"
     WindowStartupLocation="CenterOwner">
   <Window.Resources>
     <ResourceDictionary>
@@ -15,29 +15,160 @@
         <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml" />
         <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/PropertyViewStyles.xaml" />
       </ResourceDictionary.MergedDictionaries>
+      <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+      <Style x:Key="Execution.SectionBorder" TargetType="Border" BasedOn="{StaticResource PropertyView.LabelBorderStyle}">
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Background" Value="#E7EFF7" />
+      </Style>
+      <Style x:Key="Execution.SectionLabel" TargetType="TextBlock" BasedOn="{StaticResource PropertyView.LabelTextStyle}">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="#244B66" />
+      </Style>
+      <Style x:Key="Execution.ParameterBorder" TargetType="Border" BasedOn="{StaticResource PropertyView.LabelBorderStyle}">
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Background" Value="#EDF4F8" />
+      </Style>
+      <Style x:Key="Execution.ParameterLabel" TargetType="TextBlock" BasedOn="{StaticResource PropertyView.LabelTextStyle}">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="#245369" />
+      </Style>
+      <Style x:Key="Execution.HistoryToggle" TargetType="ToggleButton">
+        <Setter Property="Width" Value="14" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Background" Value="#EAF0F5" />
+        <Setter Property="Foreground" Value="#47758D" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ToggleButton">
+              <Border Background="{TemplateBinding Background}" CornerRadius="2">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,7,0,0" />
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="#D4E4F0" />
+            <Setter Property="Foreground" Value="#173F5B" />
+          </Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True">
+            <Setter Property="Background" Value="#D4E4F0" />
+            <Setter Property="Foreground" Value="#173F5B" />
+          </Trigger>
+        </Style.Triggers>
+      </Style>
+      <Style x:Key="Execution.HistoryExpander" TargetType="Expander">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Expander">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="14" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter x:Name="HistoryContent" ContentSource="Content" Visibility="Collapsed" />
+                <ToggleButton Grid.Column="1" Style="{StaticResource Execution.HistoryToggle}"
+                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                              ToolTip="{x:Static resources:ProjectLauncher.History}"
+                              AutomationProperties.Name="{x:Static resources:ProjectLauncher.History}">
+                  <icons:PackIconMaterial Width="12" Height="12"
+                                          Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}">
+                    <icons:PackIconMaterial.Style>
+                      <Style TargetType="icons:PackIconMaterial">
+                        <Setter Property="Kind" Value="ChevronRight" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=Expander}}" Value="True">
+                            <Setter Property="Kind" Value="ChevronLeft" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </icons:PackIconMaterial.Style>
+                  </icons:PackIconMaterial>
+                </ToggleButton>
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsExpanded" Value="True">
+                  <Setter TargetName="HistoryContent" Property="Visibility" Value="Visible" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style x:Key="Execution.HistoryItem" TargetType="ListBoxItem">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="7,6" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="#244B66" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ListBoxItem">
+              <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"
+                      BorderBrush="#E7EDF2" BorderThickness="0,0,0,1">
+                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="#EDF4FA" />
+          </Trigger>
+          <Trigger Property="IsSelected" Value="True">
+            <Setter Property="Background" Value="#DCEAF6" />
+            <Setter Property="Foreground" Value="#173F5B" />
+          </Trigger>
+        </Style.Triggers>
+      </Style>
     </ResourceDictionary>
   </Window.Resources>
   <DockPanel Margin="10">
     <Border DockPanel.Dock="Top" Style="{DynamicResource FlowBlox.DialogHeader}">
       <TextBlock x:Name="ProjectTitle" Style="{DynamicResource FlowBlox.DialogHeaderTitle}" />
     </Border>
-    <Border DockPanel.Dock="Top" Style="{DynamicResource FlowBlox.DialogDescription}">
-      <TextBlock x:Name="ProjectDescription" Style="{DynamicResource FlowBlox.DialogDescriptionText}" />
+    <Border x:Name="ProjectDescriptionBox" DockPanel.Dock="Top" MaxHeight="100" Style="{DynamicResource FlowBlox.DialogDescription}">
+      <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <TextBlock x:Name="ProjectDescription" Style="{DynamicResource FlowBlox.DialogDescriptionText}" />
+      </ScrollViewer>
     </Border>
+    <Expander x:Name="ProjectNoticeExpander" DockPanel.Dock="Top" Margin="0,0,0,8"
+              Style="{StaticResource FlowBlox.InformationExpander}" Visibility="Collapsed">
+      <Expander.Header>
+        <StackPanel Orientation="Horizontal">
+          <icons:PackIconMaterial Kind="LightbulbOutline" Width="16" Height="16" Margin="0,0,7,0" Foreground="{DynamicResource FlowBlox.Brush.ProjectNoteIcon}" />
+          <TextBlock Text="{x:Static resources:ProjectLauncher.ProjectNotice}" Foreground="White" />
+        </StackPanel>
+      </Expander.Header>
+      <Border Background="{DynamicResource FlowBlox.Brush.InformationBackground}"
+              BorderBrush="{DynamicResource FlowBlox.Brush.Border}" BorderThickness="1" CornerRadius="4" Padding="10">
+        <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <TextBlock x:Name="ProjectNoticeText" TextWrapping="Wrap" Foreground="DarkSlateGray" />
+        </ScrollViewer>
+      </Border>
+    </Expander>
     <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
-      <ProgressBar x:Name="RunningIndicator" IsIndeterminate="True" Height="4" Foreground="#2BA6B8" Background="#202BA6B8" Visibility="Collapsed" />
-      <TextBlock x:Name="StatusText" TextWrapping="Wrap" Margin="0,7" />
-      <Border x:Name="CompletionBox" CornerRadius="8" BorderThickness="1" Padding="12" Margin="0,0,0,12" Visibility="Collapsed">
+      <ProgressBar x:Name="RunningIndicator" Style="{StaticResource FlowBlox.ProgressBar.Indeterminate}" Visibility="Collapsed" />
+      <Border x:Name="StartedBox" Style="{StaticResource FlowBlox.NotificationBox.Information}" Margin="0,7,0,12" Visibility="Collapsed">
+        <DockPanel>
+          <icons:PackIconMaterial Kind="InformationOutline" Style="{StaticResource FlowBlox.NotificationIcon}" />
+          <StackPanel>
+            <TextBlock x:Name="StatusText" Style="{StaticResource FlowBlox.NotificationTitle}" />
+            <TextBlock x:Name="RunnerProcessText" Style="{StaticResource FlowBlox.NotificationText}" Margin="0,4,0,0" Visibility="Collapsed" />
+            <TextBlock Text="{x:Static resources:ProjectLauncher.Readonly}" Style="{StaticResource FlowBlox.NotificationText}" Margin="0,4,0,0" />
+          </StackPanel>
+        </DockPanel>
+      </Border>
+      <Border x:Name="CompletionBox" Style="{StaticResource FlowBlox.NotificationBox.Success}" Margin="0,0,0,12" Visibility="Collapsed">
         <StackPanel>
-          <TextBlock x:Name="CompletionTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
-          <TextBlock x:Name="CompletionMessage" TextWrapping="Wrap" Margin="0,5,0,0" />
+          <TextBlock x:Name="CompletionTitle" Style="{StaticResource FlowBlox.NotificationTitle}" />
+          <TextBlock x:Name="CompletionMessage" Style="{StaticResource FlowBlox.NotificationText}" Margin="0,5,0,0" />
           <TextBlock x:Name="LogLinkContainer" Margin="0,8,0,0" Visibility="Collapsed">
             <Hyperlink x:Name="LogLink" Click="OpenLog_Click">
               <Run Text="{x:Static resources:ProjectLauncher.OpenLog}" />
             </Hyperlink>
           </TextBlock>
           <TextBlock x:Name="LogUnavailableText" Text="{x:Static resources:ProjectLauncher.LogUnavailable}"
-                     TextWrapping="Wrap" Margin="0,8,0,0" Visibility="Collapsed" />
+                     Style="{StaticResource FlowBlox.NotificationText}" Margin="0,8,0,0" Visibility="Collapsed" />
         </StackPanel>
       </Border>
       <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray5}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
@@ -52,36 +183,125 @@
                 <AccessText Text="{x:Static resources:ProjectLauncher.Execute}" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
+            <Button x:Name="TerminateButton" Style="{StaticResource FlowBlox.WindowActionButton}"
+                    Visibility="Collapsed" Click="Terminate_Click">
+              <StackPanel Orientation="Horizontal">
+                <icons:PackIconMaterial Kind="Stop" Style="{StaticResource FlowBlox.WindowActionIconBase}" Foreground="IndianRed" />
+                <AccessText Text="{x:Static resources:ProjectLauncher.TerminateProcess}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
           </StackPanel>
         </DockPanel>
       </Border>
     </StackPanel>
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-      <StackPanel>
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <StackPanel Grid.Row="0">
         <Border Style="{StaticResource PropertyView.LabelBorderStyle}" Margin="0,8,0,4">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.InputPath}" Style="{StaticResource PropertyView.LabelTextStyle}" />
+          <TextBlock Text="{x:Static resources:ProjectLauncher.InputPath}" Style="{StaticResource Execution.SectionLabel}" />
         </Border>
         <DockPanel>
           <Button x:Name="InputDirectoryButton" DockPanel.Dock="Right" Margin="6,0,0,0" Width="36"
                   ToolTip="{x:Static resources:ProjectLauncher.InputDirectory}">
             <icons:PackIconMaterial Kind="FolderOpenOutline" Style="{StaticResource FlowBlox.ToolbarIconBase}" />
           </Button>
-          <TextBox x:Name="InputPath" IsReadOnly="True" Style="{StaticResource PropertyView.TextEditorStyle}" />
+          <TextBox x:Name="InputPath" IsReadOnly="True" MinHeight="34" FontSize="13" Style="{StaticResource PropertyView.TextEditorStyle}" />
         </DockPanel>
         <Border Style="{StaticResource PropertyView.LabelBorderStyle}" Margin="0,8,0,4">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.OutputPath}" Style="{StaticResource PropertyView.LabelTextStyle}" />
+          <TextBlock Text="{x:Static resources:ProjectLauncher.OutputPath}" Style="{StaticResource Execution.SectionLabel}" />
         </Border>
         <DockPanel Margin="0,0,0,12">
           <Button x:Name="OutputDirectoryButton" DockPanel.Dock="Right" Margin="6,0,0,0" Width="36"
                   ToolTip="{x:Static resources:ProjectLauncher.OutputDirectory}">
             <icons:PackIconMaterial Kind="FolderOpenOutline" Style="{StaticResource FlowBlox.ToolbarIconBase}" />
           </Button>
-          <TextBox x:Name="OutputPath" IsReadOnly="True" Style="{StaticResource PropertyView.TextEditorStyle}" />
+          <TextBox x:Name="OutputPath" IsReadOnly="True" MinHeight="34" FontSize="13" Style="{StaticResource PropertyView.TextEditorStyle}" />
         </DockPanel>
-        <StackPanel x:Name="Configuration">
-        <Border Style="{StaticResource PropertyView.LabelBorderStyle}">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.Parameters}" Style="{StaticResource PropertyView.LabelTextStyle}" />
+      </StackPanel>
+        <Border Grid.Row="1" Style="{StaticResource Execution.SectionBorder}">
+          <TextBlock Text="{x:Static resources:ProjectLauncher.Parameters}" Style="{StaticResource Execution.SectionLabel}" />
         </Border>
+        <Grid Grid.Row="2" Margin="0,6,0,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Expander x:Name="HistoryExpander" Grid.Column="0" ExpandDirection="Left" IsExpanded="True"
+                    Style="{StaticResource Execution.HistoryExpander}"
+                    Visibility="Collapsed" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"
+                    Margin="0,0,10,0" ToolTip="{x:Static resources:ProjectLauncher.History}"
+                    AutomationProperties.Name="{x:Static resources:ProjectLauncher.History}">
+            <Border Width="216" BorderBrush="#D5DFE8" BorderThickness="0,0,1,0" Padding="0,0,8,0">
+              <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="{x:Static resources:ProjectLauncher.History}"
+                           Style="{StaticResource Execution.ParameterLabel}" Margin="7,4,4,8" />
+                <ListBox x:Name="HistoryList" BorderThickness="0" Background="Transparent"
+                         SelectionChanged="HistoryList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                  <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource Execution.HistoryItem}" />
+                  </ListBox.ItemContainerStyle>
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <DockPanel ToolTip="{Binding Status}" LastChildFill="True">
+                        <Grid DockPanel.Dock="Left" Width="16" Height="16" Margin="0,0,8,0">
+                          <mah:ProgressRing IsActive="{Binding IsRunning}" Width="16" Height="16" MinWidth="0" MinHeight="0" Foreground="#3B875C">
+                            <mah:ProgressRing.Style>
+                              <Style TargetType="mah:ProgressRing">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding IsRunning}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </mah:ProgressRing.Style>
+                          </mah:ProgressRing>
+                          <icons:PackIconMaterial Kind="CheckCircleOutline" Width="16" Height="16" Foreground="#3B875C">
+                            <icons:PackIconMaterial.Style>
+                              <Style TargetType="icons:PackIconMaterial">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding IsSuccessful}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </icons:PackIconMaterial.Style>
+                          </icons:PackIconMaterial>
+                          <icons:PackIconMaterial Kind="CloseCircleOutline" Width="16" Height="16" Foreground="#BD4E48">
+                            <icons:PackIconMaterial.Style>
+                              <Style TargetType="icons:PackIconMaterial">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding HasFailed}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </icons:PackIconMaterial.Style>
+                          </icons:PackIconMaterial>
+                        </Grid>
+                        <TextBlock Text="{Binding Timestamp}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding DisplayName}" />
+                      </DockPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </DockPanel>
+            </Border>
+          </Expander>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel x:Name="Configuration">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+          <Button x:Name="ClearInputsButton" Click="ClearInputs_Click" Style="{StaticResource FlowBlox.ToolbarButton}" Visibility="Collapsed"
+                  ToolTip="{x:Static resources:ProjectLauncher.ClearInputsTooltip}">
+            <StackPanel Orientation="Horizontal">
+              <icons:PackIconMaterial Kind="Restore" Width="16" Height="16" Foreground="#47758D" Margin="0,0,6,0" />
+              <TextBlock Text="{x:Static resources:ProjectLauncher.ClearInputs}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+        <ContentControl x:Name="NoParametersHint" Content="{x:Static resources:ProjectLauncher.NoParameters}"
+                        Style="{StaticResource FlowBlox.EmptyState}" Margin="4,10,4,16" Visibility="Collapsed" />
         <StackPanel x:Name="FieldsPanel" Margin="0,6,0,12" />
         <Border Style="{StaticResource PropertyView.LabelBorderStyle}">
           <TextBlock Text="{x:Static resources:ProjectLauncher.OptionOverrides}" Style="{StaticResource PropertyView.LabelTextStyle}" />
@@ -94,7 +314,20 @@
             <icons:PackIconMaterial Kind="Delete" Style="{StaticResource FlowBlox.WindowActionIcon.Delete}" Margin="0" />
           </Button>
         </StackPanel>
+        <ContentControl Content="{x:Static resources:ProjectLauncher.NoOptionOverrides}" Margin="4,10,4,16">
+          <ContentControl.Style>
+            <Style TargetType="ContentControl" BasedOn="{StaticResource FlowBlox.EmptyState}">
+              <Setter Property="Visibility" Value="Collapsed" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding HasItems, ElementName=OptionsGrid}" Value="False">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </ContentControl.Style>
+        </ContentControl>
         <DataGrid x:Name="OptionsGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                  Visibility="{Binding HasItems, RelativeSource={RelativeSource Self}, Converter={StaticResource BooleanToVisibilityConverter}}"
                   MinHeight="100" MaxHeight="240" SelectionChanged="OptionsGrid_SelectionChanged"
                   ToolTip="{x:Static resources:ProjectLauncher.OptionTooltip}">
           <DataGrid.Columns>
@@ -111,7 +344,8 @@
           </DataGrid.Columns>
         </DataGrid>
         </StackPanel>
-      </StackPanel>
-    </ScrollViewer>
+        </ScrollViewer>
+        </Grid>
+    </Grid>
   </DockPanel>
 </mah:MetroWindow>

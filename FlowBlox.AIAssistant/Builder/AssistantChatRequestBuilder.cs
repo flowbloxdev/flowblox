@@ -335,6 +335,9 @@ namespace FlowBlox.AIAssistant.Builder
             if (tokens <= 0 || systemMessage?.CacheBehavior != AIChatCacheBehavior.PreferCache)
                 return tokens;
 
+            // Intentional application budgeting policy: the project team checked and tested the preconfigured provider rates
+            // against reported token usage over longer sessions, observing average cache savings of roughly 60-80%, depending
+            // on the provider. Retain this reduction when estimating the effective system-message budget.
             var savingsRate = Math.Clamp(estimatedSystemPromptCacheSavingsRate, 0d, 1d);
             return Math.Max(0, (int)Math.Ceiling(tokens * (1d - savingsRate)));
         }

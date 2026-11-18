@@ -25,6 +25,7 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
 
         private readonly SynchronizationContext _uiContext;
         private bool _isSelected;
+        private bool _isConnectionTargetBlocked;
         private bool _isReference;
         private bool _isRuntimeFocused;
         private bool _suppressStorageLayoutPropertyChanges;
@@ -62,6 +63,17 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         }
 
         internal int LayoutTraceId { get; }
+        public bool IsConnectionTargetBlocked
+        {
+            get => _isConnectionTargetBlocked;
+            set
+            {
+                if (_isConnectionTargetBlocked == value)
+                    return;
+                _isConnectionTargetBlocked = value;
+                OnPropertyChanged();
+            }
+        }
         public BaseFlowBlock InternalFlowBlock { get; }
         public ObservableCollection<FlowBlockRenderRowViewModel> Rows { get; } = new();
         public event PropertyChangedEventHandler PropertyChanged;

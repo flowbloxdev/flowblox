@@ -545,7 +545,7 @@ namespace FlowBlox.UICore.ViewModels
 
                 var inputFields = project?.UserFields?
                     .Where(x => x.IsUserInputField())
-                    .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(x => x.Index)
                     .ToList() ?? new List<Core.Models.Components.FieldElement>();
 
                 foreach (var field in inputFields)
@@ -920,33 +920,7 @@ namespace FlowBlox.UICore.ViewModels
             if (SelectedSession == null || string.IsNullOrWhiteSpace(SelectedSession.LogFilePath) || !File.Exists(SelectedSession.LogFilePath))
                 return;
 
-            var dialog = new MultiValueSelectionDialog(
-                FlowBloxResourceUtil.GetLocalizedString("FileOpenMode_Dialog_Title", typeof(Core.FlowBloxTexts)),
-                FlowBloxResourceUtil.GetLocalizedString("FileOpenMode_Dialog_Message", typeof(Core.FlowBloxTexts)),
-                new GenericSelectionHandler<FileOpenMode>(
-                    Enum.GetValues(typeof(FileOpenMode)).Cast<FileOpenMode>().ToList(),
-                    mode => mode.GetDisplayName()))
-            {
-                Owner = _ownerWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                switch (dialog.SelectedItem.Value)
-                {
-                    case FileOpenMode.FlowBloxEditor:
-                        FlowBloxEditingHelper.OpenUsingEditor(SelectedSession.LogFilePath);
-                        break;
-                    case FileOpenMode.WindowsDefaultApp:
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = SelectedSession.LogFilePath,
-                            UseShellExecute = true
-                        });
-                        break;
-                }
-            }
+            FlowBloxEditingHelper.OpenFileWithSelection(SelectedSession.LogFilePath, _ownerWindow);
         }
 
         private static void OpenDirectory(string path)

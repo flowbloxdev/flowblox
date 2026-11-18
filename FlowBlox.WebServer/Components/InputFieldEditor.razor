@@ -1,0 +1,84 @@
+@using FlowBlox.Core.Models.Components
+@using FlowBlox.Core.Attributes
+@using FlowBlox.Core.Enums
+@using FlowBlox.Core.Util.Resources
+@using Microsoft.JSInterop
+@inject IJSRuntime JavaScript
+<div class="field-editor">
+    <div class="field-heading"><label for="@_id">@Field.Name @(Field.IsRequiredAtRuntimeStartup ? "*" : "")</label>
+        <div class="field-actions">
+        @if (Field.LoVType != LoVType.PossibleValues && OutputDirectories.Count > 0)
+        {
+            <div class="project-output-picker">
+                <button type="button" class="quiet small-action icon-button" title="@OutputDirectoryTitle"
+                        aria-label="@OutputDirectoryTitle" aria-expanded="@_outputsOpen" disabled="@Disabled"
+                        @onclick="() => _outputsOpen = !_outputsOpen">
+                    <MdiIcon Name="folder-upload-outline" />
+                </button>
+                @if (_outputsOpen && !Disabled)
+                {
+                    <div class="project-output-options" @onkeydown="OutputPicker_KeyDown">
+                        @foreach (var choice in OutputDirectories)
+                        {
+                            <button type="button" @onclick="() => SelectOutputDirectoryAsync(choice)">@choice.DisplayName</button>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        @if (_clipboard && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
+        { <button type="button" class="quiet small-action icon-button" title="@T["Paste"]" aria-label="@T["Paste"]" disabled="@Disabled" data-paste-target="@_id"><MdiIcon Name="content-paste" /></button> }
+        </div>
+    </div>
+    @if (Field.GetValueDropDownMode() == DropDownMode.SelectionOnly && !Field.IsPassword)
+    {
+        <select id="@_id" disabled="@Disabled" value="@Value" @onchange="ChangeAsync"><option value=""></option>
+            @foreach (var item in Field.GetPossibleValues()) { <option value="@item.Value">@item.ToString()</option> }
+        </select>
+    }
+    else if (Field.IsPassword)
+    { <input id="@_id" disabled="@Disabled" type="password" autocomplete="off" value="@Value" @oninput="ChangeAsync" /> }
+    else
+    {
+        <textarea id="@_id" disabled="@Disabled" rows="2" @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput"></textarea>
+        @if (Field.GetPossibleValues().Any())
+        {
+            <details class="suggestions"><summary>@T["Suggestions"]</summary><div class="suggestion-values">
+                @foreach (var item in Field.GetPossibleValues())
+                { <button type="button" disabled="@Disabled" @onclick="() => ValueChanged.InvokeAsync(item.Value)">@item.ToString()</button> }
+            </div></details>
+        }
+    }
+    <small role="status" data-paste-error hidden>@T["PasteUnavailable"]</small>
+</div>
+@code {
+    [Parameter, EditorRequired] public FieldElement Field { get; set; } = default!;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public IReadOnlyList<ProjectOutputDirectoryChoice> OutputDirectories { get; set; } = [];
+    private string OutputDirectoryTitle => FlowBloxResourceUtil.GetLocalizedString(
+        "ProjectOutputDirectoryChoice_Select", typeof(FlowBlox.Core.FlowBloxTexts));
+    private bool _outputsOpen;
+    private readonly string _id = "field-" + Guid.NewGuid().ToString("N");
+    private bool _clipboard;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _clipboard = await JavaScript.InvokeAsync<bool>("flowBloxClipboardAvailable");
+        if (_clipboard) StateHasChanged();
+    }
+    private Task ChangeAsync(ChangeEventArgs args) => ValueChanged.InvokeAsync(args.Value?.ToString() ?? string.Empty);
+    private Task SetValueAsync(string value) => ValueChanged.InvokeAsync(value);
+    private Task SelectOutputDirectoryAsync(ProjectOutputDirectoryChoice choice)
+    {
+        _outputsOpen = false;
+        return ValueChanged.InvokeAsync(choice.Value);
+    }
+
+    private void OutputPicker_KeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+            _outputsOpen = false;
+    }
+}

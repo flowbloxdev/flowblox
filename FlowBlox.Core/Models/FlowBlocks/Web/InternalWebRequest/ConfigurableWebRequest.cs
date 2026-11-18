@@ -1,6 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
+using FlowBlox.Core.Models.Components.Authorization;
+using FlowBlox.Core.Validations;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest
 {
@@ -21,6 +24,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest
         public string Version { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        [CustomValidation(typeof(OAuthConnectionValidator), nameof(OAuthConnectionValidator.Validate))]
+        public OAuthUserConnection OAuthConnection { get; set; }
+        public CancellationToken CancellationToken { get; set; }
         public string ContentType { get; set; }
         public IDictionary<string, string> Headers { get; set; }
         public string Payload { get; set; }
@@ -61,7 +67,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest
             }
 
             var method = new HttpMethod(HttpAction ?? DefaultHTTPAction);
-            var requestMessage = new HttpRequestMessage(method, Url);
+            using var requestMessage = new HttpRequestMessage(method, Url);
 
             requestMessage.Headers.ConnectionClose = !KeepAlive;
             requestMessage.Headers.ExpectContinue = ExpectContinue;
@@ -81,10 +87,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest
                 !string.IsNullOrEmpty(Password))
             {
                 var byteArray = Encoding.ASCII.GetBytes($"{UserName}:{Password}");
-                Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             }
 
-            foreach (var header in Headers)
+            if (OAuthConnection != null)
+            {
+                var accessToken = await OAuthConnection.GetAccessTokenAsync(new Uri(Url), CancellationToken).ConfigureAwait(false);
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
+
+            foreach (var header in Headers ?? new Dictionary<string, string>())
             {
                 requestMessage.Headers.Add(header.Key, header.Value);
             }
@@ -94,7 +106,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest
                 requestMessage.Content = new StringContent(Payload, Encoding.UTF8, ContentType);
             }
 
-            HttpResponseMessage response = await Client.SendAsync(requestMessage);
+            using HttpResponseMessage response = await Client.SendAsync(requestMessage, CancellationToken).ConfigureAwait(false);
             var headers = response.Content.Headers;
             if (ResponseBodyKind == ResponseBodyKind.Bytes)
             {

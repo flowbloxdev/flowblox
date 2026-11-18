@@ -126,6 +126,33 @@ namespace FlowBlox.Core.Models.Components
             }
         }
 
+        /// <summary>
+        /// Parses a not-yet-applied dataset value with this field's date format, number separators and nullability.
+        /// Field-bound Value properties retain their existing behavior.
+        /// </summary>
+        internal object ParseDatasetValue(string rawValue)
+        {
+            var value = FlowBloxFieldHelper.ReplaceFieldsInString(rawValue);
+            if (FieldType == FieldTypes.Text)
+                return value;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (HasNullableInfo && !IsNullable)
+                    throw new InvalidOperationException($"No value set for field of type '{FieldType}'. The field is marked as non-nullable.");
+                return FieldType == FieldTypes.ByteArray ? Array.Empty<byte>() : null;
+            }
+
+            return FieldType switch
+            {
+                FieldTypes.Boolean => bool.Parse(value.Trim()),
+                FieldTypes.Integer => int.Parse(value, CultureInfo.InvariantCulture),
+                FieldTypes.Long => long.Parse(value, CultureInfo.InvariantCulture),
+                FieldTypes.Float or FieldTypes.Double or FieldTypes.DateTime => GetSpecialParsingStrategy().Parse(value),
+                FieldTypes.ByteArray => Convert.FromBase64String(value),
+                _ => value
+            };
+        }
+
         public NumberFormatInfo GetNumberFormat()
         {
             var referencedField = GetReferencedField();

@@ -18,6 +18,9 @@ using Newtonsoft.Json;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using FlowBlox.Core.Models.Components.Authorization;
+using FlowBlox.Core.Authentication.OAuth;
+using FlowBlox.Core.Validations;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Web
 {
@@ -114,6 +117,16 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         [Display(Name = "WebRequestFlowBlock_Password", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Authentication", Order = 1)]
         [FlowBloxTextBox]
         public string Password { get; set; }
+
+        [Display(Name = "WebRequestFlowBlock_OAuthConnection", Description = "WebRequestFlowBlock_OAuthConnection_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "WebRequestFlowBlock_Groups_Authentication", Order = -1)]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleOAuthConnections), DisplayMember = nameof(Name))]
+        [CustomValidation(typeof(OAuthConnectionValidator), nameof(OAuthConnectionValidator.Validate))]
+        public OAuthUserConnection OAuthConnection { get; set; }
+
+        public IEnumerable<OAuthUserConnection> GetPossibleOAuthConnections() =>
+            FlowBloxRegistryProvider.GetRegistry()?
+                .GetManagedObjects<OAuthUserConnection>() ?? Enumerable.Empty<OAuthUserConnection>();
 
         [JsonIgnore()]
         [DeepCopierIgnore()]
@@ -298,7 +311,23 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
                 if (!IsAlreadyProcessed(url))
                 {
-                    var invocationResult = InvokeWebRequest(runtime, url);
+                    WebRequestInvocationResult invocationResult;
+                    try
+                    {
+                        invocationResult = InvokeWebRequest(runtime, url);
+                    }
+                    catch (OAuthInteractionRequiredException exception)
+                    {
+                        CreateNotification(runtime, WebRequestNotifications.OAuthSignInRequired, exception);
+                        GenerateResult(runtime);
+                        return;
+                    }
+                    catch (ValidationException exception) when (OAuthConnection != null)
+                    {
+                        CreateNotification(runtime, WebRequestNotifications.OAuthAuthenticationFailed, exception);
+                        GenerateResult(runtime);
+                        return;
+                    }
 
                     if (!invocationResult.Success)
                     {
@@ -371,6 +400,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             webRequest.ResponseBodyKind = this.Resolve(x => x.ResponseBodyKind);
             webRequest.UserName = this.Resolve(owner => owner.UserName);
             webRequest.Password = this.Resolve(owner => owner.Password);
+            webRequest.OAuthConnection = OAuthConnection;
+            webRequest.CancellationToken = runtime.GetCancellationToken();
             webRequest.ContentType = this.Resolve(owner => owner.Payload_ContentType);
             webRequest.Headers = FlowBloxFieldHelper.ReplaceFieldsInDictionary(HeaderParameters.ToDictionary(x => x.Key, y => y.Value));
             webRequest.Payload = new WebRequestPayloadCreator(this).GetPayload(runtime, PostParameters.ToDictionary(x => x.Key, y => y.Value));
@@ -446,6 +477,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         public enum WebRequestNotifications
         {
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "OAuth sign-in required")]
+            OAuthSignInRequired,
+
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "OAuth authentication failed")]
+            OAuthAuthenticationFailed,
+
             [FlowBloxNotification(NotificationType = NotificationType.Warning)]
             [Display(Name = "Web request invocation failed")]
             WebRequestInvocationFailed,

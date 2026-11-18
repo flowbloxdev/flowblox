@@ -1,0 +1,23 @@
+@page "/"
+@attribute [Authorize]
+@inherits DashboardPageBase
+@inject DashboardService Dashboard
+<PageTitle>@T["Projects"] · FlowBlox</PageTitle>
+<div class="heading"><div><h1>@T["Projects"]</h1><p class="muted">@T["DashboardDescription"]</p></div><button disabled="@_busy" @onclick="RefreshAsync"><MdiIcon Name="refresh" /> @T["Refresh"]</button></div>
+@if (_error) { <p class="notice error">@T["OperationFailed"]</p> }
+@if (_busy) { <div class="loading-line" role="status" aria-label="@T["Loading"]"></div> }
+<div class="cards">
+    @foreach (var group in Dashboard.Projects.GroupBy(project => project.Group))
+    {
+        <section class="panel"><h2>@T[group.Key]</h2>
+            @foreach (var project in group)
+            { <a class="project-row" href="@($"/projects/{project.Id}")"><img src="project.svg" alt="" /><span>@project.Shortcut.Name</span><span class="chevron">›</span></a> }
+        </section>
+    }
+</div>
+@if (!_busy && Dashboard.Projects.Count == 0) { <p class="empty">ⓘ @T["NoProjects"]</p> }
+@code {
+    private bool _busy, _error;
+    protected override async Task OnInitializedAsync() { if (Dashboard.Projects.Count == 0) await RefreshAsync(); BeginRefreshing(() => Task.CompletedTask); }
+    private async Task RefreshAsync() { _busy = true; _error = false; try { await Dashboard.RefreshProjectsAsync(); } catch { _error = true; } finally { _busy = false; } }
+}

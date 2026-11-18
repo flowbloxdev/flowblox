@@ -15,7 +15,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 {
     [Serializable()]
     [FlowBloxUIGroup("BaseResultFlowBlock_Groups_Output", 25)]
-    public abstract class BaseResultFlowBlock : BaseFlowBlock
+    public abstract partial class BaseResultFlowBlock : BaseFlowBlock
     {
         public delegate void OutputDatasetProcessingChangedEventHandler(BaseRuntime runtime);
         public event OutputDatasetProcessingChangedEventHandler OutputDatasetProcessingChanged;
@@ -347,9 +347,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         protected void GenerateResult(BaseRuntime runtime, IEnumerable<Dictionary<FieldElement, string>> resultMap = null)
         {
+            resultMap = resultMap?.ToList();
             ApplyOutputBehavior(runtime, ref resultMap);
             AdjustedResultMap(runtime, resultMap);
             resultMap = GetFilteredResultMap(resultMap);
+            resultMap = SortOutputDatasets(resultMap);
             this.GridElementResult = new FlowBlockOut();
             Dictionary<FieldElement, string> precedingFieldValues = null;
             precedingFieldValues = GetPrecedingFieldValues(this);

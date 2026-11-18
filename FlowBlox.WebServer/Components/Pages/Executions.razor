@@ -1,0 +1,14 @@
+@page "/executions"
+@attribute [Authorize]
+@inherits DashboardPageBase
+@inject DashboardService Dashboard
+<PageTitle>@T["Executions"] · FlowBlox</PageTitle>
+<h1>@T["Executions"]</h1>
+<section class="panel execution-list">
+    @foreach (var entry in Dashboard.Executions.GetAll())
+    { <a class="execution-row" href="@($"/executions/{entry.Id}")"><ExecutionStatus Entry="entry" /><strong>@entry.Project.Name</strong><time datetime="@entry.StartedUtc.ToString("O")">@entry.StartedUtc.ToString("u")</time><span>›</span></a> }
+    @if (Dashboard.Executions.GetAll().Count == 0) { <p class="empty">ⓘ @T["NoExecutions"]</p> }
+</section>
+@code {
+    protected override void OnInitialized() => BeginRefreshing(() => Task.CompletedTask);
+}

@@ -1,0 +1,20 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@attribute [ExcludeFromInteractiveRouting]
+@inject WebSessions Sessions
+@inject NavigationManager Navigation
+<PageTitle>@T["SignIn"] · FlowBlox</PageTitle>
+<section class="panel login">
+    <h1>@T["SignIn"]</h1>
+    <p class="muted">@T["LoginDescription"]</p>
+    @if (Invalid) { <p role="alert" class="notice error">@T["InvalidLogin"]</p> }
+    <form method="post" action="/session/login" data-enhance="false">
+        <AntiforgeryToken />
+        <label>@T["Password"]<input name="password" type="password" autocomplete="current-password" maxlength="4096" required /></label>
+        <button type="submit" class="primary">@T["SignIn"]</button>
+    </form>
+</section>
+@code {
+    [SupplyParameterFromQuery(Name = "invalid")] public bool Invalid { get; set; }
+    protected override void OnInitialized() { if (!Sessions.PasswordRequired) Navigation.NavigateTo("/"); }
+}

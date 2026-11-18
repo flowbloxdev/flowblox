@@ -34,6 +34,11 @@ namespace FlowBlox.Core.Models.Runtime
         public event FocusChangedEventHandler FocusChanged;
         public event PauseEventHandler PauseContinue;
 
+        /// <summary>
+        /// Signals actionable setup guidance to interactive hosts and runner response collectors.
+        /// </summary>
+        public event Action<BaseRuntime, ExecutionEnvironmentPrerequisiteFailure> ExecutionEnvironmentPrerequisiteFailed;
+
         public bool Pause { get; set; }
         public bool Aborted { get; set; }
         public bool Running { get; set; }
@@ -109,6 +114,9 @@ namespace FlowBlox.Core.Models.Runtime
 
         public virtual void Report(string message, FlowBloxLogLevel logLevel = FlowBloxLogLevel.Info, Exception e = null)
         {
+            foreach (var failure in ExecutionEnvironmentPrerequisiteFailure.FromException(e))
+                NotifyExecutionEnvironmentPrerequisiteFailure(failure);
+
             LogEntryCreated?.Invoke(this, message, logLevel, e);
             LogMessageCreated?.Invoke(this, message, logLevel);
 
@@ -117,6 +125,15 @@ namespace FlowBlox.Core.Models.Runtime
                 LogMessageCreated?.Invoke(this, "The exception is logged below.", FlowBloxLogLevel.Error);
                 LogMessageCreated?.Invoke(this, e.ToString(), FlowBloxLogLevel.Error);
             }
+        }
+
+        /// <summary>
+        /// Forwards structured setup failures, including failures returned by a child runner.
+        /// </summary>
+        public void NotifyExecutionEnvironmentPrerequisiteFailure(ExecutionEnvironmentPrerequisiteFailure failure)
+        {
+            if (failure != null)
+                ExecutionEnvironmentPrerequisiteFailed?.Invoke(this, failure);
         }
 
         internal void NotifyFieldChange(FieldElement fieldElement, string oldValue, string newValue)

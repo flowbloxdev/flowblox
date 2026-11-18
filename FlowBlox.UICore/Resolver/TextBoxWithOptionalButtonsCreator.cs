@@ -39,6 +39,58 @@ namespace FlowBlox.UICore.Resolver
 
         private const double IconSize = 10;
 
+        private static readonly DependencyProperty IsTextEditorActionsProperty = DependencyProperty.RegisterAttached(
+            "IsTextEditorActions", typeof(bool), typeof(TextBoxWithOptionalButtonsCreator), new PropertyMetadata(false));
+
+        private static readonly DependencyProperty AdditionalActionProperty = DependencyProperty.RegisterAttached(
+            "AdditionalAction", typeof(Button), typeof(TextBoxWithOptionalButtonsCreator));
+
+        /// <summary>
+        /// Restores the contextual action after a dynamic selection editor rebuilds its content.
+        /// </summary>
+        public static void RestoreActionButton(ContentControl host)
+        {
+            if (host.GetValue(AdditionalActionProperty) is Button button && host.Content is FrameworkElement content)
+                TryAddActionButton(content, button);
+        }
+
+        /// <summary>
+        /// Appends a contextual action beside the editor buttons, leaving any suggestion bar at full width.
+        /// </summary>
+        public static bool TryAddActionButton(FrameworkElement editor, Button button)
+        {
+            if (editor is ContentControl host)
+            {
+                host.SetValue(AdditionalActionProperty, button);
+                return host.Content is FrameworkElement content && TryAddActionButton(content, button);
+            }
+
+            if (editor is System.Windows.Controls.Grid grid && (bool)grid.GetValue(IsTextEditorActionsProperty))
+            {
+                if (button.Parent == grid)
+                    return true;
+
+                if (button.Parent is Panel previousPanel)
+                    previousPanel.Children.Remove(button);
+
+                System.Windows.Controls.Grid.SetColumn(button, grid.ColumnDefinitions.Count);
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                grid.Children.Add(button);
+                return true;
+            }
+
+            if (editor is Panel panel)
+            {
+                foreach (var child in panel.Children.OfType<FrameworkElement>())
+                {
+                    if (TryAddActionButton(child, button))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public FrameworkElement CreateTextBoxWithOptionalButtons(
             PropertyInfo property,
             object target,
@@ -101,6 +153,7 @@ namespace FlowBlox.UICore.Resolver
                 : GetTextboxFromFrameworkElement(baseTextBox);
 
             var grid = new System.Windows.Controls.Grid();
+            grid.SetValue(IsTextEditorActionsProperty, true);
             grid.ColumnDefinitions.Add(
                 new ColumnDefinition
                 {

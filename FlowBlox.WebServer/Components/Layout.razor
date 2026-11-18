@@ -1,0 +1,17 @@
+@inherits LayoutComponentBase
+@inject WebSessions Sessions
+@inject NavigationManager Navigation
+<header class="topbar">
+    <a class="brand" href="/">
+        <img class="brand-logo" src="brand-icon.png" alt="" />
+        <span class="brand-copy"><strong class="brand-wordmark">flowblox</strong><span class="brand-subtitle">@T["Remote"]</span></span>
+    </a>
+    <AuthorizeView>
+        <Authorized>
+            <nav class="app-navigation" aria-label="@T["Navigation"]"><NavLink href="/" class="@(new Uri(Navigation.Uri).AbsolutePath.StartsWith("/projects", StringComparison.OrdinalIgnoreCase) ? "active" : null)" Match="Microsoft.AspNetCore.Components.Routing.NavLinkMatch.All"><img src="project.svg" alt="" />@T["Projects"]</NavLink><NavLink href="/executions"><img src="executions.svg" alt="" />@T["Executions"]</NavLink></nav>
+            @if (Sessions.PasswordRequired) { <form method="post" action="/session/logout"><AntiforgeryToken /><button class="quiet" type="submit">@T["SignOut"]</button></form> }
+        </Authorized>
+    </AuthorizeView>
+</header>
+<main>@Body</main>
+<div id="blazor-error-ui" style="display:none">@T["ConnectionLost"] <a href="/">@T["Reload"]</a></div>

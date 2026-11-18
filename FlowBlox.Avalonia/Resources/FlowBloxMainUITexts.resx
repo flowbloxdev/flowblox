@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -124,10 +124,10 @@
 		<value>About FlowBlox</value>
 	</data>
   <data name="AppWindow_CloseProjectConfirm_Message" xml:space="preserve">
-		<value>Do you really want to close the project "{0}"?</value>
+		<value>Do you want to close the project "{0}"?</value>
 	</data>
   <data name="AppWindow_CloseProjectConfirm_Title" xml:space="preserve">
-		<value>Close Project?</value>
+		<value>Close project</value>
 	</data>
   <data name="AppWindow_ErrorReport_Message" xml:space="preserve">
 		<value>Please report this error at https://www.flowblox.net/.</value>
@@ -313,7 +313,7 @@
 		<value>Save Failed</value>
 	</data>
   <data name="AppWindow_SaveReminder_Message" xml:space="preserve">
-		<value>(!) Make sure your changes have been saved.</value>
+		<value>Save any changes before closing the project.</value>
 	</data>
   <data name="AppWindow_Text" xml:space="preserve">
 		<value>FlowBlox</value>
@@ -841,4 +841,14 @@ The Recursive Call flow block invokes the connected earlier target flow block ag
   <data name="AppWindow_ProjectSpaceLoginRequired_Message" xml:space="preserve">
     <value>You are not logged in. Open "Tools" → "Manage projects" and click "Login".</value>
   </data>
+<data name="WebServer_Menu" xml:space="preserve"><value>Web server</value></data>
+<data name="WebServer_Configuration" xml:space="preserve"><value>Configuration...</value></data>
+<data name="WebServer_Start" xml:space="preserve"><value>Start</value></data>
+<data name="WebServer_Stop" xml:space="preserve"><value>Stop</value></data>
+<data name="WebServer_Restart" xml:space="preserve"><value>Restart</value></data>
+<data name="WebServer_Open" xml:space="preserve"><value>Open dashboard</value></data>
+<data name="WebServer_Autostart" xml:space="preserve"><value>Start after Windows sign-in</value></data>
+<data name="WebServer_Saved" xml:space="preserve"><value>The configuration has been saved. Restart the web server to apply the changes. For access from your phone, use this computer's local network address and the configured port.</value></data>
+<data name="WebServer_Error" xml:space="preserve"><value>The web server operation failed.</value></data>
+<data name="WebServer_StartFailed" xml:space="preserve"><value>The web server could not start. Check webserver/startup.log in the FlowBlox user data directory.</value></data>
 </root>

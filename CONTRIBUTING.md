@@ -60,7 +60,7 @@ Use meaningful tests for behavior changes and describe manual UI checks when app
 ## Extension setup guidance
 
 For components that need a local executable, browser or model installation, use the open
-[execution prerequisite and Quick Start API](docs/execution-prerequisites.md). Registered popup providers
+[execution prerequisite and Quick Start API](docs/execution-environment-prerequisites.md). Registered popup providers
 appear automatically in Help.
 
 ## Reviews and repository access

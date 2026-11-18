@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using FlowBlox.Core.Util;
 
 namespace FlowBlox.Core.Models.Project.Launcher;
 
@@ -18,13 +19,17 @@ public sealed class LauncherJsonStore<T>
     public List<T> Read()
     {
         lock (_sync)
+        {
+            using var storeLock = InterprocessFileLock.Acquire(_path);
             return ReadCore();
+        }
     }
 
     public void Update(Action<List<T>> update)
     {
         lock (_sync)
         {
+            using var storeLock = InterprocessFileLock.Acquire(_path);
             var entries = ReadCore();
             update(entries);
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_path))!);

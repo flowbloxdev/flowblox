@@ -71,9 +71,7 @@
                                 <ItemsControl ItemsSource="{Binding Controls}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <StackPanel behavior:ToolTipPreferenceBehavior.PreferChildToolTips="True"
-                                                        Margin="0,0,0,10"
-                                                        IsEnabled="{Binding IsEnabled}"
+                                            <StackPanel Margin="0,0,0,10"
                                                         Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
                                                 <Border
                                                     Style="{StaticResource PropertyView.LabelBorderStyle}"
@@ -100,7 +98,7 @@
                                                         </Border>
                                                     </StackPanel>
                                                 </Border>
-                                                <ContentControl Content="{Binding Control}" />
+                                                <ContentControl Content="{Binding Control}" IsEnabled="{Binding IsEnabled}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -117,8 +115,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid behavior:ToolTipPreferenceBehavior.PreferChildToolTips="True"
-                                          IsEnabled="{Binding IsEnabled}"
+                                    <Grid
                                           Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -151,6 +148,7 @@
                                         </Border>
                                         <ContentControl Grid.Row="1"
                                                         Content="{Binding Control}"
+                                                        IsEnabled="{Binding IsEnabled}"
                                                         HorizontalContentAlignment="Stretch"
                                                         VerticalContentAlignment="Stretch" />
                                     </Grid>

@@ -150,11 +150,7 @@
 		<value>Iterationskontext</value>
 	</data>
 	<data name="BaseFlowBlock_AssociatedIterationContext_Tooltip" xml:space="preserve">
-		<value>Definiert den Flow-Block, dessen Iterationszyklus diesen Block steuert.
-Der Ziel-Flow-Block wird pro Iteration dieses referenzierten Flow-Blocks genau einmal ausgeführt (in der Regel pro Datensatz).
-Bei mehreren eingehenden Pfaden wird der Iterationskontext automatisch auf den ersten gemeinsamen Flow-Block der Pfade gesetzt.
-Dieser automatisch ermittelte Wert kann durch einen explizit gesetzten AssociatedIterationContext überschrieben werden.
-Alle Eingabedaten werden innerhalb jeder referenzierten Iteration gesammelt, und dieser Flow-Block wird am Iterationsende ausgeführt (nach Abschluss dieser Iteration).</value>
+		<value>Sammelt eingehende Ergebnisse bis zum Ende einer Iteration des gew?hlten vorgelagerten Blocks und verarbeitet sie dann gem?? den Eingabeverhalten. Dieser Block, seine direkten Vorg?nger und Nachfolger sind nicht w?hlbar. Bl?cke innerhalb bereits gesammelter vorgelagerter Iterationsbereiche sind ausgeblendet; die Bereichsgrenzen bleiben verf?gbar. Start ist als Kontext m?glich. Ohne Zuweisung wird nach M?glichkeit ein automatischer Kontext verwendet.</value>
 	</data>
 	<data name="BaseFlowBlock_DefaultDescription" xml:space="preserve">
 		<value>In diesem Bereich können Sie alle notwendigen Einstellungen für den „{0}“-FlowBlock vornehmen. Nehmen Sie die gewünschten Anpassungen vor und klicken Sie anschließend auf „Annehmen“, um Ihre Änderungen zu speichern.</value>
@@ -2370,10 +2366,7 @@ Unterstützte Werte: Standard (CPU), CUDA, DirectML, OpenVINO.
 Hinweis: Sobald ein Anbieter geladen ist, kann der Anbieter innerhalb desselben Prozesses nicht gewechselt werden. Starten Sie die Anwendung nach der Änderung dieser Option neu.</value>
 	</data>
 	<data name="OnnxRuntimeGenAIFlowBlock_AiExecutionProvider_Tooltip" xml:space="preserve">
-		<value>Wählt den ONNX-Ausführungsanbieter für den gesamten Anwendungsprozess aus.
-Der Wert wird aus der globalen Option AI.Onnx.Provider gelesen.
-Unterstützte Werte: Standard (CPU), CUDA, DirectML, OpenVINO.
-Hinweis: Sobald ein Anbieter geladen ist, kann der Anbieter innerhalb desselben Prozesses nicht gewechselt werden. Starten Sie die Anwendung nach der Änderung dieser Option neu.</value>
+		<value>Wählt den lokalen Ausführungsanbieter, optional über ein Eingabefeld. Ohne Zuweisung gilt die globale Option AI.Onnx.Provider. Default bedeutet CPU. GPU-Anbieter benötigen passende Runtime-/Modelldateien und Treiber. Ein Wechsel des nativen Anbieters innerhalb desselben Anwendungsprozesses erfordert einen Neustart.</value>
 	</data>
 	<data name="LogicalCondition" xml:space="preserve">
 		<value>Bedingung</value>
@@ -3611,7 +3604,7 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
     <value>Inklusives Enddatum im Format yyyy/MM/dd.</value>
   </data>
 	<data name="IMAPMailFetchFlowBlock_SearchText" xml:space="preserve">
-    <value>Suchtext</value>
+    <value>Suchbegriff</value>
   </data>
 	<data name="IMAPMailFetchFlowBlock_SearchText_Tooltip" xml:space="preserve">
     <value>Serverseitiger Textfilter für Betreff und Nachrichtentext.</value>
@@ -3621,12 +3614,6 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
   </data>
 	<data name="IMAPMailFetchFlowBlock_MaxResults_Tooltip" xml:space="preserve">
     <value>Maximale Anzahl an E-Mails pro Ausführung dieses Flow-Blocks.</value>
-  </data>
-	<data name="IMAPMailFetchFlowBlock_NewestFirst" xml:space="preserve">
-    <value>Neueste zuerst</value>
-  </data>
-	<data name="IMAPMailFetchFlowBlock_NewestFirst_Tooltip" xml:space="preserve">
-    <value>Liefert neuere Nachrichten vor älteren.</value>
   </data>
 	<data name="IMAPMailFetchFlowBlock_MarkAsRead" xml:space="preserve">
     <value>Als gelesen markieren</value>
@@ -4011,6 +3998,21 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionRate_Tooltip" xml:space="preserve">
 		<value>Anteil der zusammenfassbaren Konversationsnachrichten, der auf einmal komprimiert wird, sobald der Assistent die Zusammenfassung aktualisieren muss. Zum Beispiel komprimiert 0,4 insgesamt 40%, behält aber weiterhin die konfigurierte Mindestanzahl neuester Nachrichten unverändert bei.</value>
+	</data>
+	<data name="AssistantConfiguration_MaxSummaryTokens" xml:space="preserve">
+		<value>Verdichtungsschwelle der Zusammenfassung (Tokens)</value>
+	</data>
+	<data name="AssistantConfiguration_MaxSummaryTokens_Tooltip" xml:space="preserve">
+		<value>Verdichtet die bestehende Zusammenfassung automatisch in einem eigenen Schritt, sobald sie diese geschätzte Tokenanzahl überschreitet. Standard: 10000. Die ursprünglichen Historiennachrichten bleiben erhalten.</value>
+	</data>
+	<data name="AssistantConfiguration_SummaryCompactionTargetRatio" xml:space="preserve">
+		<value>Zielanteil nach Verdichtung</value>
+	</data>
+	<data name="AssistantConfiguration_SummaryCompactionTargetRatio_Tooltip" xml:space="preserve">
+		<value>Zielgröße der Zusammenfassung als Anteil der Verdichtungsschwelle. Standard: 0,5, also etwa 5000 Tokens bei einer Schwelle von 10000. Unabhängig vom Anteil der Historiennachrichten, die auf einmal zusammengefasst werden.</value>
+	</data>
+	<data name="AiAssistantService_CompactingContext" xml:space="preserve">
+		<value>Kontext wird verdichtet...</value>
 	</data>
 	<data name="AssistantConfiguration_MaxContextTokens" xml:space="preserve">
 		<value>Maximale Kontext-Tokens</value>
@@ -4742,12 +4744,142 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="QuickStarts_MenuTitle" xml:space="preserve">
     <value>Quick Starts</value>
   </data>
-  <data name="ExecutionPrerequisite_Missing" xml:space="preserve">
-    <value>{0} konnte unter '{1}' nicht gefunden werden. Eine erforderliche Ausführungskomponente fehlt. Öffnen Sie Hilfe → Quick Starts → {2} für die Installations- und Einrichtungsanleitung. Prüfen Sie den konfigurierten Pfad und die Umgebungsvariable PATH.</value>
+  <data name="ExecutionEnvironmentPrerequisite_Missing" xml:space="preserve">
+    <value>{0} konnte unter '{1}' nicht gefunden werden. Eine erforderliche Komponente der Ausführungsumgebung fehlt. Öffnen Sie Hilfe → Quick Starts → {2} für die Installations- und Einrichtungsanleitung. Prüfen Sie den konfigurierten Pfad und die Umgebungsvariable PATH.</value>
   </data>
-  <data name="ExecutionPrerequisite_InitializationFailed" xml:space="preserve">
+  <data name="ExecutionEnvironmentPrerequisite_InitializationFailed" xml:space="preserve">
     <value>{0} konnte nicht initialisiert werden ('{1}'). Prüfen Sie Installation und Konfiguration unter Hilfe → Quick Starts → {2}. Details: {3}</value>
   </data>
+  <data name="OAuthUserConnection_DisplayName" xml:space="preserve"><value>OAuth-Benutzerverbindung</value></data>
+  <data name="OAuthUserConnection_DisplayName_Plural" xml:space="preserve"><value>OAuth-Benutzerverbindungen</value></data>
+  <data name="OAuthUserConnection_AuthorizationEndpoint" xml:space="preserve"><value>Autorisierungs-Endpunkt</value></data>
+  <data name="OAuthUserConnection_AuthorizationEndpoint_Tooltip" xml:space="preserve"><value>Anbieter-URL für die Browser-Anmeldung, ohne Abfrageparameter.</value></data>
+  <data name="OAuthUserConnection_TokenEndpoint" xml:space="preserve"><value>Token-Endpunkt</value></data>
+  <data name="OAuthUserConnection_TokenEndpoint_Tooltip" xml:space="preserve"><value>HTTPS-Endpunkt zum Austausch des Autorisierungscodes und zur Token-Erneuerung.</value></data>
+  <data name="OAuthUserConnection_ClientId" xml:space="preserve"><value>Client-ID</value></data>
+  <data name="OAuthUserConnection_ClientId_Tooltip" xml:space="preserve"><value>Beim Anbieter registrierte OAuth-Client-ID einer Desktop-Anwendung.</value></data>
+  <data name="OAuthUserConnection_ClientSecretReference" xml:space="preserve"><value>Client-Secret-Referenz (optional)</value></data>
+  <data name="OAuthUserConnection_ClientSecretReference_Tooltip" xml:space="preserve"><value>Optionales Client-Secret oder Feldreferenz. Eine Vault-Referenz bevorzugen, z. B. $Vault::OAuthClientSecret. Eingabeparameter verwenden ihre normale IsPassword-Einstellung. Leer lassen, wenn der Anbieter kein Client-Secret benötigt.</value></data>
+  <data name="OAuthUserConnection_Scopes" xml:space="preserve"><value>Berechtigungen (Scopes)</value></data>
+  <data name="OAuthUserConnection_Scopes_Tooltip" xml:space="preserve"><value>Durch Leerzeichen getrennte OAuth-Scopes. Nur die für den Flow benötigten API-Berechtigungen anfordern.</value></data>
+  <data name="OAuthUserConnection_ResourceBaseUrl" xml:space="preserve"><value>API-Basis-URL</value></data>
+  <data name="OAuthUserConnection_ResourceBaseUrl_Tooltip" xml:space="preserve"><value>Tokens werden nur an URLs innerhalb dieses HTTPS-Ursprungs und Pfads gesendet, z. B. https://api.example.com/.</value></data>
+  <data name="OAuthUserConnection_RedirectPort" xml:space="preserve"><value>Loopback-Weiterleitungsport</value></data>
+  <data name="OAuthUserConnection_RedirectPort_Tooltip" xml:space="preserve"><value>0 wählt einen freien lokalen Port. Einen festen Port verwenden, wenn der Anbieter dies verlangt. Callback-Pfad: /oauth/callback/.</value></data>
+  <data name="OAuthUserConnection_AuthorizationParameters" xml:space="preserve"><value>Zusätzliche Autorisierungsparameter</value></data>
+  <data name="OAuthUserConnection_AuthorizationParameters_Tooltip" xml:space="preserve"><value>Anbieterspezifische Browser-Parameter, z. B. access_type=offline oder prompt=consent. State, Redirect-URI und PKCE werden automatisch verwaltet.</value></data>
+  <data name="OAuthUserConnection_IsConnected" xml:space="preserve"><value>Lokal verbunden</value></data>
+  <data name="OAuthUserConnection_IsConnected_Tooltip" xml:space="preserve"><value>Zugangsdaten liegen außerhalb der Projektdateien geschützt für den aktuellen Windows-Benutzer. Der erste authentifizierte Request öffnet bei Bedarf den Browser.</value></data>
+  <data name="OAuthAuthorizationParameter_Name" xml:space="preserve"><value>Parametername</value></data>
+  <data name="OAuthAuthorizationParameter_Value" xml:space="preserve"><value>Wert</value></data>
+  <data name="OAuthUserConnectionUIActions_Connect" xml:space="preserve"><value>Konto im Browser verbinden</value></data>
+  <data name="OAuthUserConnectionUIActions_Disconnect" xml:space="preserve"><value>Lokale Kontoverbindung trennen</value></data>
+  <data name="WebRequestFlowBlock_OAuthConnection" xml:space="preserve"><value>OAuth-Benutzerverbindung</value></data>
+  <data name="WebRequestFlowBlock_OAuthConnection_Tooltip" xml:space="preserve"><value>Eine OAuth-Benutzerverbindung auswählen oder erstellen. Nicht gleichzeitig einen Bearer-Token, Authorization-Header oder Basic-Zugangsdaten konfigurieren.</value></data>
+  <data name="OAuthConnectionValidator_ConflictingAuthentication" xml:space="preserve"><value>Entweder eine OAuth-Benutzerverbindung oder einen Bearer-Token, Authorization-Header bzw. Basic-Zugangsdaten verwenden, nicht beides.</value></data>
+  <data name="OAuthAuthorizationSession_BrowserComplete" xml:space="preserve"><value>Die Autorisierungsantwort wurde empfangen. Du kannst diesen Tab schließen und zu FlowBlox zurückkehren.</value></data>
+  <data name="OAuthAuthorizationSession_BrowserRejected" xml:space="preserve"><value>Diese Autorisierungsantwort gehört nicht zur aktuellen FlowBlox-Anmeldung. Kehre zum ursprünglichen Anmelde-Tab zurück.</value></data>
+  <data name="FieldElement_Index" xml:space="preserve"><value>Sortierindex</value></data>
+  <data name="FieldElement_Index_Tooltip" xml:space="preserve"><value>Optionaler Sortierindex für Benutzerfelder. Felder ohne Index stehen zuerst, danach folgen indizierte Felder in aufsteigender Reihenfolge. Felder mit gleichem Index behalten ihre bisherige Reihenfolge.</value></data>
+  <data name="TextLengthModifier_DisplayName" xml:space="preserve">
+    <value>Textl?nge</value>
+  </data>
+  <data name="TextLengthModifier_Description" xml:space="preserve">
+    <value>Gibt die Zeichenanzahl einschlie?lich Leerzeichen und Zeilenumbr?chen zur?ck. F?r Berechnungen und Voraussetzungen ein numerisches Ergebnisfeld verwenden.</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_ExcludeQuotedHistory" xml:space="preserve">
+    <value>Zitierte Historie ausblenden</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_ExcludeQuotedHistory_Tooltip" xml:space="preserve">
+    <value>Entfernt HTML-Zitatbereiche und mit &gt; markierte Klartextzeilen aus Nachricht. Sind HTML und Klartext vorhanden, hat die HTML-Zitatstruktur Vorrang. Sprachabhängige Antwortköpfe werden nicht ausgewertet: Unmarkierte Historien bleiben erhalten. Zitate können relevante Informationen enthalten. Die Originalnachricht bleibt separat verfügbar. Standardmäßig deaktiviert.</value>
+  </data>
+  <data name="IMAPMailFetchDestinations_OriginalMessage" xml:space="preserve">
+    <value>Originalnachricht</value>
+  </data>
+  <data name="BaseResultFlowBlock_OutputSorting" xml:space="preserve">
+    <value>Sortierung</value>
+  </data>
+  <data name="BaseResultFlowBlock_OutputSorting_Tooltip" xml:space="preserve">
+    <value>F?r jedes Ausgabefeld wird automatisch eine Zeile angelegt. Keine Sortierung erh?lt die ?bergebene Reihenfolge. Aufsteigend oder absteigend aktivieren; Zeilen verschieben, um Haupt- und Folgeschl?ssel festzulegen. Sortiert typisierte Feldwerte nach Ausgabefilterung und Modifikatoren, vor dem Flush. Gleiche Schl?ssel behalten ihre Eingangsreihenfolge.</value>
+  </data>
+  <data name="OutputSortRule_Direction" xml:space="preserve">
+    <value>Richtung</value>
+  </data>
+  <data name="OutputSortDirection_None" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="OutputSortDirection_Ascending" xml:space="preserve">
+    <value>Aufsteigend</value>
+  </data>
+  <data name="OutputSortDirection_Descending" xml:space="preserve">
+    <value>Absteigend</value>
+  </data>
+  <data name="FieldElement_ValueStorageIcon" xml:space="preserve">
+    <value>Wertspeicherung</value>
+  </data>
+  <data name="FieldElement_ValueStorageIcon_Tooltip" xml:space="preserve">
+    <value>Zeigt, ob der Eingabewert als Projektvorgabe oder ausschließlich in lokalen Projektdaten gespeichert wird.</value>
+  </data>
+  <data name="FieldElement_ValueStorageLocally" xml:space="preserve">
+    <value>Lokal gespeichert: Der Wert steht in den lokalen Projektdaten, nicht in der Projektdatei.</value>
+  </data>
+  <data name="FieldElement_ValueStorageInProject" xml:space="preserve">
+    <value>Im Projekt gespeichert: Der Wert wird als Vorgabe in der Projektdatei gespeichert.</value>
+  </data>
+  <data name="IMAPMailFetchDestinations_UidValidity" xml:space="preserve">
+    <value>UID-Gültigkeit</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_DisplayName" xml:space="preserve">
+    <value>IMAP-Anhänge herunterladen</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_Description" xml:space="preserve">
+    <value>Lädt ausschließlich Anhang-MIME-Teile zur aktuellen Mail-UID des zugeordneten IMAP-Abrufs. Gibt einen Datensatz pro Anhang aus.</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_AssociatedImap" xml:space="preserve">
+    <value>IMAP-Abruf</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_AssociatedImap_Tooltip" xml:space="preserve">
+    <value>Verwendet den zugeordneten IMAP-Abruf oder den Vorgänger im Ausführungspfad. Benötigt dessen Ausgabe UniqueId; UidValidity wird geprüft, falls vorhanden. Nutzt dasselbe Konto und denselben Ordner ohne Eingabefeldauswahl.</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_ResultFields" xml:space="preserve">
+    <value>Anhangfelder</value>
+  </data>
+  <data name="ImapAttachmentDownloadDestinations_FileContent" xml:space="preserve">
+    <value>Dateiinhalt</value>
+  </data>
+  <data name="ImapAttachmentDownloadDestinations_ContentType" xml:space="preserve">
+    <value>Inhaltstyp</value>
+  </data>
+  <data name="ImapAttachmentDownloadDestinations_Size" xml:space="preserve">
+    <value>Größe in Bytes</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_SearchExpression" xml:space="preserve">
+    <value>Suchausdruck</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_SearchExpression_Tooltip" xml:space="preserve">
+    <value>Standard-IMAP-Suchkriterien, die direkt an den Server übergeben werden. Beispiel: OR TEXT "invoice" TEXT "receipt". SEARCH oder UID SEARCH nicht mit angeben. Zeitraum und Ungelesen-Filter gelten zusätzlich für den gesamten Ausdruck. Entweder Suchtext oder Suchausdruck verwenden.</value>
+  </data>
+  <data name="ImapSearchValidator_ConflictingSearch" xml:space="preserve">
+    <value>Entweder einen Suchtext oder einen Suchausdruck angeben, nicht beides.</value>
+  </data>
+  <data name="ProjectExecutions_ProcessTerminated" xml:space="preserve"><value>Die Ausführung wurde vom Benutzer beendet.</value></data>
+  <data name="WebServerConfiguration_DisplayName" xml:space="preserve"><value>Webserver-Konfiguration</value></data>
+  <data name="WebServerConfiguration_Description" xml:space="preserve"><value>Remote-Dashboard, optionales App-Passwort und HTTPS konfigurieren. Ohne App-Passwort ist der Zugriff direkt ohne Anmeldung möglich. Nach Änderungen den Server neu starten. Er läuft im angemeldeten Windows-Benutzerkonto.</value></data>
+  <data name="WebServerConfiguration_BindAddress" xml:space="preserve"><value>Netzwerkadresse</value></data>
+  <data name="WebServerConfiguration_BindAddress_Tooltip" xml:space="preserve"><value>127.0.0.1 erlaubt nur diesen Computer. 0.0.0.0 ermöglicht Zugriff aus dem lokalen Netzwerk. Für Netzwerkzugriff HTTPS verwenden und nur vertrauenswürdige Netzwerke in der Firewall zulassen.</value></data>
+  <data name="WebServerConfiguration_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="WebServerConfiguration_Port_Tooltip" xml:space="preserve"><value>TCP-Port für das Dashboard. Standard: 9001. Einen freien Port wählen.</value></data>
+  <data name="WebServerConfiguration_CertificateFile" xml:space="preserve"><value>HTTPS-Zertifikat</value></data>
+  <data name="WebServerConfiguration_CertificateFile_Tooltip" xml:space="preserve"><value>Optionales PFX/P12-Zertifikat mit privatem Schlüssel. Leer lassen für HTTP. Für Zugriff von anderen Geräten HTTPS verwenden. Nach Zertifikatsänderungen neu starten.</value></data>
+  <data name="WebServerConfiguration_CertificatePassword" xml:space="preserve"><value>Zertifikatspasswort</value></data>
+  <data name="WebServerConfiguration_CertificatePassword_Tooltip" xml:space="preserve"><value>Passwort für die optionale PFX/P12-Datei. Wird für den Windows-Benutzer verschlüsselt gespeichert.</value></data>
+  <data name="WebServerConfiguration_InvalidAddress" xml:space="preserve"><value>Eine gültige IPv4- oder IPv6-Adresse eingeben.</value></data>
+
+  <data name="WebServerConfiguration_AppPassword" xml:space="preserve"><value>App-Passwort (optional)</value></data>
+
+  <data name="WebServerConfiguration_AppPassword_Tooltip" xml:space="preserve"><value>Optionales gemeinsames Passwort für den Dashboard-Zugriff. Leer lassen für direkten Zugriff. Wird für Ihr Windows-Konto verschlüsselt gespeichert. Nach einer Änderung den Server neu starten.</value></data>
+  <data name="ProjectOutputDirectoryChoice_Select" xml:space="preserve"><value>Projekt-Ausgabeverzeichnis einfügen</value></data>
+  <data name="ProjectOutputDirectoryChoice_Description" xml:space="preserve"><value>Wählen Sie das Projekt, dessen Ausgabeverzeichnis Sie verwenden möchten.</value></data>
 </root>
 
 

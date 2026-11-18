@@ -28,6 +28,7 @@ internal sealed partial class WorkspaceIntegrationChecks
 {
     private async Task CheckProjectLauncherAsync(Action<bool, string> check, string directory, string sourceProjectPath)
     {
+        CheckProjectExecutionHistory(check, directory);
         // Let activation refresh finish before inserting the isolated test sections.
         _window.Topmost = true;
         _window.Activate();

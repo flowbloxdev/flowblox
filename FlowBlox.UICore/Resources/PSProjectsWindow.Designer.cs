@@ -79,7 +79,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Cancel ähnelt.
         /// </summary>
@@ -90,7 +90,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Button_CancelDeleteProject", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create stable version ähnelt.
         /// </summary>
@@ -112,7 +112,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Button_DeleteProject", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Download ähnelt.
         /// </summary>
@@ -222,7 +222,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Confirm_DeleteProject_Message", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Delete project ähnelt.
         /// </summary>
@@ -233,7 +233,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Confirm_DeleteProject_Title", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The project could not be deleted. ähnelt.
         /// </summary>
@@ -244,7 +244,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Error_DeleteProjectFailed", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Failed to download the project version. ähnelt.
         /// </summary>
@@ -288,7 +288,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Format_CreatedBy", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Comment ähnelt.
         /// </summary>
@@ -398,7 +398,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Label_CreatedBy", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Description ähnelt.
         /// </summary>
@@ -585,7 +585,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Tooltip_CreatedBy", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create stable version ähnelt.
         /// </summary>
@@ -607,7 +607,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Tooltip_DeleteProject", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Download version ähnelt.
         /// </summary>
@@ -651,7 +651,29 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Tooltip_RefreshVersions", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Private ähnelt.
+        /// </summary>
+        public static string Visibility_Private
+        {
+            get
+            {
+                return ResourceManager.GetString("Visibility_Private", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Public ähnelt.
+        /// </summary>
+        public static string Visibility_Public
+        {
+            get
+            {
+                return ResourceManager.GetString("Visibility_Public", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Projects with stable versions cannot be deleted. ähnelt.
         /// </summary>

@@ -265,4 +265,6 @@
   <data name="Confirm_DeleteProject_Message" xml:space="preserve"><value>Das Projekt „{0}“ endgültig löschen? Dies kann nicht rückgängig gemacht werden.</value></data>
   <data name="Warning_ProjectHasStableVersions" xml:space="preserve"><value>Projekte mit stabilen Versionen können nicht gelöscht werden.</value></data>
   <data name="Error_DeleteProjectFailed" xml:space="preserve"><value>Das Projekt konnte nicht gelöscht werden.</value></data>
+  <data name="Visibility_Public" xml:space="preserve"><value>Öffentlich</value></data>
+  <data name="Visibility_Private" xml:space="preserve"><value>Privat</value></data>
 </root>

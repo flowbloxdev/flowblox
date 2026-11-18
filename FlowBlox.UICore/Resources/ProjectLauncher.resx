@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -103,7 +103,7 @@
     <value>Started: {0}</value>
   </data>
   <data name="Readonly" xml:space="preserve">
-    <value>This execution has started. Its configuration is read-only.</value>
+    <value>The execution configuration can no longer be changed.</value>
   </data>
   <data name="DuplicateOption" xml:space="preserve">
     <value>Select each option only once.</value>
@@ -126,4 +126,16 @@
   <data name="LogUnavailable" xml:space="preserve">
     <value>No log file is available for this execution.</value>
   </data>
+  <data name="History" xml:space="preserve"><value>Execution history</value></data>
+  <data name="HistoryExecution" xml:space="preserve"><value>Execution on {0:g}</value></data>
+  <data name="ClearInputs" xml:space="preserve"><value>Clear</value></data>
+  <data name="ClearInputsTooltip" xml:space="preserve"><value>Restore the project defaults and remove option overrides. Saved executions remain in the history.</value></data>
+  <data name="ProjectNotice" xml:space="preserve">
+    <value>Project notes</value>
+  </data>
+  <data name="NoOptionOverrides" xml:space="preserve">
+    <value>No option overrides have been defined.</value>
+  </data>
+  <data name="TerminateProcess" xml:space="preserve"><value>Terminate process</value></data>
+  <data name="ProcessId" xml:space="preserve"><value>Process ID: {0}</value></data>
 </root>

@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.TestDefinitionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -443,17 +443,12 @@
                                                                      VerticalContentAlignment="Center"
                                                                      Visibility="{Binding UserInput, Converter={StaticResource MultilineTextVisibilityConverter}, ConverterParameter=SingleLine, ValidatesOnNotifyDataErrors=False}" />
 
-                                                            <StackPanel Orientation="Horizontal"
-                                                                        VerticalAlignment="Center"
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                                                                         Visibility="{Binding UserInput, Converter={StaticResource MultilineTextVisibilityConverter}, ValidatesOnNotifyDataErrors=False}">
-                                                                <iconPacks:PackIconMaterial Kind="InformationOutline"
-                                                                                            Margin="0,0,6,0"
-                                                                                            VerticalAlignment="Center"
+                                                                <iconPacks:PackIconMaterial Kind="InformationOutline" Margin="0,0,6,0" VerticalAlignment="Center"
                                                                                             Style="{StaticResource FlowBlox.EmptyStateIconStyle}" />
-                                                                <TextBlock Text="{x:Static resources:TestDefinitionView.Text_EditInEditor}"
-                                                                           VerticalAlignment="Center"
-                                                                           TextTrimming="CharacterEllipsis"
-                                                                           Style="{StaticResource FlowBlox.EmptyStateTextStyle}" />
+                                                                <TextBlock Text="{x:Static resources:TestDefinitionView.Text_EditInEditor}" VerticalAlignment="Center"
+                                                                           TextTrimming="CharacterEllipsis" Style="{StaticResource FlowBlox.EmptyStateTextStyle}" />
                                                             </StackPanel>
                                                         </Grid>
 
@@ -766,14 +761,10 @@
         </TabControl>
 
         <Border Grid.Row="5"
-                Background="#FFFCE8E8"
-                BorderBrush="#FFD05A5A"
-                BorderThickness="1"
-                CornerRadius="6"
-                Padding="10,8"
-                Margin="10,4,10,0"
-                MaxHeight="140"
-                Visibility="{Binding HasValidationMessages, Converter={StaticResource BooleanToVisibilityConverter}}">
+            Margin="10,4,10,0"
+            MaxHeight="140"
+            Visibility="{Binding HasValidationMessages, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Style="{StaticResource FlowBlox.NotificationBox.Error}">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl ItemsSource="{Binding ValidationMessages}">
@@ -785,15 +776,10 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <iconPacks:PackIconMaterial Kind="AlertCircleOutline"
-                                                            Width="16"
-                                                            Height="16"
-                                                            Margin="0,1,8,0"
-                                                            Foreground="#FF8A1F1F"
-                                                            VerticalAlignment="Top" />
+                                    Style="{StaticResource FlowBlox.NotificationIcon}" />
                                 <TextBlock Grid.Column="1"
-                                           Text="{Binding}"
-                                           Foreground="#FF8A1F1F"
-                                           TextWrapping="Wrap" />
+                                    Text="{Binding}"
+                                    Style="{StaticResource FlowBlox.NotificationText}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

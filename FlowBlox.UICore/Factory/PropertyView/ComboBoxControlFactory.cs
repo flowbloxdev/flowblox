@@ -83,6 +83,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     ? EnumerationDropDown.CreateItems(valueType, !required && Nullable.GetUnderlyingType(_property.PropertyType) != null)
                     : CreateItems(rawItems, required);
                 host.Content = BuildEditor(mode, password, items);
+                TextBoxWithOptionalButtonsCreator.RestoreActionButton(host);
             }
 
             void ModelChanged(object sender, PropertyChangedEventArgs args)

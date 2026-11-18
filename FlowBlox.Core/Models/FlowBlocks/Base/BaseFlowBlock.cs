@@ -92,20 +92,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         /// </summary>
         internal virtual void CompleteFailedExecution(BaseRuntime runtime) => ExecuteNextFlowBlocks(runtime);
 
-        public void CreateNotification(BaseRuntime runtime, Enum notificationEnumValue, Exception e = null)
-        {
-            CreateNotification(runtime, notificationEnumValue, notificationEnumValue.GetDisplayName(), e);
-        }
-
         /// <summary>
-        /// Creates a scoped notification with a contextual message.
-        /// The enum continues to control the notification's configured severity.
+        /// Creates a scoped notification using the enum display name as its compact message.
+        /// The exception carries detailed diagnostics; configured severity overrides still apply.
         /// </summary>
-        public void CreateNotification(
-            BaseRuntime runtime,
-            Enum notificationEnumValue,
-            string message,
-            Exception e)
+        public void CreateNotification(BaseRuntime runtime, Enum notificationEnumValue, Exception e = null)
         {
             var notificationType = GetCurrentNotificationType(notificationEnumValue);
             if (notificationType == NotificationType.None)
@@ -118,6 +109,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                     $"Missing {nameof(FlowBloxNotificationAttribute)} on enum value '{notificationEnumValue}'. " +
                      "Please annotate the enum with [FlowBlockNotification(...)] to define its NotificationType.");
 
+            var message = notificationEnumValue.GetDisplayName();
             if (notificationType == NotificationType.Warning)
             {
                 runtime.Report(message, FlowBloxLogLevel.Warning, e);
@@ -972,48 +964,32 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         public virtual List<BaseFlowBlock> GetPossibleIterationContexts()
         {
             var registry = FlowBloxRegistryProvider.GetRegistry();
-            if (registry == null)
-                return new List<BaseFlowBlock>();
+            return registry == null
+                ? new List<BaseFlowBlock>()
+                : FlowBlockConnectionRules.GetPossibleIterationContexts(this, registry.GetFlowBlocks());
+        }
 
-            var directPredecessors = registry.GetPreviousElements(this)
-                .OfType<BaseFlowBlock>()
-                .Where(x => x != null)
-                .ToList();
-
-            var result = new List<BaseFlowBlock>();
-            var visited = new HashSet<BaseFlowBlock>();
-            var queue = new Queue<BaseFlowBlock>(directPredecessors);
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                if (current == null || !visited.Add(current))
-                    continue;
-
-                foreach (var previous in registry.GetPreviousElements(current).OfType<BaseFlowBlock>())
-                {
-                    if (previous == null)
-                        continue;
-
-                    // Only upstream predecessors are allowed in the selection.
-                    result.Add(previous);
-                    queue.Enqueue(previous);
-                }
-            }
-
-            return result
-                .Where(x => !ReferenceEquals(x, this))
-                .Distinct()
-                .OrderBy(x => x.Name)
-                .ToList();
+        /// <summary>
+        /// Returns new normal successor connections that respect cardinality and cannot create a cycle.
+        /// Explicit recursive calls use their separate target-selection rules.
+        /// </summary>
+        public virtual List<BaseFlowBlock> GetPossibleNextFlowBlocks()
+        {
+            var registry = FlowBloxRegistryProvider.GetRegistry();
+            return registry == null
+                ? new List<BaseFlowBlock>()
+                : FlowBlockConnectionRules.GetPossibleNext(this, registry.GetFlowBlocks());
         }
 
         public virtual List<BaseFlowBlock> GetPossibleReferencedElements()
         {
             var registry = FlowBloxRegistryProvider.GetRegistry();
+            if (registry == null)
+                return new List<BaseFlowBlock>();
+
+            // Keep current associations available for unlinking, even when the input cardinality is full.
             return registry.GetFlowBlocks()
-                .Where(x => x.Name != this.Name)
-                .Where(x => x.CanBeReferenced)
+                .Where(candidate => ReferencedFlowBlocks.Contains(candidate) || candidate.GetPossibleNextFlowBlocks().Contains(this))
                 .ToList();
         }
 
@@ -1246,7 +1222,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                 runtime.Focus(this);
                 Wait(runtime);
                 SetParentElement(data);
-                if (!TryValidateExecutionPrerequisites(runtime))
+                if (!TryValidateExecutionEnvironmentPrerequisites(runtime))
                     return;
 
                 executor();
@@ -1292,7 +1268,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         }
 
         /// <summary>
-        /// Reports a failed execution prerequisite and completes the block without executing its action.
+        /// Reports an unmet execution-environment prerequisite and completes the block without executing its action.
         /// </summary>
         /// <param name="runtime">The runtime whose notification and result/continuation contract must be preserved.</param>
         /// <param name="exception">The prerequisite failure, including its Quick Start target and detailed cause.</param>
@@ -1301,24 +1277,24 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
         /// or schedules successors for non-result blocks. Override this hook when the block needs its own
         /// notification enum or failure-result payload; complete its result/continuation contract exactly once.
         /// </remarks>
-        protected virtual void OnExecutionPrerequisiteFailure(
+        protected virtual void OnExecutionEnvironmentPrerequisiteFailure(
             BaseRuntime runtime,
-            ExecutionPrerequisiteException exception)
+            ExecutionEnvironmentPrerequisiteException exception)
         {
-            CreateNotification(runtime, BaseFlowBlockNotifications.SetupRequired, exception.NotificationMessage, exception);
+            CreateNotification(runtime, BaseFlowBlockNotifications.SetupRequired, exception);
             CompleteFailedExecution(runtime);
         }
 
-        private bool TryValidateExecutionPrerequisites(BaseRuntime runtime)
+        private bool TryValidateExecutionEnvironmentPrerequisites(BaseRuntime runtime)
         {
             try
             {
-                EvaluateExecutionPrerequisites();
+                EvaluateExecutionEnvironmentPrerequisites();
                 return true;
             }
-            catch (ExecutionPrerequisiteException exception)
+            catch (ExecutionEnvironmentPrerequisiteException exception)
             {
-                OnExecutionPrerequisiteFailure(runtime, exception);
+                OnExecutionEnvironmentPrerequisiteFailure(runtime, exception);
                 return false;
             }
         }
@@ -1457,6 +1433,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         private void InputReference_IterationEnd(BaseRuntime runtime)
         {
+            // Earlier subscribers may produce our inputs through queued work at this same iteration end.
+            EnqueueIterationEndWorkItem(runtime, new ProcessCollectedInputsWorkItem(this));
+        }
+
+        internal void ProcessCollectedInputs(BaseRuntime runtime)
+        {
             var selector = FlowBlockDatasetSelectorFactory.Create(_passedResults.GetResults(runtime), this.InputBehaviorAssignments);
             var results = selector.GetResults();
             FilterInputDatasets(ref results);
@@ -1473,9 +1455,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                 inputBehaviours: BuildInputBehaviourSummary(),
                 iterationContext: IterationContext);
 
+            var workItems = new List<IRuntimeWorkItem>();
             foreach (var dataset in results)
             {
-                EnqueueIterationEndWorkItem(runtime, new InputDatasetWorkItem(
+                workItems.Add(new InputDatasetWorkItem(
                     block: this,
                     dataset: dataset,
                     applyDatasetAndExecute: (rt, blk, dataset) =>
@@ -1493,6 +1476,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
                 ));
             }
 
+            runtime.TaskRunner.EnqueueBatchInExecutionOrder(workItems);
             InputDataset_CurrentlyProcessing = null;
         }
 

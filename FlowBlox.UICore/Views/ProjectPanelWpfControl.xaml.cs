@@ -39,6 +39,9 @@ namespace FlowBlox.UICore.Views
             InitializeComponent();
             ViewModel = new ProjectPanelWpfViewModel();
             DataContext = ViewModel;
+            ViewModel.PropertyChanged += ViewModel_ConnectionStateChanged;
+            ProjectCanvas.LostMouseCapture += ProjectCanvas_LostMouseCapture;
+            CanvasScrollViewer.ScrollChanged += CanvasScrollViewer_ScrollChanged;
             _temporaryConnectionShortcut = new ProjectPanelTemporaryConnectionShortcut(
                 DeactivateTemporaryConnectionShortcut);
             Loaded += ProjectPanelWpfControl_Loaded;
@@ -144,6 +147,12 @@ namespace FlowBlox.UICore.Views
 
         public bool ExecuteEscapeShortcut()
         {
+            if (_isConnectingNodes)
+            {
+                EndConnectionPreview();
+                return true;
+            }
+
             if (_floatingInsertedNode == null)
                 return false;
 
@@ -203,6 +212,8 @@ namespace FlowBlox.UICore.Views
 
         private void ProjectPanelWpfControl_Unloaded(object sender, RoutedEventArgs e)
         {
+            StopEdgeAutoScroll();
+            EndConnectionPreview();
             if (_hostWindow != null)
             {
                 _hostWindow.PreviewKeyDown -= HostWindow_PreviewKeyDown;
@@ -407,9 +418,11 @@ namespace FlowBlox.UICore.Views
 
                 _connectionStartNode = node;
                 _isConnectingNodes = true;
+                ViewModel.BeginConnectionPreview(node);
                 var current = e.GetPosition(ProjectCanvas);
                 UpdateConnectionPreview(node, current);
                 Mouse.Capture(ProjectCanvas);
+                StartEdgeAutoScroll();
                 e.Handled = true;
                 return;
             }
@@ -448,7 +461,7 @@ namespace FlowBlox.UICore.Views
             }
 
             _draggedNode = node;
-            _dragStart = e.GetPosition(this);
+            _dragStart = e.GetPosition(ProjectCanvas);
             _nodeStartX = node.X;
             _nodeStartY = node.Y;
             CaptureDraggedNodeStartPositions(node);
@@ -504,8 +517,19 @@ namespace FlowBlox.UICore.Views
             if (_draggedNode == null || e.LeftButton != MouseButtonState.Pressed)
                 return;
 
-            var current = e.GetPosition(this);
-            var delta = current - _dragStart;
+            var position = e.GetPosition(ProjectCanvas);
+            var delta = position - _dragStart;
+            if (Math.Abs(delta.X) >= SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(delta.Y) >= SystemParameters.MinimumVerticalDragDistance)
+                StartEdgeAutoScroll();
+
+            MoveDraggedNode(position);
+            e.Handled = true;
+        }
+
+        private void MoveDraggedNode(Point position)
+        {
+            var delta = position - _dragStart;
             var snappedPosition = ViewModel.GetSnappedNodePosition(_draggedNode, _nodeStartX + delta.X, _nodeStartY + delta.Y);
             var effectiveDelta = snappedPosition - new Point(_nodeStartX, _nodeStartY);
             _draggedNode.X = snappedPosition.X;
@@ -515,7 +539,6 @@ namespace FlowBlox.UICore.Views
                 _draggedNode,
                 CanvasScrollViewer.ViewportWidth / 2d,
                 CanvasScrollViewer.ViewportHeight / 2d);
-            e.Handled = true;
         }
 
         private void FlowBlock_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -540,6 +563,7 @@ namespace FlowBlox.UICore.Views
             var to = new System.Drawing.Point((int)Math.Round(_draggedNode.X), (int)Math.Round(_draggedNode.Y));
             ViewModel.CommitNodeMove(_draggedNode, from, to, _draggedNodeStartPositions);
 
+            StopEdgeAutoScroll();
             Mouse.Capture(null);
             _draggedNode = null;
             _draggedNodeStartPositions.Clear();
@@ -586,7 +610,19 @@ namespace FlowBlox.UICore.Views
 
         private void ProjectCanvas_DragEnter(object sender, DragEventArgs e)
         {
-            e.Effects = ViewModel.CanCreateFlowBlockFromDrop(e.Data)
+            var canDrop = ViewModel.CanCreateFlowBlockFromDrop(e.Data);
+            if (canDrop)
+            {
+                _externalDragPosition = e.GetPosition(CanvasScrollViewer);
+                _isExternalDragOver = true;
+                StartEdgeAutoScroll();
+            }
+            else
+            {
+                StopEdgeAutoScroll();
+            }
+
+            e.Effects = canDrop
                 ? DragDropEffects.Copy
                 : DragDropEffects.None;
             e.Handled = true;
@@ -594,6 +630,7 @@ namespace FlowBlox.UICore.Views
 
         private void ProjectCanvas_Drop(object sender, DragEventArgs e)
         {
+            StopEdgeAutoScroll();
             if (!ViewModel.CanCreateFlowBlockFromDrop(e.Data))
             {
                 e.Effects = DragDropEffects.None;
@@ -703,6 +740,7 @@ namespace FlowBlox.UICore.Views
             _floatingInsertedStartY = node.Y;
             MoveFloatingInsertedNode(location);
             Mouse.Capture(ProjectCanvas);
+            StartEdgeAutoScroll();
         }
 
         private void MoveFloatingInsertedNode(Point location)
@@ -765,6 +803,7 @@ namespace FlowBlox.UICore.Views
 
         private void EndFloatingInsertedNode()
         {
+            StopEdgeAutoScroll();
             _floatingInsertedNode = null;
             Mouse.Capture(null);
         }
@@ -779,12 +818,31 @@ namespace FlowBlox.UICore.Views
 
         private void EndConnectionPreview()
         {
+            StopEdgeAutoScroll();
             _isConnectingNodes = false;
             _connectionStartNode = null;
+            ViewModel.EndConnectionPreview();
+            ProjectCanvas.Cursor = null;
             ConnectionPreviewLine.Visibility = Visibility.Collapsed;
             ConnectionPreviewStartDot.Visibility = Visibility.Collapsed;
             ConnectionPreviewArrowHead.Visibility = Visibility.Collapsed;
             Mouse.Capture(null);
+        }
+
+        private void ProjectCanvas_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            if (!ProjectCanvas.IsMouseCaptureWithin)
+                StopEdgeAutoScroll();
+
+            if (_isConnectingNodes && Mouse.Captured != ProjectCanvas)
+                EndConnectionPreview();
+        }
+
+        private void ViewModel_ConnectionStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (_isConnectingNodes && (e.PropertyName == nameof(ViewModel.IsConnectionMode) ||
+                (e.PropertyName == nameof(ViewModel.IsProjectEditingReadOnly) && ViewModel.IsProjectEditingReadOnly)))
+                EndConnectionPreview();
         }
 
         private void UpdateConnectionPreview(FlowBlockNodeViewModel startNode, Point rawEnd)
@@ -794,7 +852,18 @@ namespace FlowBlox.UICore.Views
 
             var startCenter = GetNodeCenter(startNode);
             var endNode = ViewModel.GetNodeAt(rawEnd);
-            var end = endNode != null && ViewModel.CanPreviewConnection(startNode, endNode)
+            var validTarget = endNode != null && ViewModel.CanPreviewConnection(startNode, endNode);
+            var blockedTarget = endNode != null && !validTarget;
+            ProjectCanvas.Cursor = blockedTarget ? Cursors.No : Cursors.Cross;
+            Brush previewBrush = ViewModel.IsIterationContextConnectionMode
+                ? Brushes.MediumPurple
+                : Brushes.DeepSkyBlue;
+            if (blockedTarget)
+                previewBrush = Brushes.IndianRed;
+            ConnectionPreviewLine.Stroke = previewBrush;
+            ConnectionPreviewStartDot.Fill = previewBrush;
+            ConnectionPreviewArrowHead.Fill = previewBrush;
+            var end = validTarget
                 ? ArrowGeometryHelper.GetEdgePoint(GetNodeBounds(endNode), GetNodeCenter(endNode), startCenter)
                 : rawEnd;
             var start = ArrowGeometryHelper.GetEdgePoint(GetNodeBounds(startNode), startCenter, end);

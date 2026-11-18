@@ -68,6 +68,17 @@ namespace FlowBlox.AIAssistant.Tools
                 if (!allowBatch && handler is BatchExecuteToolRequestsHandler)
                     return Task.FromResult(ToolHandlerUtilities.Fail("Nested batch not supported."));
 
+                if (request.Arguments?["arguments"] is JObject
+                    && handler.Definition.ArgumentsSchema.Property("arguments", StringComparison.OrdinalIgnoreCase) == null)
+                {
+                    return Task.FromResult(ToolHandlerUtilities.Fail(
+                        $"Invalid argument structure for tool '{resolvedName}': an extra 'arguments' object was found inside the tool arguments. " +
+                        "This tool does not define a parameter named 'arguments'. " +
+                        "Remove the extra wrapper and pass its parameters directly in toolCalls[i].arguments. " +
+                        "For example, use {\"arguments\":{\"fieldChangeId\":2}} instead of {\"arguments\":{\"arguments\":{\"fieldChangeId\":2}}}. " +
+                        "Keep the outer 'arguments' object of the tool call. The tool was not executed. Retry with the corrected structure."));
+                }
+
                 // All execution policies must see the canonical name, including approval handling.
                 request = new ToolRequest
                 {

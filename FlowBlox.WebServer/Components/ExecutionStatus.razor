@@ -1,0 +1,3 @@
+@if (Entry.IsRunning) { <span class="loader" role="status" aria-label="@T["Running"]"></span> }
+else { <span role="img" aria-label="@(Entry.Response?.Success == true ? T["Succeeded"] : T["Failed"])" class="status @(Entry.Response?.Success == true ? "success" : "failure")" title="@(Entry.Response?.Success == true ? T["Succeeded"] : T["Failed"])">@(Entry.Response?.Success == true ? "✓" : "×")</span> }
+@code { [Parameter, EditorRequired] public ProjectExecutionEntry Entry { get; set; } = default!; }

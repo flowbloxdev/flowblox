@@ -7,7 +7,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         public string FilePath { get; init; } = string.Empty;
         public string SourceUrl { get; init; } = string.Empty;
         public string ErrorMessage { get; init; } = string.Empty;
-        public ExecutionPrerequisiteException? PrerequisiteFailure { get; init; }
+        public ExecutionEnvironmentPrerequisiteException? ExecutionEnvironmentPrerequisiteFailure { get; init; }
         public MediaDownloadFailureReason FailureReason { get; init; }
     }
 }

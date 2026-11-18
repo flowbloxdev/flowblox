@@ -93,21 +93,9 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-            <Grid VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <iconPacks:PackIconMaterial Kind="InformationOutline"
-                                            Margin="0,0,8,0"
-                                            VerticalAlignment="Top"
-                                            Style="{StaticResource FlowBlox.EmptyStateIconStyle}" />
-                <TextBlock Grid.Column="1"
-                           TextAlignment="Left"
-                           Text="{x:Static resources:ProblemsView.EmptyState_NoProblemTraces}"
-                           Style="{StaticResource FlowBlox.EmptyStateTextStyle}" />
-            </Grid>
+            <ContentControl VerticalAlignment="Top"
+                Content="{x:Static resources:ProblemsView.EmptyState_NoProblemTraces}"
+                Style="{StaticResource FlowBlox.EmptyState}" />
         </Border>
     </Grid>
 </UserControl>

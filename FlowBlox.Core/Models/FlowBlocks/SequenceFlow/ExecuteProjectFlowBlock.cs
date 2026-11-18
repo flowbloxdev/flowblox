@@ -150,6 +150,9 @@ namespace FlowBlox.Core.Models.FlowBlocks
                 if (response == null)
                     throw new InvalidOperationException("Runner response could not be deserialized.");
 
+                foreach (var failure in response.ExecutionEnvironmentPrerequisiteFailures ?? new())
+                    runtime.NotifyExecutionEnvironmentPrerequisiteFailure(failure);
+
                 if (!response.Success)
                 {
                     runtime.Report($"Child project execution failed (ExitCode={response.ExitCode}).", FlowBloxLogLevel.Error);

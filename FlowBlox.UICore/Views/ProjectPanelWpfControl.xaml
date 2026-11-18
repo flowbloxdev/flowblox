@@ -242,6 +242,14 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <Style x:Key="ProjectPanel.ConnectionContent" TargetType="{x:Type Grid}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsConnectionTargetBlocked}" Value="True">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -336,12 +344,21 @@
                 </StackPanel>
             </ToggleButton>
             <ToggleButton Command="{Binding ConnectionModeCommand}"
-                          IsChecked="{Binding IsConnectionMode, Mode=OneWay}"
+                          IsChecked="{Binding IsFlowConnectionMode, Mode=OneWay}"
                           Style="{StaticResource ProjectPanel.ToolbarToggleButton}"
                           ToolTip="{x:Static resources:ProjectPanel.Toolbar_Connect}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="VectorLine" Width="14" Height="14"/>
                     <TextBlock Text="{x:Static resources:ProjectPanel.Toolbar_Connect}" Margin="5,0,0,0"/>
+                </StackPanel>
+            </ToggleButton>
+            <ToggleButton Command="{Binding IterationContextConnectionModeCommand}"
+                          IsChecked="{Binding IsIterationContextConnectionMode, Mode=OneWay}"
+                          Style="{StaticResource ProjectPanel.ToolbarToggleButton}"
+                          ToolTip="{x:Static resources:ProjectPanel.Toolbar_ConnectIterationContext_Tooltip}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="VectorLink" Width="14" Height="14" Foreground="#BA9CE8" />
+                    <TextBlock Text="{x:Static resources:ProjectPanel.Toolbar_ConnectIterationContext}" Margin="5,0,0,0" />
                 </StackPanel>
             </ToggleButton>
             <Separator/>
@@ -377,6 +394,7 @@
                   AllowDrop="True"
                   DragEnter="ProjectCanvas_DragEnter"
                   DragOver="ProjectCanvas_DragEnter"
+                  DragLeave="ProjectCanvas_DragLeave"
                   Drop="ProjectCanvas_Drop"
                   MouseLeftButtonDown="ProjectCanvas_MouseLeftButtonDown"
                   MouseMove="ProjectCanvas_MouseMove"
@@ -566,7 +584,7 @@
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <Grid>
-                                    <Grid ClipToBounds="True"
+                                    <Grid ClipToBounds="True" Style="{StaticResource ProjectPanel.ConnectionContent}"
                                           Visibility="{Binding IsNote, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="26"/>
@@ -749,7 +767,7 @@
                                             </Grid>
                                         </Border>
                                     </Grid>
-                                    <Grid ClipToBounds="True"
+                                    <Grid ClipToBounds="True" Style="{StaticResource ProjectPanel.ConnectionContent}"
                                           Visibility="{Binding IsNote, Converter={StaticResource BoolToVisibilityConverter}}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="26"/>
@@ -801,6 +819,16 @@
                                                      Cursor="IBeam"/>
                                         </Border>
                                     </Grid>
+                                    <Border CornerRadius="5"
+                                            Background="#24D76C6C"
+                                            BorderBrush="#99D98585"
+                                            BorderThickness="1"
+                                            IsHitTestVisible="False"
+                                            Visibility="{Binding IsConnectionTargetBlocked, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <iconPacks:PackIconMaterial Kind="Cancel" Width="30" Height="30"
+                                                                   Foreground="#E8B1B1" Opacity="0.85"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
                                 </Grid>
                             </Border>
                                 <projectPanelViews:IterationProgressBadge/>

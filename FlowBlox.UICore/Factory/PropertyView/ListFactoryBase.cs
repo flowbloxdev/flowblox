@@ -76,40 +76,15 @@ namespace FlowBlox.UICore.Factory.PropertyView
 
         protected FrameworkElement CreateEmptyMessage(IList list)
         {
-            var emptyMessage = new System.Windows.Controls.Grid
+            var emptyMessage = new ContentControl
             {
+                Content = FlowBloxResourceUtil.GetLocalizedString("NoDataAvailable_Text", typeof(ListFactoryBaseResources)),
                 Visibility = list.Count == 0 ? Visibility.Visible : Visibility.Collapsed,
                 Margin = new Thickness(20),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            emptyMessage.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            emptyMessage.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-            var icon = new PackIconMaterial
-            {
-                Kind = PackIconMaterialKind.AlertCircleOutline,
-                Width = 16,
-                Height = 16,
-                Foreground = Brushes.Gray,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            System.Windows.Controls.Grid.SetColumn(icon, 0);
-
-            var text = new TextBlock
-            {
-                Text = FlowBloxResourceUtil.GetLocalizedString("NoDataAvailable_Text", typeof(ListFactoryBaseResources)),
-                FontSize = 14,
-                Foreground = Brushes.Gray,
-                Margin = new Thickness(10, 0, 0, 0),
-                VerticalAlignment = VerticalAlignment.Center,
-                TextWrapping = TextWrapping.Wrap
-            };
-            System.Windows.Controls.Grid.SetColumn(text, 1);
-
-            emptyMessage.Children.Add(icon);
-            emptyMessage.Children.Add(text);
+            emptyMessage.SetResourceReference(FrameworkElement.StyleProperty, "FlowBlox.EmptyState");
 
             return emptyMessage;
         }

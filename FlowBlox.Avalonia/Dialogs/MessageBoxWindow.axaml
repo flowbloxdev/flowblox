@@ -3,7 +3,7 @@
         x:Class="FlowBlox.AvaloniaDesktop.Dialogs.MessageBoxWindow"
         Width="350" MinWidth="350" MaxWidth="700" MaxHeight="650"
         SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
-        WindowStartupLocation="CenterOwner" Topmost="True"
+        WindowStartupLocation="CenterOwner"
         Background="Transparent" TransparencyLevelHint="Transparent"
         Foreground="White" WindowDecorations="None">
   <Border BorderBrush="#0097FB" BorderThickness="1" CornerRadius="8" Background="#2D2D30">

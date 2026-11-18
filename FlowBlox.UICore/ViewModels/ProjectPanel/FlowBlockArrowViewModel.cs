@@ -23,7 +23,16 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         public string Kind { get; }
         public double Offset { get; }
         public string Label { get; }
-        public bool CanRemove => Kind == "invoke" || Kind == "recursive";
+        public bool CanRemove
+        {
+            get
+            {
+                return Kind == "invoke" || 
+                       Kind == "recursive" || 
+                       (Kind == "iteration" && From.InternalFlowBlock.AssociatedIterationContext != null);
+            }
+        }
+
         public bool IsSelected
         {
             get => _isSelected;

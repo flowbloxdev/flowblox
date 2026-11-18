@@ -88,11 +88,8 @@
 
         <!-- Special explanations -->
         <Expander DockPanel.Dock="Top"
-                  BorderBrush="{DynamicResource FlowBlox.Brush.Border}"
-                  mah:HeaderedControlHelper.HeaderBackground="{DynamicResource FlowBlox.Brush.InformationHeader}"
-                  mah:HeaderedControlHelper.HeaderForeground="{DynamicResource FlowBlox.Brush.InformationHeaderText}"
+                  Style="{StaticResource FlowBlox.InformationExpander}"
                   Header="{x:Static resources:PropertyWindow.AdditionalInformation}"
-                  IsExpanded="False"
                   Visibility="{Binding SpecialExplanations.Count, Converter={StaticResource CountToVisibilityConverter}}">
             <ScrollViewer MaxHeight="250"
                           HorizontalScrollBarVisibility="Disabled"

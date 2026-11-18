@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.OptionsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -213,16 +213,8 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Padding="18">
-                <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial Kind="InformationOutline"
-                                                Width="22"
-                                                Height="22"
-                                                Margin="0,0,8,0"
-                                                Foreground="#5C6B73"/>
-                    <TextBlock Text="{x:Static resources:OptionsWindow.EmptyState}"
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
+                <ContentControl Content="{x:Static resources:OptionsWindow.EmptyState}"
+                    Style="{StaticResource FlowBlox.EmptyState}" />
             </Border>
 
             <Grid Visibility="{Binding IsOptionSelected, Converter={StaticResource BoolToVisibilityConverter}}">

@@ -125,22 +125,21 @@ namespace FlowBlox.Core.Runner
                     ExternalDebuggingInformation = MapDebuggingInformation(request.ExternalDebuggingInformation)
                 };
 
-                response.LogfilePath = runtime.GetLogfilePath();
-                Report($"Logfile path: {response.LogfilePath}");
+                runtime.ExecutionEnvironmentPrerequisiteFailed += (_, failure) => AddExecutionEnvironmentPrerequisiteFailure(response, failure);
 
                 // Forward runtime logs and optionally abort on warnings/errors.
                 string abortReason = null;
-                string prerequisiteFailureMessage = null;
+                string environmentPrerequisiteFailureMessage = null;
 
                 runtime.LogEntryCreated += (rt, msg, level, exception) =>
                 {
-                    var prerequisiteFailure = exception as ExecutionPrerequisiteException;
+                    var environmentPrerequisiteFailure = exception as ExecutionEnvironmentPrerequisiteException;
                     var abortOnError = request.AbortOnError && level == FlowBloxLogLevel.Error;
                     var abortOnWarning = request.AbortOnWarning && level == FlowBloxLogLevel.Warning;
                     var isAborting = rt.Aborted || abortOnError || abortOnWarning;
 
-                    if (prerequisiteFailure != null && isAborting)
-                        prerequisiteFailureMessage ??= prerequisiteFailure.Message;
+                    if (environmentPrerequisiteFailure != null && isAborting)
+                        environmentPrerequisiteFailureMessage ??= environmentPrerequisiteFailure.Message;
 
                     if (level == FlowBloxLogLevel.Warning)
                     {
@@ -198,7 +197,7 @@ namespace FlowBlox.Core.Runner
                     {
                         response.Success = false;
                         response.ExitCode = RunnerExitCodes.Aborted;
-                        response.ErrorMessage = prerequisiteFailureMessage ?? abortReason ?? runtime.CancellationContext?.Reason ?? "Execution aborted.";
+                        response.ErrorMessage = environmentPrerequisiteFailureMessage ?? abortReason ?? runtime.CancellationContext?.Reason ?? "Execution aborted.";
                         Report(response.ErrorMessage, FlowBloxLogLevel.Warning);
                     }
 
@@ -213,6 +212,9 @@ namespace FlowBlox.Core.Runner
             }
             catch (InvalidOperationException ex)
             {
+                foreach (var failure in ExecutionEnvironmentPrerequisiteFailure.FromException(ex))
+                    AddExecutionEnvironmentPrerequisiteFailure(response, failure);
+
                 response.Success = false;
                 response.ExitCode = RunnerExitCodes.ValidationError;
                 response.ErrorMessage = ex.Message;
@@ -223,6 +225,9 @@ namespace FlowBlox.Core.Runner
             }
             catch (Exception ex)
             {
+                foreach (var failure in ExecutionEnvironmentPrerequisiteFailure.FromException(ex))
+                    AddExecutionEnvironmentPrerequisiteFailure(response, failure);
+
                 response.Success = false;
                 response.ExitCode = RunnerExitCodes.RuntimeError;
                 response.ErrorMessage = ex.Message;
@@ -235,7 +240,23 @@ namespace FlowBlox.Core.Runner
             {
                 timeoutCts?.Cancel();
                 timeoutCts?.Dispose();
+                // The runtime logger is created lazily by the first Report call.
+                response.LogfilePath = runtime?.GetLogfilePath();
                 response.FinishedUtc = DateTime.UtcNow;
+            }
+        }
+
+        private static void AddExecutionEnvironmentPrerequisiteFailure(RunnerResponse response, ExecutionEnvironmentPrerequisiteFailure failure)
+        {
+            lock (response.ExecutionEnvironmentPrerequisiteFailures)
+            {
+                if (!response.ExecutionEnvironmentPrerequisiteFailures.Any(existing =>
+                    existing.QuickStartTargetTypeName == failure.QuickStartTargetTypeName &&
+                    existing.QuickStartTargetAssemblyName == failure.QuickStartTargetAssemblyName &&
+                    existing.ComponentName == failure.ComponentName))
+                {
+                    response.ExecutionEnvironmentPrerequisiteFailures.Add(failure);
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.FlowBloxTaskManagementWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -365,25 +365,11 @@
                                                TextWrapping="Wrap"/>
                                 </Grid>
 
-                                <Grid Visibility="{Binding ShowInputParameterEmptyMessage, Converter={StaticResource BoolToVisibilityConverter}}"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <iconPacks:PackIconMaterial Kind="AlertCircleOutline"
-                                                                Width="16"
-                                                                Height="16"
-                                                                Foreground="Gray"
-                                                                VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1"
-                                               Text="{x:Static resources:FlowBloxTaskManagementWindow.Message_NoInputParameters}"
-                                               Foreground="Gray"
-                                               FontSize="14"
-                                               Margin="10,0,0,0"
-                                               TextWrapping="Wrap"/>
-                                </Grid>
+                                <ContentControl Visibility="{Binding ShowInputParameterEmptyMessage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{x:Static resources:FlowBloxTaskManagementWindow.Message_NoInputParameters}"
+                                    Style="{StaticResource FlowBlox.EmptyState}" />
 
                                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                                               Visibility="{Binding ShowInputParameterList, Converter={StaticResource BoolToVisibilityConverter}}">

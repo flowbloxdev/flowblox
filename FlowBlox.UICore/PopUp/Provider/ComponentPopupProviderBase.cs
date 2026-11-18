@@ -28,7 +28,7 @@ namespace FlowBlox.UICore.PopUp.Provider
         /// </summary>
         public virtual bool IsQuickStart => PopupEvent == ComponentPopupEvent.Open;
 
-        public virtual string QuickStartTitle => ExecutionPrerequisites.GetQuickStartName(typeof(TTarget), WindowTitle);
+        public virtual string QuickStartTitle => ExecutionEnvironmentPrerequisites.GetQuickStartName(typeof(TTarget), WindowTitle);
 
         /// <summary>
         /// Manual guidance is independent of a configured component and does not change onboarding state.

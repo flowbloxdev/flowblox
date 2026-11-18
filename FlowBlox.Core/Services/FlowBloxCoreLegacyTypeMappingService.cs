@@ -9,6 +9,7 @@ using FlowBlox.Core.Models.FlowBlocks.Web.InternalWebRequest;
 using FlowBlox.Core.Models.FlowBlocks.IO;
 using FlowBlox.Core.Models.FlowBlocks.Json;
 using FlowBlox.Core.Models.FlowBlocks.Logic;
+using FlowBlox.Core.Models.FlowBlocks.Web.WebBrowser;
 
 namespace FlowBlox.Core.Services
 {
@@ -18,6 +19,11 @@ namespace FlowBlox.Core.Services
         {
             return
             [
+                new FlowBloxLegacyTypeMapping(
+                    typeof(WebDownloadDestinations),
+                    [
+                        "FlowBlox.Core.Models.FlowBlocks.WebBrowser.WebDownloadDestinations, FlowBlox.Core"
+                    ]),
                 new FlowBloxLegacyTypeMapping(
                     typeof(FieldCopyFlowBlock),
                     [

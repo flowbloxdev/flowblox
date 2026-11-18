@@ -81,6 +81,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clear ähnelt.
+        /// </summary>
+        public static string ClearInputs
+        {
+            get
+            {
+                return ResourceManager.GetString("ClearInputs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Restore the project defaults and remove option overrides. Saved executions remain in the history. ähnelt.
+        /// </summary>
+        public static string ClearInputsTooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ClearInputsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
         /// </summary>
         public static string Close
@@ -191,6 +213,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Execution history ähnelt.
+        /// </summary>
+        public static string History
+        {
+            get
+            {
+                return ResourceManager.GetString("History", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Execution on {0:g} ähnelt.
+        /// </summary>
+        public static string HistoryExecution
+        {
+            get
+            {
+                return ResourceManager.GetString("HistoryExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open input directory ähnelt.
         /// </summary>
         public static string InputDirectory
@@ -231,6 +275,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("LogUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No option overrides have been defined. ähnelt.
+        /// </summary>
+        public static string NoOptionOverrides
+        {
+            get
+            {
+                return ResourceManager.GetString("NoOptionOverrides", resourceCulture);
             }
         }
         
@@ -356,7 +411,29 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die This execution has started. Its configuration is read-only. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Process ID: {0} ähnelt.
+        /// </summary>
+        public static string ProcessId
+        {
+            get
+            {
+                return ResourceManager.GetString("ProcessId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Project notes ähnelt.
+        /// </summary>
+        public static string ProjectNotice
+        {
+            get
+            {
+                return ResourceManager.GetString("ProjectNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The execution configuration can no longer be changed. ähnelt.
         /// </summary>
         public static string Readonly
         {
@@ -440,6 +517,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Succeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Terminate process ähnelt.
+        /// </summary>
+        public static string TerminateProcess
+        {
+            get
+            {
+                return ResourceManager.GetString("TerminateProcess", resourceCulture);
             }
         }
         

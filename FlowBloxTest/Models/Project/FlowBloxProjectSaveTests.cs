@@ -235,6 +235,71 @@ namespace FlowBloxTest.Models.Project
             Assert.AreEqual(0, eventCount);
         }
 
+        [TestMethod]
+        [DataRow(false)]
+        [DataRow(true)]
+        public async Task SaveToProjectSpace_LocalProject_PersistsUploadedIdentity(bool saveAs)
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "FlowBloxTest", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var file = Path.Combine(directory, "project.fbprj");
+                var project = new FlowBloxProject { ProjectName = "Local project" };
+                project.Save(file);
+                var originalGuid = project.ProjectGuid;
+                project.ProjectDescription = "Updated before upload";
+                var webApi = new StubWebApiService(HttpStatusCode.OK);
+
+                var response = await project.SaveToProjectSpaceAsync(
+                    "new-project-space-guid", "token", webApi, generateNewProjectGuid: saveAs);
+
+                Assert.IsTrue(response.Success);
+                var reloaded = FlowBloxProject.FromFile(file);
+                Assert.AreEqual("new-project-space-guid", reloaded.ProjectSpaceGuid);
+                Assert.AreEqual(webApi.BaseUrl, reloaded.ProjectSpaceEndpointUri);
+                Assert.AreEqual("Updated before upload", reloaded.ProjectDescription);
+                Assert.AreEqual(GetSerializedProjectGuid(webApi.LastRequestContent), reloaded.ProjectGuid);
+                Assert.AreEqual(saveAs, originalGuid != reloaded.ProjectGuid);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
+        [TestMethod]
+        public async Task SaveToProjectSpace_FailedUpload_DoesNotWriteLocalProjectOrSidecars()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "FlowBloxTest", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var file = Path.Combine(directory, "project.fbprj");
+                var project = new FlowBloxProject
+                {
+                    ProjectName = "Local project",
+                    ProjectSpaceGuid = "existing-project-space-guid"
+                };
+                project.Save(file);
+                var originalFiles = Directory.GetFiles(directory)
+                    .ToDictionary(path => path, File.ReadAllBytes);
+                project.ProjectDescription = "Unsaved changes";
+
+                var response = await project.SaveToProjectSpaceAsync(
+                    "new-project-space-guid", "token", new StubWebApiService(HttpStatusCode.BadRequest),
+                    generateNewProjectGuid: true);
+
+                Assert.IsFalse(response.Success);
+                foreach (var original in originalFiles)
+                    CollectionAssert.AreEqual(original.Value, File.ReadAllBytes(original.Key));
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
         private static Guid GetSerializedProjectGuid(string requestContent)
         {
             var contentBase64 = JObject.Parse(requestContent).Value<string>("ContentBase64");

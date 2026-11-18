@@ -79,7 +79,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Button_Back", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create new project ähnelt.
         /// </summary>
@@ -227,7 +227,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Hint_ProjectNotFound", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Created at ähnelt.
         /// </summary>
@@ -291,6 +291,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Label_Visibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Our cloud API is provided free of charge, so uploads may occasionally take a little longer. Your security comes first: all uploaded files are scanned for viruses. We also use a free scanning service, which can add some waiting time. Thank you for your patience! ähnelt.
+        /// </summary>
+        public static string Loading_FreeServiceNotice
+        {
+            get
+            {
+                return ResourceManager.GetString("Loading_FreeServiceNotice", resourceCulture);
             }
         }
         

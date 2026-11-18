@@ -17,6 +17,7 @@ using FlowBlox.UICore.Utilities;
 using FlowBlox.UICore.Views;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
+using SkiaSharp;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
@@ -38,6 +39,50 @@ namespace FlowBlox.UICore.Factory.PropertyView
         protected readonly object _parent;
         private IDialogService _dialogService;
         protected FrameworkElement _emptyMessage;
+
+        private static GridViewColumn CreateImageColumn(PropertyInfo property, DisplayAttribute display)
+        {
+            var headerText = FlowBloxResourceUtil.GetDisplayName(display);
+            var description = FlowBloxResourceUtil.GetDescription(display);
+            var attribute = property.GetCustomAttribute<FlowBloxImageColumnAttribute>();
+            object header = headerText;
+            if (attribute != null && attribute.IconDefinition.TryCreateSKImage(out var headerIcon))
+            {
+                header = new Image
+                {
+                    Source = SkiaWpfImageHelper.ConvertToImageSource(headerIcon),
+                    Width = 16,
+                    Height = 16
+                };
+            }
+
+            var image = new FrameworkElementFactory(typeof(Image));
+            image.SetValue(Image.WidthProperty, 16.0);
+            image.SetValue(Image.HeightProperty, 16.0);
+            image.SetValue(Image.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            image.SetValue(Image.VerticalAlignmentProperty, VerticalAlignment.Center);
+            image.SetBinding(Image.SourceProperty, new Binding(property.Name) { Converter = Icon16Converter });
+            if (!string.IsNullOrWhiteSpace(attribute?.ToolTipMemberName))
+                image.SetBinding(Image.ToolTipProperty, new Binding(attribute.ToolTipMemberName));
+            else
+                image.SetValue(Image.ToolTipProperty, description);
+
+            var columnHeader = new GridViewColumnHeader
+            {
+                Content = header,
+                ToolTip = description,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(0)
+            };
+            System.Windows.Automation.AutomationProperties.SetName(columnHeader, headerText);
+            return new GridViewColumn
+            {
+                Header = columnHeader,
+                Width = 32,
+                CellTemplate = new DataTemplate { VisualTree = image }
+            };
+        }
 
         public ListViewFactory(Window window, PropertyInfo property, object target, bool readOnly, object parent = null)
             : base(window, property, target, readOnly)
@@ -87,12 +132,18 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 CellTemplate = iconTemplate
             });
 
-            var listViewProperties = _listItemType
-                .GetProperties()
-                .Where(x => _listViewAttribute.ColumnMemberNames.Contains(x.Name));
+            var listViewProperties = _listViewAttribute.ColumnMemberNames
+                .Select(name => _listItemType.GetProperty(name))
+                .Where(property => property?.GetCustomAttribute<DisplayAttribute>() != null);
 
             foreach (var prop in listViewProperties)
             {
+                if (prop.PropertyType == typeof(SKImage))
+                {
+                    gridView.Columns.Add(CreateImageColumn(prop, prop.GetCustomAttribute<DisplayAttribute>()));
+                    continue;
+                }
+
                 var header = prop.GetCustomAttribute<DisplayAttribute>() is DisplayAttribute displayAttr
                     ? FlowBloxResourceUtil.GetDisplayName(displayAttr)
                     : prop.Name;
@@ -160,7 +211,9 @@ namespace FlowBlox.UICore.Factory.PropertyView
             // RelayCommands with central enable logic
             var addCommand = new RelayCommand(ExecuteCreate, CanAdd);
             var editCommand = new RelayCommand(() => ExecuteEdit(listView.SelectedItem),
-                () => _associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true && CanEdit(listView.SelectedItem));
+                () => ShouldShowEditButton
+                    && _associationAttribute?.Operations.HasFlag(UIOperations.Edit) == true
+                    && CanEdit(listView.SelectedItem));
             listView.MouseDoubleClick += (s, e) =>
             {
                 if (e.ChangedButton != MouseButton.Left)

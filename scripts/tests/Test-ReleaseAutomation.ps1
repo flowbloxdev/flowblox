@@ -36,7 +36,7 @@ Copy-Item -LiteralPath (Join-Path $scriptsDirectory 'update-version.ps1') -Desti
 
 $projects = @(
     'FlowBlox.Avalonia', 'FlowBlox.AIAssistant', 'FlowBlox.CLI', 'FlowBlox.Core',
-    'FlowBlox.RunnerHost', 'FlowBlox.WorkerService', 'FlowBlox.UICore', 'FlowBlox.SequenceDetection'
+    'FlowBlox.RunnerHost', 'FlowBlox.WorkerService', 'FlowBlox.WebServer', 'FlowBlox.UICore', 'FlowBlox.SequenceDetection'
 )
 foreach ($project in $projects) {
     $projectDirectory = Join-Path $fixture $project

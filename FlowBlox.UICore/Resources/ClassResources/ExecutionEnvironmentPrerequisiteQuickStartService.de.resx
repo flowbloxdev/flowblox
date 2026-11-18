@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="SetupTitle" xml:space="preserve"><value>Ausführungsumgebung einrichten</value></data>
+  <data name="SetupQuestion" xml:space="preserve"><value>Die Komponente „{0}“ konnte nicht ausgeführt werden, da eine Voraussetzung der Ausführungsumgebung nicht erfüllt ist.
+
+Möchten Sie die Anleitung zur Einrichtung öffnen?</value></data>
+</root>

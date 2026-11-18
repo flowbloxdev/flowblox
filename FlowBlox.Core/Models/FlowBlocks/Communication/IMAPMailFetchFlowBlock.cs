@@ -6,7 +6,9 @@ using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Util.Communication;
 using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Validations;
 using MailKit;
 using MailKit.Net.Imap;
 using MailKit.Search;
@@ -58,20 +60,43 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_SearchText", Description = "IMAPMailFetchFlowBlock_SearchText_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 3)]
+        [FlowBloxUI(ReadOnlyMethod = nameof(IsSearchTextReadOnly))]
+        [DependsOnProperty(MemberName = nameof(SearchExpression))]
+        [CustomValidation(typeof(ImapSearchValidator), nameof(ImapSearchValidator.Validate))]
         public string SearchText { get; set; }
 
-        [Range(1, 5000)]
-        [Display(Name = "IMAPMailFetchFlowBlock_MaxResults", Description = "IMAPMailFetchFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 4)]
-        public int MaxResults { get; set; } = 100;
+        [Display(Name = "IMAPMailFetchFlowBlock_SearchExpression", Description = "IMAPMailFetchFlowBlock_SearchExpression_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 4)]
+        [FlowBloxUI(ReadOnlyMethod = nameof(IsSearchExpressionReadOnly))]
+        [DependsOnProperty(MemberName = nameof(SearchText))]
+        [FlowBloxComboBox(DropDownMode = DropDownMode.Suggestion)]
+        [FlowBloxItemsSource(Method = nameof(GetSearchExpressionSuggestions))]
+        [CustomValidation(typeof(ImapSearchValidator), nameof(ImapSearchValidator.Validate))]
+        public string SearchExpression { get; set; }
 
-        [Display(Name = "IMAPMailFetchFlowBlock_NewestFirst", Description = "IMAPMailFetchFlowBlock_NewestFirst_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 5)]
-        public bool NewestFirst { get; set; } = true;
+        public bool IsSearchTextReadOnly() => !string.IsNullOrWhiteSpace(SearchExpression);
+        public bool IsSearchExpressionReadOnly() => !string.IsNullOrWhiteSpace(SearchText);
+
+        public IEnumerable<string> GetSearchExpressionSuggestions() =>
+        [
+            "OR TEXT \"invoice\" TEXT \"receipt\"",
+            "OR TEXT \"invoice\" (OR TEXT \"receipt\" TEXT \"payment\")",
+            "SUBJECT \"invoice\"",
+            "FROM \"sender@example.com\"",
+            "TEXT \"receipt\" NOT SUBJECT \"newsletter\""
+        ];
+
+        [Range(1, 5000)]
+        [Display(Name = "IMAPMailFetchFlowBlock_MaxResults", Description = "IMAPMailFetchFlowBlock_MaxResults_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Filter", Order = 5)]
+        public int MaxResults { get; set; } = 100;
 
         [Display(Name = "IMAPMailFetchFlowBlock_MarkAsRead", Description = "IMAPMailFetchFlowBlock_MarkAsRead_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 0)]
         public bool MarkAsRead { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_DeleteAfterFetch", Description = "IMAPMailFetchFlowBlock_DeleteAfterFetch_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 1)]
         public bool DeleteAfterFetch { get; set; }
+
+        [Display(Name = "IMAPMailFetchFlowBlock_ExcludeQuotedHistory", Description = "IMAPMailFetchFlowBlock_ExcludeQuotedHistory_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "IMAPMailFetchFlowBlock_Groups_Behavior", Order = 2)]
+        public bool ExcludeQuotedHistory { get; set; }
 
         [Display(Name = "IMAPMailFetchFlowBlock_ResultFields", ResourceType = typeof(FlowBloxTexts), Order = 20)]
         [FlowBloxDataGrid]
@@ -113,8 +138,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
             properties.Add(nameof(StartDate));
             properties.Add(nameof(EndDate));
             properties.Add(nameof(SearchText));
+            properties.Add(nameof(SearchExpression));
             properties.Add(nameof(MaxResults));
-            properties.Add(nameof(NewestFirst));
             properties.Add(nameof(MarkAsRead));
             properties.Add(nameof(DeleteAfterFetch));
             return properties;
@@ -136,6 +161,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
             CreateDestinationResultField(ResultFields, IMAPMailFetchDestinations.Message, FieldTypes.Text);
             CreateDestinationResultField(ResultFields, IMAPMailFetchDestinations.From, FieldTypes.Text);
             CreateDestinationResultField(ResultFields, IMAPMailFetchDestinations.Date, FieldTypes.Text);
+            CreateDestinationResultField(ResultFields, IMAPMailFetchDestinations.UniqueId, FieldTypes.Text);
+            CreateDestinationResultField(ResultFields, IMAPMailFetchDestinations.UidValidity, FieldTypes.Text);
             CreateDestinationResultField(ResultFields, IMAPMailFetchDestinations.IsRead, FieldTypes.Boolean);
         }
 
@@ -154,6 +181,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 var password = this.Resolve(owner => owner.Password);
                 var folderName = (Folder == null ? "INBOX" : this.Resolve(x => x.Folder)).Trim();
                 var searchText = this.Resolve(owner => owner.SearchText).Trim();
+                var searchExpression = this.Resolve(owner => owner.SearchExpression).Trim();
                 var startDate = this.Resolve(x => x.StartDate)?.Date;
                 var endDate = this.Resolve(x => x.EndDate)?.Date;
                 if (startDate.HasValue && endDate.HasValue && endDate.Value < startDate.Value)
@@ -203,13 +231,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 folder.Open(canWrite ? FolderAccess.ReadWrite : FolderAccess.ReadOnly, cancellationToken);
 
                 var query = BuildSearchQuery(startDate, endDate, searchText, this.Resolve(x => x.OnlyUnread));
-                var uids = folder.Search(query, cancellationToken);
+                var uids = string.IsNullOrWhiteSpace(searchText) && !string.IsNullOrWhiteSpace(searchExpression)
+                    ? ((IImapFolder)folder).Search(
+                        BuildRawSearchQuery(startDate, endDate, searchExpression, this.Resolve(x => x.OnlyUnread)),
+                        cancellationToken).UniqueIds
+                    : folder.Search(query, cancellationToken);
 
-                var orderedUids = (this.Resolve(x => x.NewestFirst) ? uids.Reverse() : uids).ToList();
-                if (this.Resolve(x => x.MaxResults) > 0)
-                    orderedUids = orderedUids.Take(this.Resolve(x => x.MaxResults)).ToList();
-
-                if (orderedUids.Count == 0)
+                if (uids.Count == 0)
                 {
                     CreateNotification(runtime, IMAPMailFetchNotifications.NoMessagesFound);
                     GenerateResult(runtime);
@@ -217,19 +245,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                     return;
                 }
 
-                var summaryItems = MessageSummaryItems.Envelope | MessageSummaryItems.Flags | MessageSummaryItems.InternalDate;
+                var summaryItems = MessageSummaryItems.Envelope | MessageSummaryItems.Flags |
+                    MessageSummaryItems.InternalDate | MessageSummaryItems.BodyStructure;
+                var maxResults = this.Resolve(x => x.MaxResults);
+                var orderedUids = (maxResults > 0 ? uids.Take(maxResults) : uids).ToList();
                 var summaries = folder.Fetch(orderedUids, summaryItems, cancellationToken)
-                    .Where(x => x?.UniqueId != null)
-                    .ToDictionary(x => x.UniqueId, x => x);
+                    .Where(summary => summary != null && summary.UniqueId.IsValid).ToList();
 
                 var wasUnreadBeforeFetch = new List<UniqueId>();
                 var includesMessage = ResultFields.Any(x => x?.EnumValue == IMAPMailFetchDestinations.Message);
+                var includesOriginal = ResultFields.Any(x => x?.EnumValue == IMAPMailFetchDestinations.OriginalMessage);
+                var excludeQuotedHistory = this.Resolve(x => x.ExcludeQuotedHistory);
                 var resultMap = new List<Dictionary<FieldElement, string>>(orderedUids.Count);
 
-                foreach (var uid in orderedUids)
+                foreach (var summary in summaries)
                 {
-                    if (!summaries.TryGetValue(uid, out var summary))
-                        continue;
+                    var uid = summary.UniqueId;
 
                     var flags = summary.Flags ?? MessageFlags.None;
                     var isReadBefore = flags.HasFlag(MessageFlags.Seen);
@@ -243,24 +274,28 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                     var date = summary.InternalDate?.ToString("o", CultureInfo.InvariantCulture) ?? string.Empty;
                     var messageId = envelope?.MessageId ?? string.Empty;
                     var message = string.Empty;
+                    var originalMessage = string.Empty;
 
-                    if (includesMessage)
+                    if (includesMessage || includesOriginal)
                     {
-                        var mimeMessage = folder.GetMessage(uid, cancellationToken);
-                        message = mimeMessage.TextBody
-                            ?? mimeMessage.HtmlBody
-                            ?? mimeMessage.Body?.ToString()
-                            ?? string.Empty;
+                        using var mimeMessage = ImapMessageBodyReader.Read(
+                            folder, summary, excludeQuotedHistory, cancellationToken);
+                        originalMessage = MailContentCleaner.GetOriginalContent(mimeMessage);
+                        message = excludeQuotedHistory
+                            ? MailContentCleaner.GetCurrentContent(mimeMessage)
+                            : originalMessage;
                     }
 
                     var row = new ResultFieldByEnumValueResultBuilder<IMAPMailFetchDestinations>()
                         .For(IMAPMailFetchDestinations.Subject, subject)
                         .For(IMAPMailFetchDestinations.Message, message)
+                        .For(IMAPMailFetchDestinations.OriginalMessage, originalMessage)
                         .For(IMAPMailFetchDestinations.From, from)
                         .For(IMAPMailFetchDestinations.To, to)
                         .For(IMAPMailFetchDestinations.Date, date)
                         .For(IMAPMailFetchDestinations.MessageId, messageId)
                         .For(IMAPMailFetchDestinations.UniqueId, uid.Id.ToString(CultureInfo.InvariantCulture))
+                        .For(IMAPMailFetchDestinations.UidValidity, folder.UidValidity.ToString(CultureInfo.InvariantCulture))
                         .For(IMAPMailFetchDestinations.IsRead, isReadBefore.ToString(CultureInfo.InvariantCulture))
                         .Build(ResultFields);
 
@@ -279,6 +314,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 GenerateResult(runtime, resultMap);
                 client.Disconnect(true, cancellationToken);
             });
+        }
+
+        internal static string BuildRawSearchQuery(DateTime? startDate, DateTime? endDate, string expression, bool onlyUnread)
+        {
+            // Preserve OR/NOT grouping when adding the block's independent filters.
+            var criteria = new List<string> { $"({expression})" };
+            if (onlyUnread)
+                criteria.Add("UNSEEN");
+            if (startDate.HasValue)
+                criteria.Add("SINCE " + startDate.Value.Date.AddDays(-1).ToString("d-MMM-yyyy", CultureInfo.InvariantCulture));
+            if (endDate.HasValue)
+                criteria.Add("BEFORE " + endDate.Value.Date.AddDays(1).ToString("d-MMM-yyyy", CultureInfo.InvariantCulture));
+            return string.Join(" ", criteria);
         }
 
         private SearchQuery BuildSearchQuery(DateTime? startDate, DateTime? endDate, string searchText, bool onlyUnread)

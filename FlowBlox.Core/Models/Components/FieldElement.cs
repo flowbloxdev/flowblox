@@ -14,6 +14,8 @@ using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Util.DeepCopier;
+using Newtonsoft.Json;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -40,6 +42,7 @@ namespace FlowBlox.Core.Models.Components
 
         public FieldElement()
         {
+            this.Index = null;
             this.Conditions = new ObservableCollection<ComparisonCondition>();
             this.Modifiers = new ObservableCollection<ModifierBase>();
         }
@@ -201,6 +204,11 @@ namespace FlowBlox.Core.Models.Components
         [FlowBloxUI(UISelectionButtons.None)]
         public UserFieldTypes UserFieldType { get; set; }
 
+        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
+        [Display(Name = "FieldElement_Index", Description = "FieldElement_Index_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 4)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        public int? Index { get; set; }
+
         public bool IsRegularField() => !UserField;
 
         public bool IsUserInputField() => UserField && UserFieldType == UserFieldTypes.Input;
@@ -221,7 +229,6 @@ namespace FlowBlox.Core.Models.Components
         [ActivationCondition(MemberName = nameof(UserFieldType), Values = [ UserFieldTypes.Input, UserFieldTypes.Memory])]
         [Display(Name = "FieldElement_StringValue", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [FlowBloxComboBox(DropDownModeMethod = nameof(GetValueDropDownMode), SelectionValueMember = nameof(ValueItem.Value))]
-        [RequiredIf(nameof(IsRequiredAtRuntimeStartup), true)]
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true, 
             AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options | FieldSelectionModes.Vault,
             AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
@@ -281,8 +288,25 @@ namespace FlowBlox.Core.Models.Components
             {
                 _storeValueLocally = IsPassword ? true : value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ValueStorageIcon));
+                OnPropertyChanged(nameof(ValueStorageDescription));
             }
         }
+
+        [JsonIgnore]
+        [DeepCopierIgnore]
+        [Display(Name = "FieldElement_ValueStorageIcon", Description = "FieldElement_ValueStorageIcon_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(Visible = false)]
+        [FlowBloxImageColumn(typeof(FlowBloxIcons), nameof(FlowBloxIcons.content_save), IconColor = "#B58A2D", ToolTipMemberName = nameof(ValueStorageDescription))]
+        public SKImage ValueStorageIcon => StoreValueLocally
+            ? FlowBloxIconUtil.InactiveProjectIcon16
+            : FlowBloxIconUtil.ProjectIcon16;
+
+        [JsonIgnore]
+        [DeepCopierIgnore]
+        public string ValueStorageDescription => FlowBloxResourceUtil.GetLocalizedString(StoreValueLocally
+            ? "FieldElement_ValueStorageLocally"
+            : "FieldElement_ValueStorageInProject");
 
         public bool IsStoreValueLocallyReadOnly() => IsPassword;
 
@@ -322,6 +346,8 @@ namespace FlowBlox.Core.Models.Components
                 {
                     _storeValueLocally = true;
                     OnPropertyChanged(nameof(StoreValueLocally));
+                    OnPropertyChanged(nameof(ValueStorageIcon));
+                    OnPropertyChanged(nameof(ValueStorageDescription));
                 }
 
                 OnPropertyChanged();

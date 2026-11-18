@@ -84,6 +84,16 @@ namespace FlowBlox.Core.Util
             var defaultOptions = new List<OptionElement>
             {
                 new OptionElement(
+                    WebServerConfigurationStore.OptionName,
+                    "",
+                    FlowBloxResourceUtil.GetLocalizedString("WebServerConfiguration_Description"),
+                    OptionElement.OptionType.Password,
+                    FlowBloxResourceUtil.GetLocalizedString("WebServerConfiguration_DisplayName"))
+                {
+                    IsPlaceholderEnabled = false,
+                    SystemOption = true
+                },
+                new OptionElement(
                     "Vault.Values",
                     "",
                     FlowBloxResourceUtil.GetLocalizedString("FlowBloxOptions_VaultValues_Description", typeof(FlowBloxTexts)),

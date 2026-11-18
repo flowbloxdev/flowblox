@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.CreateProjectVersionWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -97,13 +97,9 @@
 
             <!-- Error footer -->
             <Border Grid.Row="1"
-                    Background="#FFFCE8E8"
-                    BorderBrush="#FFE6A3A3"
-                    BorderThickness="1"
-                    Padding="12"
-                    CornerRadius="4"
-                    Margin="0,12,0,0"
-                    Visibility="{Binding ErrorText, Converter={StaticResource NullToVisibilityConverter}}">
+                Margin="0,12,0,0"
+                Visibility="{Binding ErrorText, Converter={StaticResource NullToVisibilityConverter}}"
+                Style="{StaticResource FlowBlox.NotificationBox.Error}">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -112,16 +108,11 @@
                     </Grid.ColumnDefinitions>
 
                     <iconPacks:PackIconMaterial Kind="AlertCircleOutline"
-                                                Width="18"
-                                                Height="18"
-                                                Margin="0,2,10,0"
-                                                Foreground="#FF8A1F1F"
-                                                VerticalAlignment="Top"/>
+                        Style="{StaticResource FlowBlox.NotificationIcon}" />
 
                     <TextBlock Grid.Column="1"
-                               Text="{Binding ErrorText}"
-                               Foreground="#FF8A1F1F"
-                               TextWrapping="Wrap" />
+                        Text="{Binding ErrorText}"
+                        Style="{StaticResource FlowBlox.NotificationText}" />
                 </Grid>
             </Border>
 

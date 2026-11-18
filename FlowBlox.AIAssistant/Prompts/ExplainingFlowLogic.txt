@@ -34,3 +34,9 @@
 - `AssociatedIterationContext` can intentionally change the normal iterative behavior.
 - Purpose: collect/process data in the iteration scope of an earlier flow block, not only the directly linked predecessor scope.
 - Do not set `AssociatedIterationContext` to a direct predecessor of the same target flow block.
+
+5) Output sorting
+- Every BaseResultFlowBlock maintains one OutputSorting row per own output field, initially Direction=None.
+- Find the output field by FQName in the component snapshot, then update its existing row through the normal indexed path, e.g. `/OutputSorting/0/Direction`, with Ascending, Descending, or None.
+- Do not create sorting rows or link fields. Rows synchronize automatically. List order defines primary/secondary keys.
+- Sorting uses typed field values after output selection/modifiers, before dataset flush.

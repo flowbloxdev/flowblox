@@ -133,13 +133,27 @@ This file summarizes core project conventions for AI/coding agents working in th
 ## Unit-Test Scope
 - Give each test one clear behavioral outcome. Split independent scenarios; do not lock prompt wording or metadata cleanup
   through keyword presence/absence checks. Keep text assertions when the text itself is functional output or protects sensitive data.
-- Do not add trivial baseline tests for changes below roughly two story points of complexity.
+- Keep tests for meaningful behavior with at least 3/10 complexity. Do not add trivial baseline, configuration-only,
+  localization or display-text checks merely to demonstrate completion of a task.
 - A test must protect meaningful FlowBlox-owned behavior such as branching, validation and error handling, state transitions, migrations, serialization compatibility, runtime interaction, or non-trivial orchestration.
 - Do not create tests that merely prove framework/BCL or third-party behavior, straightforward property-to-option mapping, or known cryptographic library output. For example, hashing `"abc"` and comparing it with the standard SHA-256 digest does not meaningfully test FlowBlox.
 - Do not add tests that only mirror declarations or configuration, such as checking that a constructor assigns a default, an `OptionsInit` method adds an option, or an annotation/resource key exists. These tests add refactoring cost without protecting runtime behavior.
 - Do not add unit tests for display names, descriptions, tooltips, or other display-only metadata, including tests that only verify their presence or localization. Verify these changes through resource generation and a successful build instead. Exact text assertions remain appropriate for functional outputs, validation errors, protocols, or other text whose content is the behavior under test.
 - Thin wrappers and direct mappings normally require a successful build, not a dedicated unit test.
 - Add tests when project-specific logic or a concrete regression risk makes them valuable, even if the implementation itself is small.
+
+## Configuration Validation
+
+- Express business rules and property-value consistency through the standard DataAnnotations validation pipeline.
+  Use annotations such as `Required`, `Range`, and `CustomValidation`; use `IValidatableObject` for object-level rules.
+- These validators run through the normal component validation before runtime startup. Keep configuration validation
+  declarative so the UI and runtime startup use the same rules.
+- Do not manually invoke validators from execution code. Calls such as `Validator.ValidateProperty`,
+  `Validator.ValidateObject`, `Validator.TryValidateObject`, or direct calls to annotation validators in `Execute`,
+  request invocation, or other execution paths are a don't. Do not duplicate a rule already covered by an annotation.
+- Validate the configured relationship, not the availability of a runtime resource. For example, an optional OAuth
+  connection may be unassigned; when assigned, its annotation can reject conflicting Bearer, Authorization-header,
+  or Basic-authentication configuration. Browser sign-in and token acquisition belong to the execution operation.
 
 ## Runtime/Execution Conventions
 - Possible unresolved field references are diagnostic hints only: report them as warnings, never use their presence to block validation, runtime startup, or FlowBlock execution. Text such as `$ABC::53` may be an intentional literal value. Required fields are missing only when their resolved value is null, empty, or whitespace.
@@ -152,9 +166,13 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Define a block-specific enum with `FlowBloxNotificationAttribute` on each entry.
 - Register it via `NotificationTypes` override in the FlowBlock.
 - Trigger it with `CreateNotification(runtime, ...)`.
+- `CreateNotification` always derives the compact message from `notificationEnumValue.GetDisplayName()` and passes that
+  message to `NotifyWarning`/`NotifyError` and the corresponding events. Do not add a message-override overload or substitute
+  an exception's message. Pass the exception separately for detailed diagnostics.
 - Keep notification enum identifiers and display names in compact English, directly in `Display(Name = "...")`; do not localize them.
 - Keep notification display texts short and action-oriented. Put installation instructions and technical details in the exception, not the node summary.
-- Extensions can use `ExecutionPrerequisites.RequireExecutable<TQuickStartTarget>` and `ExecutionPrerequisiteException`; see `docs/execution-prerequisites.md`.
+- Extensions can use `ExecutionEnvironmentPrerequisites.RequireExecutable<TQuickStartTarget>` and `ExecutionEnvironmentPrerequisiteException`; see `docs/execution-environment-prerequisites.md`.
+- Environment prerequisites cover installed tools, drivers, native runtimes and model files. Missing properties, API keys or associations use standard annotation validation and ordinary exceptions/notifications, never environment-setup exceptions.
 
 ## Practical Agent Rules
 

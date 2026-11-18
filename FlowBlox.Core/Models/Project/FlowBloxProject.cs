@@ -914,6 +914,7 @@ namespace FlowBlox.Core.Models.Project
             }
 
             var previousProjectGuid = ProjectGuid;
+            var uploadSucceeded = false;
             try
             {
                 if (generateNewProjectGuid)
@@ -931,10 +932,15 @@ namespace FlowBlox.Core.Models.Project
                 var result = await webApi.UpdateProjectAsync(userToken, request);
                 if (result?.Success == true)
                 {
+                    uploadSucceeded = true;
                     ProjectSpaceGuid = projectGuid;
                     ProjectSpaceEndpointUri = webApi.BaseUrl;
                     if (generateNewProjectGuid)
                         OnProjectGuidChanged(previousProjectGuid, ProjectGuid);
+
+                    // Keep an existing local project and its sidecars linked to the uploaded identity.
+                    if (!string.IsNullOrWhiteSpace(ProjectFilePath) && File.Exists(ProjectFilePath))
+                        Save(ProjectFilePath);
                 }
                 else if (generateNewProjectGuid)
                 {
@@ -945,7 +951,7 @@ namespace FlowBlox.Core.Models.Project
             }
             catch (Exception ex)
             {
-                if (generateNewProjectGuid)
+                if (generateNewProjectGuid && !uploadSucceeded)
                     ProjectGuid = previousProjectGuid;
 
                 FlowBloxLogManager.Instance.GetLogger().Exception(ex);

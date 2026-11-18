@@ -1,5 +1,6 @@
 ﻿using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Utilities;
+using SkiaSharp;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -9,7 +10,7 @@ namespace FlowBlox.UICore.Converters.PropertyView
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var icon = FlowBloxComponentHelper.GetIcon16(value);
+            var icon = value as SKImage ?? FlowBloxComponentHelper.GetIcon16(value);
             if (icon == null)
                 return null;
 

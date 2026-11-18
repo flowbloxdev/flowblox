@@ -32,6 +32,7 @@ $Projects = @(
   "FlowBlox.Core\FlowBlox.Core.csproj",
   "FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj",
   "FlowBlox.WorkerService\FlowBlox.WorkerService.csproj",
+  "FlowBlox.WebServer\FlowBlox.WebServer.csproj",
   "FlowBlox.UICore\FlowBlox.UICore.csproj",
   "FlowBlox.SequenceDetection\FlowBlox.SequenceDetection.csproj"
 )

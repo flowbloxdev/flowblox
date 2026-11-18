@@ -16,6 +16,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Runtime.ExceptionServices;
 using System.Text;
+using FlowBlox.Core.Models.Components.Authorization;
+using FlowBlox.Core.Provider;
+using FlowBlox.Core.Authentication.OAuth;
+using FlowBlox.Core.Validations;
 
 namespace FlowBlox.Core.Models.FlowBlocks.Web
 {
@@ -89,8 +93,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         [FlowBloxTextBox(MultiLine = true)]
         public string DefinitionWarnings { get; private set; }
 
-        [Display(Name = "OpenApiRestFlowBlock_BearerToken", Description = "OpenApiRestFlowBlock_BearerToken_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        [Display(Name = "OpenApiRestFlowBlock_BearerToken", Description = "OpenApiRestFlowBlock_BearerToken_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = 2)]
         public string BearerToken { get; set; }
+
+        [Display(Name = "WebRequestFlowBlock_OAuthConnection", Description = "WebRequestFlowBlock_OAuthConnection_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = -1)]
+        [FlowBloxAssociation]
+        [FlowBloxItemsSource(Method = nameof(GetPossibleOAuthConnections), DisplayMember = nameof(Name))]
+        [CustomValidation(typeof(OAuthConnectionValidator), nameof(OAuthConnectionValidator.Validate))]
+        public OAuthUserConnection OAuthConnection { get; set; }
+
+        public IEnumerable<OAuthUserConnection> GetPossibleOAuthConnections() =>
+            FlowBloxRegistryProvider.GetRegistry()?
+                .GetManagedObjects<OAuthUserConnection>() ?? Enumerable.Empty<OAuthUserConnection>();
 
         [Display(Name = "OpenApiRestFlowBlock_UserName", Description = "OpenApiRestFlowBlock_UserName_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Authentication", Order = 0)]
         public string UserName { get; set; }
@@ -303,6 +317,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 var descriptor = FindEndpoint() ?? throw new ValidationException("The selected OpenAPI endpoint is unavailable.");
                 result = InvokeWithPagination(descriptor, runtime).GetAwaiter().GetResult();
             }
+            catch (OAuthInteractionRequiredException exception)
+            {
+                CreateNotification(runtime, OpenApiRestNotifications.OAuthSignInRequired, exception);
+                runtime.Aborted = true;
+                GenerateResult(runtime);
+                return;
+            }
             catch (Exception ex) when (ex is JsonException or InvalidOperationException or ValidationException or FormatException or OverflowException)
             {
                 CreateNotification(runtime, OpenApiRestNotifications.InvalidResponseOrConfiguration, ex);
@@ -333,6 +354,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
 
         public enum OpenApiRestNotifications
         {
+            [FlowBloxNotification(NotificationType = NotificationType.Error)]
+            [Display(Name = "OAuth sign-in required")]
+            OAuthSignInRequired,
+
             [FlowBloxNotification(NotificationType = NotificationType.Error)]
             [Display(Name = "OpenApiRestFlowBlock_RequestFailed", ResourceType = typeof(FlowBloxTexts))]
             RequestFailed,
@@ -438,6 +463,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                 }
                 if (token?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true) token = token[7..].Trim();
                 if (!string.IsNullOrWhiteSpace(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                if (OAuthConnection != null)
+                {
+                    var accessToken = await OAuthConnection.GetAccessTokenAsync(new Uri(url), runtime.GetCancellationToken()).ConfigureAwait(false);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                }
                 foreach (var parameter in HeaderParameters)
                 {
                     var value = parameter.Resolve(owner => owner.Value);

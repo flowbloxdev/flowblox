@@ -81,12 +81,6 @@
   <data name="Message_AutoLayoutNoStart_Title" xml:space="preserve">
     <value>Automatische Ausrichtung</value>
   </data>
-  <data name="Message_ConnectBlocked_Description" xml:space="preserve">
-    <value>Die ausgewählten Flow-Blocks können nicht verbunden werden. Prüfen Sie, ob das Ziel bereits die maximale Anzahl an Eingängen besitzt, eines der Elemente eine Notiz ist oder die Verbindung eine ungültige Abhängigkeit erzeugen würde.</value>
-  </data>
-  <data name="Message_ConnectBlocked_Title" xml:space="preserve">
-    <value>Verbindung nicht möglich</value>
-  </data>
   <data name="Message_DeleteDependencyViolation_Description" xml:space="preserve">
     <value>Die Löschaktion kann nicht durchgeführt werden, weil dadurch bestehende Abhängigkeiten verletzt werden:
 {0}</value>
@@ -159,4 +153,10 @@
   </data>
   <data name="Toolbar_InputFields" xml:space="preserve"><value>Eingabefelder</value></data>
   <data name="Toolbar_MemoryFields" xml:space="preserve"><value>Speicherfelder</value></data>
+  <data name="Toolbar_ConnectIterationContext" xml:space="preserve">
+    <value>Iterationskontext</value>
+  </data>
+  <data name="Toolbar_ConnectIterationContext_Tooltip" xml:space="preserve">
+    <value>Iterationskontext verbinden: vom Block, der den Kontext ben?tigt, zu einem verf?gbaren vorgelagerten Block ziehen. Unzul?ssige Ziele werden abgeblendet.</value>
+  </data>
 </root>

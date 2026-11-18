@@ -110,6 +110,68 @@ namespace FlowBloxTest.FlowBlocks.CollectionOperations
             Assert.AreEqual(1, collector.GridElementResult.Results.Count);
         }
 
+        [TestMethod]
+        public void JoinCollector_CollectsFormattedResultsProducedAtTheSharedOuterIterationEnd()
+        {
+            var project = FlowBloxProjectManager.Instance.ActiveProject;
+            var start = CreateFlowBlock<StartFlowBlock>();
+            var configuration = CreateSource(start, ["config"]);
+            var settings = CreateSource(configuration, ["ready"]);
+            var messages = CreateSource(settings, ["alpha"], ["beta"], ["gamma"], ["delta"], ["epsilon"]);
+            messages.AssociatedIterationContext = configuration;
+            var format = CreateFlowBlock<FormatFlowBlock>(messages);
+            format.FormatExpression = "Mail: {0}";
+            format.FormatParameterDefinitions.Add(new FlowBlox.Core.Models.FlowBlocks.Format.FormatParameterDefinition
+            {
+                Field = messages.ResultFields.Single()
+            });
+            var collector = CreateFlowBlock<JoinCollectorFlowBlock>(format);
+            collector.AssociatedIterationContext = configuration;
+            collector.Separator = "|";
+            collector.JoinedParameters.Add(format.ResultField);
+
+            CreateRuntimeAndExecute(project);
+
+            Assert.AreEqual("Mail: alpha|Mail: beta|Mail: gamma|Mail: delta|Mail: epsilon", collector.ResultField.StringValue);
+            Assert.HasCount(5, collector.InputDatasets);
+            Assert.HasCount(1, collector.GridElementResult.Results);
+        }
+
+        [TestMethod]
+        public void JoinCollector_SharedIterationEndKeepsConsecutiveOuterGroupsSeparate()
+        {
+            var project = FlowBloxProjectManager.Instance.ActiveProject;
+            var start = CreateFlowBlock<StartFlowBlock>();
+            var configuration = CreateSource(start, ["one"], ["two"]);
+            var settings = CreateSource(configuration, ["ready"]);
+            var messages = CreateSource(settings, ["alpha"], ["beta"]);
+            messages.AssociatedIterationContext = configuration;
+            var format = CreateFlowBlock<FormatFlowBlock>(messages);
+            format.FormatExpression = "{0}: {1}";
+            format.FormatParameterDefinitions.Add(new FlowBlox.Core.Models.FlowBlocks.Format.FormatParameterDefinition
+            {
+                Field = configuration.ResultFields.Single()
+            });
+            format.FormatParameterDefinitions.Add(new FlowBlox.Core.Models.FlowBlocks.Format.FormatParameterDefinition
+            {
+                Field = messages.ResultFields.Single()
+            });
+            var collector = CreateFlowBlock<JoinCollectorFlowBlock>(format);
+            collector.AssociatedIterationContext = configuration;
+            collector.Separator = "|";
+            collector.JoinedParameters.Add(format.ResultField);
+            var outerCollector = CreateFlowBlock<JoinCollectorFlowBlock>(collector);
+            outerCollector.AssociatedIterationContext = start;
+            outerCollector.Separator = ";";
+            outerCollector.JoinedParameters.Add(collector.ResultField);
+
+            CreateRuntimeAndExecute(project);
+
+            Assert.AreEqual("one: alpha|one: beta;two: alpha|two: beta", outerCollector.ResultField.StringValue);
+            Assert.HasCount(2, outerCollector.InputDatasets);
+            Assert.HasCount(1, outerCollector.GridElementResult.Results);
+        }
+
         private DatasetSourceFlowBlock CreateSource(
             BaseFlowBlock predecessor,
             params string[][] rows)

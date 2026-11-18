@@ -117,18 +117,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<FlowBloxComponent> GetExecutionPrerequisiteComponents()
+        protected override IEnumerable<FlowBloxComponent> GetExecutionEnvironmentPrerequisiteComponents()
         {
             if (Provider is FFmpegMediaDownloadProvider ffmpeg && ffmpeg.CanReuseExistingOutput(CreateDownloadRequest()))
                 return new[] { this };
 
-            return base.GetExecutionPrerequisiteComponents();
+            return base.GetExecutionEnvironmentPrerequisiteComponents();
         }
 
         /// <inheritdoc />
-        protected override void OnExecutionPrerequisiteFailure(
+        protected override void OnExecutionEnvironmentPrerequisiteFailure(
             BaseRuntime runtime,
-            ExecutionPrerequisiteException exception)
+            ExecutionEnvironmentPrerequisiteException exception)
         {
             CompleteDownload(runtime, new[]
             {
@@ -169,7 +169,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
                 }
                 catch (Exception exception)
                 {
-                    if (exception is not ExecutionPrerequisiteException)
+                    if (exception is not ExecutionEnvironmentPrerequisiteException)
                         runtime.Report("Media download failed.", FlowBloxLogLevel.Warning, exception);
                     results = new[] { CreateFailureResult(exception, url) };
                 }
@@ -183,8 +183,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             return new MediaDownloadResult
             {
                 SourceUrl = url,
-                PrerequisiteFailure = exception as ExecutionPrerequisiteException,
-                FailureReason = exception is ExecutionPrerequisiteException
+                ExecutionEnvironmentPrerequisiteFailure = exception as ExecutionEnvironmentPrerequisiteException,
+                FailureReason = exception is ExecutionEnvironmentPrerequisiteException
                     ? MediaDownloadFailureReason.RequiredComponentMissing
                     : exception is TimeoutException
                     ? MediaDownloadFailureReason.Timeout
@@ -198,14 +198,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
             foreach (var result in results.Where(result => !result.Success))
                 runtime.Report("Media download entry failed: " + result.SourceUrl + ". " + result.ErrorMessage, FlowBloxLogLevel.Warning);
 
-            var prerequisiteFailures = results
-                .Where(result => !result.Success && result.PrerequisiteFailure != null)
-                .Select(result => result.PrerequisiteFailure!)
+            var environmentPrerequisiteFailures = results
+                .Where(result => !result.Success && result.ExecutionEnvironmentPrerequisiteFailure != null)
+                .Select(result => result.ExecutionEnvironmentPrerequisiteFailure!)
                 .DistinctBy(failure => (failure.ComponentName, failure.QuickStartTargetType));
-            foreach (var failure in prerequisiteFailures)
-                CreateNotification(runtime, MediaDownloadNotifications.SetupRequired, failure.NotificationMessage, failure);
 
-            foreach (var reason in results.Where(result => !result.Success && result.PrerequisiteFailure == null)
+            foreach (var failure in environmentPrerequisiteFailures)
+                CreateNotification(runtime, MediaDownloadNotifications.SetupRequired, failure);
+
+            foreach (var reason in results.Where(result => !result.Success && result.ExecutionEnvironmentPrerequisiteFailure == null)
                 .Select(result => result.FailureReason).Distinct())
                 CreateNotification(runtime, GetFailureNotification(reason));
 

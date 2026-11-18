@@ -150,11 +150,7 @@
 		<value>Iteration Context</value>
 	</data>
 	<data name="BaseFlowBlock_AssociatedIterationContext_Tooltip" xml:space="preserve">
-		<value>Defines the flow block whose iteration lifecycle controls this block.
-The target flow block executes once per iteration of that referenced flow block (usually once per dataset).
-With multiple incoming paths, the IterationContext is auto-resolved to the first common flow block.
-This automatic value can be overridden by setting AssociatedIterationContext explicitly.
-All inputs are collected during each referenced iteration and this flow block executes at iteration end (after that iteration has completed).</value>
+		<value>Collects incoming results until the selected upstream block finishes an iteration, then processes them using the configured input behaviors. This block, its direct predecessors and successors cannot be selected. Blocks inside an already collected upstream iteration scope are unavailable; the scope boundaries remain available. Start can be selected. If unassigned, an automatic context is used where possible.</value>
 	</data>
 	<data name="BaseFlowBlock_DefaultDescription" xml:space="preserve">
 		<value>In this area you can configure all required settings for the “{0}” flow block. Make the desired adjustments and then click “Apply” to save your changes.</value>
@@ -2438,10 +2434,7 @@ Note: Once a provider is loaded, switching providers within the same process is 
 		<value>Template for chat prompts. Uses placeholders {SystemPrompt} and {UserPrompt}. Can be populated via toolbox.</value>
 	</data>
 	<data name="OnnxRuntimeGenAIFlowBlock_AiExecutionProvider_Tooltip" xml:space="preserve">
-		<value>Selects the ONNX execution provider for the entire application process.
-The value is read from the global option AI.Onnx.Provider.
-Supported values: Default (CPU), CUDA, DirectML, OpenVINO.
-Note: Once a provider is loaded, switching providers within the same process is not supported. Restart the application after changing this option.</value>
+		<value>Selects the local execution provider, optionally from an input field. If unassigned, uses AI.Onnx.Provider from the global options. Default means CPU. GPU providers require compatible runtime/model files and drivers. Switching the native provider within the same application process requires a restart.</value>
 	</data>
 	<data name="OnnxRuntimeGenAIFlowBlock_AiExecutionProvider" xml:space="preserve">
 		<value>Execution provider</value>
@@ -3802,7 +3795,7 @@ If a Join collector should aggregate links across all page iterations:
     <value>Inclusive end date in format yyyy/MM/dd.</value>
   </data>
 	<data name="IMAPMailFetchFlowBlock_SearchText" xml:space="preserve">
-    <value>Search text</value>
+    <value>Search term</value>
   </data>
 	<data name="IMAPMailFetchFlowBlock_SearchText_Tooltip" xml:space="preserve">
     <value>Server-side text filter applied to message subject and body.</value>
@@ -3812,12 +3805,6 @@ If a Join collector should aggregate links across all page iterations:
   </data>
 	<data name="IMAPMailFetchFlowBlock_MaxResults_Tooltip" xml:space="preserve">
     <value>Maximum number of e-mails returned by this flow block execution.</value>
-  </data>
-	<data name="IMAPMailFetchFlowBlock_NewestFirst" xml:space="preserve">
-    <value>Newest first</value>
-  </data>
-	<data name="IMAPMailFetchFlowBlock_NewestFirst_Tooltip" xml:space="preserve">
-    <value>Returns newer messages first before older ones.</value>
   </data>
 	<data name="IMAPMailFetchFlowBlock_MarkAsRead" xml:space="preserve">
     <value>Mark as read</value>
@@ -4063,6 +4050,21 @@ If a Join collector should aggregate links across all page iterations:
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionRate_Tooltip" xml:space="preserve">
 		<value>Fraction of summarizable conversation messages compressed at once when the assistant needs to update the summary. For example, 0.4 compresses 40% while still keeping the configured minimum latest messages verbatim.</value>
+	</data>
+	<data name="AssistantConfiguration_MaxSummaryTokens" xml:space="preserve">
+		<value>Summary compaction threshold (tokens)</value>
+	</data>
+	<data name="AssistantConfiguration_MaxSummaryTokens_Tooltip" xml:space="preserve">
+		<value>Automatically compact the existing summary in a separate step when it exceeds this estimated token count. Default: 10000. Original history messages are preserved.</value>
+	</data>
+	<data name="AssistantConfiguration_SummaryCompactionTargetRatio" xml:space="preserve">
+		<value>Summary compaction target ratio</value>
+	</data>
+	<data name="AssistantConfiguration_SummaryCompactionTargetRatio_Tooltip" xml:space="preserve">
+		<value>Target summary size as a fraction of the compaction threshold. Default: 0.5, aiming for 5000 tokens at a threshold of 10000. This is separate from the fraction of history messages summarized at once.</value>
+	</data>
+	<data name="AiAssistantService_CompactingContext" xml:space="preserve">
+		<value>Compacting context...</value>
 	</data>
 	<data name="AssistantConfiguration_MaxContextTokens" xml:space="preserve">
 		<value>Maximum context tokens</value>
@@ -4740,12 +4742,142 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="QuickStarts_MenuTitle" xml:space="preserve">
     <value>Quick Starts</value>
   </data>
-  <data name="ExecutionPrerequisite_Missing" xml:space="preserve">
-    <value>{0} could not be found at '{1}'. A required execution component is missing. Open Help → Quick Starts → {2} for installation and configuration instructions. Check the configured path and PATH environment variable.</value>
+  <data name="ExecutionEnvironmentPrerequisite_Missing" xml:space="preserve">
+    <value>{0} could not be found at '{1}'. A required component of the execution environment is missing. Open Help → Quick Starts → {2} for installation and configuration instructions. Check the configured path and PATH environment variable.</value>
   </data>
-  <data name="ExecutionPrerequisite_InitializationFailed" xml:space="preserve">
+  <data name="ExecutionEnvironmentPrerequisite_InitializationFailed" xml:space="preserve">
     <value>{0} could not be initialized ('{1}'). Check its installation and configuration under Help → Quick Starts → {2}. Details: {3}</value>
   </data>
+  <data name="OAuthUserConnection_DisplayName" xml:space="preserve"><value>OAuth user connection</value></data>
+  <data name="OAuthUserConnection_DisplayName_Plural" xml:space="preserve"><value>OAuth user connections</value></data>
+  <data name="OAuthUserConnection_AuthorizationEndpoint" xml:space="preserve"><value>Authorization endpoint</value></data>
+  <data name="OAuthUserConnection_AuthorizationEndpoint_Tooltip" xml:space="preserve"><value>Provider URL for browser authorization, without query parameters.</value></data>
+  <data name="OAuthUserConnection_TokenEndpoint" xml:space="preserve"><value>Token endpoint</value></data>
+  <data name="OAuthUserConnection_TokenEndpoint_Tooltip" xml:space="preserve"><value>HTTPS endpoint for exchanging authorization codes and refreshing tokens.</value></data>
+  <data name="OAuthUserConnection_ClientId" xml:space="preserve"><value>Client ID</value></data>
+  <data name="OAuthUserConnection_ClientId_Tooltip" xml:space="preserve"><value>OAuth client ID registered for a desktop/native application with this provider.</value></data>
+  <data name="OAuthUserConnection_ClientSecretReference" xml:space="preserve"><value>Client secret reference (optional)</value></data>
+  <data name="OAuthUserConnection_ClientSecretReference_Tooltip" xml:space="preserve"><value>Optional client secret or field reference. Prefer a Vault reference, for example $Vault::OAuthClientSecret. Input parameters use their normal IsPassword setting. Leave empty if the provider does not require a client secret.</value></data>
+  <data name="OAuthUserConnection_Scopes" xml:space="preserve"><value>Scopes</value></data>
+  <data name="OAuthUserConnection_Scopes_Tooltip" xml:space="preserve"><value>Space-separated OAuth scopes. Request only the API permissions the flow needs.</value></data>
+  <data name="OAuthUserConnection_ResourceBaseUrl" xml:space="preserve"><value>API base URL</value></data>
+  <data name="OAuthUserConnection_ResourceBaseUrl_Tooltip" xml:space="preserve"><value>Tokens are sent only to URLs within this HTTPS origin and path, e.g. https://api.example.com/.</value></data>
+  <data name="OAuthUserConnection_RedirectPort" xml:space="preserve"><value>Loopback redirect port</value></data>
+  <data name="OAuthUserConnection_RedirectPort_Tooltip" xml:space="preserve"><value>0 selects a free local port. Use a fixed port if the provider requires one. Callback path: /oauth/callback/.</value></data>
+  <data name="OAuthUserConnection_AuthorizationParameters" xml:space="preserve"><value>Additional authorization parameters</value></data>
+  <data name="OAuthUserConnection_AuthorizationParameters_Tooltip" xml:space="preserve"><value>Provider-specific browser parameters, e.g. access_type=offline or prompt=consent. State, redirect URI and PKCE are managed automatically.</value></data>
+  <data name="OAuthUserConnection_IsConnected" xml:space="preserve"><value>Connected locally</value></data>
+  <data name="OAuthUserConnection_IsConnected_Tooltip" xml:space="preserve"><value>Credentials are protected for the current Windows user outside project files. The first authenticated request opens the browser if sign-in is needed.</value></data>
+  <data name="OAuthAuthorizationParameter_Name" xml:space="preserve"><value>Parameter name</value></data>
+  <data name="OAuthAuthorizationParameter_Value" xml:space="preserve"><value>Value</value></data>
+  <data name="OAuthUserConnectionUIActions_Connect" xml:space="preserve"><value>Connect account in browser</value></data>
+  <data name="OAuthUserConnectionUIActions_Disconnect" xml:space="preserve"><value>Disconnect local account</value></data>
+  <data name="WebRequestFlowBlock_OAuthConnection" xml:space="preserve"><value>OAuth user connection</value></data>
+  <data name="WebRequestFlowBlock_OAuthConnection_Tooltip" xml:space="preserve"><value>Select or create an OAuth user connection. Do not also configure a Bearer token, Authorization header or Basic credentials.</value></data>
+  <data name="OAuthConnectionValidator_ConflictingAuthentication" xml:space="preserve"><value>Use either an OAuth user connection or a Bearer token, Authorization header or Basic credentials, not both.</value></data>
+  <data name="OAuthAuthorizationSession_BrowserComplete" xml:space="preserve"><value>The authorization response was received. You can close this tab and return to FlowBlox.</value></data>
+  <data name="OAuthAuthorizationSession_BrowserRejected" xml:space="preserve"><value>This authorization callback is not valid for the current FlowBlox sign-in. Return to the original sign-in tab.</value></data>
+  <data name="FieldElement_Index" xml:space="preserve"><value>Sort index</value></data>
+  <data name="FieldElement_Index_Tooltip" xml:space="preserve"><value>Optional user-field sort index. Fields without an index appear first, followed by indexed fields in ascending order. Fields with equal indices retain their existing order.</value></data>
+  <data name="TextLengthModifier_DisplayName" xml:space="preserve">
+    <value>Text length</value>
+  </data>
+  <data name="TextLengthModifier_Description" xml:space="preserve">
+    <value>Returns the character count, including spaces and line breaks. Use a numeric result field for calculations and prerequisites.</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_ExcludeQuotedHistory" xml:space="preserve">
+    <value>Exclude quoted history</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_ExcludeQuotedHistory_Tooltip" xml:space="preserve">
+    <value>Removes HTML quote containers and plain-text lines marked with &gt; from Message. HTML quotation structure takes precedence when both HTML and plain text are available. Does not interpret localized reply headers: unmarked histories remain. Quoted passages may contain relevant information. Original message remains available separately. Disabled by default.</value>
+  </data>
+  <data name="IMAPMailFetchDestinations_OriginalMessage" xml:space="preserve">
+    <value>Original message</value>
+  </data>
+  <data name="BaseResultFlowBlock_OutputSorting" xml:space="preserve">
+    <value>Sorting</value>
+  </data>
+  <data name="BaseResultFlowBlock_OutputSorting_Tooltip" xml:space="preserve">
+    <value>One row is maintained automatically for each output field. None keeps the supplied order. Enable ascending or descending sorting; move rows to choose primary and secondary keys. Uses typed field values after output selection and modifiers, before flushing datasets. Equal keys retain their input order.</value>
+  </data>
+  <data name="OutputSortRule_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="OutputSortDirection_None" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="OutputSortDirection_Ascending" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="OutputSortDirection_Descending" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="FieldElement_ValueStorageIcon" xml:space="preserve">
+    <value>Value storage</value>
+  </data>
+  <data name="FieldElement_ValueStorageIcon_Tooltip" xml:space="preserve">
+    <value>Indicates whether the input value is stored as a project default or only in local project data.</value>
+  </data>
+  <data name="FieldElement_ValueStorageLocally" xml:space="preserve">
+    <value>Stored locally: the value is saved in local project data, not in the project file.</value>
+  </data>
+  <data name="FieldElement_ValueStorageInProject" xml:space="preserve">
+    <value>Stored in the project: the value is included in the project file as a default.</value>
+  </data>
+  <data name="IMAPMailFetchDestinations_UidValidity" xml:space="preserve">
+    <value>UID validity</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_DisplayName" xml:space="preserve">
+    <value>Download IMAP attachments</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_Description" xml:space="preserve">
+    <value>Downloads only attachment MIME parts for the current mail UID of an associated IMAP fetch block. Emits one dataset per attachment.</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_AssociatedImap" xml:space="preserve">
+    <value>IMAP fetch</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_AssociatedImap_Tooltip" xml:space="preserve">
+    <value>Uses the assigned IMAP fetch block or the preceding one on the execution path. Requires its UniqueId output; UidValidity is checked when available. Uses the same account and folder without an input-field selection.</value>
+  </data>
+  <data name="ImapAttachmentDownloadFlowBlock_ResultFields" xml:space="preserve">
+    <value>Attachment fields</value>
+  </data>
+  <data name="ImapAttachmentDownloadDestinations_FileContent" xml:space="preserve">
+    <value>File content</value>
+  </data>
+  <data name="ImapAttachmentDownloadDestinations_ContentType" xml:space="preserve">
+    <value>Content type</value>
+  </data>
+  <data name="ImapAttachmentDownloadDestinations_Size" xml:space="preserve">
+    <value>Size in bytes</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_SearchExpression" xml:space="preserve">
+    <value>Search expression</value>
+  </data>
+  <data name="IMAPMailFetchFlowBlock_SearchExpression_Tooltip" xml:space="preserve">
+    <value>Standard IMAP SEARCH criteria, passed directly to the server. Example: OR TEXT "invoice" TEXT "receipt". Do not include SEARCH or UID SEARCH. Date range and unread filters apply additionally to the entire expression. Use either search text or a search expression.</value>
+  </data>
+  <data name="ImapSearchValidator_ConflictingSearch" xml:space="preserve">
+    <value>Specify either search text or a search expression, not both.</value>
+  </data>
+  <data name="ProjectExecutions_ProcessTerminated" xml:space="preserve"><value>The execution was terminated by the user.</value></data>
+  <data name="WebServerConfiguration_DisplayName" xml:space="preserve"><value>Web server configuration</value></data>
+  <data name="WebServerConfiguration_Description" xml:space="preserve"><value>Configure the remote dashboard, optional app password and HTTPS. Leave the app password empty for direct access without signing in. Restart the server after changes. The server runs in your signed-in Windows account.</value></data>
+  <data name="WebServerConfiguration_BindAddress" xml:space="preserve"><value>Listen address</value></data>
+  <data name="WebServerConfiguration_BindAddress_Tooltip" xml:space="preserve"><value>127.0.0.1 allows this computer only. Use 0.0.0.0 for access from the local network. Use HTTPS for network access and allow only trusted networks through the firewall.</value></data>
+  <data name="WebServerConfiguration_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="WebServerConfiguration_Port_Tooltip" xml:space="preserve"><value>TCP port for the dashboard. Default: 9001. Choose an unused port.</value></data>
+  <data name="WebServerConfiguration_CertificateFile" xml:space="preserve"><value>HTTPS certificate</value></data>
+  <data name="WebServerConfiguration_CertificateFile_Tooltip" xml:space="preserve"><value>Optional PFX/P12 certificate with private key. Leave empty for HTTP. Use HTTPS for access from other devices. Restart after changing the certificate.</value></data>
+  <data name="WebServerConfiguration_CertificatePassword" xml:space="preserve"><value>Certificate password</value></data>
+  <data name="WebServerConfiguration_CertificatePassword_Tooltip" xml:space="preserve"><value>Password for the optional PFX/P12 file. Stored encrypted for the Windows user.</value></data>
+  <data name="WebServerConfiguration_InvalidAddress" xml:space="preserve"><value>Enter a valid IPv4 or IPv6 listen address.</value></data>
+
+  <data name="WebServerConfiguration_AppPassword" xml:space="preserve"><value>App password (optional)</value></data>
+
+  <data name="WebServerConfiguration_AppPassword_Tooltip" xml:space="preserve"><value>Optional shared password for dashboard access. Leave empty to allow direct access. Stored encrypted for your Windows account. Restart the server after changing it.</value></data>
+  <data name="ProjectOutputDirectoryChoice_Select" xml:space="preserve"><value>Insert project output directory</value></data>
+  <data name="ProjectOutputDirectoryChoice_Description" xml:space="preserve"><value>Select the project whose output directory you want to use.</value></data>
 </root>
 
 

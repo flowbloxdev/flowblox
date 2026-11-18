@@ -863,16 +863,15 @@ namespace FlowBlox.AppWindow
                 UpdateUI();
             }
 
-            if (!string.IsNullOrEmpty(project.Notice))
+            UpdateUI_ProjectName();
+            if (!string.IsNullOrWhiteSpace(project.Notice))
             {
-                await DesktopDialogs.Messages.ShowAsync(project.Notice,
+                await DesktopDialogs.Messages.ShowAsync(
+                    project.Notice,
                     FlowBloxResourceUtil.GetLocalizedString("AppWindow_ProjectNotice_Title", typeof(FlowBloxMainUITexts)),
                     MessageBoxButtons.Ok,
-                    MessageBoxIcon.Information
-                );
+                    MessageBoxIcon.Information);
             }
-
-            UpdateUI_ProjectName();
             return true;
         }
 
@@ -1098,6 +1097,8 @@ private void itmUndo_Click(object sender, EventArgs e)
 
         internal void OnBeforeRuntimeStarted(BaseRuntime runtime)
         {
+            runtime.ExecutionEnvironmentPrerequisiteFailed += Runtime_ExecutionEnvironmentPrerequisiteFailed;
+            runtime.Finish += Runtime_DetachExecutionEnvironmentPrerequisiteGuidance;
             runtime.LogMessageCreated += Runtime_LogMessageCreated;
 
             foreach (var backtraceInterceptor in runtime.Interceptors.OfType<RuntimeBacktraceInterceptor>())

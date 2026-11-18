@@ -22,13 +22,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         protected virtual string? AdditionalBinaryDirectory => null;
 
         /// <inheritdoc />
-        public override void ValidateExecutionPrerequisites()
+        public override void ValidateExecutionEnvironmentPrerequisites()
         {
-            var ffmpegPath = ExecutionPrerequisites.RequireExecutable<FFmpegTool>(
+            var ffmpegPath = ExecutionEnvironmentPrerequisites.RequireExecutable<FFmpegTool>(
                 "FFmpeg",
                 ResolveFFmpegExecutablePath());
             var ffprobeName = OperatingSystem.IsWindows() ? "ffprobe.exe" : "ffprobe";
-            ExecutionPrerequisites.RequireExecutable<FFmpegTool>(
+            ExecutionEnvironmentPrerequisites.RequireExecutable<FFmpegTool>(
                 "FFprobe",
                 Path.Combine(Path.GetDirectoryName(ffmpegPath)!, ffprobeName));
         }
@@ -36,7 +36,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Media
         protected string ResolveFFmpegExecutablePath()
         {
             var configuredPath = FFmpeg?.GetExecutablePath() ?? ResolveFallbackFFmpegPath();
-            return ExecutionPrerequisites.FindExecutable(configuredPath, AdditionalBinaryDirectory) ?? configuredPath;
+            return ExecutionEnvironmentPrerequisites.FindExecutable(configuredPath, AdditionalBinaryDirectory) ?? configuredPath;
         }
 
         protected FFOptions ResolveFFmpegOptions() => new FFOptions

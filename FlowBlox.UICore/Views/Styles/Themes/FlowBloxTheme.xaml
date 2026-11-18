@@ -9,6 +9,19 @@
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Semantic resources shared by static dialogs and runtime property editors. -->
+    <SolidColorBrush x:Key="FlowBlox.Brush.ProgressForeground" Color="#2BA6B8" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ProgressBackground" Color="#202BA6B8" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Information.Background" Color="#EDF5FC" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Information.Border" Color="#99BFE2" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Information.Text" Color="#244F73" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Success.Background" Color="#E8F3EC" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Success.Border" Color="#91BCA2" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Success.Text" Color="#265F3D" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Error.Background" Color="#FCE8E8" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Error.Border" Color="#E6A3A3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.Notification.Error.Text" Color="#8A1F1F" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.EmptyStateText" Color="#8F98A3" />
+    <SolidColorBrush x:Key="FlowBlox.Brush.ProjectNoteIcon" Color="#F4B400" />
     <SolidColorBrush x:Key="FlowBlox.Brush.WindowBackground" Color="#FFFFFF" />
     <SolidColorBrush x:Key="FlowBlox.Brush.Surface" Color="#EEEEEE" />
     <SolidColorBrush x:Key="FlowBlox.Brush.EditorBackground" Color="#FFFFFF" />

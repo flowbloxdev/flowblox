@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "FlowBlox.WebServer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:64651;http://localhost:64652"
+    }
+  }
+}

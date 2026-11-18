@@ -1,0 +1,4 @@
+<span class="mdi-icon" style="@($"--mdi-source: url('icons/{Name}.svg')")" aria-hidden="true"></span>
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = string.Empty;
+}

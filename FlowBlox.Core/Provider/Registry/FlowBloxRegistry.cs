@@ -67,10 +67,10 @@ namespace FlowBlox.Core.Provider.Registry
         public List<FieldElement> GetUserFields(UserFieldTypes userFieldType = UserFieldTypes.None)
         {
             var userFields = GetFieldElements().Where(x => x.UserField);
-            if (userFieldType == UserFieldTypes.None)
-                return userFields.ToList();
-            else
-                return userFields.Where(x => x.UserFieldType == userFieldType).ToList();
+            if (userFieldType != UserFieldTypes.None)
+                userFields = userFields.Where(x => x.UserFieldType == userFieldType);
+
+            return userFields.OrderBy(x => x.Index).ToList();
         }
 
         private string GetNextName<T>(string prefix = null)

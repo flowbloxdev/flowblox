@@ -1,0 +1,16 @@
+@using FlowBlox.Core.Util
+<span class="prewrap">@foreach (var part in Parts()) { @if (part.Uri != null) { <a href="@part.Uri.AbsoluteUri" target="_blank" rel="noopener noreferrer">@part.Text</a> } else { @part.Text } }</span>
+@code {
+    [Parameter] public string Text { get; set; } = string.Empty;
+    private IEnumerable<(string Text, Uri? Uri)> Parts()
+    {
+        var position = 0;
+        foreach (var link in WebLinks.Find(Text))
+        {
+            yield return (Text.Substring(position, link.Start - position), null);
+            yield return (Text.Substring(link.Start, link.Length), link.Uri);
+            position = link.Start + link.Length;
+        }
+        yield return (Text[position..], null);
+    }
+}

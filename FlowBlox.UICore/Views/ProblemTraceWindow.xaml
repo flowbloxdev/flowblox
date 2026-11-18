@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     x:Class="FlowBlox.UICore.Views.ProblemTraceWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -176,23 +176,8 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <iconPacks:PackIconMaterial
-                                Kind="InformationOutline"
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Top"
-                                Style="{StaticResource FlowBlox.EmptyStateIconStyle}" />
-                            <TextBlock
-                                Grid.Column="1"
-                                TextAlignment="Left"
-                                Text="{x:Static resources:ProblemTraceWindow.EmptyState_NoFieldValues}"
-                                Style="{StaticResource FlowBlox.EmptyStateTextStyle}" />
-                        </Grid>
+                        <ContentControl Content="{x:Static resources:ProblemTraceWindow.EmptyState_NoFieldValues}"
+                            Style="{StaticResource FlowBlox.EmptyState}" />
                     </Border>
                 </Grid>
             </StackPanel>

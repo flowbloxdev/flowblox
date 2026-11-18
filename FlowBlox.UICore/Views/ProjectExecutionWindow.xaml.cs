@@ -4,21 +4,24 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Logging;
+using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Project.Launcher;
 using FlowBlox.Core.Runner.Contracts;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Resolver;
 using FlowBlox.UICore.Commands;
 using FlowBlox.UICore.ViewModels;
 using FlowBlox.UICore.Utilities;
 using MahApps.Metro.Controls;
+using MahApps.Metro.IconPacks;
+using Newtonsoft.Json.Linq;
 using Texts = FlowBlox.UICore.Resources.ProjectLauncher;
 
 namespace FlowBlox.UICore.Views;
@@ -29,22 +32,33 @@ public partial class ProjectExecutionWindow : MetroWindow
     private readonly ProjectExecutions _executions;
     private readonly FlowBloxProject? _project;
     private readonly List<FieldElement> _fields = new();
+    private readonly IReadOnlyList<ProjectOutputDirectoryChoice> _outputDirectories = Array.Empty<ProjectOutputDirectoryChoice>();
+    private readonly Dictionary<string, string> _initialValues = new(StringComparer.OrdinalIgnoreCase);
     private readonly ObservableCollection<FlowBloxTaskOptionOverrideViewModel> _options = new();
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(3) };
     private ProjectExecutionEntry? _entry;
     private string _inputDirectory = string.Empty;
     private string _outputDirectory = string.Empty;
 
-    public ProjectExecutionWindow(ProjectShortcut shortcut, FlowBloxProject project, ProjectExecutions? executions = null)
+    public ProjectExecutionWindow(
+        ProjectShortcut shortcut,
+        FlowBloxProject project,
+        ProjectExecutions? executions = null,
+        IEnumerable<string>? projectNames = null)
     {
         InitializeComponent();
         _shortcut = shortcut;
         _executions = executions ?? ProjectExecutions.Instance;
         _project = project;
+        _outputDirectories = ProjectOutputDirectoryChoice.Create(
+            (projectNames ?? Enumerable.Empty<string>()).Append(project.ProjectName));
         ProjectTitle.Text = project.ProjectName;
         ProjectDescription.Text = project.ProjectDescription;
+        TextBlockLinkHelper.SetFormattedText(ProjectNoticeText, project.Notice);
+        ProjectNoticeExpander.Visibility = string.IsNullOrWhiteSpace(project.Notice) ? Visibility.Collapsed : Visibility.Visible;
         OptionsGrid.ItemsSource = _options;
         BuildFields();
+        InitializeHistory();
         InitializeMonitoring();
         UpdateExecuteAvailability();
     }
@@ -56,9 +70,18 @@ public partial class ProjectExecutionWindow : MetroWindow
         _executions = executions ?? ProjectExecutions.Instance;
         _entry = entry;
         ProjectTitle.Text = entry.Project.Name;
-        ProjectDescription.Text = Text(nameof(Texts.Readonly));
-        foreach (var pair in entry.Request.UserFields.OrderBy(x => x.Key, StringComparer.CurrentCultureIgnoreCase))
-            AddField(pair.Key, new TextBox { Text = pair.Value, IsReadOnly = true });
+        ProjectDescription.Text = ReadProjectDescription(entry);
+        var maskPasswords = FlowBloxOptions.GetOptionInstance()
+            .GetOption(OptionsConstants.UIPropertyViewMaskPasswordValues)?.GetValueBoolean() == true;
+        foreach (var pair in entry.Request.UserFields)
+        {
+            var isPassword = entry.Request.PasswordFieldNames == null
+                || entry.Request.PasswordFieldNames.Contains(pair.Key, StringComparer.OrdinalIgnoreCase);
+            FrameworkElement editor = maskPasswords && isPassword
+                ? new PasswordBox { Password = pair.Value ?? string.Empty }
+                : new TextBox { Text = pair.Value, IsReadOnly = true };
+            AddField(pair.Key, editor);
+        }
         foreach (var pair in entry.Request.OptionOverrides)
         {
             var option = new FlowBloxTaskOptionOverrideViewModel { OptionKey = pair.Key, StringValue = pair.Value };
@@ -73,12 +96,14 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private void InitializeMonitoring()
     {
+        ProjectDescriptionBox.Visibility = string.IsNullOrWhiteSpace(ProjectDescription.Text) ? Visibility.Collapsed : Visibility.Visible;
+        NoParametersHint.Visibility = FieldsPanel.Children.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         InputDirectoryButton.Command = new RelayCommand(async () => await OpenDirectoryAsync(_inputDirectory));
         OutputDirectoryButton.Command = new RelayCommand(async () => await OpenDirectoryAsync(_outputDirectory));
         _timer.Tick += Timer_Tick;
         Loaded += (_, _) =>
         {
-            if (_entry?.IsRunning == true)
+            if (_entry?.IsRunning == true || HistoryList.Items.OfType<ProjectExecutionHistoryItem>().Any(item => item.IsRunning))
                 _timer.Start();
         };
         Closed += (_, _) =>
@@ -96,16 +121,64 @@ public partial class ProjectExecutionWindow : MetroWindow
         var property = typeof(FieldElement).GetProperty(nameof(FieldElement.StringValue))!;
         foreach (var field in (_project!.UserFields ?? Enumerable.Empty<FieldElement>())
                      .Where(field => field.IsUserInputField())
-                     .OrderBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase))
+                     .OrderBy(x => x.Index))
         {
+            if (field.StoreValueLocally)
+                field.StringValue = string.Empty;
+
             _fields.Add(field);
+            _initialValues[field.Name] = field.StringValue ?? string.Empty;
             var bindingContext = new PropertyControlBindingContext(field);
             var model = resolver.Resolve(property, field, false, null, bindingContext);
-            AddField(field.Name + (field.IsRequiredAtRuntimeStartup ? " *" : string.Empty), model.Control);
+            var editor = AddOutputDirectoryButton(field, model.Control);
+            AddField(field.Name + (field.IsRequiredAtRuntimeStartup ? " *" : string.Empty), editor);
             field.PropertyChanged += InputField_PropertyChanged;
         }
-        if (_fields.Count == 0)
-            FieldsPanel.Children.Add(new TextBlock { Text = Text(nameof(Texts.NoParameters)), Margin = new Thickness(4) });
+    }
+
+    private FrameworkElement AddOutputDirectoryButton(FieldElement field, FrameworkElement editor)
+    {
+        if (field.LoVType == LoVType.PossibleValues)
+            return editor;
+
+        var button = new Button
+        {
+            ToolTip = FlowBloxResourceUtil.GetLocalizedString("ProjectOutputDirectoryChoice_Select", typeof(Core.FlowBloxTexts)),
+            Content = new PackIconMaterial
+            {
+                Kind = PackIconMaterialKind.FolderUploadOutline,
+                Width = 14,
+                Height = 14,
+                Foreground = System.Windows.Media.Brushes.SteelBlue
+            },
+            Width = 26,
+            Height = 24,
+            Padding = new Thickness(4, 3, 4, 3),
+            Margin = new Thickness(4, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        button.SetResourceReference(StyleProperty, "FlowBlox.ToolbarButton");
+        button.Click += (_, _) => SelectOutputDirectory(field);
+        TextBoxWithOptionalButtonsCreator.TryAddActionButton(editor, button);
+        return editor;
+    }
+
+    private void SelectOutputDirectory(FieldElement field)
+    {
+        var dialog = new MultiValueSelectionDialog(
+            FlowBloxResourceUtil.GetLocalizedString("ProjectOutputDirectoryChoice_Select", typeof(Core.FlowBloxTexts)),
+            FlowBloxResourceUtil.GetLocalizedString("ProjectOutputDirectoryChoice_Description", typeof(Core.FlowBloxTexts)),
+            new GenericSelectionHandler<ProjectOutputDirectoryChoice>(_outputDirectories, choice => choice.DisplayName))
+        {
+            Owner = this,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        if (dialog.ShowDialog() != true || dialog.SelectedItem?.Value is not ProjectOutputDirectoryChoice choice)
+            return;
+
+        field.StringValue = choice.Value;
+        FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
     }
 
     private void InputField_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -123,15 +196,71 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private void AddField(string name, FrameworkElement editor)
     {
-        var label = new TextBlock { Text = name, Style = (Style)FindResource("PropertyView.LabelTextStyle") };
+        var label = new TextBlock { Text = name, Style = (Style)FindResource("Execution.ParameterLabel") };
         FieldsPanel.Children.Add(new Border
         {
             Child = label,
-            Style = (Style)FindResource("PropertyView.LabelBorderStyle"),
+            Style = (Style)FindResource("Execution.ParameterBorder"),
             Margin = new Thickness(0, 4, 0, 3)
         });
         editor.Margin = new Thickness(0, 0, 0, 8);
+        editor.MinHeight = 36;
+        editor.SetValue(Control.FontSizeProperty, 14.0);
         FieldsPanel.Children.Add(editor);
+    }
+
+    private void InitializeHistory()
+    {
+        var history = _executions.GetForProject(_shortcut)
+            .Select(entry => new ProjectExecutionHistoryItem(entry))
+            .ToList();
+        HistoryList.ItemsSource = history;
+        HistoryExpander.Visibility = _fields.Count > 0 && history.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        ClearInputsButton.Visibility = _fields.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        if (history.Count > 0)
+            HistoryList.SelectedIndex = 0;
+    }
+
+    private void HistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_project == null || _entry != null || HistoryList.SelectedItem is not ProjectExecutionHistoryItem item)
+            return;
+
+        ResetConfiguration();
+        var values = new Dictionary<string, string>(item.Entry.Request.UserFields, StringComparer.OrdinalIgnoreCase);
+        foreach (var field in _fields)
+        {
+            if (values.TryGetValue(field.Name, out var value))
+            {
+                field.StringValue = value;
+                FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
+            }
+        }
+        foreach (var pair in item.Entry.Request.OptionOverrides)
+            AddOption(pair.Key, pair.Value);
+
+        RefreshDirectories();
+        UpdateExecuteAvailability();
+    }
+
+    private void ClearInputs_Click(object sender, RoutedEventArgs e)
+    {
+        HistoryList.SelectedItem = null;
+        ResetConfiguration();
+    }
+
+    private void ResetConfiguration()
+    {
+        OptionsGrid.CancelEdit(DataGridEditingUnit.Cell);
+        OptionsGrid.CancelEdit(DataGridEditingUnit.Row);
+        _options.Clear();
+        foreach (var field in _fields)
+        {
+            field.StringValue = _initialValues[field.Name];
+            FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
+        }
+        RefreshDirectories();
+        UpdateExecuteAvailability();
     }
 
     private async void Execute_Click(object sender, RoutedEventArgs e)
@@ -168,7 +297,13 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private void AddOption_Click(object sender, RoutedEventArgs e)
     {
-        var option = new FlowBloxTaskOptionOverrideViewModel();
+        AddOption(string.Empty, string.Empty);
+        OptionsGrid.SelectedItem = _options.Last();
+    }
+
+    private void AddOption(string key, string value)
+    {
+        var option = new FlowBloxTaskOptionOverrideViewModel { OptionKey = key, StringValue = value };
         option.SetAvailableOptionKeys(FlowBloxOptions.GetOptionInstance().OptionCollection.Keys);
         option.PropertyChanged += (_, args) =>
         {
@@ -178,7 +313,6 @@ public partial class ProjectExecutionWindow : MetroWindow
             RefreshDirectories();
         };
         _options.Add(option);
-        OptionsGrid.SelectedItem = option;
     }
 
     private void RemoveOption_Click(object sender, RoutedEventArgs e)
@@ -207,12 +341,25 @@ public partial class ProjectExecutionWindow : MetroWindow
     private void RefreshState()
     {
         _executions.Refresh();
+        if (_project != null)
+        {
+            var entries = _executions.GetForProject(_shortcut).ToDictionary(entry => entry.Id);
+            foreach (var item in HistoryList.Items.OfType<ProjectExecutionHistoryItem>())
+            {
+                if (entries.TryGetValue(item.Entry.Id, out var updated))
+                    item.Update(updated);
+            }
+            if (!HistoryList.Items.OfType<ProjectExecutionHistoryItem>().Any(item => item.IsRunning))
+                _timer.Stop();
+        }
         if (_entry != null)
         {
             _entry = _executions.GetAll().FirstOrDefault(x => x.Id == _entry.Id) ?? _entry;
-            StatusText.Text = string.Join(Environment.NewLine,
-                _entry.IsRunning ? Text(nameof(Texts.Running)) : string.Empty,
-                string.Format(Text(nameof(Texts.ExecutionStarted)), _entry.StartedUtc.ToLocalTime())).Trim();
+            StartedBox.Visibility = Visibility.Visible;
+            StatusText.Text = string.Format(Text(nameof(Texts.ExecutionStarted)), _entry.StartedUtc.ToLocalTime());
+            RunnerProcessText.Text = string.Format(Text(nameof(Texts.ProcessId)), _entry.ProcessId);
+            RunnerProcessText.Visibility = _entry.ProcessId.HasValue ? Visibility.Visible : Visibility.Collapsed;
+            TerminateButton.Visibility = _executions.CanTerminate(_entry) ? Visibility.Visible : Visibility.Collapsed;
             RunningIndicator.Visibility = _entry.IsRunning ? Visibility.Visible : Visibility.Collapsed;
             CompletionBox.Visibility = _entry.IsRunning ? Visibility.Collapsed : Visibility.Visible;
             if (!_entry.IsRunning)
@@ -227,9 +374,9 @@ public partial class ProjectExecutionWindow : MetroWindow
     private void RefreshCompletion()
     {
         var succeeded = _entry!.Response?.Success == true;
-        var color = succeeded ? Color.FromRgb(0x42, 0x97, 0x66) : Color.FromRgb(0xD7, 0x77, 0x6C);
-        CompletionBox.Background = new SolidColorBrush(color) { Opacity = 0.12 };
-        CompletionBox.BorderBrush = new SolidColorBrush(color) { Opacity = 0.6 };
+        CompletionBox.SetResourceReference(StyleProperty, succeeded
+            ? "FlowBlox.NotificationBox.Success"
+            : "FlowBlox.NotificationBox.Error");
         CompletionTitle.Text = Text(succeeded ? nameof(Texts.Succeeded) : nameof(Texts.Failed));
         CompletionMessage.Text = new[]
         {
@@ -281,12 +428,33 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
+    private async void Terminate_Click(object sender, RoutedEventArgs e)
+    {
+        if (_entry == null)
+            return;
+
+        TerminateButton.IsEnabled = false;
+        try
+        {
+            await Task.Run(() => _executions.Terminate(_entry.Id));
+            RefreshState();
+        }
+        catch (Exception exception)
+        {
+            await ShowErrorAsync(exception);
+        }
+        finally
+        {
+            TerminateButton.IsEnabled = true;
+        }
+    }
+
     private async void OpenLog_Click(object sender, RoutedEventArgs e)
     {
         try
         {
             if (File.Exists(_entry?.Response?.LogfilePath))
-                FlowBloxEditingHelper.OpenUsingEditor(_entry.Response.LogfilePath);
+                FlowBloxEditingHelper.OpenFileWithSelection(_entry.Response.LogfilePath, this);
         }
         catch (Exception exception)
         {
@@ -299,6 +467,26 @@ public partial class ProjectExecutionWindow : MetroWindow
         FlowBloxLogManager.Instance.GetLogger().Error("Project launcher operation failed.", exception);
         await MessageBoxHelper.ShowMessageBoxAsync(this, MessageBoxType.Error,
             string.Format(Text(nameof(Texts.Error)), exception.Message));
+    }
+
+    private static string ReadProjectDescription(ProjectExecutionEntry entry)
+    {
+        if (!string.IsNullOrWhiteSpace(entry.ProjectDescription))
+            return entry.ProjectDescription;
+
+        var file = File.Exists(entry.Request.ProjectFile) ? entry.Request.ProjectFile : entry.Project.ProjectFile;
+        if (!File.Exists(file))
+            return string.Empty;
+
+        try
+        {
+            return JObject.Parse(File.ReadAllText(file)).Value<string>(nameof(FlowBloxProject.ProjectDescription)) ?? string.Empty;
+        }
+        catch (Exception exception)
+        {
+            FlowBloxLogManager.Instance.GetLogger().Warn("Failed to read the execution's project description.", exception);
+            return string.Empty;
+        }
     }
 
     private static string Text(string key) => FlowBloxResourceUtil.GetLocalizedString(key, typeof(Texts));

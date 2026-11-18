@@ -8,8 +8,9 @@ namespace FlowBloxTest.Services
     {
         public List<AIChatRequest> Requests { get; } = new();
         public Action<AIChatRequest>? SummaryRequestReceived { get; set; }
+        public Func<AIChatRequest, AiExecutorResult>? CompactionResponse { get; set; }
         public List<AIChatRequest> ChatRequests => Requests
-            .Where(x => x.Source != "FlowBloxAIAssistantSummary")
+            .Where(x => x.Source != "FlowBloxAIAssistantSummary" && x.Source != "FlowBloxAIAssistantCompaction")
             .ToList();
 
         public Task<AiExecutorResult> ExecuteChatAsync(
@@ -18,6 +19,15 @@ namespace FlowBloxTest.Services
             CancellationToken ct)
         {
             Requests.Add(request);
+
+            if (request.Source == "FlowBloxAIAssistantCompaction")
+            {
+                return Task.FromResult(CompactionResponse?.Invoke(request) ?? new AiExecutorResult
+                {
+                    Success = true,
+                    OutputText = "[COMPACTED]"
+                });
+            }
 
             if (request.Source == "FlowBloxAIAssistantSummary")
             {

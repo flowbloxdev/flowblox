@@ -135,24 +135,28 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         private void EnsureModelInitialized(BaseRuntime runtime)
         {
+            var modelFolder = ResolveModelFolder();
+            if (string.IsNullOrWhiteSpace(modelFolder))
+                throw new InvalidOperationException("ONNX QA initialization failed: ModelFolder is null or empty.");
+
             try
             {
-                InitializeModel(runtime);
+                InitializeModel(runtime, modelFolder);
             }
             catch (Exception exception)
             {
-                var failure = new ExecutionPrerequisiteException(
-                    "ONNX QA", typeof(OnnxQAFlowBlock), this.Resolve(owner => owner.ModelFolder), exception);
-                CreateNotification(runtime, OnnxQANotifications.SetupRequired, failure.NotificationMessage, failure);
+                var failure = new ExecutionEnvironmentPrerequisiteException(
+                    "ONNX QA", typeof(OnnxQAFlowBlock), modelFolder, exception);
+                CreateNotification(runtime, OnnxQANotifications.SetupRequired, failure);
                 throw failure;
             }
         }
 
-        private void InitializeModel(BaseRuntime runtime)
+        private void InitializeModel(BaseRuntime runtime, string modelFolder)
         {
-            FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
-            _resolvedModelFolder = ResolveModelFolder();
+            _resolvedModelFolder = modelFolder;
             ValidateModelFolder(_resolvedModelFolder);
+            FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
 
             try
             {
@@ -187,8 +191,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                 var modelFolder = !string.IsNullOrWhiteSpace(_resolvedModelFolder) ? _resolvedModelFolder : ResolveModelFolder();
                 if (string.IsNullOrWhiteSpace(modelFolder) || !Directory.Exists(modelFolder))
                 {
-                    var failure = new ExecutionPrerequisiteException("ONNX QA", typeof(OnnxQAFlowBlock), modelFolder);
-                    CreateNotification(runtime, OnnxQANotifications.ModelFolderMissing, failure.NotificationMessage, failure);
+                    var failure = string.IsNullOrWhiteSpace(modelFolder)
+                        ? null
+                        : new ExecutionEnvironmentPrerequisiteException("ONNX QA", typeof(OnnxQAFlowBlock), modelFolder);
+                    CreateNotification(runtime, OnnxQANotifications.ModelFolderMissing, failure);
                     GenerateResult(runtime);
                     return;
                 }

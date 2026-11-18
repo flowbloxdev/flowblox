@@ -81,12 +81,6 @@
   <data name="Message_AutoLayoutNoStart_Title" xml:space="preserve">
     <value>Automatic alignment</value>
   </data>
-  <data name="Message_ConnectBlocked_Description" xml:space="preserve">
-    <value>The selected Flow Blocks cannot be connected. Check whether the target already has the maximum number of inputs, whether one of the elements is a note, or whether the connection would create an invalid dependency.</value>
-  </data>
-  <data name="Message_ConnectBlocked_Title" xml:space="preserve">
-    <value>Connection not possible</value>
-  </data>
   <data name="Message_DeleteDependencyViolation_Description" xml:space="preserve">
     <value>The delete action cannot be performed because it would violate existing dependencies: {0}</value>
   </data>
@@ -158,4 +152,10 @@
   </data>
   <data name="Toolbar_InputFields" xml:space="preserve"><value>Input fields</value></data>
   <data name="Toolbar_MemoryFields" xml:space="preserve"><value>Memory fields</value></data>
+  <data name="Toolbar_ConnectIterationContext" xml:space="preserve">
+    <value>Iteration context</value>
+  </data>
+  <data name="Toolbar_ConnectIterationContext_Tooltip" xml:space="preserve">
+    <value>Link an iteration context: drag from the block that needs the context to an available upstream block. Unavailable targets are dimmed.</value>
+  </data>
 </root>

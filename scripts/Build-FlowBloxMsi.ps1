@@ -1,4 +1,4 @@
-﻿param(
+param(
     [string]$Configuration = "Release",
     [string]$RuntimeIdentifier = "win-x64",
     [string]$InstallerProjectPath = "FlowBlox.Installer\FlowBlox.Installer.wixproj",
@@ -25,6 +25,7 @@ $applicationProjects = @(
     @{ Name = "FlowBlox.Avalonia"; Path = $flowBloxProject; Framework = $null },
     @{ Name = "FlowBlox.CLI"; Path = (Join-Path $repoRoot "FlowBlox.CLI\FlowBlox.CLI.csproj"); Framework = $null },
     @{ Name = "FlowBlox.RunnerHost"; Path = (Join-Path $repoRoot "FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj"); Framework = $null },
+    @{ Name = "FlowBlox.WebServer"; Path = (Join-Path $repoRoot "FlowBlox.WebServer\FlowBlox.WebServer.csproj"); Framework = $null },
     @{ Name = "FlowBlox.WorkerService"; Path = (Join-Path $repoRoot "FlowBlox.WorkerService\FlowBlox.WorkerService.csproj"); Framework = "net10.0-windows10.0.19041.0" }
 )
 
@@ -115,9 +116,12 @@ if (-not $NoPublish) {
         if ($applicationProject.Framework) {
             $publishArgs += @("-f", $applicationProject.Framework)
         }
-        if ($applicationProject.Name -eq 'FlowBlox.Avalonia') {
+        if ($applicationProject.Name -in @('FlowBlox.Avalonia', 'FlowBlox.WebServer')) {
             # RunnerHost is published separately with the selected RID below.
             $publishArgs += "-p:PublishRunnerHost=false"
+        }
+        if ($applicationProject.Name -eq 'FlowBlox.Avalonia') {
+            $publishArgs += "-p:PublishWebServer=false"
         }
         if ($NoRestore) {
             $publishArgs += "--no-restore"
@@ -143,7 +147,7 @@ if (-not (Test-Path $publishDirResolved)) {
     throw "Publish directory not found: $publishDirResolved"
 }
 
-foreach ($executable in @('FlowBlox.exe', 'FlowBlox.CLI.exe', 'FlowBlox.RunnerHost.exe', 'FlowBlox.WorkerService.exe')) {
+foreach ($executable in @('FlowBlox.exe', 'FlowBlox.CLI.exe', 'FlowBlox.RunnerHost.exe', 'FlowBlox.WorkerService.exe', 'FlowBlox.WebServer.exe')) {
     if (-not (Test-Path -LiteralPath (Join-Path $publishDirResolved $executable) -PathType Leaf)) {
         throw "Required application executable missing from MSI payload: $executable. Rebuild without -NoPublish to refresh the payload."
     }

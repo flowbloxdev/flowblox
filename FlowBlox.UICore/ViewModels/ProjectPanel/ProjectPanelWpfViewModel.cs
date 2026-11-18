@@ -54,6 +54,9 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         private FlowBlockArrowViewModel _selectedArrow;
         private bool _isConnectionMode;
         private bool _isTemporaryConnectionMode;
+        private bool _isIterationContextConnectionMode;
+        private FlowBlockNodeViewModel _connectionPreviewSource;
+        private HashSet<BaseFlowBlock> _connectionPreviewTargets;
         private bool _isRuntimeActive;
         private bool _isRuntimePaused;
         private bool _isExternalProjectEditActive;
@@ -73,6 +76,7 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
 
             SelectModeCommand = new RelayCommand(() => IsConnectionMode = false, CanEditGrid);
             ConnectionModeCommand = new RelayCommand(() => IsConnectionMode = true, CanEditGrid);
+            IterationContextConnectionModeCommand = new RelayCommand(EnableIterationContextConnectionMode, CanEditGrid);
             SelectAllCommand = new RelayCommand(SelectAll, CanEditGrid);
             SelectLeftCommand = new RelayCommand(() => SelectDirectional(Direction.Left), CanEditGrid);
             SelectRightCommand = new RelayCommand(() => SelectDirectional(Direction.Right), CanEditGrid);
@@ -119,6 +123,7 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
 
         public RelayCommand SelectModeCommand { get; }
         public RelayCommand ConnectionModeCommand { get; }
+        public RelayCommand IterationContextConnectionModeCommand { get; }
         public RelayCommand SelectAllCommand { get; }
         public RelayCommand SelectLeftCommand { get; }
         public RelayCommand SelectRightCommand { get; }
@@ -192,18 +197,18 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
 
         public bool IsConnectionMode
         {
-            get => _isConnectionMode || _isTemporaryConnectionMode;
+            get => _isConnectionMode || _isTemporaryConnectionMode || _isIterationContextConnectionMode;
             set
             {
-                var previousValue = IsConnectionMode;
-                if (_isConnectionMode == value && (!_isTemporaryConnectionMode || value))
+                if (_isConnectionMode == value && (!_isTemporaryConnectionMode || value) && !_isIterationContextConnectionMode)
                     return;
 
                 _isConnectionMode = value;
+                _isIterationContextConnectionMode = false;
                 if (!value)
                     _isTemporaryConnectionMode = false;
 
-                NotifyConnectionModeChanged(previousValue);
+                NotifyConnectionModeChanged();
             }
         }
 
@@ -262,7 +267,11 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         public IEnumerable<FlowBlockNodeViewModel> SelectedNodes => Nodes.Where(x => x.IsSelected);
         public bool HasNodes => Nodes.Count > 0;
         public bool IsSelectionMode => !IsConnectionMode;
-        public string ModeText => IsConnectionMode
+        public bool IsFlowConnectionMode => IsConnectionMode && !IsIterationContextConnectionMode;
+        public bool IsIterationContextConnectionMode => _isIterationContextConnectionMode;
+        public string ModeText => IsIterationContextConnectionMode
+            ? FlowBloxResourceUtil.GetLocalizedString("Toolbar_ConnectIterationContext", typeof(Resources.ProjectPanel))
+            : IsConnectionMode
             ? FlowBloxResourceUtil.GetLocalizedString("Toolbar_Connect", typeof(Resources.ProjectPanel))
             : FlowBloxResourceUtil.GetLocalizedString("Toolbar_Select", typeof(Resources.ProjectPanel));
         public string ToggleBreakpointHeader => SelectedNode?.InternalFlowBlock.BreakPoint == true
@@ -287,19 +296,50 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         public bool CanCopySelection => SelectedNodes.Any();
         public bool CanPasteSelection => _copiedFlowBlocks.Count > 0 && HasProject() && !IsProjectEditingReadOnly;
         public bool CanStartConnectionFrom(FlowBlockNodeViewModel node)
-            => !IsProjectEditingReadOnly && node?.InternalFlowBlock is not null and not NoteFlowBlock;
+            => !IsProjectEditingReadOnly && node?.InternalFlowBlock is not null and not NoteFlowBlock &&
+                (!IsIterationContextConnectionMode || node.InternalFlowBlock.GetInputCardinality() != FlowBlockCardinalities.None);
         public bool CanPreviewConnection(FlowBlockNodeViewModel startNode, FlowBlockNodeViewModel endNode)
-            => CanConnect(startNode, endNode);
+            => !IsProjectEditingReadOnly && endNode != null &&
+                (startNode == _connectionPreviewSource && _connectionPreviewTargets != null
+                    ? _connectionPreviewTargets.Contains(endNode.InternalFlowBlock)
+                    : CanConnect(startNode, endNode));
+
+        private void EnableIterationContextConnectionMode()
+        {
+            _isConnectionMode = false;
+            _isTemporaryConnectionMode = false;
+            _isIterationContextConnectionMode = true;
+            NotifyConnectionModeChanged();
+        }
+
+        public void BeginConnectionPreview(FlowBlockNodeViewModel source)
+        {
+            EndConnectionPreview();
+            if (!CanStartConnectionFrom(source))
+                return;
+
+            _connectionPreviewSource = source;
+            _connectionPreviewTargets = GetPossibleConnectionTargets(source.InternalFlowBlock).ToHashSet();
+            foreach (var node in Nodes)
+                node.IsConnectionTargetBlocked = node != source && !_connectionPreviewTargets.Contains(node.InternalFlowBlock);
+        }
+
+        public void EndConnectionPreview()
+        {
+            _connectionPreviewSource = null;
+            _connectionPreviewTargets = null;
+            foreach (var node in Nodes)
+                node.IsConnectionTargetBlocked = false;
+        }
 
         public void SetTemporaryConnectionMode(bool enabled)
         {
-            var previousValue = IsConnectionMode;
-            var temporaryValue = enabled && !_isConnectionMode;
+            var temporaryValue = enabled && !_isConnectionMode && !_isIterationContextConnectionMode;
             if (_isTemporaryConnectionMode == temporaryValue)
                 return;
 
             _isTemporaryConnectionMode = temporaryValue;
-            NotifyConnectionModeChanged(previousValue);
+            NotifyConnectionModeChanged();
         }
 
         public void SelectNode(FlowBlockNodeViewModel node, bool toggle, bool extend)
@@ -371,17 +411,24 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         {
             if (!CanConnect(startNode, endNode))
             {
-                if (startNode != null && endNode != null)
-                    ShowMessage(
-                        FlowBloxResourceUtil.GetLocalizedString("Message_ConnectBlocked_Description", typeof(Resources.ProjectPanel)),
-                        FlowBloxResourceUtil.GetLocalizedString("Message_ConnectBlocked_Title", typeof(Resources.ProjectPanel)),
-                        FlowBloxMessageBoxTypes.Information);
-
                 return false;
             }
 
             FlowBloxBaseAction connectAction;
-            if (startNode.InternalFlowBlock is RecursiveTargetFlowBlockBase recursiveCallFlowBlock)
+            if (IsIterationContextConnectionMode)
+            {
+                var flowBlock = startNode.InternalFlowBlock;
+                if (flowBlock.AssociatedIterationContext == endNode.InternalFlowBlock)
+                    return false;
+                connectAction = new FlowBloxPropertyChangeAction
+                {
+                    Target = flowBlock,
+                    PropertyName = nameof(BaseFlowBlock.AssociatedIterationContext),
+                    OldValue = flowBlock.AssociatedIterationContext,
+                    NewValue = endNode.InternalFlowBlock
+                };
+            }
+            else if (startNode.InternalFlowBlock is RecursiveTargetFlowBlockBase recursiveCallFlowBlock)
             {
                 connectAction = new FlowBloxInvokeAction
                 {
@@ -1499,13 +1546,27 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
                 _componentProvider?.GetCurrentChangelist()?.AddChange(disconnectAction);
             }
 
+            else if (arrow.Kind == "iteration")
+            {
+                var block = arrow.From.InternalFlowBlock;
+                var disconnectAction = new FlowBloxPropertyChangeAction
+                {
+                    Target = block,
+                    PropertyName = nameof(BaseFlowBlock.AssociatedIterationContext),
+                    OldValue = block.AssociatedIterationContext,
+                    NewValue = null
+                };
+                disconnectAction.Invoke();
+                _componentProvider?.GetCurrentChangelist()?.AddChange(disconnectAction);
+            }
+
             SelectedArrow = null;
             RefreshArrows();
         }
 
-        private static bool CanConnect(FlowBlockNodeViewModel startNode, FlowBlockNodeViewModel endNode)
+        private bool CanConnect(FlowBlockNodeViewModel startNode, FlowBlockNodeViewModel endNode)
         {
-            if (startNode == null || endNode == null)
+            if (startNode == null || endNode == null || !Nodes.Contains(startNode) || !Nodes.Contains(endNode))
                 return false;
 
             if (ReferenceEquals(startNode, endNode))
@@ -1516,26 +1577,16 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
             if (startFlowBlock == null || endFlowBlock == null)
                 return false;
 
-            if (startFlowBlock is RecursiveTargetFlowBlockBase recursiveTarget)
-                return recursiveTarget.GetPossibleTargetFlowBlocks().Contains(endFlowBlock);
+            return !IsProjectEditingReadOnly && GetPossibleConnectionTargets(startFlowBlock).Contains(endFlowBlock);
+        }
 
-            if (startFlowBlock is NoteFlowBlock || endFlowBlock is NoteFlowBlock)
-                return false;
-
-            if (endFlowBlock.GetInputCardinality() == FlowBlockCardinalities.None)
-                return false;
-
-            if (endFlowBlock.GetInputCardinality() == FlowBlockCardinalities.One &&
-                endFlowBlock.ReferencedFlowBlocks.Count > 0)
-                return false;
-
-            if (endFlowBlock.ReferencedFlowBlocks.Contains(startFlowBlock))
-                return false;
-
-            if (startFlowBlock.ReferencedFlowBlocks.Contains(endFlowBlock))
-                return false;
-
-            return true;
+        private List<BaseFlowBlock> GetPossibleConnectionTargets(BaseFlowBlock source)
+        {
+            if (IsIterationContextConnectionMode)
+                return source.GetPossibleIterationContexts();
+            if (source is RecursiveTargetFlowBlockBase recursiveTarget)
+                return recursiveTarget.GetPossibleTargetFlowBlocks();
+            return source.GetPossibleNextFlowBlocks();
         }
 
         private bool AssignFlowBlockName(BaseFlowBlock flowBlock)
@@ -1621,12 +1672,12 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
 
         private bool CanEditGrid() => HasProject() && !IsProjectEditingReadOnly;
 
-        private void NotifyConnectionModeChanged(bool previousValue)
+        private void NotifyConnectionModeChanged()
         {
-            if (previousValue == IsConnectionMode)
-                return;
-
+            EndConnectionPreview();
             OnPropertyChanged(nameof(IsConnectionMode));
+            OnPropertyChanged(nameof(IsFlowConnectionMode));
+            OnPropertyChanged(nameof(IsIterationContextConnectionMode));
             OnPropertyChanged(nameof(IsSelectionMode));
             OnPropertyChanged(nameof(ModeText));
             OnPropertyChanged(nameof(CanStartMarqueeSelection));
@@ -1653,6 +1704,7 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         {
             SelectModeCommand.Invalidate();
             ConnectionModeCommand.Invalidate();
+            IterationContextConnectionModeCommand.Invalidate();
             SelectAllCommand.Invalidate();
             SelectLeftCommand.Invalidate();
             SelectRightCommand.Invalidate();

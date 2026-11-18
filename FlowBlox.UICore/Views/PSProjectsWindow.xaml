@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
+<mah:MetroWindow Style="{DynamicResource FlowBlox.Window}"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     x:Class="FlowBlox.UICore.Views.PSProjectsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -10,6 +10,7 @@
     xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
     xmlns:launcher="clr-namespace:FlowBlox.UICore.Resources"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:api="clr-namespace:FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;assembly=FlowBlox.Core"
     Title="{x:Static resources:PSProjectsWindow.Title}"
     Height="800"
     Width="1100"
@@ -29,6 +30,30 @@
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:ProjectCreatorNameConverter x:Key="ProjectCreatorNameConverter" />
+
+            <Style x:Key="ProjectVisibilityBadge" TargetType="Border">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="8,3" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Visibility}" Value="{x:Static api:FbProjectVisibility.Public}">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="Background" Value="#E4F2EC" />
+                        <Setter Property="BorderBrush" Value="#B4D2C4" />
+                        <Setter Property="TextElement.Foreground" Value="#2E6851" />
+                        <Setter Property="Tag" Value="{x:Static resources:PSProjectsWindow.Visibility_Public}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Visibility}" Value="{x:Static api:FbProjectVisibility.Private}">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="Background" Value="#FCF0DF" />
+                        <Setter Property="BorderBrush" Value="#E2C6A0" />
+                        <Setter Property="TextElement.Foreground" Value="#87591E" />
+                        <Setter Property="Tag" Value="{x:Static resources:PSProjectsWindow.Visibility_Private}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
             <Style x:Key="FlowBlox.CopyIconButton"
                    TargetType="{x:Type Button}">
@@ -241,34 +266,8 @@
                               MouseDoubleClick="ProjectCards_MouseDoubleClick"
                               KeyDown="ProjectCards_KeyDown">
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Margin" Value="0,0,0,8"/>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource FlowBlox.CardListItem}">
                                 <Setter Property="AutomationProperties.Name" Value="{Binding Name}"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <Border x:Name="CardBorder" Padding="14"
-                                                    Background="#FFF7F9FB" BorderBrush="#FFD5DEE7"
-                                                    BorderThickness="1" CornerRadius="5">
-                                                <ContentPresenter HorizontalAlignment="Stretch"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="CardBorder" Property="Background" Value="#FFF0F5FA"/>
-                                                    <Setter TargetName="CardBorder" Property="BorderBrush" Value="#FFA7C0D8"/>
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="CardBorder" Property="Background" Value="#FFE8F1FA"/>
-                                                    <Setter TargetName="CardBorder" Property="BorderBrush" Value="#FF3A6EA5"/>
-                                                </Trigger>
-                                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                                    <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Accent}"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
                             </Style>
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
@@ -279,34 +278,40 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <ToggleButton Grid.Column="2" VerticalAlignment="Top" Margin="8,0,0,0"
-                                                  ToolTip="{x:Static launcher:ProjectLauncher.Favorite}"
-                                                  Loaded="FavoriteButton_Loaded" Click="FavoriteButton_Click"
-                                                  PreviewMouseDoubleClick="FavoriteButton_PreviewMouseDoubleClick">
-                                        <ToggleButton.Style>
-                                            <Style TargetType="ToggleButton">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                                <Setter Property="BorderThickness" Value="0"/>
-                                                <Setter Property="Padding" Value="4"/>
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="ToggleButton">
-                                                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                                                                <iconPacks:PackIconMaterial x:Name="FavoriteStar" Kind="StarOutline"
-                                                                                           Width="20" Height="20" Foreground="#8C969D"/>
-                                                            </Border>
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsChecked" Value="True">
-                                                                    <Setter TargetName="FavoriteStar" Property="Kind" Value="Star"/>
-                                                                    <Setter TargetName="FavoriteStar" Property="Foreground" Value="#F5A23D"/>
-                                                                </Trigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </ToggleButton.Style>
-                                    </ToggleButton>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="8,0,0,0">
+                                        <Border Style="{StaticResource ProjectVisibilityBadge}">
+                                            <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=Border}}"
+                                                       FontSize="11" FontWeight="SemiBold" />
+                                        </Border>
+                                        <ToggleButton VerticalAlignment="Center" Margin="6,0,0,0"
+                                                      ToolTip="{x:Static launcher:ProjectLauncher.Favorite}"
+                                                      Loaded="FavoriteButton_Loaded" Click="FavoriteButton_Click"
+                                                      PreviewMouseDoubleClick="FavoriteButton_PreviewMouseDoubleClick">
+                                            <ToggleButton.Style>
+                                                <Style TargetType="ToggleButton">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="Padding" Value="4"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ToggleButton">
+                                                                <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                                                    <iconPacks:PackIconMaterial x:Name="FavoriteStar" Kind="StarOutline"
+                                                                                               Width="20" Height="20" Foreground="#8C969D"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsChecked" Value="True">
+                                                                        <Setter TargetName="FavoriteStar" Property="Kind" Value="Star"/>
+                                                                        <Setter TargetName="FavoriteStar" Property="Foreground" Value="#F5A23D"/>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ToggleButton.Style>
+                                        </ToggleButton>
+                                    </StackPanel>
                                     <Border Width="42" Height="42" Margin="0,0,12,0"
                                             VerticalAlignment="Top" Background="#143A6EA5" CornerRadius="21">
                                         <iconPacks:PackIconMaterial Kind="FolderOutline" Width="23" Height="23"
@@ -349,29 +354,12 @@
                     </ListBox>
 
                     <!-- No results -->
-                    <Grid Margin="20"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center"
-                          Visibility="{Binding SearchResults.Count, Converter={StaticResource CountToVisibilityConverter}, ConverterParameter=Reverse}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <iconPacks:PackIconMaterial Kind="AlertCircleOutline"
-                                                    Width="16"
-                                                    Height="16"
-                                                    Foreground="Gray"
-                                                    VerticalAlignment="Center"/>
-
-                        <TextBlock Grid.Column="1"
-                                   Text="{x:Static resources:PSProjectsWindow.Text_NoSearchResults}"
-                                   FontSize="14"
-                                   Foreground="Gray"
-                                   Margin="10,0,0,0"
-                                   VerticalAlignment="Center"
-                                   TextWrapping="Wrap"/>
-                    </Grid>
+                    <ContentControl Margin="20"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding SearchResults.Count, Converter={StaticResource CountToVisibilityConverter}, ConverterParameter=Reverse}"
+                        Content="{x:Static resources:PSProjectsWindow.Text_NoSearchResults}"
+                        Style="{StaticResource FlowBlox.EmptyState}" />
                 </Grid>
 
                 <!-- Details -->
@@ -405,23 +393,30 @@
                             </TabItem.HeaderTemplate>
 
                             <StackPanel Margin="0,10,0,0">
-                                <ToolBar Margin="0,0,0,8"
-                                         Visibility="{Binding IsMine, Converter={StaticResource BoolToVisibilityConverter}}">
-                                    <Button Command="{Binding EditProjectCommand}"
-                                            IsEnabled="{Binding CanEditProject}"
-                                            ToolTip="{x:Static resources:PSProjectsWindow.Button_Edit}"
-                                            AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Button_Edit}">
-                                        <iconPacks:PackIconMaterial Kind="PencilOutline" Width="16" Height="16" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
-                                    </Button>
-                                    <Button x:Name="DeleteProjectButton"
-                                            Command="{Binding DeleteProjectCommand}"
-                                            IsEnabled="{Binding CanDeleteProject}"
-                                            ToolTip="{x:Static resources:PSProjectsWindow.Tooltip_DeleteProject}"
-                                            ToolTipService.ShowOnDisabled="True"
-                                            AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Button_DeleteProject}">
-                                        <iconPacks:PackIconMaterial Kind="TrashCanOutline" Width="16" Height="16" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
-                                    </Button>
-                                </ToolBar>
+                                <DockPanel Margin="0,0,0,8">
+                                    <Border DockPanel.Dock="Right" DataContext="{Binding SelectedProject}"
+                                            Style="{StaticResource ProjectVisibilityBadge}" Margin="8,0,0,0">
+                                        <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=Border}}"
+                                                   FontSize="11" FontWeight="SemiBold" />
+                                    </Border>
+                                    <ToolBar
+                                             Visibility="{Binding IsMine, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <Button Command="{Binding EditProjectCommand}"
+                                                IsEnabled="{Binding CanEditProject}"
+                                                ToolTip="{x:Static resources:PSProjectsWindow.Button_Edit}"
+                                                AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Button_Edit}">
+                                            <iconPacks:PackIconMaterial Kind="PencilOutline" Width="16" Height="16" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
+                                        </Button>
+                                        <Button x:Name="DeleteProjectButton"
+                                                Command="{Binding DeleteProjectCommand}"
+                                                IsEnabled="{Binding CanDeleteProject}"
+                                                ToolTip="{x:Static resources:PSProjectsWindow.Tooltip_DeleteProject}"
+                                                ToolTipService.ShowOnDisabled="True"
+                                                AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Button_DeleteProject}">
+                                            <iconPacks:PackIconMaterial Kind="TrashCanOutline" Width="16" Height="16" Style="{StaticResource FlowBlox.ToolbarIconBase}"/>
+                                        </Button>
+                                    </ToolBar>
+                                </DockPanel>
 
                                 <!-- Name -->
                                 <Label Content="{x:Static resources:PSProjectsWindow.Label_ProjectName}"

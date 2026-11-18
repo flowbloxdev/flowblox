@@ -243,10 +243,9 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <StackPanel VerticalAlignment="Center">
-                        <icons:PackIconMaterial Kind="InformationOutline" Width="28" Height="28" Foreground="#FF3A6EA5" HorizontalAlignment="Center" Margin="0,0,0,12" />
-                        <TextBlock Text="{Binding EmptyStateText}" Foreground="#FF37474F" TextWrapping="Wrap" TextAlignment="Center" />
-                    </StackPanel>
+                    <ContentControl VerticalAlignment="Center"
+                        Content="{Binding EmptyStateText}"
+                        Style="{StaticResource FlowBlox.EmptyState}" />
                 </Border>
             </Grid>
         </Grid>

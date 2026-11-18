@@ -92,7 +92,7 @@ namespace FlowBlox.AvaloniaDesktop.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Do you really want to close the project &quot;{0}&quot;? ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Do you want to close the project &quot;{0}&quot;? ähnelt.
         /// </summary>
         internal static string AppWindow_CloseProjectConfirm_Message
         {
@@ -103,7 +103,7 @@ namespace FlowBlox.AvaloniaDesktop.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Close Project? ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Close project ähnelt.
         /// </summary>
         internal static string AppWindow_CloseProjectConfirm_Title
         {
@@ -959,7 +959,7 @@ namespace FlowBlox.AvaloniaDesktop.Resources
                 return ResourceManager.GetString("AppWindow_ProjectSpaceLoginRequired_Message", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Notice ähnelt.
         /// </summary>
@@ -970,7 +970,7 @@ namespace FlowBlox.AvaloniaDesktop.Resources
                 return ResourceManager.GetString("AppWindow_ProjectSpaceLoginRequired_Title", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please stop the current execution before closing FlowBlox. ähnelt.
         /// </summary>
@@ -1038,7 +1038,7 @@ namespace FlowBlox.AvaloniaDesktop.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die (!) Make sure your changes have been saved. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Save any changes before closing the project. ähnelt.
         /// </summary>
         internal static string AppWindow_SaveReminder_Message
         {
@@ -2722,6 +2722,116 @@ namespace FlowBlox.AvaloniaDesktop.Resources
             get
             {
                 return ResourceManager.GetString("SplashWindow_LabelMessage_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Start after Windows sign-in ähnelt.
+        /// </summary>
+        internal static string WebServer_Autostart
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Autostart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Configuration... ähnelt.
+        /// </summary>
+        internal static string WebServer_Configuration
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The web server operation failed. ähnelt.
+        /// </summary>
+        internal static string WebServer_Error
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Web server ähnelt.
+        /// </summary>
+        internal static string WebServer_Menu
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Open dashboard ähnelt.
+        /// </summary>
+        internal static string WebServer_Open
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Restart ähnelt.
+        /// </summary>
+        internal static string WebServer_Restart
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Restart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The configuration has been saved. Restart the web server to apply the changes. For access from your phone, use this computer&apos;s local network address and the configured port. ähnelt.
+        /// </summary>
+        internal static string WebServer_Saved
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Start ähnelt.
+        /// </summary>
+        internal static string WebServer_Start
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The web server could not start. Check webserver/startup.log in the FlowBlox user data directory. ähnelt.
+        /// </summary>
+        internal static string WebServer_StartFailed
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_StartFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Stop ähnelt.
+        /// </summary>
+        internal static string WebServer_Stop
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_Stop", resourceCulture);
             }
         }
         

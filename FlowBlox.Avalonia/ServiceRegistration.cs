@@ -4,6 +4,7 @@ using FlowBlox.Core.Interfaces;
 using FlowBlox.UICore.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using FlowBlox.UICore.Interfaces;
+using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.AvaloniaDesktop.Services;
 using FlowBlox.Core.Services;
 using FlowBlox.AvaloniaDesktop.Services.Updates;
@@ -27,7 +28,10 @@ namespace FlowBlox.AvaloniaDesktop
             serviceCollection.AddSingleton<IMessageBoxService>(services => services.GetRequiredService<FlowBloxMessageBoxService>());
             serviceCollection.AddSingleton<IFilePickerService, FilePickerService>();
             serviceCollection.AddSingleton<IDialogService, DialogService>();
+            serviceCollection.AddSingleton<IOAuthUserAuthorizationService, OAuthUserAuthorizationService>();
             serviceCollection.AddSingleton<IOwnerService, OwnerService>();
+            serviceCollection.AddSingleton<IExecutionEnvironmentPrerequisiteQuickStartHost, ExecutionEnvironmentPrerequisiteQuickStartHost>();
+            serviceCollection.AddSingleton<ExecutionEnvironmentPrerequisiteQuickStartService>();
             serviceCollection.AddSingleton<IAssemblyPreloader, AssemblyPreloader>();
             serviceCollection.AddSingleton<IFlowBloxUIEvaluationService, FlowBloxUIEvaluationService>();
             serviceCollection.AddSingleton<IAppNotificationService, AppNotificationService>();

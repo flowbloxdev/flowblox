@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FlowBlox.UICore\FlowBlox.UICore.csproj" />
+    <ProjectReference Include="..\FlowBlox.WebServer\FlowBlox.WebServer.csproj" ReferenceOutputAssembly="false" Private="false" GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained" />
     <ProjectReference Include="..\FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj" ReferenceOutputAssembly="false"
                       GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained">
       <!-- The MSI supplies a separately published runner; standalone publishes keep it included. -->
@@ -51,5 +52,20 @@
       <RunnerFiles Include="..\FlowBlox.RunnerHost\bin\$(Configuration)\$(TargetFramework)\FlowBlox.RunnerHost.*" />
     </ItemGroup>
     <Copy SourceFiles="@(RunnerFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyWebServer" AfterTargets="Build" Condition="'$(PublishWebServer)' != 'false'">
+    <PropertyGroup><WebServerOutput>..\FlowBlox.WebServer\bin\$(Configuration)\$(TargetFramework)\</WebServerOutput></PropertyGroup>
+    <ItemGroup>
+      <WebServerFiles Include="$(WebServerOutput)FlowBlox.WebServer.*" />
+      <WebServerStaticFiles Include="$(WebServerOutput)wwwroot\**\*" />
+      <WebServerResources Include="$(WebServerOutput)**\FlowBlox.WebServer.resources.dll" Exclude="$(WebServerOutput)publish\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(WebServerFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebServerStaticFiles)" DestinationFiles="@(WebServerStaticFiles->'$(TargetDir)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebServerResources)" DestinationFiles="@(WebServerResources->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="PublishWebServer" AfterTargets="Publish" Condition="'$(PublishWebServer)' != 'false'">
+    <PropertyGroup><WebServerPublishDirectory>$([System.IO.Path]::GetFullPath('$(PublishDir)', '$(MSBuildProjectDirectory)'))</WebServerPublishDirectory></PropertyGroup>
+    <MSBuild Projects="..\FlowBlox.WebServer\FlowBlox.WebServer.csproj" Targets="Publish" Properties="Configuration=$(Configuration);PublishDir=$(WebServerPublishDirectory);RuntimeIdentifier=;SelfContained=false;PublishRunnerHost=true" />
   </Target>
 </Project>

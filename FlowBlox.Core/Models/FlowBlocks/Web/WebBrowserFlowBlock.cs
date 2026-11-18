@@ -36,30 +36,37 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                     var options = FlowBloxOptions.GetOptionInstance().OptionCollection;
                     if (!options.TryGetValue(OptionsConstants.WebBrowserServiceName, out var serviceNameOption) || string.IsNullOrWhiteSpace(serviceNameOption.Value))
                     {
-                        throw new ExecutionPrerequisiteException(
-                            "Browser / WebDriver", typeof(WebBrowserFlowBlock), OptionsConstants.WebBrowserServiceName);
+                        throw new InvalidOperationException("The browser service name is not configured.");
                     }
 
                     var serviceName = serviceNameOption.Value;
 
                     if (!options.TryGetValue(OptionsConstants.WebBrowserServiceSettings, out var serializedSettings) || string.IsNullOrWhiteSpace(serializedSettings.Value))
                     {
-                        throw new ExecutionPrerequisiteException(
-                            "Browser / WebDriver", typeof(WebBrowserFlowBlock), OptionsConstants.WebBrowserServiceSettings);
+                        throw new InvalidOperationException("The browser service settings are not configured.");
                     }
 
                     try
                     {
                         _internalWebBrowser = WebBrowserFactory.Create(serviceName, serializedSettings.Value);
                     }
-                    catch (Exception exception)
+                    catch (Exception exception) when (IsBrowserEnvironmentFailure(exception))
                     {
-                        throw new ExecutionPrerequisiteException("Browser / WebDriver", typeof(WebBrowserFlowBlock), serviceName, exception);
+                        throw new ExecutionEnvironmentPrerequisiteException("Browser / WebDriver", typeof(WebBrowserFlowBlock), serviceName, exception);
                     }
                 }
 
                 return _internalWebBrowser;
             }
+        }
+
+        private static bool IsBrowserEnvironmentFailure(Exception exception)
+        {
+            var cause = exception.GetBaseException();
+            return cause is OpenQA.Selenium.WebDriverException
+                || cause is System.ComponentModel.Win32Exception
+                || cause is DllNotFoundException
+                || cause is FileNotFoundException;
         }
 
         public WebBrowserFlowBlock()
@@ -160,7 +167,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         }
 
         /// <inheritdoc />
-        public override void ValidateExecutionPrerequisites()
+        public override void ValidateExecutionEnvironmentPrerequisites()
         {
             // An empty URL preserves the existing no-navigation result without creating a browser.
             if (string.IsNullOrWhiteSpace(this.Resolve(owner => owner.Url)))
@@ -172,11 +179,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         }
 
         /// <inheritdoc />
-        protected override void OnExecutionPrerequisiteFailure(
+        protected override void OnExecutionEnvironmentPrerequisiteFailure(
             BaseRuntime runtime,
-            ExecutionPrerequisiteException exception)
+            ExecutionEnvironmentPrerequisiteException exception)
         {
-            CreateNotification(runtime, WebBrowserNotifications.SetupRequired, exception.NotificationMessage, exception);
+            CreateNotification(runtime, WebBrowserNotifications.SetupRequired, exception);
             GenerateResult(runtime, string.Empty);
         }
 

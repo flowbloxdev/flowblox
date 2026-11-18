@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Interfaces;
 using FlowBlox.UICore.Utilities;
@@ -19,7 +19,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
         private Views.PropertyView _propertyView;
         private PropertyViewModel _propertyViewModel;
         private System.Windows.Controls.Grid _mainGrid;
-        private TextBlock _noSelectionText;
+        private ContentControl _noSelectionText;
         private Button _saveButton;
         private Button _applyWithoutVerificationButton;
         private bool _restoringSelection;
@@ -40,6 +40,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             listView.SelectionChanged += ListView_SelectionChanged;
             listView.HorizontalAlignment = HorizontalAlignment.Stretch;
             listView.VerticalAlignment = VerticalAlignment.Stretch;
+            ScrollViewer.SetHorizontalScrollBarVisibility(listView, ScrollBarVisibility.Auto);
 
             // In split mode, avoid StackPanel sizing-to-content behavior on the left side.
             // Rehost toolbar + list container in a docked grid (Auto + *) so the list fills available space.
@@ -54,17 +55,14 @@ namespace FlowBlox.UICore.Factory.PropertyView
             };
 
             // NoSelectionText
-            _noSelectionText = new TextBlock
+            _noSelectionText = new ContentControl
             {
-                Text = GetLocalizedString(nameof(ListViewSplitModeFactoryResources.NoElementSelectedText)),
-                FontSize = 16,
-                FontWeight = FontWeights.UltraLight,
-                Foreground = Brushes.Gray,
+                Content = GetLocalizedString(nameof(ListViewSplitModeFactoryResources.NoElementSelectedText)),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                TextAlignment = TextAlignment.Center,
-                Visibility = Visibility.Visible
+                Margin = new Thickness(20)
             };
+            _noSelectionText.SetResourceReference(FrameworkElement.StyleProperty, "FlowBlox.EmptyState");
 
             // Use the same commit actions as the Property Window, without dropdowns.
             var saveButton = CreateApplyButton(withoutVerification: false);
@@ -102,8 +100,9 @@ namespace FlowBlox.UICore.Factory.PropertyView
             _mainGrid = new System.Windows.Controls.Grid();
             _mainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
             _mainGrid.VerticalAlignment = VerticalAlignment.Stretch;
-            _mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // List
-            _mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) }); // Property
+            _mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // List
+            _mainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // Property
+            _mainGrid.SizeChanged += MainGrid_SizeChanged;
 
             System.Windows.Controls.Grid.SetColumn(leftPanel, 0);
             System.Windows.Controls.Grid.SetColumn(rightGrid, 1);
@@ -112,6 +111,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
             _mainGrid.Children.Add(rightGrid);
 
             return _mainGrid;
+        }
+
+        private void MainGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Fit the list content while reserving at least 70% for the detail editor.
+            _mainGrid.ColumnDefinitions[0].MaxWidth = e.NewSize.Width * 0.3;
         }
 
         private static System.Windows.Controls.Grid BuildDockedLeftPanel(StackPanel stackPanel)
