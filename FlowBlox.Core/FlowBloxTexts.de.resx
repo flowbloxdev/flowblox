@@ -4352,7 +4352,7 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
   <data name="OnnxQAFlowBlock_Context_Tooltip" xml:space="preserve"><value>Quelltext, aus dem die Antwort wortgetreu extrahiert wird. Lange Texte werden in überlappenden Fenstern verarbeitet.</value></data>
   <data name="OnnxQAFlowBlock_Groups_ExtendedSettings" xml:space="preserve"><value>Erweiterte Einstellungen</value></data>
   <data name="OnnxQAFlowBlock_AiExecutionProvider" xml:space="preserve"><value>AI-Ausführungsanbieter</value></data>
-  <data name="OnnxQAFlowBlock_AiExecutionProvider_Tooltip" xml:space="preserve"><value>Global in den FlowBlox-ONNX-Einstellungen ausgewählter Ausführungsanbieter.</value></data>
+  <data name="OnnxQAFlowBlock_AiExecutionProvider_Tooltip" xml:space="preserve"><value>Ausführungsanbieter für diesen Block. Standard ist CPU. Unterstützt Feldreferenzen; leer lassen, um die globale ONNX-Einstellung zu verwenden.</value></data>
   <data name="OnnxQAFlowBlock_MaxSequenceLength" xml:space="preserve"><value>Maximale Sequenzlänge</value></data>
   <data name="OnnxQAFlowBlock_MaxSequenceLength_Tooltip" xml:space="preserve"><value>Maximale Tokenanzahl je Modellaufruf einschließlich Frage und Spezialtokens. Die Grenze des Modells wird immer eingehalten.</value></data>
   <data name="OnnxQAFlowBlock_DocumentStride" xml:space="preserve"><value>Dokumentüberlappung</value></data>

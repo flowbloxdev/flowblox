@@ -8,14 +8,12 @@ using FlowBlox.Core.Models.FlowBlocks.AI.OnnxQA;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Util;
-using FlowBlox.Core.Util.DeepCopier;
 using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.Resources;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace FlowBlox.Core.Models.FlowBlocks.AI
 {
@@ -57,21 +55,20 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
 
         #region Tab: Extended settings
 
-        [JsonIgnore]
-        [DeepCopierIgnore]
-        [Required]
         [Display(Name = "OnnxQAFlowBlock_AiExecutionProvider", Description = "OnnxQAFlowBlock_AiExecutionProvider_Tooltip",
             GroupName = "OnnxQAFlowBlock_Groups_ExtendedSettings", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxUI(ReadOnly = true)]
-        public AiExecutionProviders AiExecutionProvider
+        public AiExecutionProviders? AiExecutionProvider { get; set; }
+
+        internal AiExecutionProviders GetResolvedExecutionProvider()
         {
-            get
-            {
-                var providerName = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIOnnxProvider)?.Value?.Trim();
-                return Enum.TryParse<AiExecutionProviders>(providerName, ignoreCase: true, out var provider)
-                    ? provider
-                    : AiExecutionProviders.Default;
-            }
+            var selectedProvider = this.Resolve(block => block.AiExecutionProvider);
+            if (selectedProvider.HasValue)
+                return selectedProvider.Value;
+
+            var providerName = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIOnnxProvider)?.Value?.Trim();
+            return Enum.TryParse<AiExecutionProviders>(providerName, ignoreCase: true, out var provider)
+                ? provider
+                : AiExecutionProviders.Default;
         }
 
         [Range(16, 4096)]
@@ -103,6 +100,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         public OnnxQAFlowBlock()
         {
             ModelFolder = $"$Options::{OptionsConstants.AIOnnxQAModelRootDirectory}\\{DefaultModelFolderName}";
+            AiExecutionProvider = AiExecutionProviders.Default;
             MaxSequenceLength = 384;
             DocumentStride = 128;
             MaxAnswerLength = 30;
@@ -156,7 +154,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         {
             _resolvedModelFolder = modelFolder;
             ValidateModelFolder(_resolvedModelFolder);
-            FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(AiExecutionProvider, runtime);
+            FlowBloxOnnxRuntimeLoader.Instance.EnsureLoaded(GetResolvedExecutionProvider(), runtime);
 
             try
             {
@@ -334,7 +332,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
         private SessionOptions CreateSessionOptions(BaseRuntime runtime)
         {
             var options = new SessionOptions();
-            switch (AiExecutionProvider)
+            switch (GetResolvedExecutionProvider())
             {
                 case AiExecutionProviders.OpenVINO:
                     options.AppendExecutionProvider_OpenVINO("GPU");

@@ -4404,7 +4404,7 @@ If a Join collector should aggregate links across all page iterations:
   <data name="OnnxQAFlowBlock_Context_Tooltip" xml:space="preserve"><value>Source text from which the answer is extracted verbatim. Long texts are processed in overlapping windows.</value></data>
   <data name="OnnxQAFlowBlock_Groups_ExtendedSettings" xml:space="preserve"><value>Extended settings</value></data>
   <data name="OnnxQAFlowBlock_AiExecutionProvider" xml:space="preserve"><value>AI execution provider</value></data>
-  <data name="OnnxQAFlowBlock_AiExecutionProvider_Tooltip" xml:space="preserve"><value>Execution provider selected globally in the FlowBlox ONNX settings.</value></data>
+  <data name="OnnxQAFlowBlock_AiExecutionProvider_Tooltip" xml:space="preserve"><value>Execution provider for this block. Defaults to CPU. Supports field references; leave empty to use the global ONNX setting.</value></data>
   <data name="OnnxQAFlowBlock_MaxSequenceLength" xml:space="preserve"><value>Maximum sequence length</value></data>
   <data name="OnnxQAFlowBlock_MaxSequenceLength_Tooltip" xml:space="preserve"><value>Maximum token count per model invocation, including question and special tokens. The model's own limit is always respected.</value></data>
   <data name="OnnxQAFlowBlock_DocumentStride" xml:space="preserve"><value>Document overlap</value></data>
