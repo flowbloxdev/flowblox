@@ -8,19 +8,35 @@
 {
     <h1>@_entry.Project.Name</h1>
     <p class="description">@_entry.ProjectDescription</p>
-    <div class="notice info"><strong>@T["Started"] <time datetime="@_entry.StartedUtc.ToString("O")">@_entry.StartedUtc.ToString("u")</time> · PID @_entry.ProcessId</strong><p>@T["ReadOnly"]</p></div>
-    <section class="panel"><div class="heading"><ExecutionStatus Entry="_entry" /><h2>@T[_entry.IsRunning ? "Running" : _entry.Response?.Success == true ? "Succeeded" : "Failed"]</h2></div>
+    <nav class="execution-tabs" aria-label="@T["Execution"]">
+        <a class="@(ShowInputs ? "active" : null)" aria-current="@(ShowInputs ? "page" : null)" href="@($"/executions/{Id}?view=input")"><MdiIcon Name="form-textbox" /> @T["Inputs"]</a>
+        <a class="@(!ShowInputs ? "active" : null)" aria-current="@(!ShowInputs ? "page" : null)" href="@($"/executions/{Id}?view=outputs")"><MdiIcon Name="file-export" /> @T["Outputs"]</a>
+    </nav>
+    @if (ShowInputs)
+    {
+        <ExecutionInputs Request="_entry.Request" InputDirectory="@_entry.InputDirectory" />
+    }
+    else
+    {
+        <OutputArtifacts ProjectId="@_projectId" ExecutionId="Id" OutputDirectory="@_entry.OutputDirectory" />
+        <section class="panel"><ProjectOutputs @key="Id" Entry="_entry" /></section>
+    }
+    <section class="panel execution-state" aria-live="polite"><div class="heading"><ExecutionStatus Entry="_entry" /><h2>@T[_entry.IsRunning ? "Running" : _entry.Response?.Success == true ? "Succeeded" : "Failed"]</h2></div>
+        <p class="muted">@T["Started"] <time datetime="@_entry.StartedUtc.ToString("O")">@_entry.StartedUtc.ToString("u")</time> @if (_entry.ProcessId.HasValue) { <span> · PID @_entry.ProcessId</span> }</p>
         @if (_entry.IsRunning) { <div class="loading-line"></div> }
         else
         {
-            <p class="prewrap">@(_entry.LaunchError + (_entry.Response?.ErrorMessage ?? string.Empty) + (_entry.Response?.AbortMessage ?? string.Empty))</p>
+            <p class="prewrap">@ErrorDetails</p>
+            @if (_entry.Response?.Warnings.Count > 0)
+            {
+                <details><summary>@T["Warnings"] <span class="badge">@_entry.Response.Warnings.Count</span></summary><p class="prewrap">@string.Join(Environment.NewLine, _entry.Response.Warnings.Distinct())</p></details>
+            }
             @if (!string.IsNullOrEmpty(_entry.Response?.LogfilePath)) { <a class="button" href="@($"/logs/{Id}")">@T["RuntimeLog"] ↓</a> }
             else { <p class="muted">@T["NoLog"]</p> }
         }
     </section>
     @if (_error) { <p class="notice error">@T["OperationFailed"]</p> }
     <footer class="actions">
-        @if (_projectId != null) { <a class="button" href="@($"/projects/{_projectId}/artifacts?executionId={Id}")">@T["Artifacts"] <span class="badge">@_artifactCount</span></a> }
         @if (Dashboard.Executions.CanTerminate(_entry))
         {
             @if (!_confirmStop) { <button class="danger" @onclick="() => _confirmStop = true"><MdiIcon Name="stop" /> @T["StopProcess"]</button> }
@@ -30,16 +46,27 @@
 }
 @code {
     [Parameter] public Guid Id { get; set; }
+    [SupplyParameterFromQuery(Name = "view")] public string? View { get; set; }
     private ProjectExecutionEntry? _entry;
     private string? _projectId;
-    private int _artifactCount;
     private bool _confirmStop, _error;
-    protected override async Task OnInitializedAsync() { if (Dashboard.Projects.Count == 0) await Dashboard.RefreshProjectsAsync(); await RefreshAsync(); BeginRefreshing(RefreshAsync); }
-    private async Task RefreshAsync()
+    private bool ShowInputs => View == "input" || View != "outputs" && _entry?.IsRunning == true;
+    private string ErrorDetails => string.Join(Environment.NewLine, new[]
+    {
+        _entry?.LaunchError,
+        _entry?.Response?.ErrorMessage,
+        _entry?.Response?.AbortMessage,
+        _entry?.Response?.CancellationReason,
+        _entry?.Response?.Exception,
+        _entry?.Response?.AbortException
+    }.Where(message => !string.IsNullOrWhiteSpace(message)).Distinct());
+    protected override async Task OnInitializedAsync() { if (Dashboard.Projects.Count == 0) await Dashboard.RefreshProjectsAsync(); BeginRefreshing(RefreshAsync); }
+    protected override Task OnParametersSetAsync() => RefreshAsync();
+    private Task RefreshAsync()
     {
         _entry = Dashboard.GetExecution(Id);
         _projectId = Dashboard.Projects.FirstOrDefault(project => ProjectShortcutIdentity.Matches(project.Shortcut, _entry.Project))?.Id;
-        if (_projectId != null) { try { _artifactCount = (await Dashboard.ArtifactsAsync(_projectId, Id)).Count(); } catch { _artifactCount = 0; } }
+        return Task.CompletedTask;
     }
     private async Task StopAsync() { if (!await HasSessionAsync()) return; try { Dashboard.Executions.Terminate(Id); _confirmStop = false; } catch { _error = true; } }
 }

@@ -2,7 +2,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $RuntimeManifestFileName = "runtime-manifest.json"
-$RuntimeLayoutVersion = 1
+$RuntimeLayoutVersion = 2
 
 function Write-Info($msg)  { Write-Host "[INFO] $msg" -ForegroundColor Cyan }
 function Write-Warn($msg)  { Write-Host "[WARN] $msg" -ForegroundColor Yellow }
@@ -310,6 +310,20 @@ Notes
     Write-Info "Wrote README: $readmePath"
 }
 
+function Copy-DirectMLDependency([string]$nugetRoot, [string]$ortVersion, [string]$rid, [string]$destDir) {
+    $version = Get-PackageDependencyVersion $nugetRoot "Microsoft.ML.OnnxRuntime.DirectML" $ortVersion "Microsoft.AI.DirectML"
+    $architecture = $rid.Substring(4)
+    $source = Join-Path $nugetRoot "microsoft.ai.directml\$version\bin\$architecture-win\DirectML.dll"
+    if (-not (Test-Path -LiteralPath $source)) {
+        throw "DirectML dependency not found: $source"
+    }
+    $destination = Join-Path $destDir "DirectML.dll"
+    if (-not (Test-FileUpToDate $source $destination)) {
+        Copy-Item -LiteralPath $source -Destination $destination -Force -ErrorAction Stop
+        Write-Info "Copy: Microsoft.AI.DirectML $version [$rid] -> $destDir"
+    }
+}
+
 function Sync-OrtAndGenAiRuntimes {
     $paths = Get-RepositoryRootPaths
     $csprojPath = $paths.Csproj
@@ -444,6 +458,7 @@ function Sync-OrtAndGenAiRuntimes {
     foreach ($m in $ridMapWin) {
         $dest = Join-Path (Join-Path $paths.OrtOut "directml") $m.Dest
         $anyCopied = (Copy-RuntimeNative $nugetRoot "Microsoft.ML.OnnxRuntime.DirectML" $ortVer $m.Rid $dest) -or $anyCopied
+        Copy-DirectMLDependency $nugetRoot $ortVer $m.Rid $dest
     }
 
     foreach ($m in $ridMapCuda) {
@@ -469,6 +484,7 @@ function Sync-OrtAndGenAiRuntimes {
         $dest = Join-Path (Join-Path $paths.GenAiOut "directml") $m.Dest
         $anyCopied = (Copy-RuntimeNative $nugetRoot "Microsoft.ML.OnnxRuntime.DirectML" $ortVer $m.Rid $dest) -or $anyCopied
         $anyCopied = (Copy-RuntimeNative $nugetRoot "Microsoft.ML.OnnxRuntimeGenAI.DirectML" $genaiVer $m.Rid $dest) -or $anyCopied
+        Copy-DirectMLDependency $nugetRoot $ortVer $m.Rid $dest
     }
 
     $destCudaWin = Join-Path (Join-Path $paths.GenAiOut "cuda") "win-x64"

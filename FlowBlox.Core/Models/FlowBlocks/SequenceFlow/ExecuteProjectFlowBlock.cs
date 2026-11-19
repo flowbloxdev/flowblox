@@ -5,6 +5,7 @@ using FlowBlox.Core.Attributes.FlowBlox.Core.Attributes;
 using FlowBlox.Core.Authentication;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.ExternalServices.FlowBloxWebApi;
+using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
 using FlowBlox.Core.Models.Components;
 using FlowBlox.Core.Models.FlowBlocks.Base;
 using FlowBlox.Core.Models.FlowBlocks.SequenceFlow.ExecuteProject;
@@ -17,11 +18,16 @@ using FlowBlox.Core.Util.Fields;
 using FlowBlox.Core.Util.Resources;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using System.Collections.Concurrent;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.Json;
 using static FlowBlox.Core.Util.RunnerHostResolver;
 using FlowBlox.Core.Logging;
+using FlowBlox.Core.Util.Projects;
+using FlowBlox.Core.Util.DeepCopier;
+using JsonIgnore = Newtonsoft.Json.JsonIgnoreAttribute;
 
 namespace FlowBlox.Core.Models.FlowBlocks
 {
@@ -30,9 +36,16 @@ namespace FlowBlox.Core.Models.FlowBlocks
     [Display(Name = "ExecuteProjectFlowBlock_DisplayName", Description = "ExecuteProjectFlowBlock_Description", ResourceType = typeof(FlowBloxTexts))]
     public class ExecuteProjectFlowBlock : BaseSingleResultFlowBlock
     {
+        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> ProjectNames = new(StringComparer.OrdinalIgnoreCase);
         private readonly object _projectCacheLock = new();
         private string _projectCacheKey;
-        private FlowBloxProject _projectCache;
+        private ProjectMetadata _projectCache;
+        private ObservableCollection<ExecuteProjectParameterMappingEntry> _parameterMappings;
+
+        public ExecuteProjectFlowBlock()
+        {
+            ParameterMappings = new();
+        }
 
         [ConditionallyRequired]
         [ActivationCondition(ActivationMethod = nameof(IsProjectFileVisible))]
@@ -59,6 +72,19 @@ namespace FlowBlox.Core.Models.FlowBlocks
         public string ProjectSpaceGuid { get; set; }
 
         private bool IsProjectSpaceGuidVisible() => string.IsNullOrWhiteSpace(ProjectFile);
+
+        [JsonIgnore]
+        [DeepCopierIgnore]
+        [ActivationCondition(ActivationMethod = nameof(IsProjectSpaceGuidVisible))]
+        [DependsOnProperty(MemberName = nameof(ProjectSpaceGuid))]
+        [Display(
+            Name = "ExecuteProjectFlowBlock_ProjectName",
+            Description = "ExecuteProjectFlowBlock_ProjectName_Tooltip",
+            ResourceType = typeof(FlowBloxTexts),
+            GroupName = "ExecuteProjectFlowBlock_Groups_Project",
+            Order = -1)]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnly = true)]
+        public string ProjectName => GetProjectName();
 
         [ActivationCondition(ActivationMethod = nameof(IsProjectSpaceGuidVisible))]
         [Display(
@@ -95,10 +121,43 @@ namespace FlowBlox.Core.Models.FlowBlocks
             Order = 0)]
         [FlowBloxUI(DisplayLabel = false)]
         [FlowBloxDataGrid(IsMovable = true)]
-        public ObservableCollection<ExecuteProjectParameterMappingEntry> ParameterMappings { get; set; } = new();
+        public ObservableCollection<ExecuteProjectParameterMappingEntry> ParameterMappings
+        {
+            get => _parameterMappings;
+            set
+            {
+                if (_parameterMappings != null)
+                    _parameterMappings.CollectionChanged -= ParameterMappingsChanged;
+                _parameterMappings = value;
+                if (_parameterMappings != null)
+                    _parameterMappings.CollectionChanged += ParameterMappingsChanged;
+                ParameterMappingsChanged(this, null);
+            }
+        }
 
-        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.play_box_outline, 16, SKColors.MediumPurple);
-        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.play_box_outline, 32, SKColors.MediumPurple);
+        [JsonIgnore]
+        [DeepCopierIgnore]
+        [Display(Name = "ExecuteProjectFlowBlock_InputFields", Description = "ExecuteProjectFlowBlock_InputFields_Tooltip",
+            ResourceType = typeof(FlowBloxTexts), GroupName = "ExecuteProjectFlowBlock_Groups_Parameters", Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None, ReadOnly = true)]
+        [FlowBloxDataGrid(ColumnMemberNames = [nameof(ProjectFieldMetadata.Name), nameof(ProjectFieldMetadata.FieldType),
+            nameof(ProjectFieldMetadata.DefaultValue), nameof(ProjectFieldMetadata.IsPassword), nameof(ProjectFieldMetadata.IsRequiredAtRuntimeStartup)])]
+        [FlowBloxAssociation(Operations = UIOperations.None)]
+        public List<ProjectFieldMetadata> InputFields => GetInputFieldMetadata().ToList();
+
+        private void ParameterMappingsChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            foreach (var entry in ParameterMappings ?? Enumerable.Empty<ExecuteProjectParameterMappingEntry>())
+            {
+                if (entry != null)
+                    entry.Owner = this;
+            }
+        }
+
+        public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(
+            string.IsNullOrWhiteSpace(ProjectSpaceGuid) ? FlowBloxIcons.project : FlowBloxIcons.project_space, 16);
+        public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(
+            string.IsNullOrWhiteSpace(ProjectSpaceGuid) ? FlowBloxIcons.project : FlowBloxIcons.project_space, 32);
 
         public override FlowBlockCardinalities GetInputCardinality() => FlowBlockCardinalities.Many;
         public override FlowBlockCategory GetCategory() => FlowBlockCategory.ControlFlow;
@@ -106,10 +165,62 @@ namespace FlowBlox.Core.Models.FlowBlocks
         public override List<string> GetDisplayableProperties()
         {
             var properties = base.GetDisplayableProperties();
+            properties.Add(nameof(ProjectName));
             properties.Add(nameof(ProjectFile));
             properties.Add(nameof(ProjectSpaceGuid));
             properties.Add(nameof(ProjectSpaceVersion));
             return properties;
+        }
+
+        private string GetProjectName()
+        {
+            var projectSpaceGuid = this.Resolve(block => block.ProjectSpaceGuid);
+            if (string.IsNullOrWhiteSpace(projectSpaceGuid))
+                return string.Empty;
+
+            var fallback = FlowBloxResourceUtil.GetLocalizedString(
+                "ExecuteProjectFlowBlock_ProjectNameUnavailable", typeof(FlowBloxTexts));
+            if (!Guid.TryParse(projectSpaceGuid, out var guid))
+                return fallback;
+
+            var baseUrl = FlowBloxOptions.GetOptionInstance()
+                .GetOption(OptionsConstants.ApiProjectServiceBaseUrl).Value;
+            if (string.IsNullOrWhiteSpace(baseUrl))
+                return fallback;
+            var token = FlowBloxAccountManager.Instance.GetUserToken(baseUrl);
+            var key = $"{baseUrl.TrimEnd('/')}|{guid:N}";
+            var name = ProjectNames.GetOrAdd(key, _ => new Lazy<Task<string>>(
+                () => Task.Run(() => LoadProjectNameAsync(baseUrl, guid.ToString("N"), token))));
+            try
+            {
+                return name.Value.WaitAsync(TimeSpan.FromSeconds(GlobalConstants.RemotePropertyLoadTimeoutSeconds))
+                    .GetAwaiter().GetResult() ?? fallback;
+            }
+            catch (TimeoutException)
+            {
+                return fallback;
+            }
+        }
+
+        private static async Task<string> LoadProjectNameAsync(string baseUrl, string guid, string token)
+        {
+            try
+            {
+                using var timeout = new CancellationTokenSource(
+                    TimeSpan.FromSeconds(GlobalConstants.RemotePropertyLoadTimeoutSeconds));
+                var api = new FlowBloxWebApiService(baseUrl);
+                var response = await api.GetProjectAsync(
+                    new FbProjectRequest { Guid = guid },
+                    token,
+                    timeout.Token).ConfigureAwait(false);
+                var projectName = response.Success ? response.ResultObject?.Name?.Trim() : null;
+                return string.IsNullOrEmpty(projectName) ? null : projectName;
+            }
+            catch (Exception exception)
+            {
+                FlowBloxLogManager.Instance.GetLogger().Warn("Could not load Project Space project name.", exception);
+                return null;
+            }
         }
 
         public override bool Execute(BaseRuntime runtime, object data)
@@ -150,14 +261,28 @@ namespace FlowBlox.Core.Models.FlowBlocks
                 if (response == null)
                     throw new InvalidOperationException("Runner response could not be deserialized.");
 
+                var projectContext = "Child project";
+                if (!string.IsNullOrWhiteSpace(response.ProjectName))
+                    projectContext += $" '{response.ProjectName}'";
+
+                if (!string.IsNullOrWhiteSpace(response.LogfilePath))
+                    runtime.Report($"{projectContext}: Runtime log file is located at: {response.LogfilePath}", FlowBloxLogLevel.Info);
+
                 foreach (var failure in response.ExecutionEnvironmentPrerequisiteFailures ?? new())
                     runtime.NotifyExecutionEnvironmentPrerequisiteFailure(failure);
 
+                foreach (var warning in (response.Warnings ?? new())
+                    .Where(message => !string.IsNullOrWhiteSpace(message))
+                    .Distinct(StringComparer.Ordinal))
+                    runtime.Report($"{projectContext}: {warning}", FlowBloxLogLevel.Warning);
+
                 if (!response.Success)
                 {
-                    runtime.Report($"Child project execution failed (ExitCode={response.ExitCode}).", FlowBloxLogLevel.Error);
-                    if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
-                        runtime.Report(response.ErrorMessage, FlowBloxLogLevel.Error);
+                    runtime.Report($"{projectContext}: Execution failed (ExitCode={response.ExitCode}).", FlowBloxLogLevel.Error);
+                    foreach (var error in new[] { response.ErrorMessage, response.AbortMessage, response.Exception, response.AbortException }
+                        .Where(message => !string.IsNullOrWhiteSpace(message))
+                        .Distinct(StringComparer.Ordinal))
+                        runtime.Report($"{projectContext}: {error}", FlowBloxLogLevel.Error);
 
                     runtime.CancelExecution(
                         RuntimeCancellationKind.Unknown,
@@ -242,16 +367,29 @@ namespace FlowBlox.Core.Models.FlowBlocks
             File.WriteAllText(path, json);
         }
 
+        private IReadOnlyList<ProjectFieldMetadata> GetInputFieldMetadata()
+        {
+            try
+            {
+                return GetOrCacheProject()?.InputFields ?? [];
+            }
+            catch (Exception ex)
+            {
+                FlowBloxLogManager.Instance.GetLogger().Error("Could not load project input field suggestions.", ex);
+                return [];
+            }
+        }
+
+        public IEnumerable<string> GetInputFieldNames() => GetInputFieldMetadata()
+            .Select(field => field.Name)
+            .OrderBy(name => name, StringComparer.OrdinalIgnoreCase);
+
         public IEnumerable<string> GetOutputNames()
         {
             try
             {
                 var project = GetOrCacheProject();
-                return project?.FlowBlocks?
-                    .OfType<ProjectOutputFlowBlock>()
-                    .Select(x => x.Name)
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                return project?.Outputs.Keys
                     .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
                     .ToList() ?? [];
             }
@@ -270,17 +408,9 @@ namespace FlowBlox.Core.Models.FlowBlocks
             try
             {
                 var project = GetOrCacheProject();
-                var outputFlowBlock = project?.FlowBlocks?
-                    .OfType<ProjectOutputFlowBlock>()
-                    .FirstOrDefault(x => string.Equals(x.Name, outputName, StringComparison.OrdinalIgnoreCase));
-
-                return outputFlowBlock?.MappingEntries?
-                    .Select(x => x?.OutputPropertyName)
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Select(x => x!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
-                    .ToList() ?? [];
+                return project != null && project.Outputs.TryGetValue(outputName, out var fields)
+                    ? fields
+                    : [];
             }
             catch
             {
@@ -288,7 +418,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
             }
         }
 
-        private FlowBloxProject GetOrCacheProject()
+        private ProjectMetadata GetOrCacheProject()
         {
             var cacheKey = BuildProjectCacheKey();
             if (string.IsNullOrWhiteSpace(cacheKey))
@@ -300,9 +430,11 @@ namespace FlowBlox.Core.Models.FlowBlocks
                     return _projectCache;
             }
 
-            var project = LoadProjectForSuggestions();
-            if (project == null)
+            var loadedProject = LoadProjectForSuggestions();
+            if (loadedProject == null)
                 return null;
+
+            var project = ProjectMetadataReader.Read(loadedProject);
 
             lock (_projectCacheLock)
             {

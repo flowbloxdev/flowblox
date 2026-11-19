@@ -15,6 +15,16 @@ localizeTimes(document);
 new MutationObserver(() => localizeTimes(document)).observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['datetime']});
 
 window.flowBloxClipboardAvailable = () => window.isSecureContext && !!navigator.clipboard?.readText;
+document.addEventListener('click', event => {
+    const button = event.target.closest('[data-field-target]');
+    if (!button || button.disabled) return;
+    const input = document.getElementById(button.dataset.fieldTarget);
+    if (!input || input.disabled || input.readOnly) return;
+    input.focus();
+    input.setRangeText(button.dataset.fieldReference, input.selectionStart, input.selectionEnd, 'end');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    button.closest('details').open = false;
+});
 // Read immediately in the user gesture, before a server round trip (important on mobile browsers).
 document.addEventListener('click', async event => {
     const button = event.target.closest('[data-paste-target]');

@@ -42,6 +42,9 @@ Discovery/write workflow (mandatory):
 
 
 5) Special Hints
+- For recurring tasks without a simple direct solution (e.g. retrieving IMAP settings for an email address),
+  consider reusable Project Space flows as subflows via ExecuteProjectFlowBlock before implementing complex logic.
+  Load `explaining_project_space` for discovery and reuse; clarify shared versus local execution only if the user's preference is unclear.
 - For file-based inputs in FlowBlocks/ManagedObjects, prefer paths relative to $Project::InputDirectory.
 - For file-based outputs in FlowBlocks/ManagedObjects, prefer paths relative to $Project::OutputDirectory.
 - For read-only SQL queries, use TableReaderFlowBlock with SQLTable (ManagedObject).

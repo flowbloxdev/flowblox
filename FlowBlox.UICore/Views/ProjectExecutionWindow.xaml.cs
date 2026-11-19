@@ -13,6 +13,7 @@ using FlowBlox.Core.Models.Project;
 using FlowBlox.Core.Models.Project.Launcher;
 using FlowBlox.Core.Runner.Contracts;
 using FlowBlox.Core.Util;
+using FlowBlox.Core.Util.Projects;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Resolver;
@@ -39,6 +40,7 @@ public partial class ProjectExecutionWindow : MetroWindow
     private ProjectExecutionEntry? _entry;
     private string _inputDirectory = string.Empty;
     private string _outputDirectory = string.Empty;
+    private bool _completionShown;
 
     public ProjectExecutionWindow(
         ProjectShortcut shortcut,
@@ -71,17 +73,6 @@ public partial class ProjectExecutionWindow : MetroWindow
         _entry = entry;
         ProjectTitle.Text = entry.Project.Name;
         ProjectDescription.Text = ReadProjectDescription(entry);
-        var maskPasswords = FlowBloxOptions.GetOptionInstance()
-            .GetOption(OptionsConstants.UIPropertyViewMaskPasswordValues)?.GetValueBoolean() == true;
-        foreach (var pair in entry.Request.UserFields)
-        {
-            var isPassword = entry.Request.PasswordFieldNames == null
-                || entry.Request.PasswordFieldNames.Contains(pair.Key, StringComparer.OrdinalIgnoreCase);
-            FrameworkElement editor = maskPasswords && isPassword
-                ? new PasswordBox { Password = pair.Value ?? string.Empty }
-                : new TextBox { Text = pair.Value, IsReadOnly = true };
-            AddField(pair.Key, editor);
-        }
         foreach (var pair in entry.Request.OptionOverrides)
         {
             var option = new FlowBloxTaskOptionOverrideViewModel { OptionKey = pair.Key, StringValue = pair.Value };
@@ -89,7 +80,8 @@ public partial class ProjectExecutionWindow : MetroWindow
             _options.Add(option);
         }
         OptionsGrid.ItemsSource = _options;
-        Configuration.IsEnabled = false;
+        SetConfigurationReadOnly();
+        OptionOverridesExpander.IsExpanded = _options.Count > 0;
         ExecuteButton.Visibility = Visibility.Collapsed;
         InitializeMonitoring();
     }
@@ -119,15 +111,16 @@ public partial class ProjectExecutionWindow : MetroWindow
     {
         var resolver = new PropertyControlResolver(this);
         var property = typeof(FieldElement).GetProperty(nameof(FieldElement.StringValue))!;
+        var inputMetadata = ProjectMetadataReader.Read(_project!).InputFields
+            .ToDictionary(field => field.Name, StringComparer.OrdinalIgnoreCase);
         foreach (var field in (_project!.UserFields ?? Enumerable.Empty<FieldElement>())
                      .Where(field => field.IsUserInputField())
                      .OrderBy(x => x.Index))
         {
-            if (field.StoreValueLocally)
-                field.StringValue = string.Empty;
+            field.StringValue = string.Empty;
 
             _fields.Add(field);
-            _initialValues[field.Name] = field.StringValue ?? string.Empty;
+            _initialValues[field.Name] = inputMetadata[field.Name].DefaultValue ?? string.Empty;
             var bindingContext = new PropertyControlBindingContext(field);
             var model = resolver.Resolve(property, field, false, null, bindingContext);
             var editor = AddOutputDirectoryButton(field, model.Control);
@@ -147,17 +140,14 @@ public partial class ProjectExecutionWindow : MetroWindow
             Content = new PackIconMaterial
             {
                 Kind = PackIconMaterialKind.FolderUploadOutline,
-                Width = 14,
-                Height = 14,
-                Foreground = System.Windows.Media.Brushes.SteelBlue
+                Width = 10,
+                Height = 10
             },
-            Width = 26,
-            Height = 24,
-            Padding = new Thickness(4, 3, 4, 3),
+            Padding = new Thickness(6, 0, 6, 0),
             Margin = new Thickness(4, 0, 0, 0),
             VerticalAlignment = VerticalAlignment.Top
         };
-        button.SetResourceReference(StyleProperty, "FlowBlox.ToolbarButton");
+        ((PackIconMaterial)button.Content).SetResourceReference(StyleProperty, "PropertyView.FieldSelectionIconStyle");
         button.Click += (_, _) => SelectOutputDirectory(field);
         TextBoxWithOptionalButtonsCreator.TryAddActionButton(editor, button);
         return editor;
@@ -201,11 +191,9 @@ public partial class ProjectExecutionWindow : MetroWindow
         {
             Child = label,
             Style = (Style)FindResource("Execution.ParameterBorder"),
-            Margin = new Thickness(0, 4, 0, 3)
+            Margin = new Thickness(0, 0, 0, 3)
         });
-        editor.Margin = new Thickness(0, 0, 0, 8);
-        editor.MinHeight = 36;
-        editor.SetValue(Control.FontSizeProperty, 14.0);
+        editor.Margin = new Thickness(0, 0, 0, 6);
         FieldsPanel.Children.Add(editor);
     }
 
@@ -287,7 +275,11 @@ public partial class ProjectExecutionWindow : MetroWindow
             };
             RefreshDirectories();
             _entry = _executions.Start(_shortcut, _project, request, _inputDirectory, _outputDirectory);
-            Close();
+            SetConfigurationReadOnly();
+            ExecuteButton.Visibility = Visibility.Collapsed;
+            RefreshState();
+            if (_entry.IsRunning)
+                _timer.Start();
         }
         catch (Exception exception)
         {
@@ -299,6 +291,25 @@ public partial class ProjectExecutionWindow : MetroWindow
     {
         AddOption(string.Empty, string.Empty);
         OptionsGrid.SelectedItem = _options.Last();
+    }
+
+    private void SetConfigurationReadOnly()
+    {
+        FieldsPanel.Children.Clear();
+        foreach (var pair in _entry!.Request.UserFields)
+        {
+            var isPassword = _entry.Request.PasswordFieldNames == null
+                || _entry.Request.PasswordFieldNames.Contains(pair.Key, StringComparer.OrdinalIgnoreCase);
+            FrameworkElement editor = isPassword
+                ? new PasswordValueEditor { Text = pair.Value ?? string.Empty, IsReadOnly = true }
+                : new TextBox { Text = pair.Value, IsReadOnly = true };
+            AddField(pair.Key, editor);
+        }
+        OptionsGrid.IsReadOnly = true;
+        AddOptionButton.IsEnabled = false;
+        RemoveOptionButton.IsEnabled = false;
+        ClearInputsButton.IsEnabled = false;
+        HistoryExpander.IsEnabled = false;
     }
 
     private void AddOption(string key, string value)
@@ -313,6 +324,7 @@ public partial class ProjectExecutionWindow : MetroWindow
             RefreshDirectories();
         };
         _options.Add(option);
+        OptionOverridesExpander.IsExpanded = true;
     }
 
     private void RemoveOption_Click(object sender, RoutedEventArgs e)
@@ -349,11 +361,12 @@ public partial class ProjectExecutionWindow : MetroWindow
                 if (entries.TryGetValue(item.Entry.Id, out var updated))
                     item.Update(updated);
             }
-            if (!HistoryList.Items.OfType<ProjectExecutionHistoryItem>().Any(item => item.IsRunning))
+            if (_entry == null && !HistoryList.Items.OfType<ProjectExecutionHistoryItem>().Any(item => item.IsRunning))
                 _timer.Stop();
         }
         if (_entry != null)
         {
+            NotStartedHint.Visibility = Visibility.Collapsed;
             _entry = _executions.GetAll().FirstOrDefault(x => x.Id == _entry.Id) ?? _entry;
             StartedBox.Visibility = Visibility.Visible;
             StatusText.Text = string.Format(Text(nameof(Texts.ExecutionStarted)), _entry.StartedUtc.ToLocalTime());
@@ -366,6 +379,13 @@ public partial class ProjectExecutionWindow : MetroWindow
             {
                 _timer.Stop();
                 RefreshCompletion();
+                if (!_completionShown)
+                {
+                    OutputsView.SetOutputs(ProjectExecutions.ReadOutputs(_entry));
+                    if (_entry.Response?.Success == true)
+                        ExecutionTabs.SelectedItem = ResultsTab;
+                    _completionShown = true;
+                }
             }
         }
         RefreshDirectories();
@@ -378,18 +398,24 @@ public partial class ProjectExecutionWindow : MetroWindow
             ? "FlowBlox.NotificationBox.Success"
             : "FlowBlox.NotificationBox.Error");
         CompletionTitle.Text = Text(succeeded ? nameof(Texts.Succeeded) : nameof(Texts.Failed));
-        CompletionMessage.Text = new[]
+        var messages = new[]
         {
             _entry.Response?.ErrorMessage,
             _entry.Response?.CancellationReason,
             _entry.Response?.AbortMessage,
+            _entry.Response?.Exception,
+            _entry.Response?.AbortException,
             _entry.LaunchError
-        }.FirstOrDefault(message => !string.IsNullOrWhiteSpace(message)) ?? string.Empty;
+        }.Where(message => !string.IsNullOrWhiteSpace(message)).Distinct(StringComparer.Ordinal);
+        CompletionMessage.Text = string.Join(Environment.NewLine, messages);
         CompletionMessage.Visibility = string.IsNullOrEmpty(CompletionMessage.Text) ? Visibility.Collapsed : Visibility.Visible;
         var hasLogfile = File.Exists(_entry.Response?.LogfilePath);
         LogLinkContainer.Visibility = hasLogfile ? Visibility.Visible : Visibility.Collapsed;
         LogLink.ToolTip = _entry.Response?.LogfilePath;
         LogUnavailableText.Visibility = hasLogfile ? Visibility.Collapsed : Visibility.Visible;
+        WarningMessages.Text = string.Join(Environment.NewLine, (_entry.Response?.Warnings ?? new())
+            .Where(message => !string.IsNullOrWhiteSpace(message)).Distinct(StringComparer.Ordinal));
+        WarningsExpander.Visibility = string.IsNullOrEmpty(WarningMessages.Text) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void RefreshDirectories()
@@ -411,6 +437,27 @@ public partial class ProjectExecutionWindow : MetroWindow
         OutputDirectoryButton.IsEnabled = !string.IsNullOrWhiteSpace(_outputDirectory);
         InputPath.Text = _inputDirectory;
         OutputPath.Text = _outputDirectory;
+        ResetArtifactsButton.IsEnabled = !string.IsNullOrWhiteSpace(_outputDirectory)
+            && !_executions.IsArtifactDirectoryInUse(_outputDirectory);
+    }
+
+    private async void OpenArtifacts_Click(object sender, RoutedEventArgs e) => await OpenDirectoryAsync(_outputDirectory);
+
+    private async void ResetArtifacts_Click(object sender, RoutedEventArgs e)
+    {
+        if (await MessageBoxHelper.ShowQuestionAsync(this,
+            string.Format(Text(nameof(Texts.ConfirmResetArtifacts)), _outputDirectory)) != true)
+            return;
+
+        try
+        {
+            _executions.ClearArtifacts(_outputDirectory);
+            RefreshState();
+        }
+        catch (Exception exception)
+        {
+            await ShowErrorAsync(exception);
+        }
     }
 
     private async Task OpenDirectoryAsync(string path)

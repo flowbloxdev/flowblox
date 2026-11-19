@@ -55,6 +55,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     ?? throw new InvalidOperationException(
                         $"Syntax highlighting member '{textAttr.SyntaxHighlightingMember}' was not found on '{_target.GetType().FullName}'.");
 
+            var defaultValueProperty = string.IsNullOrWhiteSpace(textAttr.DefaultValueMember)
+                ? null
+                : _target.GetType().GetProperty(textAttr.DefaultValueMember)
+                    ?? throw new InvalidOperationException(
+                        $"Default value member '{textAttr.DefaultValueMember}' was not found on '{_target.GetType().FullName}'.");
+
             void UpdateHighlighting()
             {
                 var definition = highlightingProperty == null
@@ -74,6 +80,10 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 {
                     if (!_initialized)
                         return;
+
+                    if (defaultValueProperty != null
+                        && (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == defaultValueProperty.Name))
+                        _ = editor.Dispatcher.InvokeAsync(editor.TextArea.TextView.Redraw, DispatcherPriority.DataBind);
 
                     if (highlightingProperty != null
                         && (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == highlightingProperty.Name))
@@ -118,6 +128,12 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 _fieldRegexResolver.ResolveFieldRegex(), 
                 (Brush)new BrushConverter().ConvertFromString("#FF7F00FF"))); // strong violet
 
+            if (defaultValueProperty != null)
+            {
+                editor.TextArea.TextView.LineTransformers.Add(new DefaultValueColorizer(
+                    () => defaultValueProperty.GetValue(_target) as string));
+            }
+
             if (_property.GetValue(_target) is string value)
                 editor.Text = value;
 
@@ -136,6 +152,10 @@ namespace FlowBlox.UICore.Factory.PropertyView
                         _property.SetValue(_target, newText);
                         FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
                         _updatingToModel = false;
+
+                        // Wait until AvalonEdit closes the current document/undo update.
+                        if (defaultValueProperty != null)
+                            _ = editor.Dispatcher.InvokeAsync(() => RefreshFallback(editor), DispatcherPriority.DataBind);
                     }
                 }
             };
@@ -152,6 +172,23 @@ namespace FlowBlox.UICore.Factory.PropertyView
             _initialized = true;
 
             return ResizableControlContainer.Create(editor);
+        }
+
+        private void RefreshFallback(TextEditor editor)
+        {
+            var effectiveText = _property.GetValue(_target) as string ?? string.Empty;
+            if (editor.Text == effectiveText)
+                return;
+
+            _updatingFromModel = true;
+            try
+            {
+                editor.Text = effectiveText;
+            }
+            finally
+            {
+                _updatingFromModel = false;
+            }
         }
 
         private void SetHighlighting(TextEditor editor, string resourceOrName)

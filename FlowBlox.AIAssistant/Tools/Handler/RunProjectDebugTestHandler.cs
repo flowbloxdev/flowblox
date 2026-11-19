@@ -31,7 +31,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["maxProtocolEntries"] = "optional: int (default: 250). Returns the latest entries in chronological order.",
                 ["projectFile"] = "string? (defaults to the project currently targeted by project tools)",
                 ["reason"] = "string? (required for an external or active skill project; explain why execution is needed)",
-                ["inputParameters"] = "object? (input user-field name to textual value; values support FlowBlox placeholders)",
+                ["inputParameters"] = "object? (Input field name to scalar/text value; supports FlowBlox placeholders; omitted or empty inputs use the field's defaultValue)",
                 ["usageHint"] = "Use this call for protocol output only. Read FieldValueChanges/GeneratedResults via GetLastDebugArtefact. Prefer one optimistic debug run first (usually includeTargetExecution=false). Tune maxProtocolEntries as needed."
             });
 

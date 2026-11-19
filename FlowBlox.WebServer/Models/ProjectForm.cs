@@ -9,6 +9,7 @@ public sealed class ProjectForm
     public string InputDirectory { get; set; } = string.Empty;
     public string OutputDirectory { get; set; } = string.Empty;
     public List<FieldElement> Fields { get; init; } = [];
+    public IReadOnlyList<FieldReferenceOption> FieldReferences { get; init; } = [];
     public Dictionary<string, string> Values { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Dictionary<string, string> Overrides { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 }

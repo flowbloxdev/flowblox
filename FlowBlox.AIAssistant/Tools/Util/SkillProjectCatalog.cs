@@ -1,4 +1,5 @@
 using FlowBlox.Core.Util.DistributedData;
+using FlowBlox.Core.Models.Project;
 using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Util
@@ -78,7 +79,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             return result;
         }
 
-        private static JObject ToJson(SkillProjectMetadata metadata)
+        internal static JObject ToJson(SkillProjectMetadata metadata)
         {
             var result = new JObject
             {
@@ -92,21 +93,35 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (metadata.InputFieldListOfValues.Count > 0)
                 result["inputFieldListOfValues"] = JObject.FromObject(metadata.InputFieldListOfValues);
 
-            result["inputFieldMetadata"] = ToFieldMetadataJson(metadata.InputFieldMetadata);
+            result["inputFieldMetadata"] = ToFieldMetadataJson(metadata.InputFieldMetadata, includeDefaults: true);
             if (metadata.MemoryFieldMetadata.Count > 0)
                 result["memoryFieldMetadata"] = ToFieldMetadataJson(metadata.MemoryFieldMetadata);
 
             return result;
         }
 
-        private static JObject ToFieldMetadataJson(IReadOnlyDictionary<string, SkillFieldMetadata> fields) =>
-            new(fields.Select(field => new JProperty(field.Key, new JObject
+        private static JObject ToFieldMetadataJson(
+            IReadOnlyDictionary<string, ProjectFieldMetadata> fields,
+            bool includeDefaults = false)
+        {
+            var result = new JObject();
+            foreach (var field in fields)
             {
-                ["isRequiredAtRuntimeStartup"] = field.Value.IsRequiredAtRuntimeStartup,
-                ["loVType"] = field.Value.LoVType.ToString(),
-                ["clearOnRuntimeStart"] = field.Value.ClearOnRuntimeStart,
-                ["isPassword"] = field.Value.IsPassword,
-                ["syntaxHighlighting"] = field.Value.SyntaxHighlighting
-            })));
+                var metadata = new JObject
+                {
+                    ["fieldType"] = field.Value.FieldType.ToString(),
+                    ["isRequiredAtRuntimeStartup"] = field.Value.IsRequiredAtRuntimeStartup,
+                    ["loVType"] = field.Value.LoVType.ToString(),
+                    ["clearOnRuntimeStart"] = field.Value.ClearOnRuntimeStart,
+                    ["isPassword"] = field.Value.IsPassword,
+                    ["syntaxHighlighting"] = field.Value.SyntaxHighlighting
+                };
+                if (includeDefaults && !field.Value.IsPassword)
+                    metadata["defaultValue"] = field.Value.DefaultValue;
+                result[field.Key] = metadata;
+            }
+
+            return result;
+        }
     }
 }

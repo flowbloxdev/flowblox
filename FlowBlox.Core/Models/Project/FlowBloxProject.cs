@@ -35,6 +35,7 @@ namespace FlowBlox.Core.Models.Project
         public string ProjectName { get; set; }
         public string Author { get; set; }
         public string ProjectDescription { get; set; }
+        public bool UseProjectDescriptionForProjectSpace { get; set; } = true;
         public AssistantMetadata AssistantMetadata { get; set; } = new();
         public string Notice { get; set; }
         public int GridSizeX { get; set; }
@@ -639,9 +640,7 @@ namespace FlowBlox.Core.Models.Project
                 if (field.UserField != true)
                     continue;
 
-                // Only apply values for fields that are configured to store locally.
-                // Note: This requires FieldElement.StoreValueLocally to exist as discussed.
-                if (field.StoreValueLocally != true)
+                if (!field.IsUserInputField())
                     continue;
 
                 if (localData.LocalUserFieldValues.TryGetValue(field.Name, out var value))
@@ -864,7 +863,7 @@ namespace FlowBlox.Core.Models.Project
             FlowBlocks = ordered.FlowBlocks;
         }
 
-        private string CreateProjectSpaceZipBase64()
+        internal string CreateProjectSpaceZipBase64()
         {
             // Collect current state before export and order by dependency for clean top-level JSON references.
             RefreshOrderedTopLevelCollectionsForSerialization();
@@ -1036,8 +1035,7 @@ namespace FlowBlox.Core.Models.Project
                 ProjectSpaceEndpointUri = ProjectSpaceEndpointUri
             };
 
-            // Persist only user field values that are configured to store locally.
-            // Note: This requires FieldElement.StoreValueLocally to exist.
+            // Input overrides stay local; defaults are part of the project.
             var userFields = FlowBloxRegistry.GetUserFields();
             foreach (var field in userFields)
             {
@@ -1047,10 +1045,10 @@ namespace FlowBlox.Core.Models.Project
                 if (field.UserField != true)
                     continue;
 
-                if (field.StoreValueLocally != true)
+                if (!field.IsUserInputField())
                     continue;
 
-                localData.LocalUserFieldValues[field.Name] = field.StringValue ?? string.Empty;
+                localData.LocalUserFieldValues[field.Name] = field.LocalStringValue ?? string.Empty;
             }
 
             return localData;

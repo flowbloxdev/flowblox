@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Vektorsuche einrichten</value>
+  </data>
+  <data name="LocalTitle" xml:space="preserve">
+    <value>Ohne Datenbankserver starten</value>
+  </data>
+  <data name="LocalDescription" xml:space="preserve">
+    <value>Eingebettetes SQLite und einen dauerhaften Datenbankpfad wählen. FlowBlox legt Verzeichnis, Datenbankdatei und Schema bei der ersten Verwendung an; spätere Läufe behalten den Index. Python, Docker und Datenbankerweiterungen sind nicht erforderlich. Fehlt die mitgelieferte native SQLite-Bibliothek, den passenden FlowBlox-Build reparieren/neu installieren und neu starten. SQLite: [SQLite-Dokumentation](https://www.sqlite.org/index.html)</value>
+  </data>
+  <data name="RemoteTitle" xml:space="preserve">
+    <value>Optional: Qdrant, Pinecone oder Chroma</value>
+  </data>
+  <data name="RemoteDescription" xml:space="preserve">
+    <value>Für größere Indizes ein entferntes Backend wählen. Qdrant- und Chroma-Sammlungen werden automatisch mit Kosinusdistanz angelegt. Einen lokalen Server starten oder einen gehosteten Dienst nutzen, dann Endpunkt und Zugangsdaten konfigurieren. Eine abgelehnte lokale Verbindung löst Setup required aus; Authentifizierungs- und Konfigurationsfehler bleiben normale Operationsfehler. Pinecone benötigt einen bestehenden Dense-Cosine-Index mit den Embedding-Dimensionen; Collection wählt dessen Namespace. Eine lokale SQLite-Datei speichert weiterhin Hashes und Dokumenttext. Qdrant: [Qdrant Quick Start](https://qdrant.tech/documentation/quickstart/)
+Chroma: [Chroma einrichten](https://docs.trychroma.com/docs/run-chroma/client-server)
+Pinecone: [Pinecone-Index erstellen](https://docs.pinecone.io/guides/indexes/create-an-index)</value>
+  </data>
+  <data name="EmbeddingTitle" xml:space="preserve">
+    <value>Embeddings konfigurieren</value>
+  </data>
+  <data name="EmbeddingDescription" xml:space="preserve">
+    <value>OnnxTextEmbeddingProvider erzeugt lokale Embeddings; TextEmbeddingProvider verwendet eine OpenAI-kompatible Embedding-API. Für lokale Inferenz ModelFolder mit model.onnx (oder onnx/model_quint8_avx2.onnx) und passenden Tokenizer-/Konfigurationsdateien konfigurieren. Unterstützte Transformer-Modelle verwenden input_ids, attention_mask und last_hidden_state mit Mean-Pooling sowie tokenizer.json, tokenizer_config.json, special_tokens_map.json, config.json und sentence_bert_config.json. Modelldateien separat bereitstellen; Python und ein Startskript sind für die Inferenz nicht erforderlich. Das Modell wird innerhalb der Laufzeit wiederverwendet; unveränderte Quellen verwenden gespeicherte Vektoren. Ein Modellwechsel führt zur Neuindexierung. Bei fehlenden nativen ONNX-Bibliotheken FlowBlox reparieren/neu installieren. VectorTable liefert passende Textstellen als DataTable; die Wissenssuche sammelt und formatiert Auszüge zur beliebigen Weiterverarbeitung.</value>
+  </data>
+  <data name="Sources" xml:space="preserve">
+    <value>Quellen</value>
+  </data>
+  <data name="SqliteFile" xml:space="preserve">
+    <value>SQLite-Datei
+automatisch angelegt</value>
+  </data>
+  <data name="Matches" xml:space="preserve">
+    <value>Relevante Textstellen</value>
+  </data>
+  <data name="FlowBlox" xml:space="preserve">
+    <value>FlowBlox</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Konfigurierter Dienst</value>
+  </data>
+  <data name="Collection" xml:space="preserve">
+    <value>Vektorsammlung</value>
+  </data>
+  <data name="Chunks" xml:space="preserve">
+    <value>Dokumentabschnitte</value>
+  </data>
+  <data name="Embeddings" xml:space="preserve">
+    <value>Embeddings
+und Suche</value>
+  </data>
+  <data name="Answer" xml:space="preserve">
+    <value>Cloud-AI
+mit Quellen</value>
+  </data>
+</root>

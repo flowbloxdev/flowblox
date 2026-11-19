@@ -587,6 +587,17 @@ namespace FlowBlox.AvaloniaDesktop.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reload from Project Space ähnelt.
+        /// </summary>
+        internal static string AppWindow_itmReloadFromProjectSpace_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("AppWindow_itmReloadFromProjectSpace_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Report a problem ähnelt.
         /// </summary>
         internal static string AppWindow_itmReportProblem_Text
@@ -968,6 +979,39 @@ namespace FlowBlox.AvaloniaDesktop.Resources
             get
             {
                 return ResourceManager.GetString("AppWindow_ProjectSpaceLoginRequired_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reload &apos;{0}&apos; from Project Space? Local changes will be discarded and the local project replaced with the current Project Space content. The project will be closed and reopened. ähnelt.
+        /// </summary>
+        internal static string AppWindow_ReloadProjectSpace_Confirm
+        {
+            get
+            {
+                return ResourceManager.GetString("AppWindow_ReloadProjectSpace_Confirm", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The project could not be reloaded from Project Space: {0} ähnelt.
+        /// </summary>
+        internal static string AppWindow_ReloadProjectSpace_Failed
+        {
+            get
+            {
+                return ResourceManager.GetString("AppWindow_ReloadProjectSpace_Failed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reload from Project Space ähnelt.
+        /// </summary>
+        internal static string AppWindow_ReloadProjectSpace_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("AppWindow_ReloadProjectSpace_Title", resourceCulture);
             }
         }
         

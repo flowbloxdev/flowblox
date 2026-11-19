@@ -15,10 +15,12 @@ internal static class Program
         var invalidMode = args.Length == 3
             && args[2] != "--field-selection-only"
             && args[2] != "--launcher-only"
+            && args[2] != "--execution-views-only"
+            && args[2] != "--password-editors-only"
             && args[2] != "--quick-starts-only";
         if (args.Length < 2 || args.Length > 3 || invalidMode)
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--field-selection-only|--launcher-only|--quick-starts-only]");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--field-selection-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only]");
             return 2;
         }
 
@@ -45,7 +47,9 @@ internal static class Program
                     directory, sourceProjectPath,
                     fieldSelectionOnly: args.Length == 3 && args[2] == "--field-selection-only",
                     launcherOnly: args.Length == 3 && args[2] == "--launcher-only",
-                    quickStartsOnly: args.Length == 3 && args[2] == "--quick-starts-only")
+                    quickStartsOnly: args.Length == 3 && args[2] == "--quick-starts-only",
+                    executionViewsOnly: args.Length == 3 && args[2] == "--execution-views-only",
+                    passwordEditorsOnly: args.Length == 3 && args[2] == "--password-editors-only")
             });
             return exitCode != 0 ? exitCode : passed ? 0 : 1;
         }

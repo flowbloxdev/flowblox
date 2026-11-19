@@ -19,6 +19,13 @@ namespace FlowBlox.Core.Models.Components.IO
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.microsoft_excel, 16, new SKColor(22, 163, 74));
 
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.microsoft_excel, 32, new SKColor(22, 163, 74));
+
+        [Display(Name = "ExcelTable_WorksheetName", Description = "ExcelTable_WorksheetName_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        public string WorksheetName { get; set; }
+
+        [Range(0, int.MaxValue)]
+        [Display(Name = "ExcelTable_WorksheetIndex", Description = "ExcelTable_WorksheetIndex_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
+        public int WorksheetIndex { get; set; }
         public ExcelTable() : base() 
         {
 
@@ -36,7 +43,7 @@ namespace FlowBlox.Core.Models.Components.IO
                 var dataTable = new DataTable();
                 using (var package = new ExcelPackage(memoryStream))
                 {
-                    var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                    var worksheet = SelectWorksheet(package, create: false);
                     if (worksheet == null)
                         return dataTable;
 
@@ -72,11 +79,18 @@ namespace FlowBlox.Core.Models.Components.IO
                 throw new InvalidOperationException("The data source is not ready for writing.");
             }
 
+            var worksheetName = this.Resolve(table => table.WorksheetName);
+            var worksheetIndex = this.Resolve(table => table.WorksheetIndex);
+            var hasSelection = !string.IsNullOrWhiteSpace(worksheetName) || worksheetIndex != 0;
+            var existingContent = hasSelection && DataSource.CanRead() ? DataSource.Content : null;
             using (var memoryStream = new MemoryStream())
             {
-                using (var package = new ExcelPackage(memoryStream))
+                using (var package = existingContent?.Length > 0
+                    ? new ExcelPackage(new MemoryStream(existingContent))
+                    : new ExcelPackage())
                 {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                    var worksheet = SelectWorksheet(package, create: true);
+                    worksheet.Cells.Clear();
                     for (int colIndex = 0; colIndex < dataTable.Columns.Count; colIndex++)
                     {
                         worksheet.Cells[1, colIndex + 1].Value = dataTable.Columns[colIndex].ColumnName;
@@ -101,11 +115,33 @@ namespace FlowBlox.Core.Models.Components.IO
                         }
                     }
 
-                    package.Save();
+                    package.SaveAs(memoryStream);
                 }
 
                 DataSource.Content = memoryStream.ToArray();
             }
+        }
+
+        private ExcelWorksheet SelectWorksheet(ExcelPackage package, bool create)
+        {
+            var worksheetName = this.Resolve(table => table.WorksheetName);
+            if (!string.IsNullOrWhiteSpace(worksheetName))
+            {
+                return package.Workbook.Worksheets[worksheetName]
+                    ?? (create ? package.Workbook.Worksheets.Add(worksheetName)
+                        : throw new InvalidOperationException($"Worksheet '{worksheetName}' was not found."));
+            }
+
+            var worksheetIndex = this.Resolve(table => table.WorksheetIndex);
+            if (worksheetIndex < 0 || worksheetIndex >= package.Workbook.Worksheets.Count)
+            {
+                if (worksheetIndex == 0 && package.Workbook.Worksheets.Count == 0)
+                    return create ? package.Workbook.Worksheets.Add("Sheet1") : null;
+
+                throw new InvalidOperationException($"Worksheet index {worksheetIndex} is outside the workbook.");
+            }
+
+            return package.Workbook.Worksheets.ElementAt(worksheetIndex);
         }
 
         public override void OptionsInit(List<OptionElement> defaults)

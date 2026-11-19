@@ -246,7 +246,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
                 var modelSession = ModelCache.Open(
                     runtime,
                     modelFolder,
-                    () => CreateModelSession(runtime, modelFolder),
+                    () => CreateModelSession(runtime, modelFolder, executionProvider),
                     out var alreadyOpen);
                 _model = modelSession.Model;
                 _tokenizer = modelSession.Tokenizer;
@@ -266,7 +266,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
             }
         }
 
-        private static GenAIModelSession CreateModelSession(BaseRuntime runtime, string modelFolder)
+        private static GenAIModelSession CreateModelSession(BaseRuntime runtime, string modelFolder, AiExecutionProviders executionProvider)
         {
             runtime.Report($"Loading ONNX model from folder: {modelFolder}");
 
@@ -274,7 +274,17 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
             Tokenizer tokenizer = null;
             try
             {
-                model = new Model(modelFolder);
+                if (executionProvider == AiExecutionProviders.CUDA || executionProvider == AiExecutionProviders.DirectML)
+                {
+                    using var config = new Config(modelFolder);
+                    config.ClearProviders();
+                    config.AppendProvider(executionProvider == AiExecutionProviders.CUDA ? "cuda" : "dml");
+                    model = new Model(config);
+                }
+                else
+                {
+                    model = new Model(modelFolder);
+                }
                 tokenizer = new Tokenizer(model);
                 return new GenAIModelSession(model, tokenizer);
             }
@@ -286,7 +296,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI
             }
         }
 
-        private string ResolveModelFolder() => 
+        private string ResolveModelFolder() =>
             this.Resolve(owner => owner.ModelFolder);
 
         private string GetInitialModelDirectory()

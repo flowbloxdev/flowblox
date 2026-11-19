@@ -54,6 +54,39 @@ namespace FlowBloxTest.FlowBlocks.IO
             Assert.IsTrue(table.FirstRowHeader);
         }
 
+        [TestMethod]
+        public void NamedWorksheetWritePreservesOtherSheetsAndIndexRemainsZeroBased()
+        {
+            ExcelPackage.License.SetNonCommercialPersonal("FlowBlox Tests");
+            var source = new TestDataObject();
+            var first = new ExcelTable { DataSource = source, WorksheetName = "Files" };
+            var second = new ExcelTable { DataSource = source, WorksheetName = "Directories" };
+            var data = new DataTable();
+            data.Columns.Add("Path");
+            data.Rows.Add("first.txt");
+            first.Write(data);
+            data.Rows[0][0] = "directory";
+            second.Write(data);
+
+            Assert.AreEqual("first.txt", first.Read().Rows[0][0]);
+            Assert.AreEqual("directory", second.Read().Rows[0][0]);
+            Assert.AreEqual("first.txt", new ExcelTable { DataSource = source }.Read().Rows[0][0]);
+            Assert.AreEqual("directory", new ExcelTable { DataSource = source, WorksheetIndex = 1 }.Read().Rows[0][0]);
+            first.WorksheetIndex = 99;
+            Assert.AreEqual("first.txt", first.Read().Rows[0][0]);
+        }
+
+        [TestMethod]
+        public void ReadingAnUnknownWorksheetDoesNotSilentlyReadTheFirstSheet()
+        {
+            ExcelPackage.License.SetNonCommercialPersonal("FlowBlox Tests");
+            var source = new TestDataObject();
+            var table = new ExcelTable { DataSource = source };
+            table.Write(new DataTable());
+            table.WorksheetName = "Missing";
+            Assert.ThrowsExactly<InvalidOperationException>(() => table.Read());
+        }
+
         private sealed class TestDataObject : DataObjectBase
         {
             public override byte[] Content { get; set; } = Array.Empty<byte>();

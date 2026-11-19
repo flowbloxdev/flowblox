@@ -9,20 +9,6 @@ namespace FlowBlox.Core.Util.Resources
     {
         private static readonly ConcurrentDictionary<string, SKImage> _cache = new();
 
-        public static SKImage ProjectIcon16 { get; } = CreateProjectIcon(new SKColor(0x21, 0x96, 0xF3));
-        public static SKImage InactiveProjectIcon16 { get; } = CreateProjectIcon(new SKColor(0xC0, 0xC7, 0xCE));
-
-        private static SKImage CreateProjectIcon(SKColor color)
-        {
-            var icon = CreateFromSVG(FlowBloxIcons.sitemap_outline, 16, color);
-            using var surface = SKSurface.Create(new SKImageInfo(16, 16));
-            surface.Canvas.Clear(SKColors.Transparent);
-            surface.Canvas.Translate(0, 16);
-            surface.Canvas.RotateDegrees(-90);
-            surface.Canvas.DrawImage(icon, 0, 0);
-            return surface.Snapshot();
-        }
-
         /// <summary>
         /// Loads an SVG from a byte array and renders it into an SKImage with the given size.
         /// Uses an internal cache keyed by SHA256(data) + size to avoid redundant rendering.

@@ -63,4 +63,18 @@
 <data name="ArtifactsInUse" xml:space="preserve"><value>Eine Ausführung verwendet diesen Ausgabeordner. Vor dem Zurücksetzen warten, bis sie abgeschlossen ist, oder die Ausführung stoppen.</value></data>
 <data name="Previous" xml:space="preserve"><value>Zurück</value></data>
 <data name="Next" xml:space="preserve"><value>Weiter</value></data>
+  <data name="OutputGroups" xml:space="preserve"><value>Ausgabegruppen</value></data>
+  <data name="NoResults" xml:space="preserve"><value>Es liegt noch keine Projektausgabe vor.</value></data>
+  <data name="NotStarted" xml:space="preserve"><value>Starte das Projekt unter Konfiguration, um den Ausführungsstatus zu sehen.</value></data>
+  <data name="Warnings" xml:space="preserve"><value>Warnungen</value></data>
+  <data name="ViewContent" xml:space="preserve"><value>Inhalt anzeigen</value></data>
+  <data name="CloseContent" xml:space="preserve"><value>Schließen</value></data>
+  <data name="Inputs" xml:space="preserve"><value>Eingabe</value></data>
+  <data name="Outputs" xml:space="preserve"><value>Ausgaben</value></data>
+  <data name="ShowPassword" xml:space="preserve"><value>Wert anzeigen</value></data>
+  <data name="HidePassword" xml:space="preserve"><value>Wert maskieren</value></data>
+  <data name="InsertField" xml:space="preserve"><value>Feld einfügen</value></data>
+  <data name="ProjectFields" xml:space="preserve"><value>Projektfelder</value></data>
+  <data name="Options" xml:space="preserve"><value>Optionen</value></data>
+  <data name="Vault" xml:space="preserve"><value>Vault</value></data>
 </root>

@@ -19,7 +19,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["userFieldType"] = "UserFieldTypes (Input|Memory)",
                 ["name"] = "string? (optional custom suffix/name; prefix is auto-applied if missing)",
                 ["fieldType"] = "FieldTypes? (default Text)",
-                ["storeValueLocally"] = "bool? (optional; default true for input fields, false for memory fields)",
+                ["defaultValue"] = "string? (non-password Input fields only; applied when no input parameter is supplied or the input is empty; current inputs stay local)",
                 ["isRequiredAtRuntimeStartup"] = "bool? (default false; cannot be true together with clearOnRuntimeStart)",
                 ["clearOnRuntimeStart"] = "bool? (optional Memory fields only; default false; cannot be true together with isRequiredAtRuntimeStartup)",
                 ["isPassword"] = "bool? (Input only; forces protected local storage; default false)",
@@ -82,9 +82,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             foreach (var value in values)
                 field.ListOfValues.Add(value);
 
-            var storeValueLocally = args.Value<bool?>("storeValueLocally");
-            if (storeValueLocally.HasValue)
-                field.StoreValueLocally = storeValueLocally.Value;
+            field.DefaultValue = args.Value<string>("defaultValue");
 
             return Task.FromResult(ToolHandlerUtilities.Ok(new JObject
             {
@@ -98,6 +96,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["loVType"] = field.LoVType.ToString(),
                 ["isPassword"] = field.IsPassword,
                 ["syntaxHighlighting"] = field.SyntaxHighlighting,
+                ["defaultValue"] = field.DefaultValue,
                 ["typeFullName"] = typeof(FieldElement).FullName ?? string.Empty,
                 ["resolver"] = new JObject
                 {

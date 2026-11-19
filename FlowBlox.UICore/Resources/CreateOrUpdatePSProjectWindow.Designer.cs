@@ -152,6 +152,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Project name and description are required. Enter a description in the project or disable automatic description transfer and enter a Project Space description. ähnelt.
+        /// </summary>
+        public static string Error_NameDescriptionRequired
+        {
+            get
+            {
+                return ResourceManager.GetString("Error_NameDescriptionRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die You must be logged in to save to Project Space. ähnelt.
         /// </summary>
         public static string Error_NotLoggedIn
@@ -437,6 +448,28 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use the project description ähnelt.
+        /// </summary>
+        public static string UseProjectDescription
+        {
+            get
+            {
+                return ResourceManager.GetString("UseProjectDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use the description defined in the project for Project Space. The description remains required. This setting is saved with the project. ähnelt.
+        /// </summary>
+        public static string UseProjectDescriptionTooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("UseProjectDescriptionTooltip", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Private ähnelt.
         /// </summary>

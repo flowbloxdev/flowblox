@@ -15,44 +15,52 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Executes a saved skill project or external project and returns its ProjectOutputFlowBlock values. Provide a reason and call directly; FlowBlox requests user approval unless the project is already in the user's AI.ApprovedSkillProjects option. Use InspectOutputFieldValue for truncated output values.",
+            "Executes a saved project or Project Space GUID and returns its ProjectOutputFlowBlock values. Provide a reason; FlowBlox requests approval. Local approvals may be remembered. Use InspectOutputFieldValue for truncated values.",
             new JObject
             {
-                ["projectFile"] = "string (saved .fbprj path, for example projectFile from GetSkillProjects)",
+                ["projectFile"] = "string? (saved .fbprj path; alternative to projectSpaceGuid)",
+                ["projectSpaceGuid"] = "string? (instead of projectFile)",
+                ["projectSpaceVersion"] = "int? (stable version; default latest stable, or current if none)",
+                ["private"] = "bool? (private PS access; isolated execution requires Remember credentials; default false)",
                 ["reason"] = "string (why this execution is required)",
-                ["inputParameters"] = "object? (Input user-field name to scalar/text value; values support FlowBlox placeholders)",
+                ["inputParameters"] = "object? (Input field name to scalar/text value; supports FlowBlox placeholders; omitted or empty inputs use the field's defaultValue)",
                 ["outputFields"] = "string[]? (optional ProjectOutputFlowBlock property-name filter)"
             });
 
-        public override Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
+        public override async Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
         {
             try
             {
                 ct.ThrowIfCancellationRequested();
                 if (ToolHandlerUtilities.IsSkillProjectActive())
-                    return Task.FromResult(ToolHandlerUtilities.Fail("Save and close the active skill project before executing a saved project."));
+                    return ToolHandlerUtilities.Fail("Save and close the active skill project before executing a saved project.");
 
                 var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(
                     (args.Value<string>("projectFile") ?? string.Empty).Trim());
                 var reason = (args.Value<string>("reason") ?? string.Empty).Trim();
-                if (string.IsNullOrWhiteSpace(projectFile))
-                    return Task.FromResult(ToolHandlerUtilities.Fail("projectFile is required."));
-                if (!File.Exists(projectFile))
-                    return Task.FromResult(ToolHandlerUtilities.Fail($"Project file does not exist: {projectFile}"));
                 if (string.IsNullOrWhiteSpace(reason))
-                    return Task.FromResult(ToolHandlerUtilities.Fail("reason is required for external project execution."));
+                    return ToolHandlerUtilities.Fail("reason is required for external project execution.");
 
                 FlowBloxProject project;
-                using (new DisableExtensionLoading())
+                var isProjectSpace = !string.IsNullOrWhiteSpace(args.Value<string>("projectSpaceGuid"));
+                if (isProjectSpace)
+                    project = await ProjectSpaceToolClient.LoadAsync(args, ct).ConfigureAwait(false);
+                else
                 {
-                    project = FlowBloxProject.FromFile(projectFile);
+                    if (string.IsNullOrWhiteSpace(projectFile))
+                        return ToolHandlerUtilities.Fail("projectFile or projectSpaceGuid is required.");
+                    if (!File.Exists(projectFile))
+                        return ToolHandlerUtilities.Fail($"Project file does not exist: {projectFile}");
+                    project = SkillProjectSerializer.FromFile(projectFile);
                 }
 
                 var outputFields = ReadOutputFieldFilter(args["outputFields"]);
                 ValidateOutputFields(project, outputFields);
                 var request = new RunnerRequest
                 {
-                    ProjectFile = Path.GetFullPath(projectFile),
+                    ProjectFile = isProjectSpace ? null : Path.GetFullPath(projectFile),
+                    ProjectSpaceGuid = isProjectSpace ? project.ProjectSpaceGuid : null,
+                    ProjectSpaceVersion = isProjectSpace ? project.ProjectSpaceVersion : null,
                     AutoRestart = false,
                     AbortOnError = true,
                     AbortOnWarning = false,
@@ -74,17 +82,17 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     });
 
                 var payload = BuildResponse(response, normalizedOutputs, outputFields, runId);
-                return Task.FromResult(response.Success
+                return response.Success
                     ? ToolHandlerUtilities.Ok(payload)
-                    : ToolHandlerUtilities.Fail("Project execution failed.", payload));
+                    : ToolHandlerUtilities.Fail("Project execution failed.", payload);
             }
             catch (OperationCanceledException)
             {
-                return Task.FromResult(ToolHandlerUtilities.Fail("Project execution was cancelled."));
+                return ToolHandlerUtilities.Fail("Project execution was cancelled.");
             }
             catch (Exception ex)
             {
-                return Task.FromResult(ToolHandlerUtilities.Fail(ex.Message));
+                return ToolHandlerUtilities.Fail(ex.Message);
             }
         }
 

@@ -16,7 +16,7 @@ namespace FlowBlox.Avalonia.IntegrationTests;
 
 internal sealed partial class WorkspaceIntegrationChecks
 {
-    private async Task CheckEditorPopupsAsync(string directory, Action<bool, string> check)
+    private async Task CheckEditorPopupsAsync(string directory, Action<bool, string> check, bool fieldEditorsOnly = false, bool passwordEditorsOnly = false)
     {
         var window = new Window
         {
@@ -56,6 +56,17 @@ internal sealed partial class WorkspaceIntegrationChecks
         {
             window.Show();
             window.UpdateLayout();
+            if (passwordEditorsOnly)
+            {
+                await CheckPasswordFieldEditorChangesAsync(window, content, check);
+                return;
+            }
+            if (fieldEditorsOnly)
+            {
+                await CheckFieldEditorChangesAsync(window, content, directory, check);
+                await CheckPasswordFieldEditorChangesAsync(window, content, check);
+                return;
+            }
             var dropdown = MenuVisuals<EnumerationDropDownControl>(window).Single();
             dropdown.IsChecked = true;
             await Task.Delay(100);
@@ -98,6 +109,7 @@ internal sealed partial class WorkspaceIntegrationChecks
                 "Read-only property text keeps Copy available and disables Cut");
             textMenu.IsOpen = false;
             await CheckFieldEditorChangesAsync(window, content, directory, check);
+            await CheckPasswordFieldEditorChangesAsync(window, content, check);
         }
         finally
         {
@@ -178,5 +190,18 @@ internal sealed partial class WorkspaceIntegrationChecks
         check(field.StringValue == "edited value" && value.HasChanges && !suggestions.HasMatchingSuggestion,
             "Editing a custom value clears the suggestion badge state and still reports an edit");
         SaveMenuImage(directory, window, "field-custom-value.png");
+
+        field.DefaultValue = "Default [literal].*\nSecond line";
+        check(code.Text == "edited value",
+            "Changing the default preserves an explicitly entered input value");
+        code.Text = "";
+        await Task.Delay(50);
+        check(field.StringValue == field.DefaultValue && code.Text == field.DefaultValue,
+            "Clearing the input editor immediately restores its multiline default");
+        field.DefaultValue = "Updated default";
+        await Task.Delay(50);
+        check(code.Text == "Updated default",
+            "Changing the default refreshes an input editor using its fallback");
+        SaveMenuImage(directory, window, "field-default-value.png");
     }
 }

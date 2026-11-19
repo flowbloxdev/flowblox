@@ -79,6 +79,8 @@ namespace FlowBlox.Core.Util
                 OptionCollection.Remove(OptionsConstants.ParsingDateTimeFormat);
                 OptionCollection.Remove(OptionsConstants.ParsingDecimalSeparator);
                 OptionCollection.Remove(OptionsConstants.ParsingGroupSeparator);
+                // Legacy: password fields now always start masked and expose a local reveal toggle.
+                OptionCollection.Remove("UI.PropertyView.MaskPasswordValues");
             }
 
             var defaultOptions = new List<OptionElement>
@@ -104,12 +106,6 @@ namespace FlowBlox.Core.Util
                 new OptionElement("Editor.DefaultPath", GetDefaultEditorPath(), "Path to the default editor for directly editing or viewing data from FlowBlox. We recommend the free software Notepad++: https://notepad-plus-plus.org/", OptionElement.OptionType.Text),
                 new OptionElement("UI.Style", "Professional", "Set your style here. Available styles by default: \"Default\", \"Professional\". To apply a new style, you must change this setting and restart FlowBlox.", OptionElement.OptionType.Text),
                 new OptionElement("UI.Culture", "", "Optional UI culture to force language/formatting, for example 'de-DE' or 'en-US'. Leave empty to use the operating system culture.", OptionElement.OptionType.Text),
-                new OptionElement(
-                    "UI.PropertyView.MaskPasswordValues",
-                    "false",
-                    "Mask password field values in property editors. Disabled by default for readability. Reopen an editor after changing this option. Field-view masking and protection from logs and the AI Assistant remain active.",
-                    OptionElement.OptionType.Boolean,
-                    "Mask password values in property editors"),
                 new OptionElement("FieldView.MaxDisplayLength", "3000", "Maximum number of characters displayed per field value in the FieldView UI. Full content remains available when opening/editing the field value.", OptionElement.OptionType.Integer),
                 new OptionElement("FieldView.ShowFlowBlock", "false", "Show or hide the Flow Block column in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: Show Flow Block"),
                 new OptionElement("FieldView.SingleLineFieldValues", "true", "Show field values in single-line mode in the FieldView.", OptionElement.OptionType.Boolean, "FieldView: 1 Line Values"),

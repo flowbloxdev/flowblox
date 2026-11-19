@@ -2,6 +2,8 @@
 {
     public static class GlobalConstants
     {
+        public const int RemotePropertyLoadTimeoutSeconds = 5;
+
         public const string FlowBlockTypeNameSuffix = "FlowBlock";
 
         public const string DataGridViewColumnSelectionSuffix = "Selection";

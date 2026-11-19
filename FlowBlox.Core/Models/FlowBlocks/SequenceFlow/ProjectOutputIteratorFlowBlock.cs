@@ -154,7 +154,6 @@ namespace FlowBlox.Core.Models.FlowBlocks
                 }
 
                 GenerateResult(runtime, resultMap);
-                ExecuteNextFlowBlocks(runtime);
             });
         }
     }

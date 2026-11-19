@@ -10,10 +10,20 @@
 else
 {
     <a class="back" href="/">← @T["Projects"]</a>
-    <div class="heading"><h1>@_project!.Shortcut.Name</h1><a class="button" href="@($"/projects/{Id}/artifacts")">@T["Artifacts"] <span class="badge">@_artifactCount</span></a></div>
+    <div class="heading"><h1>@_project!.Shortcut.Name</h1></div>
     <p class="description">@_form.Description</p>
     @if (!string.IsNullOrWhiteSpace(_form.Notice)) { <details class="notes"><summary>☀ @T["ProjectNotes"]</summary><p><LinkedText Text="@_form.Notice" /></p></details> }
-    <section class="panel directories"><label>@T["InputDirectory"]<input value="@_form.InputDirectory" readonly /></label><label>@T["OutputDirectory"]<input value="@_form.OutputDirectory" readonly /></label></section>
+    <nav class="execution-tabs" aria-label="@T["Project"]">
+        <button class="@(!_showOutputs ? "active" : null)" aria-pressed="@(!_showOutputs)" @onclick="() => _showOutputs = false"><MdiIcon Name="form-textbox" /> @T["Inputs"]</button>
+        <button class="@(_showOutputs ? "active" : null)" aria-pressed="@_showOutputs" @onclick="() => _showOutputs = true"><MdiIcon Name="file-export" /> @T["Outputs"]</button>
+    </nav>
+    @if (_showOutputs)
+    {
+        <OutputArtifacts ProjectId="@Id" OutputDirectory="@_form.OutputDirectory" />
+        <section class="panel"><p class="empty">@T["NoResults"]</p></section>
+    }
+    <div hidden="@_showOutputs">
+    <section class="panel directories"><label>@T["InputDirectory"]<input value="@_form.InputDirectory" readonly /></label></section>
     <h2>@T["InputParameters"]</h2>
     <div class="input-layout">
         @if (_form.Fields.Count > 0 && _history.Count > 0)
@@ -30,7 +40,7 @@ else
                 <div class="toolbar"><button class="quiet" disabled="@_busy" @onclick="ClearAsync"><MdiIcon Name="backup-restore" /> @T["Clear"]</button></div>
                 @foreach (var field in _form.Fields)
                 {
-                    <InputFieldEditor @key="field.Name" Field="field" Disabled="_busy" OutputDirectories="_outputDirectories" @bind-Value="_form.Values[field.Name]" />
+                    <InputFieldEditor @key="field.Name" Field="field" Disabled="_busy" OutputDirectories="_outputDirectories" References="_form.FieldReferences" @bind-Value="_form.Values[field.Name]" />
                 }
             }
             <details class="overrides"><summary>@T["OptionOverrides"] <span class="badge">@_form.Overrides.Count</span></summary>
@@ -41,6 +51,7 @@ else
             </details>
         </section>
     </div>
+    </div>
     <footer class="actions"><a href="/" class="button">← @T["Back"]</a><button class="primary" disabled="@(_busy || !CanRun)" @onclick="StartAsync"><MdiIcon Name="play" /> @T["RunProject"]</button></footer>
 }
 @code {
@@ -49,8 +60,7 @@ else
     private ProjectForm? _form;
     private IReadOnlyList<ProjectOutputDirectoryChoice> _outputDirectories = [];
     private IReadOnlyList<ProjectExecutionEntry> _history = [];
-    private bool _busy, _error;
-    private int _artifactCount;
+    private bool _busy, _error, _showOutputs;
     private string _optionKey = string.Empty;
     private bool CanRun => _form != null && _form.Fields.All(input => !input.IsRequiredAtRuntimeStartup || !string.IsNullOrWhiteSpace(_form.Values.GetValueOrDefault(input.Name)));
     protected override void OnInitialized() => BeginRefreshing(RefreshHistoryAsync);
@@ -59,7 +69,6 @@ else
         if (_project != null && _form != null)
         {
             if (_form.Fields.Count > 0) _history = Dashboard.Executions.GetForProject(_project.Shortcut);
-            _artifactCount = new ProjectArtifacts(_form.OutputDirectory).Count();
         }
         return Task.CompletedTask;
     }
@@ -72,7 +81,6 @@ else
             _form = await Dashboard.LoadFormAsync(Id);
             _outputDirectories = ProjectOutputDirectoryChoice.Create(Dashboard.Projects.Select(project => project.Shortcut.Name));
             _history = Dashboard.Executions.GetForProject(_project.Shortcut);
-            _artifactCount = (await Dashboard.ArtifactsAsync(Id)).Count();
         }
         catch (Exception exception) { Logger.LogWarning(exception, "Could not load the web project editor."); _error = true; }
     }

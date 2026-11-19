@@ -130,6 +130,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
         [FlowBloxUI(UISelectionButtons.None)]
         public string PaginationOffsetParameter { get; set; } = "startAt";
 
+        [Display(Name = "OpenApiRestFlowBlock_PaginationNextLinkPath", Description = "OpenApiRestFlowBlock_PaginationNextLinkPath_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 4)]
+        public string PaginationNextLinkPath { get; set; }
+
         [ActivationCondition(MemberName = nameof(Paginate), Value = true)]
         [Display(Name = "OpenApiRestFlowBlock_PaginationTotalPath", ResourceType = typeof(FlowBloxTexts), GroupName = "OpenApiRestFlowBlock_Groups_Pagination", Order = 3)]
         [FlowBloxUI(UISelectionButtons.None)]
@@ -372,21 +375,24 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             if (!Paginate)
                 return await InvokeEndpoint(descriptor, runtime).ConfigureAwait(false);
 
+            var nextLinkPath = this.Resolve(block => block.PaginationNextLinkPath);
+            var useNextLink = !string.IsNullOrWhiteSpace(nextLinkPath);
             if (descriptor.Method != "GET" || string.IsNullOrWhiteSpace(PaginationItemsPath)
-                || string.IsNullOrWhiteSpace(PaginationOffsetParameter) || MaximumPages < 1)
-                throw new ValidationException("Offset pagination requires a GET endpoint, an item path, an offset parameter and a positive page limit.");
+                || !useNextLink && string.IsNullOrWhiteSpace(PaginationOffsetParameter) || MaximumPages < 1)
+                throw new ValidationException("Pagination requires a GET endpoint, an item path, a next-link path or offset parameter, and a positive page limit.");
 
             var offsetParameter = RequestParameters.SingleOrDefault(x => x.Name == PaginationOffsetParameter);
-            if (offsetParameter == null || !string.Equals(offsetParameter.Location, "Query", StringComparison.OrdinalIgnoreCase))
+            if (!useNextLink && (offsetParameter == null || !string.Equals(offsetParameter.Location, "Query", StringComparison.OrdinalIgnoreCase)))
                 throw new ValidationException("The pagination offset must be a configured query parameter.");
-            var offsetText = offsetParameter.Resolve(owner => owner.Value);
+            var offsetText = offsetParameter?.Resolve(owner => owner.Value);
             var offset = string.IsNullOrWhiteSpace(offsetText) ? 0 : int.Parse(offsetText, System.Globalization.CultureInfo.InvariantCulture);
             var combined = new JArray();
             JObject firstPage = null;
+            string nextPageUrl = null;
             for (var pageNumber = 0; pageNumber < MaximumPages; pageNumber++)
             {
                 runtime.GetCancellationToken().ThrowIfCancellationRequested();
-                var response = await InvokeEndpoint(descriptor, runtime, offset).ConfigureAwait(false);
+                var response = await InvokeEndpoint(descriptor, runtime, useNextLink ? null : offset, nextPageUrl).ConfigureAwait(false);
                 if (response.StatusCode < 200 || response.StatusCode >= 300)
                     return response;
                 // Combining pages must not reinterpret JSON string values as local dates.
@@ -403,6 +409,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
                     : page.SelectToken(PaginationTotalPath)?.Value<int?>();
                 foreach (var item in items)
                     combined.Add(item.DeepClone());
+                if (useNextLink)
+                {
+                    var nextLink = page.SelectToken(nextLinkPath)?.Value<string>();
+                    if (string.IsNullOrWhiteSpace(nextLink))
+                    {
+                        firstPage.SelectToken(PaginationItemsPath).Replace(combined);
+                        return response with { Payload = firstPage.ToString(Formatting.None) };
+                    }
+
+                    nextPageUrl = ResolveNextPageUrl(descriptor, nextLink, nextPageUrl);
+                    continue;
+                }
                 offset = checked(offset + items.Count);
                 if (total.HasValue && offset >= total.Value || !total.HasValue && items.Count == 0)
                 {
@@ -415,7 +433,34 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             throw new ValidationException("The pagination page limit was reached; incomplete results were discarded.");
         }
 
-        private async Task<InvocationResult> InvokeEndpoint(OpenApiEndpointDescriptor descriptor, BaseRuntime runtime, int? offset = null)
+        private string ResolveNextPageUrl(OpenApiEndpointDescriptor descriptor, string nextLink, string currentPageUrl)
+        {
+            var configuredBaseUrl = BaseUrl == null
+                ? FlowBloxFieldHelper.ReplaceFieldsInString(descriptor.ServerUrl)
+                : this.Resolve(block => block.BaseUrl);
+            var baseUrl = new Uri(configuredBaseUrl.TrimEnd('/') + "/");
+            Uri next;
+            if (Uri.TryCreate(nextLink, UriKind.Absolute, out var absolute)
+                && (absolute.Scheme == "http" || absolute.Scheme == "https"))
+                next = absolute;
+            else if (nextLink.StartsWith("?", StringComparison.Ordinal))
+                next = new Uri(new Uri(currentPageUrl ?? UriHelper.ConcatUri(baseUrl.AbsoluteUri, descriptor.Path)), nextLink);
+            else if (nextLink.StartsWith(baseUrl.AbsolutePath, StringComparison.Ordinal))
+                next = new Uri(baseUrl.GetLeftPart(UriPartial.Authority) + nextLink);
+            else
+                next = new Uri(UriHelper.ConcatUri(baseUrl.AbsoluteUri, nextLink));
+
+            if (next.Scheme != baseUrl.Scheme || next.Authority != baseUrl.Authority || !string.IsNullOrEmpty(next.UserInfo))
+                throw new ValidationException("Pagination next link must stay on the configured API origin.");
+
+            return next.AbsoluteUri;
+        }
+
+        private async Task<InvocationResult> InvokeEndpoint(
+            OpenApiEndpointDescriptor descriptor,
+            BaseRuntime runtime,
+            int? offset = null,
+            string nextPageUrl = null)
         {
             var baseUrl = (BaseUrl == null
                 ? FlowBloxFieldHelper.ReplaceFieldsInString(descriptor.ServerUrl) ?? string.Empty
@@ -446,6 +491,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.Web
             var url = UriHelper.NormalizePathSeparators(UriHelper.ConcatUri(baseUrl, path));
             if (query.Count > 0)
                 url += (url.Contains('?') ? "&" : "?") + string.Join("&", query);
+            if (nextPageUrl != null)
+                url = nextPageUrl;
 
             try
             {

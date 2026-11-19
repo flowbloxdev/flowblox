@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Text.Json;
+using Newtonsoft.Json;
 using FlowBlox.Core.Constants;
 using FlowBlox.Core.Runner.Contracts;
 using FlowBlox.Core.Runner.Serialization;
@@ -31,6 +31,14 @@ public sealed class ProjectExecutions
 
     public IReadOnlyList<ProjectExecutionEntry> GetAll() => _store.Read()
         .OrderByDescending(x => x.StartedUtc).ToList();
+
+    public static Dictionary<string, List<ProjectOutputDatasetDto>> ReadOutputs(ProjectExecutionEntry entry)
+    {
+        // The original response also preserves values from older history entries serialized as JsonElement metadata.
+        if (File.Exists(entry.ResponseFile))
+            return RunnerJson.ReadFile<RunnerResponse>(entry.ResponseFile)?.Outputs ?? new();
+        return entry.Response?.Outputs ?? new();
+    }
 
     public IReadOnlyList<ProjectExecutionEntry> GetForProject(ProjectShortcut project)
     {
@@ -230,7 +238,9 @@ public sealed class ProjectExecutions
         {
             try
             {
-                var response = RunnerJson.ReadFile<RunnerResponse>(entry.ResponseFile);
+                var response = JsonConvert.DeserializeObject<RunnerResponse>(
+                    File.ReadAllText(entry.ResponseFile),
+                    new JsonSerializerSettings { DateParseHandling = DateParseHandling.None });
                 if (response != null && response.FinishedUtc != default)
                     completed[entry.Id] = response;
             }

@@ -63,4 +63,18 @@
 <data name="ArtifactsInUse" xml:space="preserve"><value>An execution is using this output folder. Stop it or wait for completion before resetting artifacts.</value></data>
 <data name="Previous" xml:space="preserve"><value>Previous</value></data>
 <data name="Next" xml:space="preserve"><value>Next</value></data>
+  <data name="OutputGroups" xml:space="preserve"><value>Output groups</value></data>
+  <data name="NoResults" xml:space="preserve"><value>No project output is available yet.</value></data>
+  <data name="NotStarted" xml:space="preserve"><value>Start the project from Configuration to view its execution status.</value></data>
+  <data name="Warnings" xml:space="preserve"><value>Warnings</value></data>
+  <data name="ViewContent" xml:space="preserve"><value>View content</value></data>
+  <data name="CloseContent" xml:space="preserve"><value>Close</value></data>
+  <data name="Inputs" xml:space="preserve"><value>Input</value></data>
+  <data name="Outputs" xml:space="preserve"><value>Outputs</value></data>
+  <data name="ShowPassword" xml:space="preserve"><value>Show value</value></data>
+  <data name="HidePassword" xml:space="preserve"><value>Mask value</value></data>
+  <data name="InsertField" xml:space="preserve"><value>Insert field</value></data>
+  <data name="ProjectFields" xml:space="preserve"><value>Project fields</value></data>
+  <data name="Options" xml:space="preserve"><value>Options</value></data>
+  <data name="Vault" xml:space="preserve"><value>Vault</value></data>
 </root>

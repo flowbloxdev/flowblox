@@ -1,0 +1,121 @@
+@using System.Data
+@using FlowBlox.Core.Runner.Contracts
+@using FlowBlox.Core.Util.Projects
+@inject Microsoft.JSInterop.IJSRuntime JS
+@using Microsoft.JSInterop
+
+<div class="project-outputs">
+    @if (Outputs?.Count > 0)
+    {
+        <nav class="output-groups" aria-label="@T["OutputGroups"]">
+            @foreach (var name in Outputs.Keys)
+            {
+                <button class="@(_selectedName == name ? "selected" : null)" aria-pressed="@(_selectedName == name)" @onclick="() => SelectOutput(name)">
+                    <MdiIcon Name="file-export" /><span>@name</span><span class="badge">@Outputs[name].Count</span>
+                </button>
+            }
+        </nav>
+    }
+    <section class="output-content" aria-live="polite">
+        @if (_table.Rows.Count == 0 || _table.Columns.Count == 0)
+        {
+            <p class="empty">@T["NoResults"]</p>
+        }
+        else if (_table.Rows.Count == 1)
+        {
+            @foreach (DataColumn column in _table.Columns)
+            {
+                <label class="result-field">@column.ColumnName
+                    <textarea readonly rows="@TextRows(Convert.ToString(_table.Rows[0][column]) ?? string.Empty)">@_table.Rows[0][column]</textarea>
+                </label>
+            }
+        }
+        else
+        {
+            <div class="output-table-scroll" tabindex="0" role="region" aria-label="@_selectedName">
+                <table class="output-table">
+                    <thead><tr>@foreach (DataColumn column in _table.Columns) { <th scope="col">@column.ColumnName</th> }</tr></thead>
+                    <tbody>
+                        @foreach (DataRow row in _table.Rows.Cast<DataRow>().Skip(_page * PageSize).Take(PageSize))
+                        {
+                            <tr>
+                                @foreach (DataColumn column in _table.Columns)
+                                {
+                                    var content = Convert.ToString(row[column]) ?? string.Empty;
+                                    <td><div class="output-cell"><span>@Preview(content)</span><button class="icon-button" title="@T["ViewContent"]" aria-label="@(T["ViewContent"] + ": " + column.ColumnName)" @onclick="() => OpenContent(column.ColumnName, content)"><MdiIcon Name="text-box-search-outline" /></button></div></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button disabled="@(_page == 0)" @onclick="() => _page--">@T["Previous"]</button>
+                <span>@(_page + 1) / @((_table.Rows.Count + PageSize - 1) / PageSize)</span>
+                <button disabled="@((_page + 1) * PageSize >= _table.Rows.Count)" @onclick="() => _page++">@T["Next"]</button>
+            </div>
+        }
+    </section>
+</div>
+@if (_content != null)
+{
+        <dialog @ref="_contentDialog" class="content-dialog" @onkeydown="ContentKeyDown" aria-labelledby="output-content-title">
+            <div class="heading"><h2 id="output-content-title">@_contentTitle</h2><button autofocus @onclick="CloseContentAsync">@T["CloseContent"]</button></div>
+            <textarea readonly aria-label="@_contentTitle">@_content</textarea>
+        </dialog>
+}
+
+@code {
+    [Parameter] public ProjectExecutionEntry? Entry { get; set; }
+    private Dictionary<string, List<ProjectOutputDatasetDto>>? Outputs;
+    private const int PageSize = 25;
+    private DataTable _table = new();
+    private string? _selectedName, _content, _contentTitle;
+    private int _page;
+    private bool _loaded, _focusContent;
+    private ElementReference _contentDialog;
+
+    protected override void OnParametersSet()
+    {
+        if (_loaded || Entry?.Response == null)
+            return;
+        Outputs = ProjectExecutions.ReadOutputs(Entry);
+        _loaded = true;
+        var first = Outputs.Keys.FirstOrDefault();
+        if (first != null)
+            SelectOutput(first);
+    }
+
+    private void SelectOutput(string name)
+    {
+        _selectedName = name;
+        _table = ProjectOutputTable.Create(Outputs![name]);
+        _page = 0;
+    }
+
+    private void OpenContent(string title, string content)
+    {
+        _contentTitle = title;
+        _content = content;
+        _focusContent = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusContent)
+        {
+            _focusContent = false;
+            await JS.InvokeVoidAsync("FlowBloxOutputContent.open", _contentDialog);
+        }
+    }
+
+    private Task CloseContentAsync()
+    {
+        _content = null;
+        return Task.CompletedTask;
+    }
+
+    private Task ContentKeyDown(KeyboardEventArgs args) => args.Key == "Escape" ? CloseContentAsync() : Task.CompletedTask;
+    private static int TextRows(string text) => Math.Clamp(text.Count(character => character == '\n') + 2, 3, 14);
+    private static string Preview(string content) => content.Length > 180 ? content[..180] + "…" : content;
+}

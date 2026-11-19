@@ -51,7 +51,7 @@ Dieselbe Installation lässt sich für mehrere Anbieter und FlowBlocks wiederver
   <data name="FFmpeg_WindowTitle" xml:space="preserve"><value>Direkte Mediendownloads mit FFmpeg einrichten</value></data>
   <data name="FFmpeg_SourceHeadline" xml:space="preserve"><value>Eine direkte Medien- oder Manifest-URL verwenden</value></data>
   <data name="FFmpeg_SourceDescription" xml:space="preserve"><value>Diesen Anbieter mit dem FlowBlock **Mediendownload** verknüpfen.
-Dessen URL muss direkt auf eine Mediendatei oder ein HLS-/DASH-Manifest zeigen, z. B. **https://example.org/video.mp4** oder **stream.m3u8**.
+Dessen URL muss direkt auf eine Mediendatei oder ein HLS-/DASH-Manifest zeigen, z. B. [**https://example.org/video.mp4**](https://example.org/video.mp4) oder [**stream.m3u8**](https://example.org/stream.m3u8).
 Für eine Webseiten-URL wird ein Webseiten-Extraktor wie yt-dlp benötigt.
 
 **Video** kopiert die Streams in MKV; **Ursprüngliches Audio** kopiert Audio in MKA.

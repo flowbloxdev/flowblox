@@ -461,4 +461,12 @@
     <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/delete/ (Apache-2.0).</comment>
   </data>
   <data name="folder_upload_outline" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\folder-upload-outline.svg;System.Byte[], mscorlib</value></data>
+  <data name="project_space" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\project-space.svg;System.Byte[], mscorlib</value>
+    <comment>FlowBlox Project Space logo, based on the existing project-space PNG assets.</comment>
+  </data>
+  <data name="project" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\project.svg;System.Byte[], mscorlib</value>
+    <comment>Pictogrammers MDI sitemap-outline, rotated 90 degrees left with the existing FlowBlox project color (#2196F3).</comment>
+  </data>
 </root>

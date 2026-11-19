@@ -282,7 +282,7 @@ namespace FlowBlox.AppWindow
             }
 
             var project = FlowBloxProjectManager.Instance.ActiveProject;
-            var isRuntimeActive = IsProjectEditingReadOnly;
+            var isRuntimeActive = IsProjectEditingReadOnly || _isReloadingFromProjectSpace;
 
             var isProjectActive = project != null;
 
@@ -292,6 +292,7 @@ namespace FlowBlox.AppWindow
 
             itmCreateProject.Enabled = !isRuntimeActive;
             itmOpenProject.Enabled = !isRuntimeActive;
+            itmOpenFromProjectSpace.Enabled = !isRuntimeActive;
             itmOpenExampleProject.Enabled = !isRuntimeActive;
             itmRecentProjects.Enabled = !isRuntimeActive && itmRecentProjects.DropDownItems.Count > 0;
             itmCloseProject.Enabled = isProjectActive && !isRuntimeActive;
@@ -314,6 +315,7 @@ namespace FlowBlox.AppWindow
             itmOpenProjectOutputDir.Enabled = isProjectActive;
 
             itmSaveToProjectSpace.Enabled = isProjectActive && !isRuntimeActive && !isDistributedDataProject;
+            itmReloadFromProjectSpace.Enabled = CanReloadFromProjectSpace;
 
             var changelist = _componentProvider.GetCurrentChangelist();
             this.itmUndo.Enabled = (changelist != null) && (!isRuntimeActive) && changelist.CanUndo;
@@ -442,6 +444,7 @@ namespace FlowBlox.AppWindow
             var wasWorkspaceVisible = Workspace.IsVisible;
             Workspace.IsVisible = FlowBloxProjectManager.Instance.ActiveProject != null
                 && !_isProjectLoading
+                && !_isReloadingFromProjectSpace
                 && !_isProjectUnloading;
             Welcome.IsVisible = !Workspace.IsVisible;
             this.FindControl<Avalonia.Controls.ScrollViewer>("Shortcuts").IsVisible = !Workspace.IsVisible;
@@ -1389,6 +1392,7 @@ private void itmUndo_Click(object sender, EventArgs e)
                 PrepareProjectForSave,
                 RestoreProjectAfterSaveAttempt);
             WpfDialogHost.ShowDialog(dialog, this);
+            UpdateUI_ProjectName();
         }
 
         private async void itmOpenFromProjectSpace_Click(object sender, EventArgs e)

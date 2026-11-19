@@ -21,6 +21,7 @@ public sealed class SkillProjectApprovalTests
     private string _directory = null!;
     private string _previousApprovals = null!;
     private string? _previousLocalAppData;
+    private string _previousUserDataDirectory = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -34,6 +35,8 @@ public sealed class SkillProjectApprovalTests
         option.PersistentValue = string.Empty;
         _previousLocalAppData = Environment.GetEnvironmentVariable("LOCALAPPDATA");
         Environment.SetEnvironmentVariable("LOCALAPPDATA", _directory);
+        _previousUserDataDirectory = GlobalPaths.UserDataDirectory;
+        GlobalPaths.UseUserDataDirectory(_directory);
     }
 
     [TestCleanup]
@@ -42,6 +45,7 @@ public sealed class SkillProjectApprovalTests
         FlowBloxProjectManager.Instance.ActiveProject = _previousProject;
         FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.AIApprovedSkillProjects).PersistentValue = _previousApprovals;
         Environment.SetEnvironmentVariable("LOCALAPPDATA", _previousLocalAppData);
+        GlobalPaths.UseUserDataDirectory(_previousUserDataDirectory);
         Directory.Delete(_directory, recursive: true);
     }
 
@@ -120,10 +124,8 @@ public sealed class SkillProjectApprovalTests
         var skill = new FlowBloxProject { ProjectName = "Custom" };
         FlowBloxProjectManager.Instance.ActiveProject = skill;
         var sql = skill.FlowBloxRegistry.CreateUserField(UserFieldTypes.Input, fieldName: "Sql");
-        sql.StoreValueLocally = false;
         var encoding = skill.FlowBloxRegistry.CreateUserField(UserFieldTypes.Input, fieldName: "Encoding");
-        encoding.StoreValueLocally = false;
-        encoding.StringValue = "UTF8";
+        encoding.DefaultValue = "UTF8";
         var path = Path.Combine(_directory, "custom.fbprj");
         skill.Save(path);
         FlowBloxProjectManager.Instance.ActiveProject = main;

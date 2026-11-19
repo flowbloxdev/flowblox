@@ -7,6 +7,22 @@
 <div class="field-editor">
     <div class="field-heading"><label for="@_id">@Field.Name @(Field.IsRequiredAtRuntimeStartup ? "*" : "")</label>
         <div class="field-actions">
+        @if (References.Count > 0 && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
+        {
+            <details class="field-reference-picker">
+                <summary class="small-action" aria-label="@T["InsertField"]" title="@T["InsertField"]">(x)</summary>
+                <div class="field-reference-options">
+                    @foreach (var group in References.GroupBy(reference => reference.Group))
+                    {
+                        <strong>@T[group.Key]</strong>
+                        @foreach (var reference in group)
+                        {
+                            <button type="button" disabled="@Disabled" data-field-target="@_id" data-field-reference="@reference.Reference">@reference.Name</button>
+                        }
+                    }
+                </div>
+            </details>
+        }
         @if (Field.LoVType != LoVType.PossibleValues && OutputDirectories.Count > 0)
         {
             <div class="project-output-picker">
@@ -37,7 +53,7 @@
         </select>
     }
     else if (Field.IsPassword)
-    { <input id="@_id" disabled="@Disabled" type="password" autocomplete="off" value="@Value" @oninput="ChangeAsync" /> }
+    { <PasswordInput Id="@_id" Label="@Field.Name" Disabled="Disabled" Value="@Value" ValueChanged="ValueChanged" /> }
     else
     {
         <textarea id="@_id" disabled="@Disabled" rows="2" @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput"></textarea>
@@ -57,6 +73,7 @@
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public IReadOnlyList<ProjectOutputDirectoryChoice> OutputDirectories { get; set; } = [];
+    [Parameter] public IReadOnlyList<FieldReferenceOption> References { get; set; } = [];
     private string OutputDirectoryTitle => FlowBloxResourceUtil.GetLocalizedString(
         "ProjectOutputDirectoryChoice_Select", typeof(FlowBlox.Core.FlowBloxTexts));
     private bool _outputsOpen;

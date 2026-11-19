@@ -40,7 +40,9 @@ internal sealed partial class WorkspaceIntegrationChecks
         string sourceProjectPath,
         bool fieldSelectionOnly = false,
         bool launcherOnly = false,
-        bool quickStartsOnly = false)
+        bool quickStartsOnly = false,
+        bool executionViewsOnly = false,
+        bool passwordEditorsOnly = false)
     {
         var results = new List<string>();
         string error = null;
@@ -54,6 +56,17 @@ internal sealed partial class WorkspaceIntegrationChecks
         try
         {
             Directory.CreateDirectory(directory);
+            if (passwordEditorsOnly)
+            {
+                await CheckEditorPopupsAsync(directory, Check, passwordEditorsOnly: true);
+                return true;
+            }
+            if (executionViewsOnly)
+            {
+                CheckProjectExecutionHistory(Check, directory);
+                CheckExecutionCompletionViews(Check, directory);
+                return true;
+            }
             if (quickStartsOnly)
             {
                 CheckQuickStartMenu(Check, directory);
@@ -93,13 +106,19 @@ internal sealed partial class WorkspaceIntegrationChecks
             CheckQuickStartMenu(Check, directory);
             await CheckManagedObjectActionsDropDownAsync(directory, Check);
             await CheckAssistantProviderSelectionAsync(Check);
+            CheckAssistantEmptyHistory(Check, directory);
+            await CheckFlowBlockIconsAsync(Check, directory);
+            await CheckExecuteProjectEditorsAsync(Check, directory);
             CheckProjectSpaceCards(Check, directory);
             await CheckMissingProjectSpaceGuidAsync(Check);
             CheckFieldSelectionDialogScrolling(Check, directory);
             CheckFieldSelectionDialogContext(Check);
             await CaptureNotificationBarPreviewAsync(directory);
             if (fieldSelectionOnly)
+            {
+                await CheckEditorPopupsAsync(directory, Check, fieldEditorsOnly: true);
                 return true;
+            }
             await CheckDesktopDialogsAsync(Check, directory);
             Check(!_window.itmSaveProject.Enabled && !_window.itmCloseProject.Enabled, "Commands disabled without project");
             CheckWorkspaceObserver(Check);

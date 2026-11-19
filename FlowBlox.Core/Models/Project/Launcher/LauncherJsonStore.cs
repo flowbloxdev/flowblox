@@ -52,7 +52,9 @@ public sealed class LauncherJsonStore<T>
         if (!File.Exists(_path))
             return new List<T>();
 
-        return JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(_path))
+        return JsonConvert.DeserializeObject<List<T>>(
+            File.ReadAllText(_path),
+            new JsonSerializerSettings { DateParseHandling = DateParseHandling.None })
             ?? throw new InvalidDataException($"Invalid launcher list: {_path}");
     }
 }

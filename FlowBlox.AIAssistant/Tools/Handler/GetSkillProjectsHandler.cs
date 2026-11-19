@@ -11,7 +11,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             Name,
             "Lists Skills and their metadata from the current session or distributed FlowBlox data, optionally filtered by name or description. " +
             "Both modes return projectFile for direct ExecuteExternalProject or RunProjectDebugTest calls; distributed projects do not need to be copied first. " +
-            "Use GetSkillProject instead when the exact name is already known from the session bootstrap.",
+            "Use GetSkillProject instead when the exact name is already known from the session bootstrap. " +
+            "Input metadata defaultValue applies when its input parameter is omitted or empty.",
             new JObject
             {
                 ["mode"] = "string? (session|distributedData; default: session)",

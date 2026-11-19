@@ -15,10 +15,14 @@ namespace FlowBlox.UICore.Views
         public ExternalProjectExecutionConfirmationWindow(
             string projectFile,
             string reason,
-            IReadOnlyDictionary<string, string>? inputParameters = null)
+            IReadOnlyDictionary<string, string>? inputParameters = null,
+            bool allowRememberApproval = true,
+            string? projectSpaceGuid = null,
+            int? projectSpaceVersion = null)
         {
             InitializeComponent();
             _projectFile = projectFile ?? string.Empty;
+            AlwaysAllowButton.Visibility = allowRememberApproval ? Visibility.Visible : Visibility.Collapsed;
 
             ReasonText.Text = reason;
             InputParametersGrid.ItemsSource = inputParameters?
@@ -27,6 +31,16 @@ namespace FlowBlox.UICore.Views
             ProjectFileText.Text = string.IsNullOrWhiteSpace(_projectFile)
                 ? Text("Message_ExternalProjectExecution_ActiveSkillProject")
                 : string.Format(Text("Message_ExternalProjectExecution_ProjectFile"), _projectFile);
+            if (!string.IsNullOrWhiteSpace(projectSpaceGuid))
+            {
+                var guidLabel = FlowBloxResourceUtil.GetLocalizedString("ExecuteProjectFlowBlock_ProjectSpaceGuid", typeof(Core.FlowBloxTexts));
+                ProjectFileText.Text = $"{Path.GetFileNameWithoutExtension(_projectFile)}\n{guidLabel}: {projectSpaceGuid}";
+                if (projectSpaceVersion.HasValue)
+                {
+                    var versionLabel = FlowBloxResourceUtil.GetLocalizedString("ExecuteProjectFlowBlock_ProjectSpaceVersion", typeof(Core.FlowBloxTexts));
+                    ProjectFileText.Text += $"\n{versionLabel}: {projectSpaceVersion}";
+                }
+            }
             ReviewButton.IsEnabled = File.Exists(_projectFile) && File.Exists(ResolveFlowBloxExecutable());
         }
 

@@ -1,0 +1,32 @@
+@using FlowBlox.Core.Runner.Contracts
+
+<section class="panel directories">
+    <label>@T["InputDirectory"]<input value="@InputDirectory" readonly /></label>
+</section>
+<section class="panel">
+    <h2>@T["InputParameters"]</h2>
+    @if (Request.UserFields.Count == 0)
+    {
+        <p class="empty">@T["NoInputs"]</p>
+    }
+    @foreach (var pair in Request.UserFields)
+    {
+        var isPassword = Request.PasswordFieldNames == null || Request.PasswordFieldNames.Contains(pair.Key, StringComparer.OrdinalIgnoreCase);
+        <label>@pair.Key
+            @if (isPassword) { <PasswordInput Label="@pair.Key" Value="@(pair.Value ?? string.Empty)" ReadOnly="true" /> }
+            else { <textarea readonly rows="3">@pair.Value</textarea> }
+        </label>
+    }
+    <details class="overrides"><summary>@T["OptionOverrides"] <span class="badge">@Request.OptionOverrides.Count</span></summary>
+        @foreach (var pair in Request.OptionOverrides)
+        {
+            <label>@pair.Key<input value="@pair.Value" readonly /></label>
+        }
+        @if (Request.OptionOverrides.Count == 0) { <p class="empty">@T["NoOverrides"]</p> }
+    </details>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public RunnerRequest Request { get; set; } = default!;
+    [Parameter] public string InputDirectory { get; set; } = string.Empty;
+}

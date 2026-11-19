@@ -4878,6 +4878,171 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="WebServerConfiguration_AppPassword_Tooltip" xml:space="preserve"><value>Optional shared password for dashboard access. Leave empty to allow direct access. Stored encrypted for your Windows account. Restart the server after changing it.</value></data>
   <data name="ProjectOutputDirectoryChoice_Select" xml:space="preserve"><value>Insert project output directory</value></data>
   <data name="ProjectOutputDirectoryChoice_Description" xml:space="preserve"><value>Select the project whose output directory you want to use.</value></data>
+  <data name="DetectDocumentFormatFlowBlock_DisplayName" xml:space="preserve">
+    <value>Detect document format</value>
+  </data>
+  <data name="DetectDocumentFormatFlowBlock_Description" xml:space="preserve">
+    <value>Detects PDF, DOCX, XLSX or UTF-8 text from binary content. Unsupported binary formats produce a warning.</value>
+  </data>
+  <data name="DetectDocumentFormatFlowBlock_ContentField" xml:space="preserve">
+    <value>Binary content</value>
+  </data>
+  <data name="DetectDocumentFormatFlowBlock_ContentField_Tooltip" xml:space="preserve">
+    <value>Field containing document bytes. Returns Pdf, Docx, Xlsx or Text; no filename is required. Text must use UTF-8.</value>
+  </data>
+  <data name="TextEmbeddingProvider_DisplayName" xml:space="preserve">
+    <value>Text embeddings</value>
+  </data>
+  <data name="TextEmbeddingProvider_Description" xml:space="preserve">
+    <value>Creates semantic vectors through an OpenAI-compatible embeddings API. This provider is independent of the answer model.</value>
+  </data>
+  <data name="TextEmbeddingProvider_Endpoint" xml:space="preserve">
+    <value>Embedding endpoint</value>
+  </data>
+  <data name="TextEmbeddingProvider_Endpoint_Tooltip" xml:space="preserve">
+    <value>Full embeddings endpoint, for example https://api.openai.com/v1/embeddings. Use the same endpoint and model for indexing and questions.</value>
+  </data>
+  <data name="VectorStore_DisplayName" xml:space="preserve">
+    <value>Vector store</value>
+  </data>
+  <data name="VectorStore_Description" xml:space="preserve">
+    <value>Persistent semantic document chunks. The embedded SQLite database and schema are created automatically. Unchanged sources reuse their embeddings.</value>
+  </data>
+  <data name="VectorStore_DatabasePath" xml:space="preserve">
+    <value>Database path</value>
+  </data>
+  <data name="VectorStore_DatabasePath_Tooltip" xml:space="preserve">
+    <value>Persistent SQLite file, e.g. $Project::Directory/knowledge.sqlite. No database server or separate installation is required.</value>
+  </data>
+  <data name="VectorStore_Collection" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="VectorStore_ChunkSize" xml:space="preserve">
+    <value>Chunk size (characters)</value>
+  </data>
+  <data name="VectorStore_ChunkOverlap" xml:space="preserve">
+    <value>Chunk overlap (characters)</value>
+  </data>
+  <data name="VectorStore_InvalidOverlap" xml:space="preserve">
+    <value>Chunk overlap must be smaller than the chunk size.</value>
+  </data>
+  <data name="VectorTable_DisplayName" xml:space="preserve">
+    <value>Vector search table</value>
+  </data>
+  <data name="VectorTable_Description" xml:space="preserve">
+    <value>Semantic search as a standard DataTable: SourceId, Title, ChunkIndex, Text and Score. Can be read with the standard table blocks.</value>
+  </data>
+  <data name="VectorTable_Question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="VectorTable_TopK" xml:space="preserve">
+    <value>Maximum matches</value>
+  </data>
+  <data name="VectorTable_TopK_Tooltip" xml:space="preserve">
+    <value>Returns the most similar document chunks in descending cosine similarity order.</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_DisplayName" xml:space="preserve">
+    <value>Index knowledge source</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_Description" xml:space="preserve">
+    <value>Inserts or atomically replaces a source and its chunks when content or embedding configuration changes. Reuses unchanged embeddings.</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_SourceId" xml:space="preserve">
+    <value>Source ID</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_Title" xml:space="preserve">
+    <value>Source title</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_Content" xml:space="preserve">
+    <value>Source text</value>
+  </data>
+  <data name="SearchKnowledgeFlowBlock_DisplayName" xml:space="preserve">
+    <value>Search knowledge after indexing</value>
+  </data>
+  <data name="SearchKnowledgeFlowBlock_Description" xml:space="preserve">
+    <value>Collects successful source updates and searches once after iteration. Only current sources are eligible; failed indexing prevents answering from a partial index.</value>
+  </data>
+  <data name="SearchKnowledgeFlowBlock_IndexStatus" xml:space="preserve">
+    <value>Index success field</value>
+  </data>
+  <data name="SearchKnowledgeFlowBlock_MaxEvidenceCharacters" xml:space="preserve">
+    <value>Maximum evidence characters</value>
+  </data>
+  <data name="SearchKnowledgeFlowBlock_MaxEvidenceCharacters_Tooltip" xml:space="preserve">
+    <value>Bounds the retrieved text passed to the answer model. Includes titles, source IDs and citation numbers.</value>
+  </data>
+  <data name="VectorStoreBackend_EmbeddedSqlite" xml:space="preserve">
+    <value>Embedded SQLite (automatic)</value>
+  </data>
+  <data name="VectorStore_Backend" xml:space="preserve">
+    <value>Vector backend</value>
+  </data>
+  <data name="VectorStore_Endpoint" xml:space="preserve">
+    <value>Remote endpoint</value>
+  </data>
+  <data name="VectorStore_Endpoint_Tooltip" xml:space="preserve">
+    <value>Qdrant server URL or Pinecone index host. For Chroma use the database API root, e.g. http://localhost:8000/api/v2/tenants/default_tenant/databases/default_database.</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_SourceIdResult" xml:space="preserve">
+    <value>Source ID result field</value>
+  </data>
+  <data name="UpsertVectorSourceFlowBlock_SourceIdResult_Tooltip" xml:space="preserve">
+    <value>Carries source identity alongside success so collectors retain the correct source for every indexed document.</value>
+  </data>
+  <data name="FieldElement_DefaultValue" xml:space="preserve">
+    <value>Default value</value>
+  </data>
+  <data name="FieldElement_DefaultValue_Tooltip" xml:space="preserve">
+    <value>Used when the input is empty. Saved in the project; entered input values stay local. Unavailable for passwords.</value>
+  </data>
+  <data name="FieldElement_DefaultValueNotAllowed" xml:space="preserve">
+    <value>The default value must be contained in the allowed values.</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_InputFields" xml:space="preserve">
+    <value>Project inputs</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_InputFields_Tooltip" xml:space="preserve">
+    <value>Input definitions from the target project. Default values apply when no input is supplied or the input is empty. Current local values are not shown.</value>
+  </data>
+  <data name="OnnxTextEmbeddingProvider_DisplayName" xml:space="preserve">
+    <value>ONNX text embeddings</value>
+  </data>
+  <data name="OnnxTextEmbeddingProvider_Description" xml:space="preserve">
+    <value>Computes embeddings locally with a mean-pooling ONNX transformer. Loads the model once per runtime; no embedding service or API key is required.</value>
+  </data>
+  <data name="OnnxTextEmbeddingProvider_ModelFolder" xml:space="preserve">
+    <value>Model folder</value>
+  </data>
+  <data name="OnnxTextEmbeddingProvider_ModelFolder_Tooltip" xml:space="preserve">
+    <value>Folder with a compatible mean-pooling transformer model and matching tokenizer files. Requires input_ids, attention_mask and last_hidden_state; model and tokenizer configuration must match. Missing files or native libraries open the vector-search Quick Start.</value>
+  </data>
+  <data name="ExcelTable_WorksheetName" xml:space="preserve">
+    <value>Worksheet name</value>
+  </data>
+  <data name="ExcelTable_WorksheetName_Tooltip" xml:space="preserve">
+    <value>Optional worksheet name. Takes precedence over WorksheetIndex. Reading requires the sheet to exist; writing creates it and preserves the other sheets.</value>
+  </data>
+  <data name="ExcelTable_WorksheetIndex" xml:space="preserve">
+    <value>Worksheet index</value>
+  </data>
+  <data name="ExcelTable_WorksheetIndex_Tooltip" xml:space="preserve">
+    <value>Zero-based worksheet index when WorksheetName is empty. Default: 0 (first worksheet).</value>
+  </data>
+  <data name="OpenApiRestFlowBlock_PaginationNextLinkPath" xml:space="preserve">
+    <value>Next-page link JSONPath</value>
+  </data>
+  <data name="OpenApiRestFlowBlock_PaginationNextLinkPath_Tooltip" xml:space="preserve">
+    <value>Optional JSONPath to the next-page URL, e.g. _links.next. When set, follows same-origin links instead of offset pagination. An absent or empty link ends pagination.</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_ProjectName" xml:space="preserve">
+    <value>Project name</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_ProjectName_Tooltip" xml:space="preserve">
+    <value>Read-only name retrieved from Project Space metadata. Cached per endpoint and project GUID; loading is limited by the remote-property timeout.</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_ProjectNameUnavailable" xml:space="preserve">
+    <value>The project name could not be determined.</value>
+  </data>
 </root>
 
 

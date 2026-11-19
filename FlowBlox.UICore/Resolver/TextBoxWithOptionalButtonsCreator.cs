@@ -15,6 +15,7 @@ using FlowBlox.UICore.Factory.Adapter;
 using FlowBlox.UICore.Factory.PropertyView;
 using FlowBlox.UICore.Interfaces;
 using FlowBlox.UICore.Utilities;
+using FlowBlox.UICore.Views;
 using MahApps.Metro.IconPacks;
 using System.Collections;
 using System.IO;
@@ -108,18 +109,11 @@ namespace FlowBlox.UICore.Resolver
             FrameworkElement baseTextBox = inputControl;
             if (isPassword && baseTextBox == null)
             {
-                var passwordBox = new PasswordBox
+                var passwordBox = new PasswordValueEditor
                 {
-                    Password = property.GetValue(target) as string ?? string.Empty,
-                    IsEnabled = !readOnly
+                    IsReadOnly = readOnly
                 };
-                passwordBox.PasswordChanged += (_, _) =>
-                {
-                    if (readOnly)
-                        return;
-                    property.SetValue(target, passwordBox.Password);
-                    FlowBloxComponentHelper.RaisePropertyChanged(target, property.Name);
-                };
+                PropertyEditorBinding.Bind(passwordBox, PasswordValueEditor.TextProperty, binding, target, property.Name);
                 baseTextBox = passwordBox;
             }
             var fieldSelectionAttribute = property.GetCustomAttribute<FlowBloxFieldSelectionAttribute>();

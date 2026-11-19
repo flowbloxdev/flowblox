@@ -392,14 +392,15 @@ namespace FlowBlox.Core.Runner
                 }
                 else
                 {
+                    fieldElement.StringValue = null;
                     if (string.IsNullOrEmpty(fieldElement.StringValue))
                         Report($"No value provided for input field '{fieldElement.Name}'.", FlowBloxLogLevel.Warning);
                     else
                     {
                         var displayValue = fieldElement.IsPassword
                             ? GlobalConstants.HiddenSensitiveValue
-                            : fieldElement.StringValue;
-                        Report($"No value provided for input field '{fieldElement.Name}', using current value '{displayValue}'.", FlowBloxLogLevel.Info);
+                            : fieldElement.DefaultValue;
+                        Report($"No value provided for input field '{fieldElement.Name}', using default value '{displayValue}'.", FlowBloxLogLevel.Info);
                     }
                 }
             }

@@ -13,6 +13,9 @@ namespace FlowBlox.UICore.PopUp.Provider
 
         public string Headline { get; }
 
+        /// <summary>
+        /// Markdown content for the step. Format hyperlinks as [label](url).
+        /// </summary>
         public string Description { get; }
 
         public ImageSource Image { get; }

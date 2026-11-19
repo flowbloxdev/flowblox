@@ -851,4 +851,16 @@ Der RecursiveCall-Flow-Block ruft den verbundenen, früheren Ziel-Flow-Block ern
 <data name="WebServer_Saved" xml:space="preserve"><value>Die Konfiguration wurde gespeichert. Den Webserver neu starten, um die Änderungen anzuwenden. Für Zugriff vom Smartphone die lokale Netzwerkadresse dieses Computers und den konfigurierten Port verwenden.</value></data>
 <data name="WebServer_Error" xml:space="preserve"><value>Die Webserver-Aktion ist fehlgeschlagen.</value></data>
 <data name="WebServer_StartFailed" xml:space="preserve"><value>Der Webserver konnte nicht starten. webserver/startup.log im FlowBlox-Benutzerdatenverzeichnis prüfen.</value></data>
+  <data name="AppWindow_itmReloadFromProjectSpace_Text" xml:space="preserve">
+    <value>Aus Project Space neu laden</value>
+  </data>
+  <data name="AppWindow_ReloadProjectSpace_Title" xml:space="preserve">
+    <value>Aus Project Space neu laden</value>
+  </data>
+  <data name="AppWindow_ReloadProjectSpace_Confirm" xml:space="preserve">
+    <value>'{0}' erneut aus dem Project Space laden? Lokale Änderungen werden verworfen und der lokale Projektstand durch den aktuellen Inhalt aus dem Project Space überschrieben. Das Projekt wird geschlossen und erneut geöffnet.</value>
+  </data>
+  <data name="AppWindow_ReloadProjectSpace_Failed" xml:space="preserve">
+    <value>Das Projekt konnte nicht erneut aus dem Project Space geladen werden: {0}</value>
+  </data>
 </root>

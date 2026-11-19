@@ -11,6 +11,8 @@ using FlowBlox.Core.Provider;
 using FlowBlox.Core.Provider.Project;
 using FlowBlox.Core.Runner.Contracts;
 using FlowBlox.Core.Util;
+using FlowBlox.Core.Util.Projects;
+using FlowBlox.Core.Util.Vault;
 using FlowBlox.WebServer.Models;
 using Newtonsoft.Json.Linq;
 
@@ -110,7 +112,13 @@ public sealed class DashboardService(ILogger<DashboardService> logger)
                 InputDirectory = project.ProjectInputDirectory,
                 OutputDirectory = project.ProjectOutputDirectory,
                 Fields = fields,
-                Values = fields.ToDictionary(field => field.Name, field => field.StoreValueLocally ? string.Empty : field.StringValue ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                FieldReferences = project.GetProjectPropertyElements()
+                    .Select(property => new FieldReferenceOption { Name = property.Key, Group = "ProjectFields", Reference = "$Project::" + property.Key })
+                    .Concat(AvailableOptions.Select(option => new FieldReferenceOption { Name = option.Name, Group = "Options", Reference = "$Options::" + option.Name }))
+                    .Concat(FlowBloxVault.GetReferences().Select(entry => new FieldReferenceOption { Name = entry.Name, Group = "Vault", Reference = entry.Reference }))
+                    .ToList(),
+                Values = ProjectMetadataReader.Read(project).InputFields.ToDictionary(
+                    field => field.Name, field => field.DefaultValue ?? string.Empty, StringComparer.OrdinalIgnoreCase)
             };
         }
         finally { FlowBloxProjectManager.Instance.CloseScopedProject(project); }

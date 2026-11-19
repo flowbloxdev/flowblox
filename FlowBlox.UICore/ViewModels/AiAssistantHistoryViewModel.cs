@@ -1,5 +1,6 @@
 using FlowBlox.AIAssistant.History;
 using FlowBlox.Core.DependencyInjection;
+using FlowBlox.Core.Util.Resources;
 using FlowBlox.UICore.Commands;
 using FlowBlox.UICore.Enums;
 using FlowBlox.UICore.Interfaces;
@@ -22,6 +23,9 @@ namespace FlowBlox.UICore.ViewModels
         public RelayCommand DeleteHistoryCommand { get; }
 
         public bool HasHistories => Histories.Count > 0;
+
+        public string EmptyMessage => FlowBloxResourceUtil.GetLocalizedString(
+            "Empty_Description", typeof(Resources.AiAssistantHistoryView));
 
         public event EventHandler? NewHistoryRequested;
         public event EventHandler<AiAssistantHistoryListItem>? HistoryOpenRequested;

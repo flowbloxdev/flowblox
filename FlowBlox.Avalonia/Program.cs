@@ -8,13 +8,16 @@ using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using FlowBlox.AvaloniaDesktop.Interop.Windows;
 using FlowBlox.AvaloniaDesktop.Hosting;
+using FlowBlox.AvaloniaDesktop.CommandLine;
 
 namespace FlowBlox.AvaloniaDesktop;
 
 internal static class Program
 {
     [STAThread]
-    public static int Main(string[] args) => Run(args, new DesktopStartupOptions());
+    public static int Main(string[] args) => ProjectSpaceCommand.IsRequested(args)
+        ? ProjectSpaceCommand.Run(args)
+        : Run(args, new DesktopStartupOptions());
 
     internal static int Run(string[] args, DesktopStartupOptions options)
     {

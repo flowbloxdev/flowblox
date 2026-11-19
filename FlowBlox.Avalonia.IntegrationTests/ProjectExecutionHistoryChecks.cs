@@ -56,13 +56,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             entries.AddRange([older, unrelated, entry]);
         });
         var store = new ProjectExecutions(path);
-        var maskOption = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.UIPropertyViewMaskPasswordValues);
-        var originalMask = maskOption.PersistentValue;
-        try
         {
-            foreach (var mask in new[] { true, false })
-            {
-                maskOption.Value = mask.ToString();
                 var project = new FlowBloxProject { ProjectName = shortcut.Name, UserFields = new List<FieldElement>() };
                 foreach (var name in new[] { "Count", "Secret", "Added" })
                 {
@@ -72,7 +66,7 @@ internal sealed partial class WorkspaceIntegrationChecks
                         UserField = true,
                         UserFieldType = UserFieldTypes.Input,
                         IsPassword = name == "Secret",
-                        StringValue = name == "Secret" ? string.Empty : "project default"
+                        DefaultValue = name == "Secret" ? null : "project default"
                     };
                     project.FlowBloxRegistry.Register(field);
                     project.UserFields.Add(field);
@@ -90,17 +84,28 @@ internal sealed partial class WorkspaceIntegrationChecks
                         check(project.UserFields.Single(field => field.Name == "Count").StringValue == "last input"
                             && project.UserFields.Single(field => field.Name == "Added").StringValue == "project default",
                             "Latest snapshot restores matching inputs while new inputs retain current project defaults");
-                        check(FindLauncherVisuals<PasswordBox>(fields).Any() == mask,
-                            $"Execution inputs honor password masking when the option is {mask}");
+                        check(FindLauncherVisuals<PasswordBox>(fields).Any(),
+                            $"Execution inputs always use password masking");
+                        var passwordEditor = FindLauncherVisuals<PasswordValueEditor>(fields).Single();
+                        var maskButton = (System.Windows.Controls.Primitives.ToggleButton)passwordEditor.FindName("MaskButton");
+                        check(maskButton.IsChecked == true && passwordEditor.Text == "private-history-test",
+                            "Password inputs start masked and restore the actual history value");
+                        maskButton.IsChecked = false;
+                        check(((TextBox)passwordEditor.FindName("RevealedEditor")).Visibility == Visibility.Visible
+                            && project.UserFields.Single(field => field.Name == "Secret").IsPassword,
+                            "The eye reveals the value without changing the field's password flag");
                         check(((DataGrid)dialog.FindName("OptionsGrid")).Items.Count == 1,
                             "Execution snapshot restores its option overrides");
                         history.SelectedIndex = 1;
                         check(project.UserFields.Single(field => field.Name == "Count").StringValue == "older input",
                             "Selecting an older execution replaces the current parameter values");
                         ((Button)dialog.FindName("ClearInputsButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                        dialog.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Background);
+                        check(passwordEditor.Text == string.Empty,
+                            "Clearing input history also clears the revealed password editor");
                         check(history.SelectedIndex == -1
                             && project.UserFields.Single(field => field.Name == "Count").StringValue == "project default"
-                            && project.UserFields.Single(field => field.Name == "Secret").StringValue == string.Empty
+                            && string.IsNullOrEmpty(project.UserFields.Single(field => field.Name == "Secret").StringValue)
                             && ((DataGrid)dialog.FindName("OptionsGrid")).Items.Count == 0,
                             "Clear restores original inputs, clears snapshot selection and removes overrides");
                     }
@@ -116,8 +121,10 @@ internal sealed partial class WorkspaceIntegrationChecks
                 {
                     try
                     {
-                        check(FindLauncherVisuals<PasswordBox>((StackPanel)readonlyDialog.FindName("FieldsPanel")).Any() == mask,
-                            $"Persisted execution details honor the password masking option {mask}");
+                        ((TabItem)readonlyDialog.FindName("ConfigurationTab")).IsSelected = true;
+                        readonlyDialog.UpdateLayout();
+                        check(FindLauncherVisuals<PasswordBox>((StackPanel)readonlyDialog.FindName("FieldsPanel")).Any(),
+                            $"Persisted execution details always mask password inputs");
                     }
                     catch (Exception exception) { failure = exception; }
                     finally { readonlyDialog.Close(); }
@@ -125,11 +132,6 @@ internal sealed partial class WorkspaceIntegrationChecks
                 WpfDialogHost.ShowDialog(readonlyDialog, _window);
                 if (failure != null)
                     throw failure;
-            }
-        }
-        finally
-        {
-            maskOption.PersistentValue = originalMask;
         }
     }
 }

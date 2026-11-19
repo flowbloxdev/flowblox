@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Controls;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote;
+using FlowBlox.Core.Models.Components.Knowledge;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Views;
@@ -33,6 +34,8 @@ internal sealed partial class WorkspaceIntegrationChecks
                 opened = popup.IsVisible && !string.IsNullOrWhiteSpace(popup.Title);
                 if (provider.TargetType == typeof(AIPromptFlowBlock))
                     CheckAIPromptQuickStartNavigation(popup, directory, check);
+                if (provider.TargetType == typeof(VectorStore))
+                    CheckVectorStoreQuickStartNavigation(popup, directory, check);
 
                 popup.Close();
             }));
@@ -47,6 +50,30 @@ internal sealed partial class WorkspaceIntegrationChecks
 
             check(opened, $"Help opens registered Quick Start without a configured target: {provider.TargetType.Name}");
         }
+    }
+
+    private static void CheckVectorStoreQuickStartNavigation(
+        ComponentPopupWindow popup,
+        string directory,
+        Action<bool, string> check)
+    {
+        var image = (Image)popup.FindName("StepImage");
+        var next = (Button)popup.FindName("NextButton");
+        var previous = (Button)popup.FindName("PreviousButton");
+        for (var step = 1; step <= 3; step++)
+        {
+            popup.UpdateLayout();
+            check(image.Source != null && image.ActualWidth > 0 && image.ActualHeight > 0,
+                $"Vector-store Quick Start renders its diagram on step {step}");
+            SaveMenuImage(directory, (FrameworkElement)popup.Content, $"vector-store-quick-start-{step}.png");
+            if (step < 3)
+                next.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        }
+
+        previous.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        previous.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        check(!previous.IsVisible && image.Source != null,
+            "Vector-store Quick Start returns to its first step");
     }
 
     private static void CheckAIPromptQuickStartNavigation(

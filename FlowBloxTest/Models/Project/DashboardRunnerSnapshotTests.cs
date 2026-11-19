@@ -36,7 +36,8 @@ public sealed class DashboardRunnerSnapshotTests
                     UserField = true,
                     UserFieldType = UserFieldTypes.Input,
                     FieldType = new TypeElement { FieldType = FieldTypes.Text },
-                    StringValue = "Default"
+                    DefaultValue = "Default",
+                    StringValue = "Local override"
                 }]
             };
             var json = JsonConvert.SerializeObject(source, JsonSettings.ProjectExport());

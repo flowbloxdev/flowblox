@@ -8,9 +8,14 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
 {
     public partial class FlowBloxWebApiService
     {
-        public async Task<ApiResponse<FbProjectResult>> GetProjectAsync(FbProjectRequest request, string userToken = "")
+        public async Task<ApiResponse<FbProjectResult>> GetProjectAsync(
+            FbProjectRequest request,
+            string userToken = "",
+            CancellationToken cancellationToken = default)
         {
-            string query = string.IsNullOrEmpty(request.Name) ? $"guid={request.Guid}" : $"name={request.Name}";
+            string query = string.IsNullOrEmpty(request.Name)
+                ? $"guid={Uri.EscapeDataString(request.Guid ?? string.Empty)}"
+                : $"name={Uri.EscapeDataString(request.Name)}";
             string url = UriHelper.ConcatUri(_baseUrl, $"project.php?{query}");
 
             if (!string.IsNullOrEmpty(userToken))
@@ -18,10 +23,10 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
 
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseBody = await response.Content.ReadAsStringAsync();
+                    string responseBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     return new ApiResponse<FbProjectResult>
                     {
                         Success = true,
@@ -46,9 +51,10 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
 
         public async Task<ApiResponse<List<FbProjectResult>>> GetProjectsAsync(string userToken = "", bool mine = false, string searchForName = "")
         {
+            var query = Uri.EscapeDataString(searchForName ?? string.Empty);
             string url = mine
-                ? UriHelper.ConcatUri(_baseUrl, $"projects.php?mine=1&searchForName={searchForName}")
-                : UriHelper.ConcatUri(_baseUrl, $"projects.php?searchForName={searchForName}");
+                ? UriHelper.ConcatUri(_baseUrl, $"projects.php?mine=1&searchForName={query}")
+                : UriHelper.ConcatUri(_baseUrl, $"projects.php?searchForName={query}");
 
             if (!string.IsNullOrEmpty(userToken))
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);

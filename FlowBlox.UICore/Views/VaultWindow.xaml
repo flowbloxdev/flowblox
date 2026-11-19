@@ -10,6 +10,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/PasswordEditorStyles.xaml" />
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/MahAppMetroResources.xaml"/>
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -120,44 +121,10 @@
                         <TextBox x:Name="ValueEditor" Text="{Binding SelectedEntry.Value, UpdateSourceTrigger=PropertyChanged}"
                                  TextWrapping="Wrap" MinHeight="30"/>
                         <PasswordBox x:Name="PasswordEditor" PasswordChanged="Password_Changed" MinHeight="30"/>
-                        <ToggleButton x:Name="MaskValueButton" Grid.Column="1" IsChecked="{Binding SelectedEntry.IsPassword}"
+                        <ToggleButton Style="{StaticResource FlowBlox.PasswordVisibilityToggle}" x:Name="MaskValueButton" Grid.Column="1" IsChecked="{Binding SelectedEntry.IsPassword}"
                                       Width="32" Height="30" Margin="6,0,0,0" VerticalAlignment="Top"
                                       AutomationProperties.Name="{x:Static resources:VaultWindow.Password}">
-                            <ToggleButton.Style>
-                                <Style TargetType="ToggleButton">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ToggleButton">
-                                                <Border Background="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center"
-                                                                      VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Foreground" Value="#246BA8"/>
-                                    <Setter Property="ToolTip" Value="{x:Static resources:VaultWindow.Password}"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsChecked" Value="True">
-                                            <Setter Property="Foreground" Value="#A9C1D4"/>
-                                            <Setter Property="ToolTip" Value="{x:Static resources:VaultWindow.ShowValue}"/>
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Foreground" Value="#17558C"/>
-                                        </Trigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsChecked" Value="True"/>
-                                                <Condition Property="IsMouseOver" Value="True"/>
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Foreground" Value="#739BB9"/>
-                                        </MultiTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ToggleButton.Style>
+
                             <icons:PackIconMaterial Kind="EyeOutline" Width="20" Height="20"/>
                         </ToggleButton>
                     </Grid>

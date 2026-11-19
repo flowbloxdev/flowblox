@@ -133,9 +133,23 @@ namespace FlowBlox.UICore.ViewModels
         }
 
         private string _projectDescription;
+        public bool UseProjectDescriptionForProjectSpace
+        {
+            get => _project?.UseProjectDescriptionForProjectSpace ?? true;
+            set
+            {
+                if (_project == null || _project.UseProjectDescriptionForProjectSpace == value)
+                    return;
+                _project.UseProjectDescriptionForProjectSpace = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ProjectDescription));
+                OnPropertyChanged(nameof(CanSave));
+            }
+        }
+
         public string ProjectDescription
         {
-            get => _projectDescription;
+            get => UseProjectDescriptionForProjectSpace ? _project?.ProjectDescription : _projectDescription;
             set
             {
                 if (_projectDescription == value)
@@ -421,6 +435,12 @@ namespace FlowBlox.UICore.ViewModels
 
             try
             {
+                if (string.IsNullOrWhiteSpace(ProjectName) || string.IsNullOrWhiteSpace(ProjectDescription))
+                {
+                    await ShowErrorAsync(FlowBloxResourceUtil.GetLocalizedString(
+                        "Error_NameDescriptionRequired", typeof(Resources.CreateOrUpdatePSProjectWindow)));
+                    return;
+                }
                 IsBusy = true;
                 await WarnIfExternalProjectReferencesExistAsync();
 

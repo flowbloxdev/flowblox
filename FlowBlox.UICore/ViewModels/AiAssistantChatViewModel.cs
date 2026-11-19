@@ -606,7 +606,8 @@ namespace FlowBlox.UICore.ViewModels
                 return true;
 
             var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(
-                request.Arguments?.Value<string>("projectFile") ?? string.Empty);
+                request.Arguments?.Value<string>("projectFile") ??
+                request.Arguments?.Value<string>("confirmationProjectFile") ?? string.Empty);
             return ShowExternalProjectExecutionConfirmation(projectFile, reason, request);
         }
 
@@ -630,7 +631,11 @@ namespace FlowBlox.UICore.ViewModels
         {
             bool? Show()
             {
-                var window = new ExternalProjectExecutionConfirmationWindow(projectFile, reason, request.ConfirmationInputParameters);
+                var window = new ExternalProjectExecutionConfirmationWindow(
+                    projectFile, reason, request.ConfirmationInputParameters,
+                    allowRememberApproval: string.IsNullOrWhiteSpace(request.Arguments?.Value<string>("projectSpaceGuid")),
+                    projectSpaceGuid: request.Arguments?.Value<string>("projectSpaceGuid"),
+                    projectSpaceVersion: request.Arguments?.Value<int?>("projectSpaceVersion"));
                 var result = _dialogService.ShowWPFDialog(window);
                 request.RememberProjectApproval = result == true && window.RememberProjectApproval;
                 return result;

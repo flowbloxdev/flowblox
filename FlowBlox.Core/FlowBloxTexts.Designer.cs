@@ -3862,6 +3862,50 @@ namespace FlowBlox.Core {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Binary content ähnelt.
+        /// </summary>
+        public static string DetectDocumentFormatFlowBlock_ContentField
+        {
+            get
+            {
+                return ResourceManager.GetString("DetectDocumentFormatFlowBlock_ContentField", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Field containing document bytes. Returns Pdf, Docx, Xlsx or Text; no filename is required. Text must use UTF-8. ähnelt.
+        /// </summary>
+        public static string DetectDocumentFormatFlowBlock_ContentField_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("DetectDocumentFormatFlowBlock_ContentField_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Detects PDF, DOCX, XLSX or UTF-8 text from binary content. Unsupported binary formats produce a warning. ähnelt.
+        /// </summary>
+        public static string DetectDocumentFormatFlowBlock_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("DetectDocumentFormatFlowBlock_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Detect document format ähnelt.
+        /// </summary>
+        public static string DetectDocumentFormatFlowBlock_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("DetectDocumentFormatFlowBlock_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Decode ähnelt.
         /// </summary>
         public static string Direction_Decode {
@@ -17300,6 +17344,578 @@ namespace FlowBlox.Core {
         public static string ZipCompressionStrength_VeryHigh {
             get {
                 return ResourceManager.GetString("ZipCompressionStrength_VeryHigh", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Text embeddings ähnelt.
+        /// </summary>
+        public static string TextEmbeddingProvider_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("TextEmbeddingProvider_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Creates semantic vectors through an OpenAI-compatible embeddings API. This provider is independent of the answer model. ähnelt.
+        /// </summary>
+        public static string TextEmbeddingProvider_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("TextEmbeddingProvider_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Embedding endpoint ähnelt.
+        /// </summary>
+        public static string TextEmbeddingProvider_Endpoint
+        {
+            get
+            {
+                return ResourceManager.GetString("TextEmbeddingProvider_Endpoint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Full embeddings endpoint, for example https://api.openai.com/v1/embeddings. Use the same endpoint and model for indexing and questions. ähnelt.
+        /// </summary>
+        public static string TextEmbeddingProvider_Endpoint_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("TextEmbeddingProvider_Endpoint_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vector store ähnelt.
+        /// </summary>
+        public static string VectorStore_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Persistent semantic document chunks. The embedded SQLite database and schema are created automatically. Unchanged sources reuse their embeddings. ähnelt.
+        /// </summary>
+        public static string VectorStore_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Database path ähnelt.
+        /// </summary>
+        public static string VectorStore_DatabasePath
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_DatabasePath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Persistent SQLite file, e.g. $Project::Directory/knowledge.sqlite. No database server or separate installation is required. ähnelt.
+        /// </summary>
+        public static string VectorStore_DatabasePath_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_DatabasePath_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Collection ähnelt.
+        /// </summary>
+        public static string VectorStore_Collection
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_Collection", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Chunk size (characters) ähnelt.
+        /// </summary>
+        public static string VectorStore_ChunkSize
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_ChunkSize", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Chunk overlap (characters) ähnelt.
+        /// </summary>
+        public static string VectorStore_ChunkOverlap
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_ChunkOverlap", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Chunk overlap must be smaller than the chunk size. ähnelt.
+        /// </summary>
+        public static string VectorStore_InvalidOverlap
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_InvalidOverlap", resourceCulture);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vector search table ähnelt.
+        /// </summary>
+        public static string VectorTable_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorTable_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Semantic search as a standard DataTable: SourceId, Title, ChunkIndex, Text and Score. Can be read with the standard table blocks. ähnelt.
+        /// </summary>
+        public static string VectorTable_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorTable_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Question ähnelt.
+        /// </summary>
+        public static string VectorTable_Question
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorTable_Question", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Maximum matches ähnelt.
+        /// </summary>
+        public static string VectorTable_TopK
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorTable_TopK", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Returns the most similar document chunks in descending cosine similarity order. ähnelt.
+        /// </summary>
+        public static string VectorTable_TopK_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorTable_TopK_Tooltip", resourceCulture);
+            }
+        }
+
+
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Index knowledge source ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Inserts or atomically replaces a source and its chunks when content or embedding configuration changes. Reuses unchanged embeddings. ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source ID ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_SourceId
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_SourceId", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source title ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source text ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_Content
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_Content", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Search knowledge after indexing ähnelt.
+        /// </summary>
+        public static string SearchKnowledgeFlowBlock_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("SearchKnowledgeFlowBlock_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Collects successful source updates and searches once after iteration. Only current sources are eligible; failed indexing prevents answering from a partial index. ähnelt.
+        /// </summary>
+        public static string SearchKnowledgeFlowBlock_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("SearchKnowledgeFlowBlock_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Index success field ähnelt.
+        /// </summary>
+        public static string SearchKnowledgeFlowBlock_IndexStatus
+        {
+            get
+            {
+                return ResourceManager.GetString("SearchKnowledgeFlowBlock_IndexStatus", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Maximum evidence characters ähnelt.
+        /// </summary>
+        public static string SearchKnowledgeFlowBlock_MaxEvidenceCharacters
+        {
+            get
+            {
+                return ResourceManager.GetString("SearchKnowledgeFlowBlock_MaxEvidenceCharacters", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Bounds the retrieved text passed to the answer model. Includes titles, source IDs and citation numbers. ähnelt.
+        /// </summary>
+        public static string SearchKnowledgeFlowBlock_MaxEvidenceCharacters_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("SearchKnowledgeFlowBlock_MaxEvidenceCharacters_Tooltip", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Embedded SQLite (automatic) ähnelt.
+        /// </summary>
+        public static string VectorStoreBackend_EmbeddedSqlite
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStoreBackend_EmbeddedSqlite", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vector backend ähnelt.
+        /// </summary>
+        public static string VectorStore_Backend
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_Backend", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Remote endpoint ähnelt.
+        /// </summary>
+        public static string VectorStore_Endpoint
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_Endpoint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Qdrant server URL or Pinecone index host. For Chroma use the database API root, e.g. http://localhost:8000/api/v2/tenants/default_tenant/databases/default_database. ähnelt.
+        /// </summary>
+        public static string VectorStore_Endpoint_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("VectorStore_Endpoint_Tooltip", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source ID result field ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_SourceIdResult
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_SourceIdResult", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Carries source identity alongside success so collectors retain the correct source for every indexed document. ähnelt.
+        /// </summary>
+        public static string UpsertVectorSourceFlowBlock_SourceIdResult_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("UpsertVectorSourceFlowBlock_SourceIdResult_Tooltip", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Default value ähnelt.
+        /// </summary>
+        public static string FieldElement_DefaultValue
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldElement_DefaultValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Used when the input is empty. Saved in the project; entered input values stay local. Unavailable for passwords. ähnelt.
+        /// </summary>
+        public static string FieldElement_DefaultValue_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldElement_DefaultValue_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The default value must be contained in the allowed values. ähnelt.
+        /// </summary>
+        public static string FieldElement_DefaultValueNotAllowed
+        {
+            get
+            {
+                return ResourceManager.GetString("FieldElement_DefaultValueNotAllowed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Project inputs ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_InputFields
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_InputFields", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Input definitions from the target project. Default values apply when no input is supplied or the input is empty. Current local values are not shown. ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_InputFields_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_InputFields_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die ONNX text embeddings ähnelt.
+        /// </summary>
+        public static string OnnxTextEmbeddingProvider_DisplayName
+        {
+            get
+            {
+                return ResourceManager.GetString("OnnxTextEmbeddingProvider_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Computes embeddings locally with a mean-pooling ONNX transformer. Loads the model once per runtime; no embedding service or API key is required. ähnelt.
+        /// </summary>
+        public static string OnnxTextEmbeddingProvider_Description
+        {
+            get
+            {
+                return ResourceManager.GetString("OnnxTextEmbeddingProvider_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Model folder ähnelt.
+        /// </summary>
+        public static string OnnxTextEmbeddingProvider_ModelFolder
+        {
+            get
+            {
+                return ResourceManager.GetString("OnnxTextEmbeddingProvider_ModelFolder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Folder with a compatible mean-pooling transformer model and matching tokenizer files. Requires input_ids, attention_mask and last_hidden_state; model and tokenizer configuration must match. Missing files or native libraries open the vector-search Quick Start. ähnelt.
+        /// </summary>
+        public static string OnnxTextEmbeddingProvider_ModelFolder_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("OnnxTextEmbeddingProvider_ModelFolder_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Worksheet name ähnelt.
+        /// </summary>
+        public static string ExcelTable_WorksheetName
+        {
+            get
+            {
+                return ResourceManager.GetString("ExcelTable_WorksheetName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional worksheet name. Takes precedence over WorksheetIndex. Reading requires the sheet to exist; writing creates it and preserves the other sheets. ähnelt.
+        /// </summary>
+        public static string ExcelTable_WorksheetName_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ExcelTable_WorksheetName_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Worksheet index ähnelt.
+        /// </summary>
+        public static string ExcelTable_WorksheetIndex
+        {
+            get
+            {
+                return ResourceManager.GetString("ExcelTable_WorksheetIndex", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zero-based worksheet index when WorksheetName is empty. Default: 0 (first worksheet). ähnelt.
+        /// </summary>
+        public static string ExcelTable_WorksheetIndex_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ExcelTable_WorksheetIndex_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Next-page link JSONPath ähnelt.
+        /// </summary>
+        public static string OpenApiRestFlowBlock_PaginationNextLinkPath
+        {
+            get
+            {
+                return ResourceManager.GetString("OpenApiRestFlowBlock_PaginationNextLinkPath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional JSONPath to the next-page URL, e.g. _links.next. When set, follows same-origin links instead of offset pagination. An absent or empty link ends pagination. ähnelt.
+        /// </summary>
+        public static string OpenApiRestFlowBlock_PaginationNextLinkPath_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("OpenApiRestFlowBlock_PaginationNextLinkPath_Tooltip", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Project name ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_ProjectName
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_ProjectName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Read-only name retrieved from Project Space metadata. Cached per endpoint and project GUID; loading is limited by the remote-property timeout. ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_ProjectName_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_ProjectName_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The project name could not be determined. ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_ProjectNameUnavailable
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_ProjectNameUnavailable", resourceCulture);
             }
         }
     }

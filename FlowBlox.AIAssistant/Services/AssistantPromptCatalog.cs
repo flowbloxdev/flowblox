@@ -159,7 +159,7 @@ namespace FlowBlox.AIAssistant.Services
                     SpecialProjectSpaceKey,
                     "Explaining Project Space",
                     "FlowBlox.AIAssistant.Prompts.ExplainingProjectSpace.txt",
-                    "Project Space, project sharing, stable versions, or remote execution",
+                    "Project Space discovery, reusable subflows, project sharing, stable versions, or remote execution",
                     false),
                 [SpecialTaskSchedulingKey] = new PromptEntryDefinition(
                     SpecialTaskSchedulingKey,

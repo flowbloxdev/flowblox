@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace FlowBlox.UICore.ViewModels.ProjectPanel
 {
@@ -113,6 +114,7 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
         public bool IsNote => InternalFlowBlock is NoteFlowBlock;
         public string NoteText => (InternalFlowBlock as NoteFlowBlock)?.Note ?? string.Empty;
         public string Title => FlowBloxComponentHelper.GetDisplayName(InternalFlowBlock);
+        public ImageSource Icon => SkiaWpfImageHelper.ConvertToImageSource(InternalFlowBlock.Icon16);
         public string Name => InternalFlowBlock.Name;
         public bool HasBreakpoint => InternalFlowBlock.BreakPoint;
         public bool HasOverriddenNotifications => InternalFlowBlock.HasOverriddenNotifications;
@@ -233,6 +235,7 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
                 }
 
                 OnPropertyChanged(nameof(Rows));
+                OnPropertyChanged(nameof(Icon));
                 NotifyLayoutChanged();
                 NotifyRuntimeStateChanged(preserveCenter: false);
             }

@@ -1,6 +1,7 @@
 <mah:MetroWindow xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:views="clr-namespace:FlowBlox.UICore.Views"
     xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     x:Class="FlowBlox.UICore.Views.ProjectExecutionWindow"
@@ -17,19 +18,18 @@
       </ResourceDictionary.MergedDictionaries>
       <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
       <Style x:Key="Execution.SectionBorder" TargetType="Border" BasedOn="{StaticResource PropertyView.LabelBorderStyle}">
-        <Setter Property="Padding" Value="10,7" />
-        <Setter Property="Background" Value="#E7EFF7" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Background" Value="#CDDDEB" />
       </Style>
       <Style x:Key="Execution.SectionLabel" TargetType="TextBlock" BasedOn="{StaticResource PropertyView.LabelTextStyle}">
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="#244B66" />
       </Style>
       <Style x:Key="Execution.ParameterBorder" TargetType="Border" BasedOn="{StaticResource PropertyView.LabelBorderStyle}">
-        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Padding" Value="4" />
         <Setter Property="Background" Value="#EDF4F8" />
       </Style>
       <Style x:Key="Execution.ParameterLabel" TargetType="TextBlock" BasedOn="{StaticResource PropertyView.LabelTextStyle}">
-        <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="#245369" />
       </Style>
       <Style x:Key="Execution.HistoryToggle" TargetType="ToggleButton">
@@ -147,6 +147,33 @@
       </Border>
     </Expander>
     <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+      <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray5}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+        <DockPanel>
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{x:Static resources:ProjectLauncher.Close}" IsCancel="True"
+                    Style="{StaticResource FlowBlox.WindowActionButton.Back}" Click="Close_Click" />
+            <Button x:Name="ExecuteButton" Style="{StaticResource FlowBlox.WindowActionButton}"
+                    IsDefault="True" IsEnabled="False" Click="Execute_Click">
+              <StackPanel Orientation="Horizontal">
+                <icons:PackIconMaterial Kind="Play" Style="{StaticResource FlowBlox.WindowActionIcon.Apply}" />
+                <AccessText Text="{x:Static resources:ProjectLauncher.Execute}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+            <Button x:Name="TerminateButton" Style="{StaticResource FlowBlox.WindowActionButton}"
+                    Visibility="Collapsed" Click="Terminate_Click">
+              <StackPanel Orientation="Horizontal">
+                <icons:PackIconMaterial Kind="Stop" Style="{StaticResource FlowBlox.WindowActionIconBase}" Foreground="IndianRed" />
+                <AccessText Text="{x:Static resources:ProjectLauncher.TerminateProcess}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </DockPanel>
+      </Border>
+    </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200" DockPanel.Dock="Bottom">
+          <StackPanel Margin="4,8">
+            <ContentControl x:Name="NotStartedHint" Content="{x:Static resources:ProjectLauncher.NotStarted}"
+                            Style="{StaticResource FlowBlox.EmptyState}" Margin="0,12" />
       <ProgressBar x:Name="RunningIndicator" Style="{StaticResource FlowBlox.ProgressBar.Indeterminate}" Visibility="Collapsed" />
       <Border x:Name="StartedBox" Style="{StaticResource FlowBlox.NotificationBox.Information}" Margin="0,7,0,12" Visibility="Collapsed">
         <DockPanel>
@@ -171,30 +198,21 @@
                      Style="{StaticResource FlowBlox.NotificationText}" Margin="0,8,0,0" Visibility="Collapsed" />
         </StackPanel>
       </Border>
-      <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray5}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
-        <DockPanel>
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="{x:Static resources:ProjectLauncher.Close}" IsCancel="True"
-                    Style="{StaticResource FlowBlox.WindowActionButton.Back}" Click="Close_Click" />
-            <Button x:Name="ExecuteButton" Style="{StaticResource FlowBlox.WindowActionButton}"
-                    IsDefault="True" IsEnabled="False" Click="Execute_Click">
-              <StackPanel Orientation="Horizontal">
-                <icons:PackIconMaterial Kind="Play" Style="{StaticResource FlowBlox.WindowActionIcon.Apply}" />
-                <AccessText Text="{x:Static resources:ProjectLauncher.Execute}" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
-            <Button x:Name="TerminateButton" Style="{StaticResource FlowBlox.WindowActionButton}"
-                    Visibility="Collapsed" Click="Terminate_Click">
-              <StackPanel Orientation="Horizontal">
-                <icons:PackIconMaterial Kind="Stop" Style="{StaticResource FlowBlox.WindowActionIconBase}" Foreground="IndianRed" />
-                <AccessText Text="{x:Static resources:ProjectLauncher.TerminateProcess}" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
+
+            <Expander x:Name="WarningsExpander" Header="{x:Static resources:ProjectLauncher.Warnings}" Visibility="Collapsed" Margin="0,8">
+              <TextBox x:Name="WarningMessages" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="240" VerticalScrollBarVisibility="Auto" />
+            </Expander>
           </StackPanel>
-        </DockPanel>
-      </Border>
-    </StackPanel>
-    <Grid>
+        </ScrollViewer>
+    <TabControl x:Name="ExecutionTabs">
+      <TabItem x:Name="ConfigurationTab">
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <icons:PackIconMaterial Kind="FormTextbox" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" Foreground="#1E88E5" />
+            <TextBlock Text="{x:Static resources:ProjectLauncher.Inputs}" FontSize="15" FontWeight="SemiBold" Padding="0,5" />
+          </StackPanel>
+        </TabItem.Header>
+<Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
@@ -202,28 +220,22 @@
       </Grid.RowDefinitions>
       <StackPanel Grid.Row="0">
         <Border Style="{StaticResource PropertyView.LabelBorderStyle}" Margin="0,8,0,4">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.InputPath}" Style="{StaticResource Execution.SectionLabel}" />
+          <TextBlock Text="{x:Static resources:ProjectLauncher.InputPath}" Style="{StaticResource PropertyView.LabelTextStyle}" />
         </Border>
         <DockPanel>
           <Button x:Name="InputDirectoryButton" DockPanel.Dock="Right" Margin="6,0,0,0" Width="36"
                   ToolTip="{x:Static resources:ProjectLauncher.InputDirectory}">
             <icons:PackIconMaterial Kind="FolderOpenOutline" Style="{StaticResource FlowBlox.ToolbarIconBase}" />
           </Button>
-          <TextBox x:Name="InputPath" IsReadOnly="True" MinHeight="34" FontSize="13" Style="{StaticResource PropertyView.TextEditorStyle}" />
-        </DockPanel>
-        <Border Style="{StaticResource PropertyView.LabelBorderStyle}" Margin="0,8,0,4">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.OutputPath}" Style="{StaticResource Execution.SectionLabel}" />
-        </Border>
-        <DockPanel Margin="0,0,0,12">
-          <Button x:Name="OutputDirectoryButton" DockPanel.Dock="Right" Margin="6,0,0,0" Width="36"
-                  ToolTip="{x:Static resources:ProjectLauncher.OutputDirectory}">
-            <icons:PackIconMaterial Kind="FolderOpenOutline" Style="{StaticResource FlowBlox.ToolbarIconBase}" />
-          </Button>
-          <TextBox x:Name="OutputPath" IsReadOnly="True" MinHeight="34" FontSize="13" Style="{StaticResource PropertyView.TextEditorStyle}" />
+          <TextBox x:Name="InputPath" IsReadOnly="True" Style="{StaticResource PropertyView.TextEditorStyle}" />
         </DockPanel>
       </StackPanel>
-        <Border Grid.Row="1" Style="{StaticResource Execution.SectionBorder}">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.Parameters}" Style="{StaticResource Execution.SectionLabel}" />
+        <Border Grid.Row="1" Style="{StaticResource Execution.SectionBorder}" Margin="0,8,0,5">
+          <StackPanel Orientation="Horizontal">
+            <icons:PackIconMaterial Kind="FormTextbox" Width="14" Height="14" Foreground="#1E88E5"
+                                    VerticalAlignment="Center" Margin="0,0,6,0" />
+            <TextBlock Text="{x:Static resources:ProjectLauncher.Parameters}" Style="{StaticResource Execution.SectionLabel}" />
+          </StackPanel>
         </Border>
         <Grid Grid.Row="2" Margin="0,6,0,0">
           <Grid.ColumnDefinitions>
@@ -302,10 +314,13 @@
         </StackPanel>
         <ContentControl x:Name="NoParametersHint" Content="{x:Static resources:ProjectLauncher.NoParameters}"
                         Style="{StaticResource FlowBlox.EmptyState}" Margin="4,10,4,16" Visibility="Collapsed" />
-        <StackPanel x:Name="FieldsPanel" Margin="0,6,0,12" />
-        <Border Style="{StaticResource PropertyView.LabelBorderStyle}">
-          <TextBlock Text="{x:Static resources:ProjectLauncher.OptionOverrides}" Style="{StaticResource PropertyView.LabelTextStyle}" />
-        </Border>
+        <StackPanel x:Name="FieldsPanel" Margin="0,0,0,6" />
+        <Expander x:Name="OptionOverridesExpander" Header="{x:Static resources:ProjectLauncher.OptionOverrides}"
+                  IsExpanded="False" Margin="0,8,0,0"
+                  BorderBrush="{DynamicResource FlowBlox.Brush.Border}"
+                  mah:HeaderedControlHelper.HeaderBackground="{DynamicResource FlowBlox.Brush.InformationHeader}"
+                  mah:HeaderedControlHelper.HeaderForeground="{DynamicResource FlowBlox.Brush.InformationHeaderText}">
+        <StackPanel Margin="8">
         <StackPanel Orientation="Horizontal" Margin="0,6">
           <Button x:Name="AddOptionButton" ToolTip="{x:Static resources:ProjectLauncher.AddOption}" Click="AddOption_Click" Padding="6,3">
             <icons:PackIconMaterial Kind="Plus" Style="{StaticResource FlowBlox.WindowActionIcon.Apply}" Margin="0" />
@@ -344,8 +359,49 @@
           </DataGrid.Columns>
         </DataGrid>
         </StackPanel>
+        </Expander>
+        </StackPanel>
         </ScrollViewer>
         </Grid>
     </Grid>
+      </TabItem>
+      <TabItem x:Name="ResultsTab">
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <icons:PackIconMaterial Kind="Export" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" Foreground="#9270CC" />
+            <TextBlock Text="{x:Static resources:ProjectLauncher.Outputs}" FontSize="15" FontWeight="SemiBold" Padding="0,5" />
+          </StackPanel>
+        </TabItem.Header>
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top">
+        <Border Style="{StaticResource PropertyView.LabelBorderStyle}" Margin="0,8,0,4">
+          <TextBlock Text="{x:Static resources:ProjectLauncher.OutputPath}" Style="{StaticResource PropertyView.LabelTextStyle}" />
+        </Border>
+        <DockPanel Margin="0,0,0,12">
+          <Button x:Name="OutputDirectoryButton" DockPanel.Dock="Right" Margin="6,0,0,0" Width="36"
+                  ToolTip="{x:Static resources:ProjectLauncher.OutputDirectory}">
+            <icons:PackIconMaterial Kind="FolderOpenOutline" Style="{StaticResource FlowBlox.ToolbarIconBase}" />
+          </Button>
+          <TextBox x:Name="OutputPath" IsReadOnly="True" Style="{StaticResource PropertyView.TextEditorStyle}" />
+        </DockPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+              <Button Click="OpenArtifacts_Click" Margin="0,0,8,0">
+                <StackPanel Orientation="Horizontal">
+                  <icons:PackIconMaterial Kind="FolderOpenOutline" Width="14" Height="14" Foreground="#BD9550" Margin="0,0,6,0" />
+                  <TextBlock Text="{x:Static resources:ProjectLauncher.Artifacts}" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="ResetArtifactsButton" Click="ResetArtifacts_Click">
+                <StackPanel Orientation="Horizontal">
+                  <icons:PackIconMaterial Kind="Delete" Width="14" Height="14" Foreground="#BD4E48" Margin="0,0,6,0" />
+                  <TextBlock Text="{x:Static resources:ProjectLauncher.ResetArtifacts}" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </StackPanel>
+          <views:ProjectOutputsView x:Name="OutputsView" />
+        </DockPanel>
+      </TabItem>
+    </TabControl>
   </DockPanel>
 </mah:MetroWindow>

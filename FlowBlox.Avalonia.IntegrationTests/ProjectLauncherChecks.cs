@@ -162,7 +162,8 @@ internal sealed partial class WorkspaceIntegrationChecks
                 CaptureProjectCards(dialog, Path.Combine(directory, "project-execution-inputs.png"));
                 ((WpfButton)dialog.FindName("ExecuteButton")).RaiseEvent(new System.Windows.RoutedEventArgs(WpfButton.ClickEvent));
                 check(store.GetAll().Count == 1, "Execution is persisted before the runner is monitored");
-                check(closedAfterStart, "A successful runner launch closes the configuration dialog");
+                check(!closedAfterStart && ((WpfButton)dialog.FindName("ExecuteButton")).Visibility == System.Windows.Visibility.Collapsed,
+                    "Starting keeps execution monitoring open and makes its input configuration read-only");
                 check(store.GetAll().Single().Request.UserFields["Choice"] == "example",
                     "Input values are passed to the runner request");
             }

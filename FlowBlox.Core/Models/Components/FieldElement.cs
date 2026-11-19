@@ -14,11 +14,11 @@ using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Util.Fields;
-using FlowBlox.Core.Util.DeepCopier;
 using Newtonsoft.Json;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace FlowBlox.Core.Models.Components
@@ -82,12 +82,6 @@ namespace FlowBlox.Core.Models.Components
         public override void OnAfterCreate()
         {
             base.OnAfterCreate();
-
-            if (_storeValueLocally == null && UserField)
-            {
-                if (UserFieldType == UserFieldTypes.Input)
-                    StoreValueLocally = true;
-            }
 
             if (this.Source != null)
             {
@@ -215,15 +209,20 @@ namespace FlowBlox.Core.Models.Components
 
         private string _stringValue;
 
-        public bool ShouldSerializeStringValue()
+        public bool ShouldSerializeStringValue() => UserField && UserFieldType == UserFieldTypes.Memory;
+
+        internal string LocalStringValue => _stringValue;
+
+        [OnDeserialized]
+        private void MigrateInputValue(StreamingContext context)
         {
-            if (!UserField)
-                return false;
+            if (!IsUserInputField())
+                return;
 
-            if (StoreValueLocally)
-                return false;
-
-            return true;
+            // Legacy migration: old project StringValue becomes the input default, never a local override.
+            // The removed StoreValueLocally JSON member is intentionally ignored; passwords have no default.
+            _defaultValue = IsPassword ? null : _defaultValue ?? _stringValue;
+            _stringValue = null;
         }
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Values = [ UserFieldTypes.Input, UserFieldTypes.Memory])]
@@ -233,7 +232,8 @@ namespace FlowBlox.Core.Models.Components
             AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options | FieldSelectionModes.Vault,
             AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
         [FlowBloxTextBox(MultiLine = true, IsCodingMode = true,
-            IsPasswordMethod = nameof(ShouldMaskValue), SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
+            IsPasswordMethod = nameof(ShouldMaskValue), SyntaxHighlightingMember = nameof(SyntaxHighlighting),
+            DefaultValueMember = nameof(DefaultValue))]
         [FlowBloxItemsSource(
             Method = nameof(GetPossibleValues),
             Dependency = nameof(ListOfValues),
@@ -247,15 +247,21 @@ namespace FlowBlox.Core.Models.Components
                 lock (_runtimeFieldValueSync)
                 {
                     if (runtime != null && _runtimeToFieldValue.TryGetValue(runtime, out value))
-                        return value;
+                        return GetEffectiveStringValue(value);
                 }
-                return _stringValue;
+                return GetEffectiveStringValue(_stringValue);
             }
             set
             {
-                _stringValue = value;
+                _stringValue = IsUserInputField() && !IsPassword && value == DefaultValue
+                    ? null
+                    : value;
             }
         }
+
+        private string GetEffectiveStringValue(string value) => IsUserInputField() && string.IsNullOrEmpty(value)
+            ? DefaultValue
+            : value;
 
         public string ShortStringValue => GetShortStringValue(this.StringValue);
 
@@ -263,8 +269,7 @@ namespace FlowBlox.Core.Models.Components
             | FieldSelectionModes.Options
             | (IsUserInputField() ? FieldSelectionModes.Vault : FieldSelectionModes.Default);
 
-        public bool ShouldMaskValue() => IsPassword
-            && FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.UIPropertyViewMaskPasswordValues)?.GetValueBoolean() == true;
+        public bool ShouldMaskValue() => IsPassword;
 
         public DropDownMode GetValueDropDownMode() => LoVType == LoVType.PossibleValues && ListOfValues?.Count > 0
             ? DropDownMode.SelectionOnly
@@ -276,39 +281,53 @@ namespace FlowBlox.Core.Models.Components
 
         public static string GetShortStringValue(string value) => TextHelper.ShortenString(value, 100, true);
 
-        private bool? _storeValueLocally;
+        private string _defaultValue;
 
-        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
-        [Display(Name = "FieldElement_StoreValueLocally", Description = "FieldElement_StoreValueLocally_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 3)]
-        [FlowBloxUI(UISelectionButtons.None, ReadOnlyMethod = nameof(IsStoreValueLocallyReadOnly))]
-        public bool StoreValueLocally
+        [ActivationCondition(ActivationMethod = nameof(DisplayDefaultValue))]
+        [Display(Name = "FieldElement_DefaultValue", Description = "FieldElement_DefaultValue_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 3)]
+        [FlowBloxUI(ReadOnlyMethod = nameof(IsDefaultValueReadOnly))]
+        [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true,
+            AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options | FieldSelectionModes.Vault,
+            AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
+        [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
+        [CustomValidation(typeof(FieldElement), nameof(ValidateDefaultValue))]
+        [DependsOnProperty(MemberNames = [nameof(IsPassword), nameof(LoVType), nameof(ListOfValues)])]
+        public string DefaultValue
         {
-            get => IsPassword || (_storeValueLocally ?? false);
+            get => IsPassword ? null : _defaultValue;
             set
             {
-                _storeValueLocally = IsPassword ? true : value;
+                // Editor copies can write the effective StringValue before copying DefaultValue.
+                if (IsUserInputField() && !IsPassword
+                    && (_stringValue == _defaultValue || _stringValue == value))
+                    _stringValue = null;
+
+                _defaultValue = IsPassword ? null : value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ValueStorageIcon));
-                OnPropertyChanged(nameof(ValueStorageDescription));
+                OnPropertyChanged(nameof(StringValue));
             }
         }
 
-        [JsonIgnore]
-        [DeepCopierIgnore]
-        [Display(Name = "FieldElement_ValueStorageIcon", Description = "FieldElement_ValueStorageIcon_Tooltip", ResourceType = typeof(FlowBloxTexts))]
-        [FlowBloxUI(Visible = false)]
-        [FlowBloxImageColumn(typeof(FlowBloxIcons), nameof(FlowBloxIcons.content_save), IconColor = "#B58A2D", ToolTipMemberName = nameof(ValueStorageDescription))]
-        public SKImage ValueStorageIcon => StoreValueLocally
-            ? FlowBloxIconUtil.InactiveProjectIcon16
-            : FlowBloxIconUtil.ProjectIcon16;
+        public bool ShouldSerializeDefaultValue() => IsUserInputField() && !IsPassword;
 
-        [JsonIgnore]
-        [DeepCopierIgnore]
-        public string ValueStorageDescription => FlowBloxResourceUtil.GetLocalizedString(StoreValueLocally
-            ? "FieldElement_ValueStorageLocally"
-            : "FieldElement_ValueStorageInProject");
+        public bool DisplayDefaultValue() => IsUserInputField();
 
-        public bool IsStoreValueLocallyReadOnly() => IsPassword;
+        public bool IsDefaultValueReadOnly() => IsPassword;
+
+        public static ValidationResult ValidateDefaultValue(string value, ValidationContext context)
+        {
+            var field = (FieldElement)context.ObjectInstance;
+            if (field.IsUserInputField() && !string.IsNullOrEmpty(value)
+                && field.LoVType == LoVType.PossibleValues && field.ListOfValues?.Count > 0
+                && !field.ListOfValues.Any(item => string.Equals(item.Value, value, StringComparison.Ordinal)))
+            {
+                return new ValidationResult(
+                    FlowBloxResourceUtil.GetLocalizedString("FieldElement_DefaultValueNotAllowed"),
+                    [nameof(DefaultValue)]);
+            }
+
+            return ValidationResult.Success;
+        }
 
         [ActivationCondition(MemberName = nameof(UserFieldType), Value = UserFieldTypes.Memory)]
         [Display(Name = "FieldElement_ClearOnRuntimeStart", Description = "FieldElement_ClearOnRuntimeStart_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 1)]
@@ -343,14 +362,11 @@ namespace FlowBlox.Core.Models.Components
                 _isPassword = value;
 
                 if (value)
-                {
-                    _storeValueLocally = true;
-                    OnPropertyChanged(nameof(StoreValueLocally));
-                    OnPropertyChanged(nameof(ValueStorageIcon));
-                    OnPropertyChanged(nameof(ValueStorageDescription));
-                }
+                    _defaultValue = null;
 
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(DefaultValue));
+                OnPropertyChanged(nameof(StringValue));
             }
         }
 

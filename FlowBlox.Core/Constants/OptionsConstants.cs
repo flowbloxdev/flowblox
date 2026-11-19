@@ -103,7 +103,6 @@ namespace FlowBlox.Core.Constants
         public const string TestDefinitionViewHideLastLayerNeighbours = "TestDefinitionView.HideLastLayerNeighbours";
 
         public const string UICulture = "UI.Culture";
-        public const string UIPropertyViewMaskPasswordValues = "UI.PropertyView.MaskPasswordValues";
         public const string UIStyle = "UI.Style";
 
         public const string UpdatesInstallerManifestUrl = "Updates.InstallerManifestUrl";

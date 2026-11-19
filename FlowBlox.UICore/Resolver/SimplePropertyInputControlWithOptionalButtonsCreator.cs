@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace FlowBlox.UICore.Resolver
 {
@@ -128,6 +129,8 @@ namespace FlowBlox.UICore.Resolver
                 {
                     toggle.MinHeight = 24;
                     toggle.Padding = new Thickness(0);
+                    toggle.HorizontalAlignment = HorizontalAlignment.Left;
+                    toggle.LayoutTransform = new ScaleTransform(0.75, 0.75);
                 }
                 PropertyEditorBinding.Bind(toggle, ToggleSwitch.IsOnProperty, binding, target, property.Name);
                 return toggle;

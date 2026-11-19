@@ -225,4 +225,7 @@ Beispiele (max. {1}):
   <data name="Loading_FreeServiceNotice" xml:space="preserve">
     <value>Unsere Cloud-API stellen wir kostenlos bereit. Deshalb kann ein Upload gelegentlich etwas länger dauern. Ihre Sicherheit steht an erster Stelle: Alle hochgeladenen Dateien werden auf Viren geprüft. Auch dafür nutzen wir einen kostenlosen Dienst, der etwas mehr Zeit benötigen kann. Vielen Dank für Ihre Geduld!</value>
   </data>
+  <data name="UseProjectDescription" xml:space="preserve"><value>Projektbeschreibung verwenden</value></data>
+  <data name="UseProjectDescriptionTooltip" xml:space="preserve"><value>Verwendet die im Projekt definierte Beschreibung im Project Space. Die Beschreibung bleibt ein Pflichtfeld. Diese Einstellung wird im Projekt gespeichert.</value></data>
+  <data name="Error_NameDescriptionRequired" xml:space="preserve"><value>Projektname und Beschreibung sind erforderlich. Trage eine Projektbeschreibung ein oder deaktiviere die automatische Übernahme und gib eine Project-Space-Beschreibung an.</value></data>
 </root>

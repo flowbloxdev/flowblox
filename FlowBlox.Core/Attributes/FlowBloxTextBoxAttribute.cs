@@ -44,6 +44,11 @@ namespace FlowBlox.Core.Attributes
         /// </summary>
         public string SyntaxHighlightingMember { get; set; }
 
+        /// <summary>
+        /// Optional instance property supplying the fallback value to highlight in the editor.
+        /// </summary>
+        public string DefaultValueMember { get; set; }
+
         public FlowBloxTextBoxAttribute()
         {
             MultiLine = false;

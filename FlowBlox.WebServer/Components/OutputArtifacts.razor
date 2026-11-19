@@ -1,0 +1,70 @@
+@inherits DashboardPageBase
+@inject DashboardService Dashboard
+
+<section class="panel output-artifacts">
+    <label>@T["OutputDirectory"]<input value="@OutputDirectory" readonly /></label>
+    @if (ProjectId != null)
+    {
+        <div class="artifact-actions">
+            <a class="button" href="@($"/projects/{ProjectId}/artifacts" + (ExecutionId.HasValue ? $"?executionId={ExecutionId}" : string.Empty))">@T["Artifacts"] <span class="badge">@_count</span></a>
+            <button class="danger" disabled="@(_inUse || _busy || _count == 0)" @onclick="() => _confirm = true"><MdiIcon Name="delete" /> @T["ResetArtifacts"]</button>
+        </div>
+        @if (_confirm)
+        {
+            <p>@T["ConfirmReset"]</p>
+            <button class="danger" disabled="@(_inUse || _busy)" @onclick="ResetAsync">@T["Confirm"]</button>
+            <button @onclick="() => _confirm = false">@T["Cancel"]</button>
+        }
+        @if (_inUse) { <p class="muted">@T["ArtifactsInUse"]</p> }
+        @if (_error) { <p class="notice error" role="alert">@T["OperationFailed"]</p> }
+    }
+</section>
+
+@code {
+    [Parameter] public string? ProjectId { get; set; }
+    [Parameter] public Guid? ExecutionId { get; set; }
+    [Parameter] public string OutputDirectory { get; set; } = string.Empty;
+    private int _count;
+    private bool _inUse, _confirm, _busy, _error;
+
+    protected override void OnInitialized() => BeginRefreshing(RefreshAsync);
+    protected override Task OnParametersSetAsync() => RefreshAsync();
+
+    private Task RefreshAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(OutputDirectory))
+        {
+            try
+            {
+                _count = new ProjectArtifacts(OutputDirectory).Count();
+                _inUse = Dashboard.Executions.IsArtifactDirectoryInUse(OutputDirectory);
+            }
+            catch (Exception exception)
+            {
+                PageLogger.LogWarning(exception, "Could not read project artifacts for output view.");
+                _error = true;
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task ResetAsync()
+    {
+        if (ProjectId == null || !await HasSessionAsync())
+            return;
+        _busy = true;
+        try
+        {
+            await Dashboard.ClearArtifactsAsync(ProjectId, ExecutionId);
+            _confirm = false;
+            _error = false;
+            await RefreshAsync();
+        }
+        catch (Exception exception)
+        {
+            PageLogger.LogWarning(exception, "Could not reset project artifacts from output view.");
+            _error = true;
+        }
+        finally { _busy = false; }
+    }
+}

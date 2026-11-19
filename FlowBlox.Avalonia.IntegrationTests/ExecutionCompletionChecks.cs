@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -42,7 +43,16 @@ internal sealed partial class WorkspaceIntegrationChecks
                     Success = outcome == "success",
                     FinishedUtc = DateTime.UtcNow,
                     ErrorMessage = outcome == "success" ? null : error,
-                    LogfilePath = logfile
+                    LogfilePath = logfile,
+                    Outputs = new()
+                    {
+                        ["Answer"] = [new() { Values = new() { ["Text"] = "First line\nSecond line" } }],
+                        ["Items"] =
+                        [
+                            new() { Values = new() { ["Name"] = "First", ["Details"] = "Long\ncontent" } },
+                            new() { Values = new() { ["Name"] = "Second", ["Details"] = "More content" } }
+                        ]
+                    }
                 });
             }
 
@@ -77,6 +87,26 @@ internal sealed partial class WorkspaceIntegrationChecks
                         if (outcome == "missing-log")
                             check(((TextBlock)dialog.FindName("LogUnavailableText")).Visibility == Visibility.Visible,
                                 "An unavailable logfile is explained without exposing a broken link");
+                        var outputs = (ProjectOutputsView)dialog.FindName("OutputsView");
+                        var groups = (ListBox)outputs.FindName("OutputNames");
+                        var fields = (StackPanel)outputs.FindName("ResultFields");
+                        ((TabControl)dialog.FindName("ExecutionTabs")).SelectedItem = dialog.FindName("ResultsTab");
+                        dialog.UpdateLayout();
+                        check((string)groups.SelectedItem == "Answer"
+                            && fields.Children.OfType<TextBox>().Single().Text == "First line\nSecond line",
+                            "The first output is selected and a single dataset displays its full text");
+                        if (outcome == "success")
+                            CaptureProjectCards(dialog, Path.Combine(directory, "project-execution-single-output.png"));
+                        groups.SelectedItem = "Items";
+                        dialog.UpdateLayout();
+                        var grid = (DataGrid)outputs.FindName("ResultsGrid");
+                        check(grid.Visibility == Visibility.Visible && grid.Items.Count == 2 && grid.Columns.Count == 2,
+                            "Selecting a list output switches to a read-only grid with field headers");
+                        check(grid.IsReadOnly && grid.Columns.All(column => column is DataGridTemplateColumn),
+                            "Output grid cells expose the shared content viewer without allowing edits");
+                        check(grid.IsVisible && grid.ActualWidth > 0
+                            && FindLauncherVisuals<TextBlock>(grid).Any(text => text.Text == "First"),
+                            "List output values are rendered in the visible desktop grid");
                     }
                     CaptureProjectCards(dialog, Path.Combine(directory, $"project-execution-{outcome}.png"));
                 }

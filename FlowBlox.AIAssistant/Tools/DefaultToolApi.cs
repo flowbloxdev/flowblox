@@ -49,34 +49,34 @@ namespace FlowBlox.AIAssistant.Tools
             return ExecuteAsync(request, ct, allowBatch: false);
         }
 
-        private Task<ToolResponse> ExecuteAsync(ToolRequest request, CancellationToken ct, bool allowBatch)
+        private async Task<ToolResponse> ExecuteAsync(ToolRequest request, CancellationToken ct, bool allowBatch)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             if (string.IsNullOrWhiteSpace(request.ToolName))
-                return Task.FromResult(ToolHandlerUtilities.Fail("ToolName is required."));
+                return ToolHandlerUtilities.Fail("ToolName is required.");
 
             IToolHandler handler;
             try
             {
                 var resolvedName = _toolNameResolver.Resolve(request.ToolName);
                 if (resolvedName == null)
-                    return Task.FromResult(ToolHandlerUtilities.Fail($"Tool '{request.ToolName}' is not registered."));
+                    return ToolHandlerUtilities.Fail($"Tool '{request.ToolName}' is not registered.");
 
                 handler = _handlers[resolvedName];
                 if (!allowBatch && handler is BatchExecuteToolRequestsHandler)
-                    return Task.FromResult(ToolHandlerUtilities.Fail("Nested batch not supported."));
+                    return ToolHandlerUtilities.Fail("Nested batch not supported.");
 
                 if (request.Arguments?["arguments"] is JObject
                     && handler.Definition.ArgumentsSchema.Property("arguments", StringComparison.OrdinalIgnoreCase) == null)
                 {
-                    return Task.FromResult(ToolHandlerUtilities.Fail(
+                    return ToolHandlerUtilities.Fail(
                         $"Invalid argument structure for tool '{resolvedName}': an extra 'arguments' object was found inside the tool arguments. " +
                         "This tool does not define a parameter named 'arguments'. " +
                         "Remove the extra wrapper and pass its parameters directly in toolCalls[i].arguments. " +
                         "For example, use {\"arguments\":{\"fieldChangeId\":2}} instead of {\"arguments\":{\"arguments\":{\"fieldChangeId\":2}}}. " +
-                        "Keep the outer 'arguments' object of the tool call. The tool was not executed. Retry with the corrected structure."));
+                        "Keep the outer 'arguments' object of the tool call. The tool was not executed. Retry with the corrected structure.");
                 }
 
                 // All execution policies must see the canonical name, including approval handling.
@@ -91,25 +91,25 @@ namespace FlowBlox.AIAssistant.Tools
 
                 if (RequiresUserConfirmation(request))
                 {
-                    request = CreateConfirmationRequest(request);
+                    request = await CreateConfirmationRequestAsync(request, ct).ConfigureAwait(false);
                     if (!IsToolExecutionApproved(request))
                     {
-                        return Task.FromResult(ToolHandlerUtilities.Fail(
+                        return ToolHandlerUtilities.Fail(
                             $"Execution for tool '{request.ToolName}' was cancelled by user confirmation.",
                             new JObject
                             {
                                 ["cancelledByUser"] = true,
                                 ["toolName"] = request.ToolName
-                            }));
+                            });
                     }
                 }
             }
             catch (Exception ex)
             {
-                return Task.FromResult(ToolHandlerUtilities.Fail(ex.Message));
+                return ToolHandlerUtilities.Fail(ex.Message);
             }
 
-            return ExecuteHandlerAndNotifyChanges(handler, request, ct);
+            return await ExecuteHandlerAndNotifyChanges(handler, request, ct).ConfigureAwait(false);
         }
 
         private async Task<ToolResponse> ExecuteHandlerAndNotifyChanges(IToolHandler handler, ToolRequest request, CancellationToken ct)
@@ -141,6 +141,9 @@ namespace FlowBlox.AIAssistant.Tools
             if (!isDebugTest && !string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase))
                 return false;
 
+            if (!isDebugTest && !string.IsNullOrWhiteSpace(request.Arguments?.Value<string>("projectSpaceGuid")))
+                return true;
+
             var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(request.Arguments?.Value<string>("projectFile") ?? string.Empty);
             if (string.IsNullOrWhiteSpace(projectFile))
             {
@@ -160,7 +163,7 @@ namespace FlowBlox.AIAssistant.Tools
                 if (ToolExecutionConfirmationCallback?.Invoke(request) != true)
                     return false;
 
-                if (request.RememberProjectApproval &&
+                if (request.RememberProjectApproval && string.IsNullOrWhiteSpace(request.Arguments?.Value<string>("projectSpaceGuid")) &&
                     (string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase) ||
                      string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -181,7 +184,7 @@ namespace FlowBlox.AIAssistant.Tools
             }
         }
 
-        private static ToolRequest CreateConfirmationRequest(ToolRequest request)
+        private static async Task<ToolRequest> CreateConfirmationRequestAsync(ToolRequest request, CancellationToken ct)
         {
             var isDebugTest = string.Equals(request.ToolName, RunProjectDebugTestToolName, StringComparison.OrdinalIgnoreCase);
             if (!isDebugTest && !string.Equals(request.ToolName, ExecuteExternalProjectToolName, StringComparison.OrdinalIgnoreCase))
@@ -189,8 +192,18 @@ namespace FlowBlox.AIAssistant.Tools
 
             var projectFile = FlowBloxFieldHelper.ReplaceFieldsInString(request.Arguments?.Value<string>("projectFile") ?? string.Empty);
             FlowBloxProject project;
-            var usesActiveProject = string.IsNullOrWhiteSpace(projectFile);
-            if (usesActiveProject)
+            var isProjectSpace = !isDebugTest && !string.IsNullOrWhiteSpace(request.Arguments?.Value<string>("projectSpaceGuid"));
+            var usesActiveProject = string.IsNullOrWhiteSpace(projectFile) && !isProjectSpace;
+            if (isProjectSpace)
+            {
+                project = await ProjectSpaceToolClient.LoadAsync(request.Arguments, ct).ConfigureAwait(false);
+                projectFile = Path.Combine(
+                    Path.GetTempPath(), "FlowBloxAiAssistantReview", Guid.NewGuid().ToString("N"),
+                    Core.Util.IOUtil.GetValidFileName(project.ProjectName) + ".fbprj");
+                Directory.CreateDirectory(Path.GetDirectoryName(projectFile)!);
+                File.WriteAllText(projectFile, Newtonsoft.Json.JsonConvert.SerializeObject(project, Core.Util.Json.JsonSettings.ProjectExport()));
+            }
+            else if (usesActiveProject)
             {
                 if (!isDebugTest || !SkillProjectSessionStore.TryGetActiveProjectInfo(
                     ToolHandlerUtilities.CurrentSessionGuid,
@@ -208,7 +221,13 @@ namespace FlowBlox.AIAssistant.Tools
             var arguments = request.Arguments == null
                 ? new JObject()
                 : new JObject(request.Arguments);
-            if (usesActiveProject)
+            if (isProjectSpace)
+            {
+                arguments["confirmationProjectFile"] = projectFile;
+                arguments["projectSpaceGuid"] = project.ProjectSpaceGuid;
+                arguments["projectSpaceVersion"] = project.ProjectSpaceVersion;
+            }
+            else if (usesActiveProject)
             {
                 arguments.Remove("projectFile");
                 arguments["confirmationProjectFile"] = projectFile;
@@ -221,9 +240,9 @@ namespace FlowBlox.AIAssistant.Tools
                 .Where(field => field.UserFieldType == UserFieldTypes.Input)
                 .ToDictionary(
                     field => field.Name,
-                    field => inputs.TryGetValue(field.Name, out var value)
+                    field => inputs.TryGetValue(field.Name, out var value) && !string.IsNullOrEmpty(value)
                         ? value
-                        : FlowBloxFieldHelper.ReplaceFieldsInString(field.StringValue, resolveVaultReferences: false),
+                        : FlowBloxFieldHelper.ReplaceFieldsInString(field.DefaultValue, resolveVaultReferences: false),
                     StringComparer.OrdinalIgnoreCase);
 
             var inputSnapshot = JObject.FromObject(effectiveInputs);
@@ -249,6 +268,7 @@ namespace FlowBlox.AIAssistant.Tools
                 new GetDistributedDataContentHandler(),
                 new GetProjectMetadataHandler(),
                 new GetSkillProjectsHandler(),
+                new GetPSProjectsHandler(),
                 new GetSkillProjectHandler(),
                 new CreateOrUpdateSkillProjectHandler(),
                 new SkillProjectEditingHandler(),

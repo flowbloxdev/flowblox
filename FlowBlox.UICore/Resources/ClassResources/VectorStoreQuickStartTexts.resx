@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Vector search setup</value>
+  </data>
+  <data name="LocalTitle" xml:space="preserve">
+    <value>Start without installing a database server</value>
+  </data>
+  <data name="LocalDescription" xml:space="preserve">
+    <value>Choose Embedded SQLite and a persistent database path. FlowBlox creates the parent directory, database file and schema on first use; later runs keep the index. No Python, Docker or database extension is required. If the packaged SQLite native library is missing, repair/reinstall the matching FlowBlox build, then restart. SQLite: [SQLite documentation](https://www.sqlite.org/index.html)</value>
+  </data>
+  <data name="RemoteTitle" xml:space="preserve">
+    <value>Optional: Qdrant, Pinecone or Chroma</value>
+  </data>
+  <data name="RemoteDescription" xml:space="preserve">
+    <value>For larger indexes choose a remote backend. Qdrant and Chroma collections are created automatically with cosine distance. Start a local server or use a hosted service, then configure Endpoint and credentials. A refused local connection raises Setup required; authentication and configuration errors remain ordinary operation failures. Pinecone requires an existing dense cosine index with the embedding dimensions; Collection selects its namespace. A local SQLite file still keeps hashes and document text. Qdrant: [Qdrant Quick Start](https://qdrant.tech/documentation/quickstart/)
+Chroma: [Set up Chroma](https://docs.trychroma.com/docs/run-chroma/client-server)
+Pinecone: [Create a Pinecone index](https://docs.pinecone.io/guides/indexes/create-an-index)</value>
+  </data>
+  <data name="EmbeddingTitle" xml:space="preserve">
+    <value>Configure embeddings</value>
+  </data>
+  <data name="EmbeddingDescription" xml:space="preserve">
+    <value>Use OnnxTextEmbeddingProvider for local embeddings or TextEmbeddingProvider for an OpenAI-compatible embedding API. For local inference, configure ModelFolder with model.onnx (or onnx/model_quint8_avx2.onnx) and matching tokenizer/configuration files. Supported transformer models use input_ids, attention_mask and last_hidden_state with mean pooling, plus tokenizer.json, tokenizer_config.json, special_tokens_map.json, config.json and sentence_bert_config.json. Provision model files separately; Python and a startup script are not required for inference. The model is reused within a runtime; unchanged sources reuse stored vectors. A model change reindexes sources. If native ONNX libraries are missing, repair/reinstall FlowBlox. VectorTable returns matching passages as a DataTable; Search knowledge collects and formats excerpts for any downstream consumer.</value>
+  </data>
+  <data name="Sources" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="SqliteFile" xml:space="preserve">
+    <value>SQLite file
+created automatically</value>
+  </data>
+  <data name="Matches" xml:space="preserve">
+    <value>Relevant passages</value>
+  </data>
+  <data name="FlowBlox" xml:space="preserve">
+    <value>FlowBlox</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Configured service</value>
+  </data>
+  <data name="Collection" xml:space="preserve">
+    <value>Vector collection</value>
+  </data>
+  <data name="Chunks" xml:space="preserve">
+    <value>Document chunks</value>
+  </data>
+  <data name="Embeddings" xml:space="preserve">
+    <value>Embeddings
+and search</value>
+  </data>
+  <data name="Answer" xml:space="preserve">
+    <value>Cloud AI
+with citations</value>
+  </data>
+</root>

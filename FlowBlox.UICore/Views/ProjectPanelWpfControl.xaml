@@ -602,7 +602,7 @@
                                                 </Style>
                                             </Border.Style>
                                             <DockPanel LastChildFill="True">
-                                                <iconPacks:PackIconMaterial DockPanel.Dock="Left" Kind="LightningBolt" Width="15" Height="15" Margin="6,5,4,0" Foreground="#00A2FF"/>
+                                                <Image DockPanel.Dock="Left" Source="{Binding Icon}" Width="16" Height="16" Margin="6,5,4,0"/>
                                                 <iconPacks:PackIconMaterial DockPanel.Dock="Right" Kind="RecordCircle" Width="13" Height="13" Margin="3,6" Foreground="#E53B3B" Visibility="{Binding HasBreakpoint, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                 <iconPacks:PackIconMaterial DockPanel.Dock="Right" Kind="BellCogOutline" Width="14" Height="14" Margin="3,6" Foreground="#F4C542" Visibility="{Binding HasOverriddenNotifications, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                 <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>

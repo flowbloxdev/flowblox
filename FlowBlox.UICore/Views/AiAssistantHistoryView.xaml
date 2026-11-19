@@ -101,14 +101,8 @@
                 </Style>
             </Border.Style>
             <ContentControl Style="{StaticResource FlowBlox.EmptyState}" MaxWidth="280"
-                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ContentControl.Content>
-                    <MultiBinding StringFormat="{}{0}&#10;{1}">
-                        <Binding Source="{x:Static resources:AiAssistantHistoryView.Empty_Title}" />
-                        <Binding Source="{x:Static resources:AiAssistantHistoryView.Empty_Description}" />
-                    </MultiBinding>
-                </ContentControl.Content>
-            </ContentControl>
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Content="{Binding EmptyMessage}" />
         </Border>
     </Grid>
 </UserControl>
