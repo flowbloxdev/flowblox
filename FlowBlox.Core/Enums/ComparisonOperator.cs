@@ -63,6 +63,16 @@ namespace FlowBlox.Core.Enums
         [Display(Name = "ComparisonOperator_XPathIsFalse", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxEnumerationGroup("EnumerationGroup_AdvancedTextOperators", ResourceType = typeof(FlowBloxTexts),
             IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#546E7A")]
-        XPathIsFalse
+        XPathIsFalse,
+
+        [Display(Name = "ComparisonOperator_ContainsLine", Description = "ComparisonOperator_ContainsLine_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_LineSetOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#00897B")]
+        ContainsLine,
+
+        [Display(Name = "ComparisonOperator_NotContainsLine", Description = "ComparisonOperator_NotContainsLine_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_LineSetOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#00897B")]
+        NotContainsLine
     }
 }

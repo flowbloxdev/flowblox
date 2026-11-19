@@ -25,6 +25,7 @@ public sealed class DashboardService(ILogger<DashboardService> logger)
     private IReadOnlyList<WebProject> _projects = [];
     public IReadOnlyList<WebProject> Projects => _projects;
     public ProjectExecutions Executions => ProjectExecutions.Instance;
+    public ProjectInputConfigurations InputConfigurations => ProjectInputConfigurations.Instance;
 
     public async Task RefreshProjectsAsync()
     {

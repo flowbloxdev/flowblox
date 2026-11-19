@@ -1,0 +1,175 @@
+@inherits DashboardPageBase
+@inject DashboardService Dashboard
+@inject ILogger<InputConfigurations> Logger
+
+<section class="panel saved-inputs" aria-labelledby="saved-inputs-title">
+    <div class="saved-inputs-heading">
+        <h2 id="saved-inputs-title">@T["SavedConfigurations"]</h2>
+        <MdiIcon Name="cog-outline" />
+    </div>
+    @if (_error)
+    {
+        <p role="alert" class="notice error">@T["OperationFailed"]</p>
+    }
+    @if (_configurations.Count > 0)
+    {
+        <label class="configuration-selector">@T["SelectConfiguration"]
+            <select value="@_selectedId" disabled="@Disabled" @onchange="SelectAsync">
+                <option value="">@T["ProjectDefaults"]</option>
+                @foreach (var configuration in _configurations)
+                {
+                    <option value="@configuration.Id">@configuration.Name</option>
+                }
+            </select>
+        </label>
+        @if (Selected is { } selected)
+        {
+            var status = selected.GetStatus(Form.Fields);
+            <div class="configuration-status" role="status">
+                <span>@T["ConfigurationFilled", status.FilledCount, status.TotalCount]</span>
+                <span class="@(status.MissingRequiredFields.Count > 0 ? "configuration-incomplete" : "success")">
+                    @(status.MissingRequiredFields.Count > 0 ? T["ConfigurationMissing", status.MissingRequiredFields.Count] : T["ConfigurationComplete"])
+                </span>
+                @if (status.MissingRequiredFields.Count > 0)
+                {
+                    <small>@string.Join(", ", status.MissingRequiredFields)</small>
+                }
+            </div>
+        }
+    }
+    <div class="configuration-actions">
+        <button type="button" disabled="@Disabled" @onclick="() => BeginNameEdit(false)">@T["SaveConfiguration"]</button>
+        <button type="button" class="quiet" disabled="@(Disabled || Selected == null)" @onclick="() => BeginNameEdit(true)">@T["EditConfiguration"]</button>
+    </div>
+    @if (_editingName)
+    {
+        <form class="configuration-name-form" @onsubmit="SaveNameAsync" @onsubmit:preventDefault>
+            <label>@T["ConfigurationName"]
+                <input @ref="_nameInput" @bind="_name" @bind:event="oninput" required maxlength="120" autocomplete="off" />
+            </label>
+            <div class="configuration-actions">
+                <button type="submit" class="primary" disabled="@(Disabled || string.IsNullOrWhiteSpace(_name))">@T["Save"]</button>
+                <button type="button" class="quiet" @onclick="() => _editingName = false">@T["Cancel"]</button>
+            </div>
+        </form>
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string ProjectId { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public ProjectForm Form { get; set; } = default!;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback Applied { get; set; }
+    private IReadOnlyList<ProjectInputConfiguration> _configurations = [];
+    private string _loadedProjectId = string.Empty;
+    private ProjectForm? _loadedForm;
+    private string _selectedId = string.Empty;
+    private string _name = string.Empty;
+    private bool _editingName, _renaming, _error, _focusName;
+    private ElementReference _nameInput;
+    private ProjectInputConfiguration? Selected => _configurations.FirstOrDefault(configuration => configuration.Id.ToString() == _selectedId);
+
+    protected override void OnParametersSet()
+    {
+        if (_loadedProjectId == ProjectId && ReferenceEquals(_loadedForm, Form))
+            return;
+
+        _loadedProjectId = ProjectId;
+        _loadedForm = Form;
+        _selectedId = string.Empty;
+        _editingName = false;
+        Reload();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusName)
+        {
+            _focusName = false;
+            await _nameInput.FocusAsync();
+        }
+    }
+
+    private void Reload()
+    {
+        try
+        {
+            _configurations = Dashboard.InputConfigurations.GetForProject(Dashboard.GetProject(ProjectId).Shortcut);
+            _error = false;
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "Could not load saved project input configurations.");
+            _error = true;
+        }
+    }
+
+    private async Task SelectAsync(ChangeEventArgs args)
+    {
+        if (Disabled || !await HasSessionAsync())
+            return;
+
+        _selectedId = args.Value?.ToString() ?? string.Empty;
+        _editingName = false;
+        foreach (var field in Form.Fields)
+            Form.Values[field.Name] = Selected?.GetInputValue(field) ?? (field.IsPassword ? string.Empty : field.DefaultValue ?? string.Empty);
+
+        var allowed = Dashboard.AvailableOptions.Select(option => option.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Form.Overrides = Selected?.Request.OptionOverrides.Where(pair => allowed.Contains(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase) ?? new(StringComparer.OrdinalIgnoreCase);
+        await Applied.InvokeAsync();
+    }
+
+    private void BeginNameEdit(bool renaming)
+    {
+        if (Disabled || (renaming && Selected == null))
+            return;
+
+        _renaming = renaming;
+        _name = renaming ? Selected!.Name : string.Empty;
+        _editingName = true;
+        _focusName = true;
+    }
+
+    private async Task SaveNameAsync()
+    {
+        if (Disabled || string.IsNullOrWhiteSpace(_name) || !await HasSessionAsync())
+            return;
+
+        try
+        {
+            var project = Dashboard.GetProject(ProjectId).Shortcut;
+            if (_renaming)
+            {
+                if (Selected == null)
+                    return;
+
+                Dashboard.InputConfigurations.Rename(project, Selected.Id, _name);
+            }
+            else
+            {
+                var configuration = new ProjectInputConfiguration
+                {
+                    Name = _name,
+                    Project = project,
+                    Request = new FlowBlox.Core.Runner.Contracts.RunnerRequest
+                    {
+                        UserFields = Form.Fields.ToDictionary(field => field.Name, field => Form.Values.GetValueOrDefault(field.Name) ?? string.Empty, StringComparer.OrdinalIgnoreCase),
+                        PasswordFieldNames = Form.Fields.Where(field => field.IsPassword).Select(field => field.Name).ToList(),
+                        OptionOverrides = new(Form.Overrides, StringComparer.OrdinalIgnoreCase)
+                    }
+                };
+                Dashboard.InputConfigurations.Save(configuration);
+                _selectedId = configuration.Id.ToString();
+            }
+
+            _editingName = false;
+            Reload();
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "Could not save project input configuration.");
+            _error = true;
+        }
+    }
+}

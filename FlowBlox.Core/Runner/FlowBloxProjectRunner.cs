@@ -32,11 +32,15 @@ namespace FlowBlox.Core.Runner
         private static async Task<FlowBloxProject> OpenProjectFromProjectSpaceAsync(
             string projectGuid,
             int? projectVersion,
+            bool cacheOnly,
             CancellationToken cancellationToken = default)
         {
             // Auto login
-            var flowBloxAutoLoginExecutor = new FlowBloxAutoLoginExecutor();
-            await flowBloxAutoLoginExecutor.TryAutoLoginAsync().ConfigureAwait(false);
+            if (!cacheOnly)
+            {
+                var flowBloxAutoLoginExecutor = new FlowBloxAutoLoginExecutor();
+                await flowBloxAutoLoginExecutor.TryAutoLoginAsync().ConfigureAwait(false);
+            }
 
             // Build Web API client and token
             var baseUrl = FlowBloxOptions.GetOptionInstance()
@@ -51,13 +55,14 @@ namespace FlowBlox.Core.Runner
                     projectGuid,
                     projectVersion,
                     token,
-                    webApi)
+                    webApi,
+                    cacheOnly)
                 .ConfigureAwait(false);
         }
 
-        private static FlowBloxProject OpenProjectFromProjectSpace(string projectGuid, int? projectVersion)
+        private static FlowBloxProject OpenProjectFromProjectSpace(string projectGuid, int? projectVersion, bool cacheOnly)
         {
-            return OpenProjectFromProjectSpaceAsync(projectGuid, projectVersion)
+            return OpenProjectFromProjectSpaceAsync(projectGuid, projectVersion, cacheOnly)
                 .GetAwaiter()
                 .GetResult();
         }
@@ -95,7 +100,7 @@ namespace FlowBlox.Core.Runner
                     else
                         Report($"Loading project from ProjectSpaceGuid '{request.ProjectSpaceGuid}'...");
 
-                    project = OpenProjectFromProjectSpace(request.ProjectSpaceGuid, request.ProjectSpaceVersion);
+                    project = OpenProjectFromProjectSpace(request.ProjectSpaceGuid, request.ProjectSpaceVersion, request.ProjectSpaceCacheOnly);
                 }
                 else
                 {
@@ -122,6 +127,7 @@ namespace FlowBlox.Core.Runner
                 {
                     IsNoDesignerMode = true,
                     AutoRestart = request.AutoRestart, // Note: ExecuteProjectFlowBlock/RunnerHost may force this to false before calling the runner.
+                    EnableAppNotifications = request.EnableAppNotifications,
                     ExternalDebuggingInformation = MapDebuggingInformation(request.ExternalDebuggingInformation)
                 };
 

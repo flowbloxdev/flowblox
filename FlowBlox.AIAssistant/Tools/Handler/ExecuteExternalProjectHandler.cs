@@ -64,6 +64,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     AutoRestart = false,
                     AbortOnError = true,
                     AbortOnWarning = false,
+                    EnableAppNotifications = false,
                     UserFields = ProjectExecutionToolUtilities.ResolveInputParameters(
                         args["inputParameters"] as JObject,
                         project)

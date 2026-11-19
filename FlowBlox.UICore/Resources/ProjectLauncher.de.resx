@@ -129,7 +129,7 @@
   <data name="History" xml:space="preserve"><value>Ausführungsverlauf</value></data>
   <data name="HistoryExecution" xml:space="preserve"><value>Ausführung am {0:g}</value></data>
   <data name="ClearInputs" xml:space="preserve"><value>Zurücksetzen</value></data>
-  <data name="ClearInputsTooltip" xml:space="preserve"><value>Projektvorgaben wiederherstellen und Optionsüberschreibungen entfernen. Gespeicherte Ausführungen bleiben im Verlauf.</value></data>
+  <data name="ClearInputsTooltip" xml:space="preserve"><value>Projektvorgaben wiederherstellen und Optionsanpassungen entfernen. Gespeicherte Eingabekonfigurationen bleiben erhalten.</value></data>
   <data name="ProjectNotice" xml:space="preserve">
     <value>Projektnotiz</value>
   </data>
@@ -150,4 +150,12 @@
   <data name="ConfirmResetArtifacts" xml:space="preserve"><value>Alle Dateien und Ordner in diesem Ausgabeverzeichnis löschen?
 {0}
 Die Projektausgabewerte bleiben erhalten.</value></data>
+  <data name="SavedConfigurations" xml:space="preserve"><value>Eingabekonfigurationen</value></data>
+  <data name="SaveConfiguration" xml:space="preserve"><value>Konfiguration speichern</value></data>
+  <data name="EditConfiguration" xml:space="preserve"><value>Namen bearbeiten</value></data>
+  <data name="ConfigurationName" xml:space="preserve"><value>Name der Konfiguration</value></data>
+  <data name="ConfigurationNameDescription" xml:space="preserve"><value>Geben Sie der Eingabekonfiguration einen Namen. Auch unvollständige Eingaben können gespeichert werden.</value></data>
+  <data name="ConfigurationFilled" xml:space="preserve"><value>{0}/{1} Felder ausgefüllt</value></data>
+  <data name="ConfigurationMissing" xml:space="preserve"><value>Fehlende Pflichtfelder: {0}</value></data>
+  <data name="ConfigurationComplete" xml:space="preserve"><value>Pflichtfelder vollständig</value></data>
 </root>

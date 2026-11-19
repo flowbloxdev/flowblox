@@ -54,6 +54,7 @@ namespace FlowBlox.Core.Models.Runtime
         public bool ExecutionFlowEnabled { get; set; }
         internal int ExecutionLayer { get; private set; }
         public bool DisableInterceptors { get; set; }
+        public bool EnableAppNotifications { get; set; } = true;
         public RuntimeExternalDebuggingInformation ExternalDebuggingInformation { get; set; }
 
         private readonly IEnumerable<IRuntimeInterceptor> _interceptors;

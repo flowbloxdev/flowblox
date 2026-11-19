@@ -105,6 +105,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     AutoRestart = false,
                     AbortOnError = false,
                     AbortOnWarning = false,
+                    EnableAppNotifications = false,
                     UserFields = inputParameters,
                     ExternalDebuggingInformation = new RunnerExternalDebuggingInformation
                     {

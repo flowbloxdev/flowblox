@@ -150,6 +150,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
                     return left != null && left.Contains(right);
                 case ComparisonOperator.NotContains:
                     return left == null || !left.Contains(right);
+                case ComparisonOperator.ContainsLine:
+                    return LineSetCache.Shared.GetLines(left ?? string.Empty).Contains(right);
+                case ComparisonOperator.NotContainsLine:
+                    return !LineSetCache.Shared.GetLines(left ?? string.Empty).Contains(right);
             }
 
             if (left == null)

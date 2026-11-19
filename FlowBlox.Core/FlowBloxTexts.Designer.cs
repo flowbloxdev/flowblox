@@ -17918,5 +17918,82 @@ namespace FlowBlox.Core {
                 return ResourceManager.GetString("ExecuteProjectFlowBlock_ProjectNameUnavailable", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Line set operators ähnelt.
+        /// </summary>
+        public static string EnumerationGroup_LineSetOperators
+        {
+            get
+            {
+                return ResourceManager.GetString("EnumerationGroup_LineSetOperators", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Contains exact line (Hash comparison) ähnelt.
+        /// </summary>
+        public static string ComparisonOperator_ContainsLine
+        {
+            get
+            {
+                return ResourceManager.GetString("ComparisonOperator_ContainsLine", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Does not contain exact line (Hash comparison) ähnelt.
+        /// </summary>
+        public static string ComparisonOperator_NotContainsLine
+        {
+            get
+            {
+                return ResourceManager.GetString("ComparisonOperator_NotContainsLine", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Matches the complete comparison value against individual lines (CRLF, LF or CR). Case and whitespace are preserved. Line sets are shared by content hash and expire after two minutes without access. ähnelt.
+        /// </summary>
+        public static string ComparisonOperator_ContainsLine_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ComparisonOperator_ContainsLine_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die True when no complete line equals the comparison value. Case and whitespace are preserved. Line sets are shared by content hash and expire after two minutes without access. ähnelt.
+        /// </summary>
+        public static string ComparisonOperator_NotContainsLine_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ComparisonOperator_NotContainsLine_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die App notifications ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_EnableAppNotifications
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_EnableAppNotifications", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Allow the child project to send configured application notifications, such as runtime emails. Disabled by default for subflows. Runtime logs and FlowBlock notifications remain available. ähnelt.
+        /// </summary>
+        public static string ExecuteProjectFlowBlock_EnableAppNotifications_Tooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ExecuteProjectFlowBlock_EnableAppNotifications_Tooltip", resourceCulture);
+            }
+        }
     }
 }

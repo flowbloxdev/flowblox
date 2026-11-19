@@ -114,6 +114,15 @@ namespace FlowBlox.Core.Models.FlowBlocks
         public bool AbortOnWarning { get; set; } = false;
 
         [Display(
+            Name = "ExecuteProjectFlowBlock_EnableAppNotifications",
+            Description = "ExecuteProjectFlowBlock_EnableAppNotifications_Tooltip",
+            ResourceType = typeof(FlowBloxTexts),
+            GroupName = "ExecuteProjectFlowBlock_Groups_Project",
+            Order = 5)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        public bool EnableAppNotifications { get; set; } = false;
+
+        [Display(
             Name = "ExecuteProjectFlowBlock_ParameterMappings",
             Description = "ExecuteProjectFlowBlock_ParameterMappings_Description",
             ResourceType = typeof(FlowBloxTexts),
@@ -161,6 +170,50 @@ namespace FlowBlox.Core.Models.FlowBlocks
 
         public override FlowBlockCardinalities GetInputCardinality() => FlowBlockCardinalities.Many;
         public override FlowBlockCategory GetCategory() => FlowBlockCategory.ControlFlow;
+
+        public override void RuntimeStarted(BaseRuntime runtime)
+        {
+            base.RuntimeStarted(runtime);
+            ClearProjectCache();
+            var key = BuildProjectCacheKey();
+            runtime.Report($"FlowBlock '{Name}': Preloading child project ({key}).");
+            try
+            {
+                var projectSpaceGuid = this.Resolve(block => block.ProjectSpaceGuid);
+                if (!string.IsNullOrWhiteSpace(projectSpaceGuid))
+                {
+                    var endpoint = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.ApiProjectServiceBaseUrl).Value;
+                    if (string.IsNullOrWhiteSpace(FlowBloxAccountManager.Instance.GetUserToken(endpoint)))
+                        new FlowBloxAutoLoginExecutor().TryAutoLoginAsync().GetAwaiter().GetResult();
+                }
+
+                if (GetOrCacheProject() == null)
+                    throw new InvalidOperationException("No project could be loaded. Check the Project Space reference or local project file.");
+
+                runtime.Report($"FlowBlock '{Name}': Child project preloaded successfully ({key}).");
+            }
+            catch (Exception exception)
+            {
+                var message = $"FlowBlock '{Name}': Could not preload child project ({key}). {exception.Message}";
+                runtime.Report(message, FlowBloxLogLevel.Error, exception);
+                throw new InvalidOperationException(message, exception);
+            }
+        }
+
+        public override void RuntimeFinished(BaseRuntime runtime)
+        {
+            ClearProjectCache();
+            base.RuntimeFinished(runtime);
+        }
+
+        private void ClearProjectCache()
+        {
+            lock (_projectCacheLock)
+            {
+                _projectCacheKey = null;
+                _projectCache = null;
+            }
+        }
 
         public override List<string> GetDisplayableProperties()
         {
@@ -241,7 +294,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
                 var requestFile = Path.Combine(workDir, "request.json");
                 var responseFile = Path.Combine(workDir, "response.json");
 
-                var request = BuildRunnerRequest();
+                var request = BuildRunnerRequest(runtime);
 
                 WriteJson(requestFile, request);
 
@@ -303,7 +356,7 @@ namespace FlowBlox.Core.Models.FlowBlocks
             return dir;
         }
 
-        private FlowBlox.Core.Runner.Contracts.RunnerRequest BuildRunnerRequest()
+        private FlowBlox.Core.Runner.Contracts.RunnerRequest BuildRunnerRequest(BaseRuntime runtime)
         {
             var userFields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var optionOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -337,10 +390,12 @@ namespace FlowBlox.Core.Models.FlowBlocks
                     : this.Resolve(owner => owner.ProjectSpaceGuid),
 
                 ProjectSpaceVersion = this.Resolve(x => x.ProjectSpaceVersion),
+                ProjectSpaceCacheOnly = true,
 
                 AutoRestart = false, // hard requirement
                 AbortOnError = AbortOnError,
                 AbortOnWarning = AbortOnWarning,
+                EnableAppNotifications = runtime.EnableAppNotifications && EnableAppNotifications,
                 UserFields = userFields,
                 OptionOverrides = optionOverrides
             };
@@ -428,21 +483,16 @@ namespace FlowBlox.Core.Models.FlowBlocks
             {
                 if (string.Equals(_projectCacheKey, cacheKey, StringComparison.OrdinalIgnoreCase))
                     return _projectCache;
-            }
 
-            var loadedProject = LoadProjectForSuggestions();
-            if (loadedProject == null)
-                return null;
+                var loadedProject = LoadProject();
+                if (loadedProject == null)
+                    return null;
 
-            var project = ProjectMetadataReader.Read(loadedProject);
-
-            lock (_projectCacheLock)
-            {
+                var project = ProjectMetadataReader.Read(loadedProject);
                 _projectCacheKey = cacheKey;
                 _projectCache = project;
+                return project;
             }
-
-            return project;
         }
 
         private string BuildProjectCacheKey()
@@ -451,21 +501,20 @@ namespace FlowBlox.Core.Models.FlowBlocks
             var projectSpaceGuid = this.Resolve(owner => owner.ProjectSpaceGuid);
             var versionPart = this.Resolve(x => x.ProjectSpaceVersion)?.ToString();
 
-            if (!string.IsNullOrWhiteSpace(projectFile))
-                return $"FILE|{projectFile}";
-
             if (!string.IsNullOrWhiteSpace(projectSpaceGuid))
-                return $"SPACE|{projectSpaceGuid}|{versionPart}";
+            {
+                var endpoint = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.ApiProjectServiceBaseUrl).Value;
+                return $"SPACE|{endpoint}|{projectSpaceGuid}|{versionPart ?? "latest"}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(projectFile))
+                return $"FILE|{Path.GetFullPath(projectFile)}";
 
             return string.Empty;
         }
 
-        private FlowBloxProject LoadProjectForSuggestions()
+        private FlowBloxProject LoadProject()
         {
-            var projectFile = this.Resolve(owner => owner.ProjectFile);
-            if (!string.IsNullOrWhiteSpace(projectFile) && File.Exists(projectFile))
-                return FlowBloxProject.FromFile(projectFile);
-
             var projectSpaceGuid = this.Resolve(owner => owner.ProjectSpaceGuid);
             if (!string.IsNullOrWhiteSpace(projectSpaceGuid))
             {
@@ -485,6 +534,10 @@ namespace FlowBlox.Core.Models.FlowBlocks
                     .GetAwaiter()
                     .GetResult();
             }
+
+            var projectFile = this.Resolve(owner => owner.ProjectFile);
+            if (!string.IsNullOrWhiteSpace(projectFile) && File.Exists(projectFile))
+                return FlowBloxProject.FromFile(projectFile);
 
             return null;
         }

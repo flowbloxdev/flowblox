@@ -57,7 +57,7 @@
           </Trigger>
         </Style.Triggers>
       </Style>
-      <Style x:Key="Execution.HistoryExpander" TargetType="Expander">
+      <Style x:Key="Execution.InputConfigurationsExpander" TargetType="Expander">
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="Expander">
@@ -69,8 +69,8 @@
                 <ContentPresenter x:Name="HistoryContent" ContentSource="Content" Visibility="Collapsed" />
                 <ToggleButton Grid.Column="1" Style="{StaticResource Execution.HistoryToggle}"
                               IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                              ToolTip="{x:Static resources:ProjectLauncher.History}"
-                              AutomationProperties.Name="{x:Static resources:ProjectLauncher.History}">
+                              ToolTip="{x:Static resources:ProjectLauncher.SavedConfigurations}"
+                              AutomationProperties.Name="{x:Static resources:ProjectLauncher.SavedConfigurations}">
                   <icons:PackIconMaterial Width="12" Height="12"
                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}">
                     <icons:PackIconMaterial.Style>
@@ -95,16 +95,17 @@
           </Setter.Value>
         </Setter>
       </Style>
-      <Style x:Key="Execution.HistoryItem" TargetType="ListBoxItem">
+      <Style x:Key="Execution.ConfigurationCard" TargetType="ListBoxItem">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Padding" Value="7,6" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Margin" Value="0,0,0,6" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="#244B66" />
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="ListBoxItem">
               <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"
-                      BorderBrush="#E7EDF2" BorderThickness="0,0,0,1">
+                      BorderBrush="#CFDCE5" BorderThickness="1" CornerRadius="0">
                 <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
               </Border>
             </ControlTemplate>
@@ -242,59 +243,57 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
-          <Expander x:Name="HistoryExpander" Grid.Column="0" ExpandDirection="Left" IsExpanded="True"
-                    Style="{StaticResource Execution.HistoryExpander}"
+          <Expander x:Name="InputConfigurationsExpander" Grid.Column="0" ExpandDirection="Left" IsExpanded="True"
+                    Style="{StaticResource Execution.InputConfigurationsExpander}"
                     Visibility="Collapsed" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"
-                    Margin="0,0,10,0" ToolTip="{x:Static resources:ProjectLauncher.History}"
-                    AutomationProperties.Name="{x:Static resources:ProjectLauncher.History}">
+                    Margin="0,0,10,0" ToolTip="{x:Static resources:ProjectLauncher.SavedConfigurations}"
+                    AutomationProperties.Name="{x:Static resources:ProjectLauncher.SavedConfigurations}">
             <Border Width="216" BorderBrush="#D5DFE8" BorderThickness="0,0,1,0" Padding="0,0,8,0">
               <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="{x:Static resources:ProjectLauncher.History}"
+                <TextBlock DockPanel.Dock="Top" Text="{x:Static resources:ProjectLauncher.SavedConfigurations}"
                            Style="{StaticResource Execution.ParameterLabel}" Margin="7,4,4,8" />
-                <ListBox x:Name="HistoryList" BorderThickness="0" Background="Transparent"
-                         SelectionChanged="HistoryList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                <ListBox x:Name="ConfigurationList" BorderThickness="0" Background="Transparent"
+                         SelectionChanged="ConfigurationList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          ScrollViewer.VerticalScrollBarVisibility="Auto">
                   <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource Execution.HistoryItem}" />
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource Execution.ConfigurationCard}" />
                   </ListBox.ItemContainerStyle>
                   <ListBox.ItemTemplate>
                     <DataTemplate>
-                      <DockPanel ToolTip="{Binding Status}" LastChildFill="True">
-                        <Grid DockPanel.Dock="Left" Width="16" Height="16" Margin="0,0,8,0">
-                          <mah:ProgressRing IsActive="{Binding IsRunning}" Width="16" Height="16" MinWidth="0" MinHeight="0" Foreground="#3B875C">
-                            <mah:ProgressRing.Style>
-                              <Style TargetType="mah:ProgressRing">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding IsRunning}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </mah:ProgressRing.Style>
-                          </mah:ProgressRing>
-                          <icons:PackIconMaterial Kind="CheckCircleOutline" Width="16" Height="16" Foreground="#3B875C">
-                            <icons:PackIconMaterial.Style>
-                              <Style TargetType="icons:PackIconMaterial">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding IsSuccessful}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </icons:PackIconMaterial.Style>
-                          </icons:PackIconMaterial>
-                          <icons:PackIconMaterial Kind="CloseCircleOutline" Width="16" Height="16" Foreground="#BD4E48">
-                            <icons:PackIconMaterial.Style>
-                              <Style TargetType="icons:PackIconMaterial">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding HasFailed}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </icons:PackIconMaterial.Style>
-                          </icons:PackIconMaterial>
-                        </Grid>
-                        <TextBlock Text="{Binding Timestamp}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding DisplayName}" />
-                      </DockPanel>
+                      <Grid>
+                        <Grid.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="{x:Static resources:ProjectLauncher.EditConfiguration}"
+                                      Click="RenameConfiguration_Click"
+                                      Tag="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                              <MenuItem.Icon><icons:PackIconMaterial Kind="PencilOutline" Foreground="#526D82" /></MenuItem.Icon>
+                            </MenuItem>
+                          </ContextMenu>
+                        </Grid.ContextMenu>
+                        <Grid.RowDefinitions>
+                          <RowDefinition Height="Auto" />
+                          <RowDefinition Height="Auto" />
+                          <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Margin="0,0,23,7"
+                                   TextWrapping="Wrap" MaxHeight="36" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" />
+                        <icons:PackIconMaterial Kind="CogOutline" Width="16" Height="16" Foreground="#526D82"
+                                                HorizontalAlignment="Right" VerticalAlignment="Top" />
+                        <TextBlock Grid.Row="1" Text="{Binding FilledSummary}" FontSize="11" Foreground="#607383" />
+                        <TextBlock Grid.Row="2" Text="{Binding RequiredSummary}" FontSize="11" Margin="0,4,0,0"
+                                   TextWrapping="Wrap" ToolTip="{Binding MissingFields}">
+                          <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                              <Setter Property="Foreground" Value="#3B875C" />
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasMissingRequiredFields}" Value="True">
+                                  <Setter Property="Foreground" Value="#A16B16" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </TextBlock.Style>
+                        </TextBlock>
+                      </Grid>
                     </DataTemplate>
                   </ListBox.ItemTemplate>
                 </ListBox>
@@ -304,6 +303,13 @@
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel x:Name="Configuration">
         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+          <Button x:Name="SaveConfigurationButton" Click="SaveConfiguration_Click" Style="{StaticResource FlowBlox.ToolbarButton}"
+                  ToolTip="{x:Static resources:ProjectLauncher.SaveConfiguration}">
+            <StackPanel Orientation="Horizontal">
+              <icons:PackIconMaterial Kind="ContentSaveOutline" Width="16" Height="16" Foreground="#526D82" Margin="0,0,6,0" />
+              <TextBlock Text="{x:Static resources:ProjectLauncher.SaveConfiguration}" />
+            </StackPanel>
+          </Button>
           <Button x:Name="ClearInputsButton" Click="ClearInputs_Click" Style="{StaticResource FlowBlox.ToolbarButton}" Visibility="Collapsed"
                   ToolTip="{x:Static resources:ProjectLauncher.ClearInputsTooltip}">
             <StackPanel Orientation="Horizontal">

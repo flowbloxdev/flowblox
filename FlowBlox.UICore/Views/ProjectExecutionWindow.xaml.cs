@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using FlowBlox.Core.Constants;
+using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Enums;
 using FlowBlox.Core.Models.Components;
@@ -17,6 +18,8 @@ using FlowBlox.Core.Util.Projects;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Resolver;
+using FlowBlox.UICore.Interfaces;
+using FlowBlox.UICore.Enums;
 using FlowBlox.UICore.Commands;
 using FlowBlox.UICore.ViewModels;
 using FlowBlox.UICore.Utilities;
@@ -31,6 +34,7 @@ public partial class ProjectExecutionWindow : MetroWindow
 {
     private readonly ProjectShortcut _shortcut;
     private readonly ProjectExecutions _executions;
+    private readonly ProjectInputConfigurations _inputConfigurations = ProjectInputConfigurations.Instance;
     private readonly FlowBloxProject? _project;
     private readonly List<FieldElement> _fields = new();
     private readonly IReadOnlyList<ProjectOutputDirectoryChoice> _outputDirectories = Array.Empty<ProjectOutputDirectoryChoice>();
@@ -41,16 +45,19 @@ public partial class ProjectExecutionWindow : MetroWindow
     private string _inputDirectory = string.Empty;
     private string _outputDirectory = string.Empty;
     private bool _completionShown;
+    private bool _refreshingConfigurations;
 
     public ProjectExecutionWindow(
         ProjectShortcut shortcut,
         FlowBloxProject project,
         ProjectExecutions? executions = null,
-        IEnumerable<string>? projectNames = null)
+        IEnumerable<string>? projectNames = null,
+        ProjectInputConfigurations? inputConfigurations = null)
     {
         InitializeComponent();
         _shortcut = shortcut;
         _executions = executions ?? ProjectExecutions.Instance;
+        _inputConfigurations = inputConfigurations ?? ProjectInputConfigurations.Instance;
         _project = project;
         _outputDirectories = ProjectOutputDirectoryChoice.Create(
             (projectNames ?? Enumerable.Empty<string>()).Append(project.ProjectName));
@@ -60,7 +67,7 @@ public partial class ProjectExecutionWindow : MetroWindow
         ProjectNoticeExpander.Visibility = string.IsNullOrWhiteSpace(project.Notice) ? Visibility.Collapsed : Visibility.Visible;
         OptionsGrid.ItemsSource = _options;
         BuildFields();
-        InitializeHistory();
+        InitializeInputConfigurations();
         InitializeMonitoring();
         UpdateExecuteAvailability();
     }
@@ -95,7 +102,7 @@ public partial class ProjectExecutionWindow : MetroWindow
         _timer.Tick += Timer_Tick;
         Loaded += (_, _) =>
         {
-            if (_entry?.IsRunning == true || HistoryList.Items.OfType<ProjectExecutionHistoryItem>().Any(item => item.IsRunning))
+            if (_entry?.IsRunning == true)
                 _timer.Start();
         };
         Closed += (_, _) =>
@@ -197,25 +204,32 @@ public partial class ProjectExecutionWindow : MetroWindow
         FieldsPanel.Children.Add(editor);
     }
 
-    private void InitializeHistory()
+    private void InitializeInputConfigurations(Guid? selectedId = null)
     {
-        var history = _executions.GetForProject(_shortcut)
-            .Select(entry => new ProjectExecutionHistoryItem(entry))
+        var configurations = _inputConfigurations.GetForProject(_shortcut)
+            .Select(configuration => new ProjectInputConfigurationItem(configuration, _fields))
             .ToList();
-        HistoryList.ItemsSource = history;
-        HistoryExpander.Visibility = _fields.Count > 0 && history.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        ClearInputsButton.Visibility = _fields.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        if (history.Count > 0)
-            HistoryList.SelectedIndex = 0;
+        _refreshingConfigurations = true;
+        try
+        {
+            ConfigurationList.ItemsSource = configurations;
+            InputConfigurationsExpander.Visibility = configurations.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            ClearInputsButton.Visibility = _fields.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            ConfigurationList.SelectedItem = configurations.FirstOrDefault(item => item.Configuration.Id == selectedId);
+        }
+        finally
+        {
+            _refreshingConfigurations = false;
+        }
     }
 
-    private void HistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void ConfigurationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_project == null || _entry != null || HistoryList.SelectedItem is not ProjectExecutionHistoryItem item)
+        if (_refreshingConfigurations || _project == null || _entry != null || ConfigurationList.SelectedItem is not ProjectInputConfigurationItem item)
             return;
 
         ResetConfiguration();
-        var values = new Dictionary<string, string>(item.Entry.Request.UserFields, StringComparer.OrdinalIgnoreCase);
+        var values = new Dictionary<string, string>(item.Configuration.Request.UserFields, StringComparer.OrdinalIgnoreCase);
         foreach (var field in _fields)
         {
             if (values.TryGetValue(field.Name, out var value))
@@ -224,7 +238,7 @@ public partial class ProjectExecutionWindow : MetroWindow
                 FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
             }
         }
-        foreach (var pair in item.Entry.Request.OptionOverrides)
+        foreach (var pair in item.Configuration.Request.OptionOverrides)
             AddOption(pair.Key, pair.Value);
 
         RefreshDirectories();
@@ -233,8 +247,74 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private void ClearInputs_Click(object sender, RoutedEventArgs e)
     {
-        HistoryList.SelectedItem = null;
+        ConfigurationList.SelectedItem = null;
         ResetConfiguration();
+    }
+
+    private async void SaveConfiguration_Click(object sender, RoutedEventArgs e)
+    {
+        if (_project == null || _entry != null)
+            return;
+
+        try
+        {
+            OptionsGrid.CommitEdit(DataGridEditingUnit.Cell, true);
+            OptionsGrid.CommitEdit(DataGridEditingUnit.Row, true);
+            var name = EditConfigurationName(string.Empty);
+            if (name == null)
+                return;
+
+            var configuration = new ProjectInputConfiguration
+            {
+                Name = name,
+                Project = _shortcut,
+                Request = new RunnerRequest
+                {
+                    UserFields = _fields.ToDictionary(field => field.Name, field => field.StringValue ?? string.Empty, StringComparer.OrdinalIgnoreCase),
+                    PasswordFieldNames = _fields.Where(field => field.IsPassword).Select(field => field.Name).ToList(),
+                    OptionOverrides = _options.Where(option => !string.IsNullOrWhiteSpace(option.OptionKey))
+                        .ToDictionary(option => option.OptionKey, option => option.StringValue ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                }
+            };
+            _inputConfigurations.Save(configuration);
+            InitializeInputConfigurations(configuration.Id);
+        }
+        catch (Exception exception)
+        {
+            await ShowErrorAsync(exception);
+        }
+    }
+
+    private async void RenameConfiguration_Click(object sender, RoutedEventArgs e)
+    {
+        if (_entry != null || sender is not MenuItem menu || menu.Tag is not ProjectInputConfigurationItem item)
+            return;
+
+        try
+        {
+            var name = EditConfigurationName(item.Name);
+            if (name == null)
+                return;
+
+            var selectedId = (ConfigurationList.SelectedItem as ProjectInputConfigurationItem)?.Configuration.Id;
+            _inputConfigurations.Rename(_shortcut, item.Configuration.Id, name);
+            InitializeInputConfigurations(selectedId);
+        }
+        catch (Exception exception)
+        {
+            await ShowErrorAsync(exception);
+        }
+    }
+
+    private string? EditConfigurationName(string value)
+    {
+        var dialog = new EditValueWindow(value, false, false)
+        {
+            Owner = this,
+            Title = Text(nameof(Texts.ConfigurationName)),
+            Description = Text(nameof(Texts.ConfigurationNameDescription))
+        };
+        return dialog.ShowDialog() == true ? dialog.GetValue().Trim() : null;
     }
 
     private void ResetConfiguration()
@@ -309,7 +389,8 @@ public partial class ProjectExecutionWindow : MetroWindow
         AddOptionButton.IsEnabled = false;
         RemoveOptionButton.IsEnabled = false;
         ClearInputsButton.IsEnabled = false;
-        HistoryExpander.IsEnabled = false;
+        InputConfigurationsExpander.IsEnabled = false;
+        SaveConfigurationButton.IsEnabled = false;
     }
 
     private void AddOption(string key, string value)
@@ -353,17 +434,6 @@ public partial class ProjectExecutionWindow : MetroWindow
     private void RefreshState()
     {
         _executions.Refresh();
-        if (_project != null)
-        {
-            var entries = _executions.GetForProject(_shortcut).ToDictionary(entry => entry.Id);
-            foreach (var item in HistoryList.Items.OfType<ProjectExecutionHistoryItem>())
-            {
-                if (entries.TryGetValue(item.Entry.Id, out var updated))
-                    item.Update(updated);
-            }
-            if (_entry == null && !HistoryList.Items.OfType<ProjectExecutionHistoryItem>().Any(item => item.IsRunning))
-                _timer.Stop();
-        }
         if (_entry != null)
         {
             NotStartedHint.Visibility = Visibility.Collapsed;
@@ -509,11 +579,12 @@ public partial class ProjectExecutionWindow : MetroWindow
         }
     }
 
-    private async Task ShowErrorAsync(Exception exception)
+    private Task ShowErrorAsync(Exception exception)
     {
         FlowBloxLogManager.Instance.GetLogger().Error("Project launcher operation failed.", exception);
-        await MessageBoxHelper.ShowMessageBoxAsync(this, MessageBoxType.Error,
-            string.Format(Text(nameof(Texts.Error)), exception.Message));
+        FlowBloxServiceLocator.Instance.GetService<IFlowBloxMessageBoxService>().ShowMessageBox(
+            string.Format(Text(nameof(Texts.Error)), exception.Message), Text(nameof(Texts.Title)), FlowBloxMessageBoxTypes.Error);
+        return Task.CompletedTask;
     }
 
     private static string ReadProjectDescription(ProjectExecutionEntry entry)

@@ -30,6 +30,12 @@ namespace FlowBlox.Core.Interceptors
 
         public override void NotifyBeforeRuntimeStarted()
         {
+            if (Runtime?.EnableAppNotifications == false)
+            {
+                _configuration = null;
+                return;
+            }
+
             _configuration = RuntimeNotificationConfigurationStore.Load(out var error);
             if (!string.IsNullOrWhiteSpace(error))
                 FlowBloxLogManager.Instance.GetLogger().Warn(error);
@@ -43,6 +49,9 @@ namespace FlowBlox.Core.Interceptors
 
         public override void NotifyError(BaseFlowBlock flowBlock, string message, Exception exception = null)
         {
+            if (_configuration == null)
+                return;
+
             _lastError = CreateContext(RuntimeNotificationType.RuntimeError, message, exception, flowBlock?.Name);
             if (_cancellation?.CancellationKind == RuntimeCancellationKind.AbortOnWarningOrError)
                 _abortTriggeringError = _lastError;
@@ -63,7 +72,7 @@ namespace FlowBlox.Core.Interceptors
 
         public override void NotifyRuntimeFinished()
         {
-            if (_finished)
+            if (_configuration == null || _finished)
                 return;
 
             _finished = true;
@@ -95,8 +104,11 @@ namespace FlowBlox.Core.Interceptors
                 Send(RuntimeNotificationType.RuntimeCompletedSuccessfully, "Runtime execution completed successfully.");
         }
 
-        private void Send(RuntimeNotificationType type, string message, Exception exception = null) =>
-            Send(CreateContext(type, message, exception));
+        private void Send(RuntimeNotificationType type, string message, Exception exception = null)
+        {
+            if (_configuration?.IsEnabled(type) == true)
+                Send(CreateContext(type, message, exception));
+        }
 
         private void Send(RuntimeNotificationContext context)
         {

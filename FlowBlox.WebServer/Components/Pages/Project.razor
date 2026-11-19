@@ -25,14 +25,8 @@ else
     <div hidden="@_showOutputs">
     <section class="panel directories"><label>@T["InputDirectory"]<input value="@_form.InputDirectory" readonly /></label></section>
     <h2>@T["InputParameters"]</h2>
+    <InputConfigurations ProjectId="@Id" Form="_form" Disabled="_busy" Applied="ConfigurationApplied" />
     <div class="input-layout">
-        @if (_form.Fields.Count > 0 && _history.Count > 0)
-        {
-            <details class="panel history"><summary>@T["History"]</summary>
-                @foreach (var entry in _history)
-                { <button class="history-row" disabled="@_busy" title="@T["UseHistory"]" @onclick="() => ApplyHistoryAsync(entry)"><ExecutionStatus Entry="entry" /><time datetime="@entry.StartedUtc.ToString("O")">@entry.StartedUtc.ToString("u")</time></button> }
-            </details>
-        }
         <section class="panel inputs">
             @if (_form.Fields.Count == 0) { <p class="empty">ⓘ @T["NoInputs"]</p> }
             else
@@ -59,19 +53,9 @@ else
     private WebProject? _project;
     private ProjectForm? _form;
     private IReadOnlyList<ProjectOutputDirectoryChoice> _outputDirectories = [];
-    private IReadOnlyList<ProjectExecutionEntry> _history = [];
     private bool _busy, _error, _showOutputs;
     private string _optionKey = string.Empty;
     private bool CanRun => _form != null && _form.Fields.All(input => !input.IsRequiredAtRuntimeStartup || !string.IsNullOrWhiteSpace(_form.Values.GetValueOrDefault(input.Name)));
-    protected override void OnInitialized() => BeginRefreshing(RefreshHistoryAsync);
-    private Task RefreshHistoryAsync()
-    {
-        if (_project != null && _form != null)
-        {
-            if (_form.Fields.Count > 0) _history = Dashboard.Executions.GetForProject(_project.Shortcut);
-        }
-        return Task.CompletedTask;
-    }
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -80,17 +64,10 @@ else
             _project = Dashboard.GetProject(Id);
             _form = await Dashboard.LoadFormAsync(Id);
             _outputDirectories = ProjectOutputDirectoryChoice.Create(Dashboard.Projects.Select(project => project.Shortcut.Name));
-            _history = Dashboard.Executions.GetForProject(_project.Shortcut);
         }
         catch (Exception exception) { Logger.LogWarning(exception, "Could not load the web project editor."); _error = true; }
     }
-    private async Task ApplyHistoryAsync(ProjectExecutionEntry entry)
-    {
-        if (!await HasSessionAsync()) return;
-        foreach (var field in _form!.Fields) _form.Values[field.Name] = entry.Request.UserFields.GetValueOrDefault(field.Name) ?? string.Empty;
-        var allowed = Dashboard.AvailableOptions.Select(option => option.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        _form.Overrides = entry.Request.OptionOverrides.Where(pair => allowed.Contains(pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
-    }
+    private void ConfigurationApplied() => StateHasChanged();
     private async Task ClearAsync()
     {
         if (!await HasSessionAsync()) return;

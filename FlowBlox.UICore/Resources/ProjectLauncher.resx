@@ -129,7 +129,7 @@
   <data name="History" xml:space="preserve"><value>Execution history</value></data>
   <data name="HistoryExecution" xml:space="preserve"><value>Execution on {0:g}</value></data>
   <data name="ClearInputs" xml:space="preserve"><value>Clear</value></data>
-  <data name="ClearInputsTooltip" xml:space="preserve"><value>Restore the project defaults and remove option overrides. Saved executions remain in the history.</value></data>
+  <data name="ClearInputsTooltip" xml:space="preserve"><value>Restore project defaults and remove option overrides. Saved input configurations are retained.</value></data>
   <data name="ProjectNotice" xml:space="preserve">
     <value>Project notes</value>
   </data>
@@ -150,4 +150,12 @@
   <data name="ConfirmResetArtifacts" xml:space="preserve"><value>Delete all files and folders in this output directory?
 {0}
 Project output values are retained.</value></data>
+  <data name="SavedConfigurations" xml:space="preserve"><value>Input configurations</value></data>
+  <data name="SaveConfiguration" xml:space="preserve"><value>Save configuration</value></data>
+  <data name="EditConfiguration" xml:space="preserve"><value>Edit name</value></data>
+  <data name="ConfigurationName" xml:space="preserve"><value>Configuration name</value></data>
+  <data name="ConfigurationNameDescription" xml:space="preserve"><value>Name this input configuration. Incomplete inputs can be saved too.</value></data>
+  <data name="ConfigurationFilled" xml:space="preserve"><value>{0}/{1} fields filled</value></data>
+  <data name="ConfigurationMissing" xml:space="preserve"><value>Required fields missing: {0}</value></data>
+  <data name="ConfigurationComplete" xml:space="preserve"><value>Required fields complete</value></data>
 </root>

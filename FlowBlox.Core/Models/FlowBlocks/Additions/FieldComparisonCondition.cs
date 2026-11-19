@@ -43,7 +43,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
             var fieldValue = fieldElement.Value;
             var isStringField = fieldValue is string || (fieldValue == null
                 && (fieldElement.FieldType == null || fieldElement.FieldType.FieldType == FieldTypes.Text));
-            if ((op == ComparisonOperator.Contains || op == ComparisonOperator.NotContains) && !isStringField)
+            var requiresText = op == ComparisonOperator.Contains || op == ComparisonOperator.NotContains
+                || op == ComparisonOperator.ContainsLine || op == ComparisonOperator.NotContainsLine;
+            if (requiresText && !isStringField)
             {
                 var message = FlowBloxResourceUtil.GetLocalizedString("FieldComparisonCondition_Validation_ContainsRequiresText");
                 return new ValidationResult(message, [validationContext.MemberName]);

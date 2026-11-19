@@ -14,6 +14,7 @@ using FlowBlox.Core.Provider.Placeholders.InputFile;
 using FlowBlox.Core.Provider.Registry;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Json;
+using FlowBlox.Core.Util.Projects;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -758,16 +759,17 @@ namespace FlowBlox.Core.Models.Project
             }
         }
 
-        public static async Task<FlowBloxProject> FromProjectSpaceGuidAsync(string projectSpaceGuid, string userToken, FlowBloxWebApiService webApi)
+        public static async Task<FlowBloxProject> FromProjectSpaceGuidAsync(string projectSpaceGuid, string userToken, FlowBloxWebApiService webApi, bool cacheOnly = false)
         {
-            return await FromProjectSpaceGuidAsync(projectSpaceGuid, null, userToken, webApi);
+            return await FromProjectSpaceGuidAsync(projectSpaceGuid, null, userToken, webApi, cacheOnly);
         }
 
         public static async Task<FlowBloxProject> FromProjectSpaceGuidAsync(
             string projectSpaceGuid,
             int? projectSpaceVersion,
             string userToken,
-            FlowBloxWebApiService webApi)
+            FlowBloxWebApiService webApi,
+            bool cacheOnly = false)
         {
             var versionText = projectSpaceVersion.HasValue ? projectSpaceVersion.Value.ToString() : "latest";
             _logger.Info($"Loading project from Project Space. Guid={projectSpaceGuid}, Version={versionText}");
@@ -777,44 +779,8 @@ namespace FlowBlox.Core.Models.Project
 
             try
             {
-                // Fetch metadata (usually still "project by guid"; ok for both latest and stable)
-                var remoteResp = await webApi.GetProjectAsync(new FbProjectRequest { Guid = projectSpaceGuid }, userToken);
-                if (!remoteResp.Success || remoteResp.ResultObject == null)
-                {
-                    ThrowIfProjectSpaceLoginRequired(remoteResp, userToken);
-                    throw new InvalidOperationException("Project not found in Project Space.");
-                }
-
-                // Fetch project content
-                ApiResponse<string> contentResp;
-
-                if (projectSpaceVersion.HasValue)
-                {
-                    // Version
-                    contentResp = await webApi.GetProjectVersionContentAsync(
-                        userToken,
-                        Guid.Parse(projectSpaceGuid),
-                        projectSpaceVersion.Value);
-                }
-                else
-                {
-                    // Latest
-                    contentResp = await webApi.GetProjectContentAsync(
-                        userToken,
-                        Guid.Parse(projectSpaceGuid));
-                }
-
-                if (contentResp == null || !contentResp.Success)
-                {
-                    ThrowIfProjectSpaceLoginRequired(contentResp, userToken);
-                    throw new InvalidOperationException(
-                        $"Failed to retrieve project content from Project Space. Version={versionText}. {contentResp?.ErrorMessage}");
-                }
-
-                if (string.IsNullOrWhiteSpace(contentResp.ResultObject))
-                    throw new Exception($"Project content is missing in Project Space response. Version={versionText}.");
-
-                var zipBytes = Convert.FromBase64String(contentResp.ResultObject);
+                var zipBytes = await new ProjectSpaceContentCache().LoadAsync(
+                    projectSpaceGuid, projectSpaceVersion, userToken, webApi, cacheOnly);
                 var extracted = ExtractProjectSpaceZip(zipBytes);
 
                 // Load project + extensions. No local data involved for ProjectSpace.
@@ -840,18 +806,6 @@ namespace FlowBlox.Core.Models.Project
             {
                 _logger.Error($"Failed to load project from Project Space. Guid={projectSpaceGuid}, Version={versionText}", ex);
                 throw;
-            }
-        }
-
-        private static void ThrowIfProjectSpaceLoginRequired(ApiResponse response, string userToken)
-        {
-            if (response == null || !string.IsNullOrWhiteSpace(userToken))
-                return;
-
-            if (response.Success || response.StatusCode is HttpStatusCode.Unauthorized
-                or HttpStatusCode.Forbidden or HttpStatusCode.NotFound)
-            {
-                throw new ProjectSpaceLoginRequiredException();
             }
         }
 

@@ -4510,7 +4510,7 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="CollectionQueryOperation_Any" xml:space="preserve"><value>Any</value></data>
   <data name="CollectionQueryOperation_All" xml:space="preserve"><value>All</value></data>
   <data name="FieldComparisonCondition_Validation_ByteArrayOperatorNotSupported" xml:space="preserve"><value>ByteArray fields support equality, inequality and presence checks only.</value></data>
-  <data name="FieldComparisonCondition_Validation_ContainsRequiresText" xml:space="preserve"><value>The Contains and NotContains operators require a text field. Select a text field or a different comparison operator.</value></data>
+  <data name="FieldComparisonCondition_Validation_ContainsRequiresText" xml:space="preserve"><value>This text comparison requires a text field. Select a text field or a different comparison operator.</value></data>
   <data name="TableSelectorColumnCondition_ColumnType" xml:space="preserve"><value>Column type</value></data>
   <data name="TableSelectorColumnCondition_ColumnType_Tooltip" xml:space="preserve"><value>Type definition for this column condition. Select DateTime, Float, or Double to configure the date/time format or number separators used to parse its comparison value. The default type is Text.</value></data>
   <data name="CollectionQueryFlowBlock_Predicate" xml:space="preserve"><value>Predicate</value></data>
@@ -4568,6 +4568,27 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
 	<data name="EnumerationGroup_AdvancedTextOperators" xml:space="preserve">
 		<value>Advanced text operators</value>
 	</data>
+  <data name="EnumerationGroup_LineSetOperators" xml:space="preserve">
+    <value>Line set operators</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_EnableAppNotifications" xml:space="preserve">
+    <value>App notifications</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_EnableAppNotifications_Tooltip" xml:space="preserve">
+    <value>Allow the child project to send configured application notifications, such as runtime emails. Disabled by default for subflows. Runtime logs and FlowBlock notifications remain available.</value>
+  </data>
+  <data name="ComparisonOperator_ContainsLine" xml:space="preserve">
+    <value>Contains exact line (Hash comparison)</value>
+  </data>
+  <data name="ComparisonOperator_NotContainsLine" xml:space="preserve">
+    <value>Does not contain exact line (Hash comparison)</value>
+  </data>
+  <data name="ComparisonOperator_ContainsLine_Tooltip" xml:space="preserve">
+    <value>Matches the complete comparison value against individual lines (CRLF, LF or CR). Case and whitespace are preserved. Line sets are shared by content hash and expire after two minutes without access.</value>
+  </data>
+  <data name="ComparisonOperator_NotContainsLine_Tooltip" xml:space="preserve">
+    <value>True when no complete line equals the comparison value. Case and whitespace are preserved. Line sets are shared by content hash and expire after two minutes without access.</value>
+  </data>
 	<data name="FieldElement_Conditions_Tooltip" xml:space="preserve">
 		<value>Check the field value after modifiers are applied. If any condition is not met, the field value is cleared (set to null). The result dataset remains; the number of results does not change.</value>
 	</data>

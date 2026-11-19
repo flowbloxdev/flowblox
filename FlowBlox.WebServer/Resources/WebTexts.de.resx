@@ -77,4 +77,15 @@
   <data name="ProjectFields" xml:space="preserve"><value>Projektfelder</value></data>
   <data name="Options" xml:space="preserve"><value>Optionen</value></data>
   <data name="Vault" xml:space="preserve"><value>Vault</value></data>
+  <data name="SavedConfigurations" xml:space="preserve"><value>Eingabekonfigurationen</value></data>
+  <data name="SaveConfiguration" xml:space="preserve"><value>Konfiguration speichern</value></data>
+  <data name="EditConfiguration" xml:space="preserve"><value>Namen bearbeiten</value></data>
+  <data name="ConfigurationName" xml:space="preserve"><value>Name der Konfiguration</value></data>
+  <data name="ConfigurationNameDescription" xml:space="preserve"><value>Geben Sie der Eingabekonfiguration einen Namen. Auch unvollständige Eingaben können gespeichert werden.</value></data>
+  <data name="ConfigurationFilled" xml:space="preserve"><value>{0}/{1} Felder ausgefüllt</value></data>
+  <data name="ConfigurationMissing" xml:space="preserve"><value>Fehlende Pflichtfelder: {0}</value></data>
+  <data name="ConfigurationComplete" xml:space="preserve"><value>Pflichtfelder vollständig</value></data>
+  <data name="SelectConfiguration" xml:space="preserve"><value>Konfiguration auswählen</value></data>
+  <data name="ProjectDefaults" xml:space="preserve"><value>Projektvorgaben</value></data>
+  <data name="Save" xml:space="preserve"><value>Speichern</value></data>
 </root>

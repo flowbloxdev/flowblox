@@ -1,5 +1,8 @@
 ﻿using FlowBlox.UICore.Enums;
 using MahApps.Metro.Controls;
+using FlowBlox.UICore.Interfaces;
+using FlowBlox.Core.DependencyInjection;
+using FlowBlox.Core.Util.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -143,12 +146,10 @@ namespace FlowBlox.UICore.Views
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                MessageBox.Show(
-                    this,
-                    EditValueWindowResources.ValidationErrorMessage,
-                    EditValueWindowResources.ValidationErrorTitle,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                FlowBloxServiceLocator.Instance.GetService<IFlowBloxMessageBoxService>().ShowMessageBox(
+                    FlowBloxResourceUtil.GetLocalizedString("ValidationErrorMessage", typeof(EditValueWindowResources)),
+                    FlowBloxResourceUtil.GetLocalizedString("ValidationErrorTitle", typeof(EditValueWindowResources)),
+                    FlowBloxMessageBoxTypes.Information);
                 return;
             }
 

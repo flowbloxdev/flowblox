@@ -4458,7 +4458,7 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="CollectionQueryOperation_Any" xml:space="preserve"><value>Mindestens eines (Any)</value></data>
   <data name="CollectionQueryOperation_All" xml:space="preserve"><value>Alle (All)</value></data>
   <data name="FieldComparisonCondition_Validation_ByteArrayOperatorNotSupported" xml:space="preserve"><value>ByteArray-Felder unterstützen nur Gleichheit, Ungleichheit und die Prüfung auf vorhandene oder fehlende Werte.</value></data>
-  <data name="FieldComparisonCondition_Validation_ContainsRequiresText" xml:space="preserve"><value>Die Operatoren „Enthält“ und „Enthält nicht“ erfordern ein Textfeld. Wählen Sie ein Textfeld oder einen anderen Vergleichsoperator.</value></data>
+  <data name="FieldComparisonCondition_Validation_ContainsRequiresText" xml:space="preserve"><value>Dieser Textvergleich erfordert ein Textfeld. Wählen Sie ein Textfeld oder einen anderen Vergleichsoperator.</value></data>
   <data name="TableSelectorColumnCondition_ColumnType" xml:space="preserve"><value>Spaltentyp</value></data>
   <data name="TableSelectorColumnCondition_ColumnType_Tooltip" xml:space="preserve"><value>Typdefinition für diese Spaltenbedingung. Wählen Sie DateTime, Float oder Double, um das Datums-/Zeitformat oder die Zahlentrennzeichen für das Einlesen des Vergleichswerts festzulegen. Der Standardtyp ist Text.</value></data>
   <data name="CollectionQueryFlowBlock_Predicate" xml:space="preserve"><value>Prädikat</value></data>
@@ -4570,6 +4570,27 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
 	<data name="EnumerationGroup_AdvancedTextOperators" xml:space="preserve">
 		<value>Erweiterte Textoperatoren</value>
 	</data>
+  <data name="EnumerationGroup_LineSetOperators" xml:space="preserve">
+    <value>Zeilenmengen-Operatoren</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_EnableAppNotifications" xml:space="preserve">
+    <value>App-Benachrichtigungen</value>
+  </data>
+  <data name="ExecuteProjectFlowBlock_EnableAppNotifications_Tooltip" xml:space="preserve">
+    <value>Erlaubt dem Unterprojekt, konfigurierte App-Benachrichtigungen wie Laufzeit-E-Mails zu senden. Für Unterflows standardmäßig deaktiviert. Laufzeitprotokolle und FlowBlock-Benachrichtigungen bleiben verfügbar.</value>
+  </data>
+  <data name="ComparisonOperator_ContainsLine" xml:space="preserve">
+    <value>Enthält vollständige Zeile (Hash-Vergleich)</value>
+  </data>
+  <data name="ComparisonOperator_NotContainsLine" xml:space="preserve">
+    <value>Enthält keine vollständige Zeile (Hash-Vergleich)</value>
+  </data>
+  <data name="ComparisonOperator_ContainsLine_Tooltip" xml:space="preserve">
+    <value>Vergleicht den vollständigen Vergleichswert mit einzelnen Zeilen (CRLF, LF oder CR). Groß-/Kleinschreibung und Leerzeichen bleiben erhalten. Zeilenmengen werden über den Inhalts-Hash gemeinsam genutzt und laufen nach zwei Minuten ohne Zugriff ab.</value>
+  </data>
+  <data name="ComparisonOperator_NotContainsLine_Tooltip" xml:space="preserve">
+    <value>Wahr, wenn keine vollständige Zeile dem Vergleichswert entspricht. Groß-/Kleinschreibung und Leerzeichen bleiben erhalten. Zeilenmengen werden über den Inhalts-Hash gemeinsam genutzt und laufen nach zwei Minuten ohne Zugriff ab.</value>
+  </data>
 	<data name="FieldElement_Conditions_Tooltip" xml:space="preserve">
 		<value>Prüfen den Feldwert nach Anwendung der Modifier. Ist eine Bedingung nicht erfüllt, wird der Feldwert geleert (auf null gesetzt). Der Ergebnisdatensatz bleibt erhalten; die Anzahl der Ergebnisse ändert sich nicht.</value>
 	</data>
