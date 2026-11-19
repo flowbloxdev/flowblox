@@ -37,10 +37,22 @@ public class VectorTable : ManagedObject, IReadableTable
     [Display(Name = "VectorTable_TopK", Description = "VectorTable_TopK_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
     public int TopK { get; set; } = 8;
 
+    [Display(Name = "VectorTable_SourceFilter", Description = "VectorTable_SourceFilter_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+    [FlowBloxAssociation]
+    [FlowBloxItemsSource(Method = nameof(GetSourceFilters), DisplayMember = nameof(Name))]
+    public IReadableTable SourceFilter { get; set; }
+
+    [Required]
+    [Display(Name = "VectorTable_SourceIdColumn", Description = "VectorTable_SourceIdColumn_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+    public string SourceIdColumn { get; set; } = "SourceId";
+
     private CancellationToken _cancellationToken;
 
     public IEnumerable<VectorStore> GetStores() => FlowBloxRegistryProvider.GetRegistry().GetManagedObjects<VectorStore>();
     public IEnumerable<TextEmbeddingProviderBase> GetEmbeddingProviders() => FlowBloxRegistryProvider.GetRegistry().GetManagedObjects<TextEmbeddingProviderBase>();
+    public IEnumerable<IReadableTable> GetSourceFilters() => FlowBloxRegistryProvider.GetRegistry()
+        .GetManagedObjects<IReadableTable>()
+        .Where(table => table != this && table is not VectorTable);
     public override List<string> GetDisplayableProperties() => [nameof(Name), nameof(Store), nameof(Embeddings)];
 
     public override void RuntimeStarted(BaseRuntime runtime)
@@ -54,9 +66,29 @@ public class VectorTable : ManagedObject, IReadableTable
 
     public DataTable Read(ISet<string>? activeSources)
     {
+        activeSources ??= ReadSourceFilter();
         var question = this.Resolve(table => table.Question, required: true);
         var vectors = Embeddings.EmbedAsync([question], _cancellationToken).GetAwaiter().GetResult();
         return Store.Search(vectors.Single(), Embeddings, this.Resolve(table => table.TopK), activeSources, _cancellationToken);
+    }
+
+    private ISet<string> ReadSourceFilter()
+    {
+        if (SourceFilter == null)
+            return null;
+
+        if (SourceFilter is VectorTable)
+            throw new InvalidOperationException("A vector search table cannot be used as a source filter.");
+
+        var column = this.Resolve(table => table.SourceIdColumn, required: true);
+        var data = SourceFilter.Read();
+        if (!data.Columns.Contains(column))
+            throw new InvalidOperationException($"The source filter does not contain column '{column}'.");
+
+        return data.Rows.Cast<DataRow>()
+            .Select(row => row[column] == DBNull.Value ? null : Convert.ToString(row[column]))
+            .Where(source => !string.IsNullOrWhiteSpace(source))
+            .ToHashSet(StringComparer.Ordinal);
     }
 
     public void AddDataSourceChangedListener(Action listener) { }

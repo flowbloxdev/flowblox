@@ -29,6 +29,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
         [FlowBloxAssociation(Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete)]
         public FieldElement Field { get; set; }
 
+        [Display(Name = "TableSelectorMappingEntry_IsOptional", Description = "TableSelectorMappingEntry_IsOptional_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        public bool IsOptional { get; set; }
+
+        [Display(Name = "TableSelectorMappingEntry_FallbackValue", ResourceType = typeof(FlowBloxTexts), Order = 2)]
+        [ActivationCondition(MemberName = nameof(IsOptional), Value = true)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        public string FallbackValue { get; set; }
+
         public override string ToString() => $"{ColumnName} → {Field}";
     }
 
@@ -151,7 +160,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
 
                 foreach (var mappingEntry in MappingEntries)
                 {
-                    if (!tableData.Columns.Contains(mappingEntry.ColumnName))
+                    if (!tableData.Columns.Contains(mappingEntry.ColumnName) && !mappingEntry.IsOptional)
                         throw new InvalidOperationException($"Could not find the column header \"{mappingEntry.ColumnName}\" from mapping entries in table data.");
                 }
 
@@ -176,11 +185,13 @@ namespace FlowBlox.Core.Models.FlowBlocks.IO
                     Dictionary<FieldElement, string> resultEntry = new Dictionary<FieldElement, string>();
                     foreach (var mappingEntry in MappingEntries)
                     {
-                        if (!tableData.Columns.Contains(mappingEntry.ColumnName))
+                        if (!tableData.Columns.Contains(mappingEntry.ColumnName) && !mappingEntry.IsOptional)
                             throw new InvalidOperationException($"The column \"{mappingEntry.ColumnName}\" does not exist in table \"{ReferencedTable.Name}\".");
 
                         FieldElement fieldElement = mappingEntry.Field;
-                        var rawValue = tableData.Rows[rowCounter][mappingEntry.ColumnName];
+                        var rawValue = tableData.Columns.Contains(mappingEntry.ColumnName)
+                            ? tableData.Rows[rowCounter][mappingEntry.ColumnName]
+                            : mappingEntry.FallbackValue;
                         string fieldValue = rawValue == DBNull.Value
                             ? string.Empty
                             : FieldResultFormatter.FormatResult(fieldElement, rawValue);

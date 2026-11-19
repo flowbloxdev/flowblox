@@ -5064,7 +5064,34 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="ExecuteProjectFlowBlock_ProjectNameUnavailable" xml:space="preserve">
     <value>The project name could not be determined.</value>
   </data>
-</root>
+  <data name="VectorTable_SourceFilter" xml:space="preserve">
+    <value>Source filter table</value>
+  </data>
+  <data name="VectorTable_SourceFilter_Tooltip" xml:space="preserve">
+    <value>Optional table containing the source IDs allowed in this search. An empty table allows no sources.</value>
+  </data>
+  <data name="VectorTable_SourceIdColumn" xml:space="preserve">
+    <value>Source ID column</value>
+  </data>
+  <data name="VectorTable_SourceIdColumn_Tooltip" xml:space="preserve">
+    <value>Column in the source filter table containing the document IDs, for example SourceId.</value>
+  </data>
+  <data name="VectorSourceTable_DisplayName" xml:space="preserve">
+    <value>Indexed vector sources</value>
+  </data>
+  <data name="VectorSourceTable_Description" xml:space="preserve">
+    <value>Lists indexed source IDs and content hashes for the current collection and embedding profile without reading source content.</value>
+  </data>
+  <data name="TableSelectorMappingEntry_IsOptional" xml:space="preserve">
+    <value>Optional column</value>
+  </data>
+  <data name="TableSelectorMappingEntry_IsOptional_Tooltip" xml:space="preserve">
+    <value>Use the fallback value when this column is absent. Existing columns are read normally.</value>
+  </data>
+  <data name="TableSelectorMappingEntry_FallbackValue" xml:space="preserve">
+    <value>Missing-column fallback</value>
+  </data>
+  <data name="PDF2TextFlowBlock_UseOcr" xml:space="preserve"><value>Use OCR</value></data>  <data name="PDF2TextFlowBlock_UseOcr_Tooltip" xml:space="preserve"><value>Recognize scanned PDF pages locally using Tesseract. German and English language data are included. The original PDF text remains available separately.</value></data>  <data name="PDF2TextFlowBlock_OcrMode" xml:space="preserve"><value>OCR pages</value></data>  <data name="PdfOcrMode_EmptyPages" xml:space="preserve"><value>Pages without PDF text</value></data>  <data name="PdfOcrMode_AllPages" xml:space="preserve"><value>All pages, including mixed text and scans</value></data>  <data name="PDF2TextFlowBlock_OcrLanguages" xml:space="preserve"><value>OCR languages</value></data>  <data name="PDF2TextFlowBlock_OcrLanguages_Tooltip" xml:space="preserve"><value>Tesseract language names separated by +, for example deu+eng. Other languages require their traineddata files.</value></data>  <data name="PDF2TextFlowBlock_OcrDataDirectory" xml:space="preserve"><value>OCR language data directory</value></data>  <data name="PDF2TextFlowBlock_OcrDataDirectory_Tooltip" xml:space="preserve"><value>Optional custom tessdata directory. Leave empty to use the bundled German and English data.</value></data>  <data name="PDF2TextFlowBlock_OcrDpi" xml:space="preserve"><value>OCR rendering DPI</value></data>  <data name="PDF2TextFlowBlock_OcrDpi_Tooltip" xml:space="preserve"><value>PDF page resolution for OCR. Default: 300 DPI. Higher values require more memory and processing time.</value></data>  <data name="PDF2TextFlowBlock_PdfTextResult" xml:space="preserve"><value>Original PDF text field</value></data>  <data name="PDF2TextFlowBlock_OcrTextResult" xml:space="preserve"><value>OCR text field</value></data>  <data name="PDF2TextFlowBlock_PageNumberResult" xml:space="preserve"><value>Page number field</value></data></root>
 
 
 

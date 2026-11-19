@@ -31,6 +31,51 @@ public sealed class VectorStoreTests
     }
 
     [TestMethod]
+    public async Task IndexedSourceListingExcludesOtherCollectionsAndProfiles()
+    {
+        await _store.UpsertAsync("current", "Title", "TBS current", _embeddings, default);
+        var other = new VectorStore
+        {
+            DatabasePath = _store.DatabasePath,
+            Collection = "other",
+            ChunkSize = 64,
+            ChunkOverlap = 8
+        };
+        await other.UpsertAsync("other", "Title", "TBS other", _embeddings, default);
+        Assert.AreEqual("current", _store.GetSources(_embeddings).Rows.Cast<System.Data.DataRow>().Single()["SourceId"]);
+        _embeddings.Model = "changed-model";
+        Assert.AreEqual(0, _store.GetSources(_embeddings).Rows.Count);
+    }
+
+    [TestMethod]
+    public async Task VectorTableUsesMappedActiveSourcesAndEmptyFilterAllowsNone()
+    {
+        await _store.UpsertAsync("active", "Title", "TBS active", _embeddings, default);
+        await _store.UpsertAsync("removed", "Title", "TBS stale", _embeddings, default);
+        var field = new FlowBlox.Core.Models.Components.FieldElement(FlowBlox.Core.Enums.FieldTypes.Text)
+        {
+            StringValue = "DocumentKey\nactive\n"
+        };
+        var filter = new FlowBlox.Core.Models.Components.IO.CsvTable
+        {
+            Separator = ";",
+            FirstRowHeader = true,
+            DataSource = new FlowBlox.Core.Models.Components.IO.MemoryObject { Field = field, FileName = "sources.csv" }
+        };
+        var search = new VectorTable
+        {
+            Store = _store,
+            Embeddings = _embeddings,
+            Question = "TBS",
+            SourceFilter = filter,
+            SourceIdColumn = "DocumentKey"
+        };
+        Assert.AreEqual("active", search.Read().Rows.Cast<System.Data.DataRow>().Single()["SourceId"]);
+        field.StringValue = "DocumentKey\n";
+        Assert.AreEqual(0, search.Read().Rows.Count);
+    }
+
+    [TestMethod]
     public async Task UnchangedSourceReusesPersistedEmbeddingsAcrossInstances()
     {
         Assert.IsTrue(await _store.UpsertAsync("source", "Title", "TBS production", _embeddings, default));

@@ -12,6 +12,15 @@ run through `dotnet test`.
 
 ## Running
 
+To open a local project, run the Project Panel automatic layout command, save it through the application and close:
+
+```powershell
+.\FlowBlox.Avalonia.IntegrationTests.exe <results-directory> <project.fbprj> --layout-save
+```
+
+The runner uses an editable working copy, checks the original for concurrent changes and copies the saved project back.
+It does not upload the project. The result is written to `layout-save-result.json`.
+
 From the repository root:
 
 ```powershell

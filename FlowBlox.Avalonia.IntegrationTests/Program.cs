@@ -17,10 +17,11 @@ internal static class Program
             && args[2] != "--launcher-only"
             && args[2] != "--execution-views-only"
             && args[2] != "--password-editors-only"
+            && args[2] != "--layout-save"
             && args[2] != "--quick-starts-only";
         if (args.Length < 2 || args.Length > 3 || invalidMode)
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--field-selection-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only]");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--field-selection-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save]");
             return 2;
         }
 
@@ -43,7 +44,9 @@ internal static class Program
             {
                 WorkspaceDirectory = directory,
                 EnableInteractiveStartup = false,
-                OnStarted = async window => passed = await new WorkspaceIntegrationChecks(window).RunAsync(
+                OnStarted = async window => passed = args.Length == 3 && args[2] == "--layout-save"
+                    ? await new WorkspaceIntegrationChecks(window).LayoutAndSaveAsync(directory, sourceProjectPath)
+                    : await new WorkspaceIntegrationChecks(window).RunAsync(
                     directory, sourceProjectPath,
                     fieldSelectionOnly: args.Length == 3 && args[2] == "--field-selection-only",
                     launcherOnly: args.Length == 3 && args[2] == "--launcher-only",

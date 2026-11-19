@@ -184,6 +184,9 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Do not change project versions or create a version-update commit just to prepare a release tag. The release build derives its version from the tag through the existing version-update script.
 
 ### General implementation
+- After manually editing a `.fbprj`, open it successfully in the active Avalonia host, run the Project Panel toolbar's
+  automatic layout command, save through the application and close that session before finalizing or uploading.
+  The desktop integration runner supports `--layout-save` for this workflow. Do not spend time hand-positioning generated nodes.
 - Reuse existing infrastructure before introducing new patterns.
 - Keep changes consistent with annotation-driven UI architecture.
 - Do not introduce user-visible strings without localization keys.

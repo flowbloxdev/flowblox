@@ -187,6 +187,29 @@ public class VectorStore : ManagedObject, IValidatableObject
         return result;
     }
 
+    public DataTable GetSources(TextEmbeddingProviderBase embeddings)
+    {
+        var collection = this.Resolve(store => store.Collection, required: true);
+        var profile = GetProfile(embeddings, this.Resolve(store => store.ChunkSize), this.Resolve(store => store.ChunkOverlap));
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT source_id AS SourceId, content_hash AS ContentHash
+            FROM knowledge_sources
+            WHERE collection=$collection AND profile=$profile
+              AND EXISTS (SELECT 1 FROM knowledge_chunks c
+                          WHERE c.collection=knowledge_sources.collection
+                            AND c.source_id=knowledge_sources.source_id AND c.profile=$profile)
+            ORDER BY source_id
+            """;
+        command.Parameters.AddWithValue("$collection", collection);
+        command.Parameters.AddWithValue("$profile", profile);
+        using var reader = command.ExecuteReader();
+        var result = new DataTable();
+        result.Load(reader);
+        return result;
+    }
+
     private SqliteConnection Open()
     {
         var path = Path.GetFullPath(this.Resolve(store => store.DatabasePath, required: true));

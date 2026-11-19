@@ -11261,6 +11261,132 @@ namespace FlowBlox.Core {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die OCR language data directory ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrDataDirectory {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrDataDirectory", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional custom tessdata directory. Leave empty to use the bundled German and English data. ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrDataDirectory_Tooltip {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrDataDirectory_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die OCR rendering DPI ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrDpi {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrDpi", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die PDF page resolution for OCR. Default: 300 DPI. Higher values require more memory and processing time. ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrDpi_Tooltip {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrDpi_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die OCR languages ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrLanguages {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrLanguages", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Tesseract language names separated by +, for example deu+eng. Other languages require their traineddata files. ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrLanguages_Tooltip {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrLanguages_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die OCR pages ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrMode {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrMode", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die OCR text field ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_OcrTextResult {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_OcrTextResult", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Page number field ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_PageNumberResult {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_PageNumberResult", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Original PDF text field ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_PdfTextResult {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_PdfTextResult", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use OCR ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_UseOcr {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_UseOcr", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Recognize scanned PDF pages locally using Tesseract. German and English language data are included. The original PDF text remains available separately. ähnelt.
+        /// </summary>
+        public static string PDF2TextFlowBlock_UseOcr_Tooltip {
+            get {
+                return ResourceManager.GetString("PDF2TextFlowBlock_UseOcr_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die All pages, including mixed text and scans ähnelt.
+        /// </summary>
+        public static string PdfOcrMode_AllPages {
+            get {
+                return ResourceManager.GetString("PdfOcrMode_AllPages", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Pages without PDF text ähnelt.
+        /// </summary>
+        public static string PdfOcrMode_EmptyPages {
+            get {
+                return ResourceManager.GetString("PdfOcrMode_EmptyPages", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Uses the Phi-2 tokenizer model for tokenizing and detokenizing text for AI inference. ähnelt.
         /// </summary>
         public static string Phi2AiTokenizer_Description {
@@ -14057,6 +14183,33 @@ namespace FlowBlox.Core {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Missing-column fallback ähnelt.
+        /// </summary>
+        public static string TableSelectorMappingEntry_FallbackValue {
+            get {
+                return ResourceManager.GetString("TableSelectorMappingEntry_FallbackValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional column ähnelt.
+        /// </summary>
+        public static string TableSelectorMappingEntry_IsOptional {
+            get {
+                return ResourceManager.GetString("TableSelectorMappingEntry_IsOptional", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use the fallback value when this column is absent. Existing columns are read normally. ähnelt.
+        /// </summary>
+        public static string TableSelectorMappingEntry_IsOptional_Tooltip {
+            get {
+                return ResourceManager.GetString("TableSelectorMappingEntry_IsOptional_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Clear on runtime start ähnelt.
         /// </summary>
         public static string TableWriterFlowBlock_ClearOnRuntimeStart {
@@ -14831,6 +14984,24 @@ namespace FlowBlox.Core {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Lists indexed source IDs and content hashes for the current collection and embedding profile without reading source content. ähnelt.
+        /// </summary>
+        public static string VectorSourceTable_Description {
+            get {
+                return ResourceManager.GetString("VectorSourceTable_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Indexed vector sources ähnelt.
+        /// </summary>
+        public static string VectorSourceTable_DisplayName {
+            get {
+                return ResourceManager.GetString("VectorSourceTable_DisplayName", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Vector backend ähnelt.
         /// </summary>
         public static string VectorStore_Backend {
@@ -14965,6 +15136,42 @@ namespace FlowBlox.Core {
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source filter table ähnelt.
+        /// </summary>
+        public static string VectorTable_SourceFilter {
+            get {
+                return ResourceManager.GetString("VectorTable_SourceFilter", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Optional table containing the source IDs allowed in this search. An empty table allows no sources. ähnelt.
+        /// </summary>
+        public static string VectorTable_SourceFilter_Tooltip {
+            get {
+                return ResourceManager.GetString("VectorTable_SourceFilter_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Source ID column ähnelt.
+        /// </summary>
+        public static string VectorTable_SourceIdColumn {
+            get {
+                return ResourceManager.GetString("VectorTable_SourceIdColumn", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Column in the source filter table containing the document IDs, for example SourceId. ähnelt.
+        /// </summary>
+        public static string VectorTable_SourceIdColumn_Tooltip {
+            get {
+                return ResourceManager.GetString("VectorTable_SourceIdColumn_Tooltip", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Maximum matches ähnelt.
         /// </summary>
