@@ -67,7 +67,7 @@ public sealed class JiraSkillProjectTests
             var logs = new List<string>();
             using var runtime = new FlowBloxUnitTestRuntime(project);
             runtime.LogMessageCreated += (_, message, _) => logs.Add(message);
-            if (scenario is "invalidLevel" or "missingLevel" or "missingPassword")
+            if (scenario is "invalidLevel" or "missingPassword")
             {
                 Assert.ThrowsExactly<ValidationException>(runtime.Execute);
                 Assert.HasCount(0, api.Requests);

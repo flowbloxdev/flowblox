@@ -265,7 +265,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        [DataRow("", "distributedData", "skillProjectName is required")]
+        [DataRow("", "distributedData", "skillProjectName or projectSpaceGuid is required")]
         [DataRow("ExecuteSQL", "distributedData", "was not found")]
         [DataRow("ExecuteSQLQuery", "session", "was not found")]
         [DataRow("ExecuteSQLQuery", "unknown", "not supported")]

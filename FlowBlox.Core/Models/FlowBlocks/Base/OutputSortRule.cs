@@ -29,4 +29,6 @@ public sealed class OutputSortRule : FlowBloxReactiveObject
             OnPropertyChanged();
         }
     }
+
+    public override string ToString() => $"{Field?.Name}: {Direction}";
 }

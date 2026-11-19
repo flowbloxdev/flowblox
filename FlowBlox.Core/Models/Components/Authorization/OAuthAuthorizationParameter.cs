@@ -14,4 +14,6 @@ public sealed class OAuthAuthorizationParameter : FlowBloxReactiveObject
 
     [Display(Name = "OAuthAuthorizationParameter_Value", ResourceType = typeof(FlowBloxTexts))]
     public string Value { get; set; } = string.Empty;
+
+    public override string ToString() => Name;
 }

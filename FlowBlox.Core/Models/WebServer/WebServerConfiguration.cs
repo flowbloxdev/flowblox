@@ -34,6 +34,8 @@ public sealed class WebServerConfiguration : FlowBloxReactiveObject
     [FlowBloxUI(UISelectionButtons.None)]
     public string AppPassword { get; set; } = string.Empty;
 
+    public override string ToString() => $"{BindAddress}:{Port}";
+
     public static ValidationResult ValidateBindAddress(string value, ValidationContext context) =>
         IPAddress.TryParse(value, out _) ? ValidationResult.Success :
         new ValidationResult(FlowBloxResourceUtil.GetLocalizedString("WebServerConfiguration_InvalidAddress"), [context.MemberName]);
