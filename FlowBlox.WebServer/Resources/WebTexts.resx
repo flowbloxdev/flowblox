@@ -94,4 +94,7 @@
   <data name="Retry" xml:space="preserve"><value>Retry</value></data>
   <data name="PrepareFirstProject" xml:space="preserve"><value>Open, create, or download a flow from Project Space in the desktop app. Run it locally once and follow any setup instructions for required external components. After a successful test, you can run it remotely.</value></data>
   <data name="ExecutionSetupRequired" xml:space="preserve"><value>This flow requires additional setup. Run it once in the desktop app and follow the setup instructions, then try again here.</value></data>
+  <data name="LocalConfigurationReadOnly" xml:space="preserve">
+    <value>Read-only source from the local project data. You can change values for this run or save them as a new configuration.</value>
+  </data>
 </root>

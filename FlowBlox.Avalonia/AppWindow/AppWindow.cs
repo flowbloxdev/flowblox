@@ -1008,8 +1008,7 @@ namespace FlowBlox.AppWindow
 
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "explorer.exe",
-                Arguments = outputDirectory,
+                FileName = outputDirectory,
                 UseShellExecute = true
             });
         }
@@ -1072,7 +1071,10 @@ private void itmUndo_Click(object sender, EventArgs e)
             if (File.Exists(logPath))
             {
                 var logDirectory = Path.GetDirectoryName(logPath);
-                Process.Start("explorer.exe", logDirectory);
+                Process.Start(new ProcessStartInfo(logDirectory)
+                {
+                    UseShellExecute = true
+                });
             }
         }
 
@@ -1084,7 +1086,10 @@ private void itmUndo_Click(object sender, EventArgs e)
             if (File.Exists(logPath))
             {
                 var logDirectory = Path.GetDirectoryName(logPath);
-                Process.Start("explorer.exe", logDirectory);
+                Process.Start(new ProcessStartInfo(logDirectory)
+                {
+                    UseShellExecute = true
+                });
             }
         }
 
@@ -1096,8 +1101,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "explorer.exe",
-                Arguments = projectDirectory,
+                FileName = projectDirectory,
                 UseShellExecute = true
             });
         }
@@ -1570,8 +1574,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "explorer.exe",
-                Arguments = inputDirectory,
+                FileName = inputDirectory,
                 UseShellExecute = true
             });
         }
@@ -1587,8 +1590,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "explorer.exe",
-                Arguments = projectInputDirectory,
+                FileName = projectInputDirectory,
                 UseShellExecute = true
             });
         }
@@ -1604,8 +1606,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "explorer.exe",
-                Arguments = projectOutputDirectory,
+                FileName = projectOutputDirectory,
                 UseShellExecute = true
             });
         }
@@ -1631,8 +1632,7 @@ private void itmUndo_Click(object sender, EventArgs e)
 
             Process.Start(new ProcessStartInfo
             {
-                FileName = "explorer.exe",
-                Arguments = directory,
+                FileName = directory,
                 UseShellExecute = true
             });
         }

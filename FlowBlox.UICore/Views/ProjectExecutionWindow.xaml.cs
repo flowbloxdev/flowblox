@@ -329,7 +329,8 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private async void RenameConfiguration_Click(object sender, RoutedEventArgs e)
     {
-        if (_entry != null || sender is not MenuItem menu || menu.Tag is not ProjectInputConfigurationItem item)
+        if (_entry != null || sender is not MenuItem menu || menu.Tag is not ProjectInputConfigurationItem item
+            || item.Configuration.IsReadOnly)
             return;
 
         try

@@ -8,6 +8,11 @@ namespace FlowBlox.Core.Models.Project.Launcher;
 public sealed class ProjectInputConfiguration
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+
+    // Empty ID is reserved for the derived local profile; saved presets use generated IDs.
+    [JsonIgnore]
+    public bool IsReadOnly => Id == Guid.Empty;
+
     public string Name { get; set; } = string.Empty;
     public ProjectShortcut Project { get; set; } = new();
 

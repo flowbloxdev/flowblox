@@ -94,4 +94,7 @@
   <data name="Retry" xml:space="preserve"><value>Erneut versuchen</value></data>
   <data name="PrepareFirstProject" xml:space="preserve"><value>Öffne, erstelle oder lade zuerst einen Flow aus dem Project Space in der Desktop-App herunter. Führe ihn einmal lokal aus und richte dabei ggf. benötigte externe Komponenten ein. Nach einem erfolgreichen Test kannst du den Flow remote verwenden.</value></data>
   <data name="ExecutionSetupRequired" xml:space="preserve"><value>Für diesen Flow sind noch Einrichtungsschritte erforderlich. Starten Sie ihn einmal in der Desktop-App und folgen Sie den Einrichtungshinweisen. Versuchen Sie es anschließend hier erneut.</value></data>
+  <data name="LocalConfigurationReadOnly" xml:space="preserve">
+    <value>Schreibgeschützte Vorlage aus den lokalen Projektdaten. Sie können Werte für diesen Lauf ändern oder als neue Konfiguration speichern.</value>
+  </data>
 </root>

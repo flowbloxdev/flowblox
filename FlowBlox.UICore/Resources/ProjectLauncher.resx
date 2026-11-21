@@ -158,4 +158,7 @@ Project output values are retained.</value></data>
   <data name="ConfigurationFilled" xml:space="preserve"><value>{0}/{1} fields filled</value></data>
   <data name="ConfigurationMissing" xml:space="preserve"><value>Required fields missing: {0}</value></data>
   <data name="ConfigurationComplete" xml:space="preserve"><value>Required fields complete</value></data>
+  <data name="LocalConfigurationReadOnly" xml:space="preserve">
+    <value>Read-only source from the local project data. You can change values for this run or save them as a new configuration.</value>
+  </data>
 </root>

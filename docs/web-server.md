@@ -24,6 +24,17 @@ Artifact folders, counts and downloads are available from project and execution 
 
 All dashboard clients control the same Windows user's available projects and files. The app password is an access gate, not a multi-user authorization model.
 
+## Input configurations
+
+Desktop Run/Execute and the web dashboard use the same named input configurations. When a local
+project and its `.fblocaldata` sidecar exist, a **Local developer configuration** is offered first.
+It is read directly from the sidecar whenever configurations are loaded, not stored as a duplicate
+in the preset list. Online-only projects and local projects without a sidecar do not get this entry.
+
+The local source profile cannot be renamed or overwritten. Selecting it copies its inputs into the
+current execution form; edits affect that run only. **Save configuration** creates a separate named
+preset, retaining the existing password protection. Neither action writes to the project or its sidecar.
+
 ## Build and verification
 
 Build `FlowBlox.WebServer/FlowBlox.WebServer.csproj` or the desktop application. Desktop build, publish and MSI packaging place the companion beside the desktop executable, sharing existing Core/RunnerHost dependencies. The companion includes RunnerHost and its runtime dependencies. Machines without the .NET SDK need the **ASP.NET Core 10 Runtime** in addition to FlowBlox's Windows Desktop Runtime.

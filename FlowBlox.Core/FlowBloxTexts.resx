@@ -5125,6 +5125,12 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="ComparisonOperator_FileIsEmpty_Tooltip" xml:space="preserve"><value>True if the file is missing or has a size of zero bytes. No comparison value is needed.</value></data>
   <data name="ComparisonOperator_DirectoryIsEmpty" xml:space="preserve"><value>Directory is empty</value></data>
   <data name="ComparisonOperator_DirectoryIsEmpty_Tooltip" xml:space="preserve"><value>True if the directory is missing or contains no files, including all subdirectories. Empty subdirectories are ignored. No comparison value is needed.</value></data>
+  <data name="ProjectInputConfiguration_LocalDeveloper" xml:space="preserve">
+    <value>Local developer configuration</value>
+  </data>
+  <data name="ProjectInputConfiguration_ReadOnly" xml:space="preserve">
+    <value>The local developer configuration is read-only. Save a new configuration to keep your changes.</value>
+  </data>
 </root>
 
 

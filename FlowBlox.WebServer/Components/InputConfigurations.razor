@@ -26,6 +26,10 @@
         {
             var status = selected.GetStatus(Form.Fields);
             <div class="configuration-status" role="status">
+                @if (selected.IsReadOnly)
+                {
+                    <small><MdiIcon Name="lock-outline" /> @T["LocalConfigurationReadOnly"]</small>
+                }
                 <span>@T["ConfigurationFilled", status.FilledCount, status.TotalCount]</span>
                 <span class="@(status.MissingRequiredFields.Count > 0 ? "configuration-incomplete" : "success")">
                     @(status.MissingRequiredFields.Count > 0 ? T["ConfigurationMissing", status.MissingRequiredFields.Count] : T["ConfigurationComplete"])
@@ -39,7 +43,7 @@
     }
     <div class="configuration-actions">
         <button type="button" disabled="@Disabled" @onclick="() => BeginNameEdit(false)">@T["SaveConfiguration"]</button>
-        <button type="button" class="quiet" disabled="@(Disabled || Selected == null)" @onclick="() => BeginNameEdit(true)">@T["EditConfiguration"]</button>
+        <button type="button" class="quiet" disabled="@(Disabled || Selected?.IsReadOnly != false)" @onclick="() => BeginNameEdit(true)">@T["EditConfiguration"]</button>
     </div>
     @if (_editingName)
     {
@@ -122,7 +126,7 @@
 
     private void BeginNameEdit(bool renaming)
     {
-        if (Disabled || (renaming && Selected == null))
+        if (Disabled || (renaming && Selected?.IsReadOnly != false))
             return;
 
         _renaming = renaming;
@@ -141,7 +145,7 @@
             var project = Dashboard.GetProject(ProjectId).Shortcut;
             if (_renaming)
             {
-                if (Selected == null)
+                if (Selected == null || Selected.IsReadOnly)
                     return;
 
                 Dashboard.InputConfigurations.Rename(project, Selected.Id, _name);

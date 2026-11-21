@@ -51,6 +51,8 @@ $fixture = @{
 }
 if (-not $EmptyCatalog) {
     [IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fbprj'), ($fixture | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+    $localData = @{ LocalUserFieldValues = @{ Suggested = 'local developer value'; LocalPassword = 'must-not-render-local-secret' } }
+    [IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fblocaldata'), ($localData | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } else {
     $demoProject = Join-Path $repoDirectory 'FlowBlox.Build/data/example_project/CsvToJson.fbprj'
     if (-not (Test-Path -LiteralPath $demoProject)) { throw 'Bundled example fixture is missing.' }
@@ -130,12 +132,14 @@ try {
         throw 'Project input form did not render suggestions and allowed values.'
     }
     if ($projectHtml -match 'must-not-render-local-secret') { throw 'Locally stored field value was rendered.' }
+    if ($projectHtml -notmatch '<option value="00000000-0000-0000-0000-000000000000"') { throw 'Local developer configuration is missing.' }
+    if ($projectHtml -match 'local developer value') { throw 'Local profile values were applied without selection.' }
     if ($projectHtml -notmatch '(?s)<textarea[^>]*>initial default</textarea>') { throw 'Project default did not populate the text field.' }
     if ([regex]::Matches($projectHtml, 'field-value-status filled').Count -ne 3) { throw 'Defaults, false or zero were not marked as supplied.' }
     if ([regex]::Matches($projectHtml, 'field-value-status missing').Count -ne 1) { throw 'The empty required password was not marked as missing.' }
     if ([regex]::Matches($projectHtml, 'field-value-status empty').Count -ne 1) { throw 'The empty optional input was not neutral.' }
     if ($projectHtml -notmatch '<input[^>]*aria-required="true"[^>]*aria-describedby="field-[^"]+-status"[^>]*type="password"') { throw 'Password completion is not accessible.' }
-    foreach ($icon in @('circle', 'star')) {
+    foreach ($icon in @('circle', 'star', 'lock-outline')) {
         if ([int]$client.GetAsync("$base/icons/$icon.svg").GetAwaiter().GetResult().StatusCode -ne 200) { throw "Field icon is not served: $icon" }
     }
     Write-Host 'Passed: input completion, required password accessibility and false/zero defaults.'

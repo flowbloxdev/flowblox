@@ -191,6 +191,8 @@ This file summarizes core project conventions for AI/coding agents working in th
 - After manually editing a `.fbprj`, open it successfully in the active Avalonia host, run the Project Panel toolbar's
   automatic layout command, save through the application and close that session before finalizing or uploading.
   The desktop integration runner supports `--layout-save` for this workflow. Do not spend time hand-positioning generated nodes.
+- Treat a successful Project Space CLI upload as confirmation. Do not routinely download the project again;
+  download only when investigating a concrete synchronization issue or when explicitly requested.
 - Reuse existing infrastructure before introducing new patterns.
 - Keep changes consistent with annotation-driven UI architecture.
 - Do not introduce user-visible strings without localization keys.

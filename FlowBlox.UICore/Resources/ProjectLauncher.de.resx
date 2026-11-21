@@ -158,4 +158,7 @@ Die Projektausgabewerte bleiben erhalten.</value></data>
   <data name="ConfigurationFilled" xml:space="preserve"><value>{0}/{1} Felder ausgefüllt</value></data>
   <data name="ConfigurationMissing" xml:space="preserve"><value>Fehlende Pflichtfelder: {0}</value></data>
   <data name="ConfigurationComplete" xml:space="preserve"><value>Pflichtfelder vollständig</value></data>
+  <data name="LocalConfigurationReadOnly" xml:space="preserve">
+    <value>Schreibgeschützte Vorlage aus den lokalen Projektdaten. Sie können Werte für diesen Lauf ändern oder als neue Konfiguration speichern.</value>
+  </data>
 </root>

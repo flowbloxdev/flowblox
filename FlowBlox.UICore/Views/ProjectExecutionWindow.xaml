@@ -273,6 +273,7 @@
                           <ContextMenu>
                             <MenuItem Header="{x:Static resources:ProjectLauncher.EditConfiguration}"
                                       Click="RenameConfiguration_Click"
+                                      IsEnabled="{Binding Tag.CanRename, RelativeSource={RelativeSource Self}}"
                                       Tag="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                               <MenuItem.Icon><icons:PackIconMaterial Kind="PencilOutline" Foreground="#526D82" /></MenuItem.Icon>
                             </MenuItem>
@@ -284,8 +285,9 @@
                           <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Margin="0,0,23,7"
-                                   TextWrapping="Wrap" MaxHeight="36" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" />
-                        <icons:PackIconMaterial Kind="CogOutline" Width="16" Height="16" Foreground="#526D82"
+                                   TextWrapping="Wrap" MaxHeight="36" TextTrimming="CharacterEllipsis" ToolTip="{Binding Description}" />
+                        <icons:PackIconMaterial Kind="{Binding IconKind}" Width="16" Height="16" Foreground="#526D82"
+                                                ToolTip="{Binding Description}"
                                                 HorizontalAlignment="Right" VerticalAlignment="Top" />
                         <TextBlock Grid.Row="1" Text="{Binding FilledSummary}" FontSize="11" Foreground="#607383" />
                         <TextBlock Grid.Row="2" Text="{Binding RequiredSummary}" FontSize="11" Margin="0,4,0,0"

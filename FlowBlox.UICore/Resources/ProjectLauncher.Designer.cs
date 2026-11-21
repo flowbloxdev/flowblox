@@ -90,7 +90,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Artifacts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Clear ähnelt.
         /// </summary>
@@ -103,7 +103,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Restore the project defaults and remove option overrides. Saved executions remain in the history. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Restore project defaults and remove option overrides. Saved input configurations are retained. ähnelt.
         /// </summary>
         public static string ClearInputsTooltip
         {
@@ -125,6 +125,61 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Required fields complete ähnelt.
+        /// </summary>
+        public static string ConfigurationComplete
+        {
+            get
+            {
+                return ResourceManager.GetString("ConfigurationComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0}/{1} fields filled ähnelt.
+        /// </summary>
+        public static string ConfigurationFilled
+        {
+            get
+            {
+                return ResourceManager.GetString("ConfigurationFilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Required fields missing: {0} ähnelt.
+        /// </summary>
+        public static string ConfigurationMissing
+        {
+            get
+            {
+                return ResourceManager.GetString("ConfigurationMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Configuration name ähnelt.
+        /// </summary>
+        public static string ConfigurationName
+        {
+            get
+            {
+                return ResourceManager.GetString("ConfigurationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Name this input configuration. Incomplete inputs can be saved too. ähnelt.
+        /// </summary>
+        public static string ConfigurationNameDescription
+        {
+            get
+            {
+                return ResourceManager.GetString("ConfigurationNameDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Delete all files and folders in this output directory?
         ///{0}
         ///Project output values are retained. ähnelt.
@@ -136,7 +191,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("ConfirmResetArtifacts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Select each option only once. ähnelt.
         /// </summary>
@@ -145,6 +200,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("DuplicateOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Edit name ähnelt.
+        /// </summary>
+        public static string EditConfiguration
+        {
+            get
+            {
+                return ResourceManager.GetString("EditConfiguration", resourceCulture);
             }
         }
         
@@ -290,7 +356,18 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Inputs", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Read-only source from the local project data. You can change values for this run or save them as a new configuration. ähnelt.
+        /// </summary>
+        public static string LocalConfigurationReadOnly
+        {
+            get
+            {
+                return ResourceManager.GetString("LocalConfigurationReadOnly", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Local projects ähnelt.
         /// </summary>
@@ -345,7 +422,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("NoResults", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Start the project from Input to view its execution status. ähnelt.
         /// </summary>
@@ -356,7 +433,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("NotStarted", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open project ähnelt.
         /// </summary>
@@ -433,7 +510,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("OutputGroups", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Output directory ähnelt.
         /// </summary>
@@ -455,7 +532,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Outputs", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die My Project Space projects ähnelt.
         /// </summary>
@@ -587,7 +664,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("ResetArtifacts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Running ähnelt.
         /// </summary>
@@ -596,6 +673,28 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Save configuration ähnelt.
+        /// </summary>
+        public static string SaveConfiguration
+        {
+            get
+            {
+                return ResourceManager.GetString("SaveConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Input configurations ähnelt.
+        /// </summary>
+        public static string SavedConfigurations
+        {
+            get
+            {
+                return ResourceManager.GetString("SavedConfigurations", resourceCulture);
             }
         }
         
@@ -664,7 +763,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("ViewContent", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die View execution ähnelt.
         /// </summary>
@@ -675,7 +774,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("ViewExecution", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Warnings ähnelt.
         /// </summary>
@@ -684,94 +783,6 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Warnings", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Input configurations ähnelt.
-        /// </summary>
-        public static string SavedConfigurations
-        {
-            get
-            {
-                return ResourceManager.GetString("SavedConfigurations", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Save configuration ähnelt.
-        /// </summary>
-        public static string SaveConfiguration
-        {
-            get
-            {
-                return ResourceManager.GetString("SaveConfiguration", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Edit name ähnelt.
-        /// </summary>
-        public static string EditConfiguration
-        {
-            get
-            {
-                return ResourceManager.GetString("EditConfiguration", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Configuration name ähnelt.
-        /// </summary>
-        public static string ConfigurationName
-        {
-            get
-            {
-                return ResourceManager.GetString("ConfigurationName", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Name this input configuration. Incomplete inputs can be saved too. ähnelt.
-        /// </summary>
-        public static string ConfigurationNameDescription
-        {
-            get
-            {
-                return ResourceManager.GetString("ConfigurationNameDescription", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {0}/{1} fields filled ähnelt.
-        /// </summary>
-        public static string ConfigurationFilled
-        {
-            get
-            {
-                return ResourceManager.GetString("ConfigurationFilled", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Required fields missing: {0} ähnelt.
-        /// </summary>
-        public static string ConfigurationMissing
-        {
-            get
-            {
-                return ResourceManager.GetString("ConfigurationMissing", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Required fields complete ähnelt.
-        /// </summary>
-        public static string ConfigurationComplete
-        {
-            get
-            {
-                return ResourceManager.GetString("ConfigurationComplete", resourceCulture);
             }
         }
     }

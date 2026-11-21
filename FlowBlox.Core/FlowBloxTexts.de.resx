@@ -5112,6 +5112,12 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="ComparisonOperator_FileIsEmpty_Tooltip" xml:space="preserve"><value>Wahr, wenn die Datei fehlt oder null Bytes groß ist. Ein Vergleichswert ist nicht erforderlich.</value></data>
   <data name="ComparisonOperator_DirectoryIsEmpty" xml:space="preserve"><value>Verzeichnis ist leer</value></data>
   <data name="ComparisonOperator_DirectoryIsEmpty_Tooltip" xml:space="preserve"><value>Wahr, wenn das Verzeichnis fehlt oder auch in allen Unterverzeichnissen keine Dateien enthält. Leere Unterverzeichnisse werden ignoriert. Ein Vergleichswert ist nicht erforderlich.</value></data>
+  <data name="ProjectInputConfiguration_LocalDeveloper" xml:space="preserve">
+    <value>Lokale Entwicklerkonfiguration</value>
+  </data>
+  <data name="ProjectInputConfiguration_ReadOnly" xml:space="preserve">
+    <value>Die lokale Entwicklerkonfiguration ist schreibgeschützt. Speichern Sie eine neue Konfiguration, um Ihre Änderungen zu behalten.</value>
+  </data>
 </root>
 
 
