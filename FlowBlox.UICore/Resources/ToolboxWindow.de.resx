@@ -142,15 +142,17 @@
     <value>Inhalt:</value>
   </data>
   <data name="Button_Save" xml:space="preserve">
-    <value>Speichern</value>
+    <value>Übernehmen</value>
   </data>
   <data name="Message_NoToolboxElementsFound" xml:space="preserve">
     <value>Keine Toolbox-Elemente vorhanden.</value>
   </data>
   <data name="Button_Select" xml:space="preserve">
-    <value>Auswählen</value>
+    <value>Einfügen</value>
   </data>
   <data name="Message_SaveSuccessful" xml:space="preserve">
     <value>Speichern erfolgreich.</value>
   </data>
+  <data name="Description" xml:space="preserve"><value>Wiederverwendbare Vorlagen, Vorschläge und Beispiele durchsuchen und verwalten. Fügen Sie eine Vorlage in ein Eingabefeld ein; Parameterplatzhalter unterstützen Sie dabei, Felder auszuwählen oder Werte manuell einzugeben.</value></data>
+  <data name="Button_Back" xml:space="preserve"><value>Zurück</value></data>
 </root>

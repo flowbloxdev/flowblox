@@ -54,8 +54,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
 
         protected string GetComparisonDisplayName()
         {
-            if (Operator == ComparisonOperator.HasValue || 
-                Operator == ComparisonOperator.HasNoValue)
+            if (Operator == ComparisonOperator.HasValue
+                || Operator == ComparisonOperator.HasNoValue
+                || Operator == ComparisonOperator.FileExists
+                || Operator == ComparisonOperator.DirectoryExists
+                || Operator == ComparisonOperator.FileIsEmpty
+                || Operator == ComparisonOperator.DirectoryIsEmpty)
                 return Operator.GetDisplayName();
 
             return $"{Operator.GetDisplayName()} \"{Value}\"";

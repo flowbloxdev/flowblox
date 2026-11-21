@@ -19,21 +19,50 @@ public sealed class FlowBloxMessageBoxService(IOwnerService owners) : IMessageBo
 
     public async Task<MessageBoxResult> ShowAsync(string message, string title, MessageBoxButtons buttons = MessageBoxButtons.Ok,
         MessageBoxIcon icon = MessageBoxIcon.Information)
+        => await ShowCoreAsync(message, title, buttons, icon);
+
+    private async Task<MessageBoxResult> ShowCoreAsync(
+        string message,
+        string title,
+        MessageBoxButtons buttons,
+        MessageBoxIcon icon,
+        string yesButtonText = null,
+        string noButtonText = null,
+        MessageBoxResult defaultResult = MessageBoxResult.No)
     {
         if (!Dispatcher.UIThread.CheckAccess())
-            return await Dispatcher.UIThread.InvokeAsync(() => ShowAsync(message, title, buttons, icon));
+            return await Dispatcher.UIThread.InvokeAsync(() => ShowCoreAsync(
+                message, title, buttons, icon, yesButtonText, noButtonText, defaultResult));
         var owner = _dialogs.LastOrDefault() ?? owners.GetCurrentOwner();
-        var dialog = new MessageBoxWindow(message, title, buttons, icon) { Icon = owner.Icon };
+        var dialog = new MessageBoxWindow(message, title, buttons, icon, yesButtonText, noButtonText, defaultResult) { Icon = owner.Icon };
         using var scope = new WpfModalScope(owner);
         _dialogs.Add(dialog);
         try
         {
             var result = await dialog.ShowDialog<MessageBoxResult>(owner);
             return result == MessageBoxResult.None
-                ? buttons == MessageBoxButtons.YesNo ? MessageBoxResult.No : MessageBoxResult.Ok
+                ? buttons == MessageBoxButtons.YesNo ? defaultResult : MessageBoxResult.Ok
                 : result;
         }
         finally { _dialogs.Remove(dialog); }
+    }
+
+    public FlowBloxMessageBoxDialogResult ShowMessageBox(
+        string message,
+        string title,
+        string yesButtonText,
+        string noButtonText,
+        FlowBloxMessageBoxDialogResult defaultResult)
+    {
+        var result = ModalTask.Run(() => ShowCoreAsync(
+            message,
+            title,
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question,
+            yesButtonText,
+            noButtonText,
+            defaultResult == FlowBloxMessageBoxDialogResult.Yes ? MessageBoxResult.Yes : MessageBoxResult.No));
+        return result == MessageBoxResult.Yes ? FlowBloxMessageBoxDialogResult.Yes : FlowBloxMessageBoxDialogResult.No;
     }
 
     public FlowBloxMessageBoxDialogResult ShowMessageBox(string message, string title, FlowBloxMessageBoxTypes type)

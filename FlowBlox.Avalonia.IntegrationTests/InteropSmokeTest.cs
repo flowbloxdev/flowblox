@@ -42,7 +42,8 @@ internal sealed partial class WorkspaceIntegrationChecks
         bool launcherOnly = false,
         bool quickStartsOnly = false,
         bool executionViewsOnly = false,
-        bool passwordEditorsOnly = false)
+        bool passwordEditorsOnly = false,
+        bool projectSpaceOnly = false)
     {
         var results = new List<string>();
         string error = null;
@@ -56,6 +57,12 @@ internal sealed partial class WorkspaceIntegrationChecks
         try
         {
             Directory.CreateDirectory(directory);
+            if (projectSpaceOnly)
+            {
+                CheckProjectSpaceCards(Check, directory);
+                CheckExtensionCards(Check, directory);
+                return true;
+            }
             if (passwordEditorsOnly)
             {
                 await CheckEditorPopupsAsync(directory, Check, passwordEditorsOnly: true);
@@ -110,6 +117,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             await CheckFlowBlockIconsAsync(Check, directory);
             await CheckExecuteProjectEditorsAsync(Check, directory);
             CheckProjectSpaceCards(Check, directory);
+            CheckExtensionCards(Check, directory);
             await CheckMissingProjectSpaceGuidAsync(Check);
             CheckFieldSelectionDialogScrolling(Check, directory);
             CheckFieldSelectionDialogContext(Check);

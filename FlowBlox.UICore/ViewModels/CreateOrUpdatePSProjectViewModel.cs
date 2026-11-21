@@ -161,6 +161,17 @@ namespace FlowBlox.UICore.ViewModels
             }
         }
 
+        private FbProjectClassification _classification;
+        public FbProjectClassification Classification
+        {
+            get => _classification;
+            set
+            {
+                _classification = value;
+                OnPropertyChanged();
+            }
+        }
+
         private FbProjectVisibility _visibility = FbProjectVisibility.Private;
         public FbProjectVisibility Visibility
         {
@@ -338,6 +349,7 @@ namespace FlowBlox.UICore.ViewModels
             CreatedAtText = string.Empty;
             UpdatedAtText = string.Empty;
             Visibility = FbProjectVisibility.Private;
+            Classification = FbProjectClassification.Solution;
 
             InitializeFromLocalOrRemoteAsync();
         }
@@ -393,6 +405,7 @@ namespace FlowBlox.UICore.ViewModels
                     ProjectName = remote.Name;
                     ProjectDescription = remote.Description;
                     Visibility = remote.Visibility;
+                    Classification = remote.Classification;
                     CreatedAtText = remote.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty;
                     UpdatedAtText = remote.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty;
                     return;
@@ -451,6 +464,7 @@ namespace FlowBlox.UICore.ViewModels
                     {
                         Name = ProjectName,
                         Description = ProjectDescription,
+                        Classification = Classification,
                         Visibility = Visibility
                     });
 
@@ -475,6 +489,7 @@ namespace FlowBlox.UICore.ViewModels
                         ProjectGuid = ProjectGuid,
                         Name = ProjectName,
                         Description = ProjectDescription,
+                        Classification = Classification,
                         Visibility = Visibility
                     });
 

@@ -22,9 +22,11 @@
 				<ResourceDictionary Source="/FlowBlox.UICore;component/Views/MahAppMetroResources.xaml"/>
 				<ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
-			<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+			<converters:CompactCountConverter x:Key="CompactCountConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 			<converters:NullOrEmptyToBoolConverter x:Key="NullOrEmptyToBoolConverter"/>
 			<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:ProjectCreatorNameConverter x:Key="ProjectCreatorNameConverter"/>
 			<converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
 		</ResourceDictionary>
 	</Window.Resources>
@@ -206,12 +208,10 @@
 								<ColumnDefinition Width="2*"/>
 								<ColumnDefinition Width="*"/>
 							</Grid.ColumnDefinitions>
-							<!-- Left Panel: Search and ListView -->
-							<ScrollViewer Grid.Column="0"
-							              VerticalScrollBarVisibility="Auto"
-							              Margin="10">
-								<StackPanel>
-									<StackPanel Orientation="Horizontal"
+                            <!-- Online extension cards use the Project Space card style. -->
+                            <Grid Grid.Column="0" Margin="10">
+                                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                <StackPanel Orientation="Horizontal"
 									            Margin="0,5,5,5">
 										<TextBox x:Name="SearchTextBox"
 										         Width="200"
@@ -229,31 +229,76 @@
 											</Button.Content>
 										</Button>
 									</StackPanel>
-									<ListView ItemsSource="{Binding SearchResults}"
-									          SelectedItem="{Binding SelectedExtension}">
-										<ListView.View>
-											<GridView>
-												<GridViewColumn Header="{x:Static resources:ExtensionsWindow.Header_Name}"
-												                DisplayMemberBinding="{Binding Name}"/>
-												<GridViewColumn Header="{x:Static resources:ExtensionsWindow.Header_Description}"
-												                DisplayMemberBinding="{Binding Description}"/>
-												<GridViewColumn Header="{x:Static resources:ExtensionsWindow.Header_LatestVersion}"
-												                DisplayMemberBinding="{Binding Versions[0].Version}"/>
-											</GridView>
-										</ListView.View>
-									</ListView>
-									<ContentControl Margin="20"
-									    HorizontalAlignment="Stretch"
-									    VerticalAlignment="Center"
-									    Visibility="{Binding SearchResults.Count, Converter={StaticResource CountToVisibilityConverter}, ConverterParameter=Reverse}"
-									    Content="{x:Static resources:ExtensionsWindow.Text_NoSearchResults}"
-									    Style="{StaticResource FlowBlox.EmptyState}" />
-								</StackPanel>
-							</ScrollViewer>
+                                <Grid Grid.Row="1">
+                                    <ListBox x:Name="ExtensionCards" ItemsSource="{Binding SearchResults}"
+                                             SelectedItem="{Binding SelectedExtension, Mode=TwoWay}" SelectionMode="Single"
+                                             BorderThickness="0" Background="Transparent" Padding="0"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                             ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True"
+                                             VirtualizingPanel.VirtualizationMode="Recycling"
+                                             AutomationProperties.Name="{x:Static resources:ExtensionsWindow.Tab_Online}">
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource FlowBlox.CardListItem}">
+                                                <Setter Property="AutomationProperties.Name" Value="{Binding Name}"/>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                    <Border Width="42" Height="42" Margin="0,0,12,0" VerticalAlignment="Top"
+                                                            Background="#143A6EA5" CornerRadius="21">
+                                                        <iconPacks:PackIconMaterial Kind="PuzzleOutline" Width="23" Height="23" Foreground="#3A6EA5"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1">
+                                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontSize="15" FontWeight="SemiBold"
+                                                                   Foreground="#263238" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="44"/>
+                                                        <TextBlock Text="{Binding Description}" ToolTip="{Binding Description}" Margin="0,4,0,0"
+                                                                   Foreground="#546E7A" MaxHeight="54" TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
+                                                        <WrapPanel Margin="0,9,0,0">
+                                                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0"
+                                                                        AutomationProperties.Name="{x:Static resources:ExtensionsWindow.Downloads}"
+                                                                        AutomationProperties.HelpText="{Binding DownloadCount, StringFormat={}{0:N0}}"
+                                                                        ToolTip="{Binding DownloadCount, StringFormat={}{0:N0}}">
+                                                                <iconPacks:PackIconMaterial Kind="Download" Width="12" Height="12" Margin="0,0,5,0"
+                                                                                           VerticalAlignment="Center" Foreground="#78909C"/>
+                                                                <TextBlock Text="{Binding DownloadCount, Converter={StaticResource CompactCountConverter}}"
+                                                                           AutomationProperties.Name="{x:Static resources:ExtensionsWindow.Downloads}"
+                                                                           AutomationProperties.HelpText="{Binding DownloadCount, StringFormat={}{0:N0}}"
+                                                                           FontSize="11" Foreground="#78909C"/>
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0"
+                                                                Visibility="{Binding CreatedBy, Converter={StaticResource NullToVisibilityConverter}}">
+                                                                <iconPacks:PackIconMaterial Kind="AccountOutline" Width="12" Height="12" Margin="0,0,5,0" VerticalAlignment="Center" Foreground="#78909C"/>
+                                                                <TextBlock FontSize="11" Foreground="#78909C">
+                                                                    <TextBlock.Text><MultiBinding Converter="{StaticResource ProjectCreatorNameConverter}">
+                                                                        <Binding Path="CreatedBy"/><Binding Path="DataContext.CreatorNames" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                                    </MultiBinding></TextBlock.Text>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                            <TextBlock Text="{Binding Versions[0].Version, StringFormat=v{0}}" FontSize="11" Foreground="#78909C" Margin="0,0,12,0"
+                                                                ToolTip="{x:Static resources:ExtensionsWindow.Header_LatestVersion}"/>
+                                                            <StackPanel Orientation="Horizontal" ToolTip="{x:Static resources:ExtensionsWindow.UpdatedAt}"
+                                                                Visibility="{Binding UpdatedAt, Converter={StaticResource NullToVisibilityConverter}}">
+                                                                <iconPacks:PackIconMaterial Kind="ClockOutline" Width="12" Height="12" Margin="0,0,5,0" VerticalAlignment="Center" Foreground="#78909C"/>
+                                                                <TextBlock Text="{Binding UpdatedAt, StringFormat={}{0:g}}" FontSize="11" Foreground="#78909C"/>
+                                                            </StackPanel>
+                                                        </WrapPanel>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <ContentControl Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                        Visibility="{Binding SearchResults.Count, Converter={StaticResource CountToVisibilityConverter}, ConverterParameter=Reverse}"
+                                        Content="{x:Static resources:ExtensionsWindow.Text_NoSearchResults}" Style="{StaticResource FlowBlox.EmptyState}"/>
+                                </Grid>
+                            </Grid>
 							<!-- Right Panel: Detail View -->
 							<ScrollViewer Grid.Column="1"
 							              VerticalScrollBarVisibility="Auto"
-							              HorizontalScrollBarVisibility="Auto"
+							              HorizontalScrollBarVisibility="Disabled"
 							              Margin="5">
 								<StackPanel Visibility="{Binding IsExtensionSelected, Converter={StaticResource BoolToVisibilityConverter}}">
 									<!-- Detail view elements like Labels, TextBlocks, ComboBox, and Buttons -->
@@ -278,7 +323,14 @@
 									          DisplayMemberPath="Version"
 									          SelectedItem="{Binding SelectedVersion}"
 									          Margin="5,0,0,5"/>
-									<!-- Version Changes -->
+									<StackPanel Orientation="Horizontal" Margin="5,0,0,5" ToolTip="{x:Static resources:ExtensionsWindow.VersionDownloads}">
+                                        <TextBlock Text="{x:Static resources:ExtensionsWindow.Downloads}" Margin="0,0,8,0"/>
+                                        <TextBlock Text="{Binding SelectedVersion.DownloadCount, Converter={StaticResource CompactCountConverter}}"
+                                            ToolTip="{Binding SelectedVersion.DownloadCount, StringFormat={}{0:N0}}"/>
+                                    </StackPanel>
+                                    <Label Content="{x:Static resources:ExtensionsWindow.RuntimeVersion}" FontWeight="DemiBold"/>
+                                    <TextBlock Text="{Binding SelectedVersion.RuntimeVersion}" Margin="5,0,0,5"/>
+                                    <!-- Version Changes -->
 									<Label Content="{x:Static resources:ExtensionsWindow.Label_Changes}"
 									       FontWeight="DemiBold"
 									       Margin="0,5,0,5"/>

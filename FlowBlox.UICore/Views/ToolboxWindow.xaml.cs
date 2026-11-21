@@ -26,6 +26,11 @@ namespace FlowBlox.UICore.Views
 
         public ToolboxElement SelectedToolboxElement => ViewModel.SelectedToolboxElement;
 
+        private void Back_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
+
         private void ListViewItem_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ViewModel.SelectCommand.Execute(null);

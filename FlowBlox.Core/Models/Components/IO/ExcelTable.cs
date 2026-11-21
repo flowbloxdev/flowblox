@@ -52,19 +52,29 @@ namespace FlowBlox.Core.Models.Components.IO
                         return dataTable;
 
                     var firstRowHeader = this.Resolve(table => table.FirstRowHeader);
-                    foreach (var firstRowCell in worksheet.Cells[1, 1, 1, dimension.End.Column])
+                    for (var column = 1; column <= dimension.End.Column; column++)
                     {
-                        dataTable.Columns.Add(firstRowHeader ? firstRowCell.Text : $"Column {firstRowCell.Start.Column}");
+                        var name = firstRowHeader ? worksheet.Cells[1, column].Text : string.Empty;
+                        if (string.IsNullOrWhiteSpace(name))
+                            name = $"Column {column}";
+
+                        var uniqueName = name;
+                        var suffix = 2;
+                        while (dataTable.Columns.Contains(uniqueName))
+                            uniqueName = $"{name}_{suffix++}";
+
+                        dataTable.Columns.Add(uniqueName);
                     }
 
                     var startRow = firstRowHeader ? 2 : 1;
                     for (int rowNum = startRow; rowNum <= dimension.End.Row; rowNum++)
                     {
-                        var wsRow = worksheet.Cells[rowNum, 1, rowNum, dimension.End.Column];
                         DataRow row = dataTable.Rows.Add();
-                        foreach (var cell in wsRow)
+                        for (var column = 1; column <= dimension.End.Column; column++)
                         {
-                            row[cell.Start.Column - 1] = cell.Text;
+                            var value = worksheet.Cells[rowNum, column].Text;
+                            if (!string.IsNullOrEmpty(value))
+                                row[column - 1] = value;
                         }
                     }
                 }

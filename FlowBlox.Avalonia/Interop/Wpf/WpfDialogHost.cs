@@ -17,20 +17,22 @@ namespace FlowBlox.AvaloniaDesktop.Interop.Wpf
             helper.Owner = owner.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
 
             wpfDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            void CenterOnOwner(object sender, RoutedEventArgs args)
+            void CenterOnOwner(object sender, EventArgs args)
             {
-                wpfDialog.Loaded -= CenterOnOwner;
+                wpfDialog.ContentRendered -= CenterOnOwner;
                 CenterOnNativeOwner(helper.Handle, helper.Owner, owner);
             }
 
-            wpfDialog.Loaded += CenterOnOwner;
+            // Loaded can precede final SizeToContent sizing and native startup placement.
+            // Center once after rendering so WPF does not overwrite the calculated position.
+            wpfDialog.ContentRendered += CenterOnOwner;
             try
             {
                 return InvokeShowDialog(() => wpfDialog.ShowDialog(), owner);
             }
             finally
             {
-                wpfDialog.Loaded -= CenterOnOwner;
+                wpfDialog.ContentRendered -= CenterOnOwner;
             }
         }
 

@@ -9,22 +9,27 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI.OnnxQA
         private readonly OnnxQASequenceFormat _sequenceFormat;
         private readonly int _classificationTokenId;
         private readonly int _separatorTokenId;
+        private readonly OnnxModelTokenVocabulary _modelVocabulary;
 
         private OnnxQAModelTokenizer(
             Microsoft.ML.Tokenizers.Tokenizer tokenizer,
             OnnxQASequenceFormat sequenceFormat,
             int classificationTokenId,
             int separatorTokenId,
-            int maximumSequenceLength)
+            int maximumSequenceLength,
+            OnnxModelTokenVocabulary modelVocabulary = null)
         {
             _tokenizer = tokenizer;
             _sequenceFormat = sequenceFormat;
             _classificationTokenId = classificationTokenId;
             _separatorTokenId = separatorTokenId;
             MaximumSequenceLength = maximumSequenceLength;
+            _modelVocabulary = modelVocabulary;
         }
 
         public int MaximumSequenceLength { get; }
+        internal int ClassificationTokenId => _classificationTokenId;
+        internal int SeparatorTokenId => _separatorTokenId;
 
         public static OnnxQAModelTokenizer Load(string modelFolder)
         {
@@ -112,12 +117,18 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI.OnnxQA
                     addEndOfSentence: false,
                     specialTokens: addedTokens);
 
+                var unknownToken = GetToken(tokenizerConfig, specialTokensMap, "unk_token", tokenizer.UnknownToken);
+                var modelVocabulary = OnnxModelTokenVocabulary.Load(modelFolder, tokenizer.UnknownId, unknownToken);
+
                 return new OnnxQAModelTokenizer(
                     tokenizer,
                     sequenceFormat,
-                    GetRequiredTokenId(tokenizer, addedTokens, classificationToken),
-                    GetRequiredTokenId(tokenizer, addedTokens, separatorToken),
-                    maximumSequenceLength);
+                    modelVocabulary?.GetRequiredTokenId(classificationToken)
+                        ?? GetRequiredTokenId(tokenizer, addedTokens, classificationToken),
+                    modelVocabulary?.GetRequiredTokenId(separatorToken)
+                        ?? GetRequiredTokenId(tokenizer, addedTokens, separatorToken),
+                    maximumSequenceLength,
+                    modelVocabulary);
             }
 
             throw new NotSupportedException(
@@ -140,7 +151,14 @@ namespace FlowBlox.Core.Models.FlowBlocks.AI.OnnxQA
                     considerPreTokenization: true,
                     considerNormalization: true);
 
-                return MapSentencePieceOffsetsToOriginal(originalText, normalizedText, tokens);
+                var mapped = MapSentencePieceOffsetsToOriginal(originalText, normalizedText, tokens);
+                if (_modelVocabulary == null)
+                    return mapped;
+
+                return mapped.Select(token => new EncodedToken(
+                    _modelVocabulary.GetTokenId(token),
+                    token.Value,
+                    token.Offset)).ToList();
             }
 
             return _tokenizer.EncodeToTokens(text ?? string.Empty, out _, considerPreTokenization: true, considerNormalization: true);

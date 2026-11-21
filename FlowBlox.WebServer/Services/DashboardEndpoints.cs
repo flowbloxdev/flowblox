@@ -23,8 +23,8 @@ public static class DashboardEndpoints
         app.MapGet("/download/{projectId}", DownloadAsync).RequireAuthorization();
         app.MapGet("/logs/{executionId:guid}", (Guid executionId, DashboardService dashboard) =>
         {
-            var entry = dashboard.GetExecution(executionId);
-            var path = entry.Response?.LogfilePath;
+            var entry = dashboard.Executions.GetAll().SingleOrDefault(entry => entry.Id == executionId);
+            var path = entry?.Response?.LogfilePath;
             return !string.IsNullOrWhiteSpace(path) && File.Exists(path)
                 ? Results.File(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), "text/plain", Path.GetFileName(path))
                 : Results.NotFound();

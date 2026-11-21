@@ -2,9 +2,15 @@
 @attribute [Authorize]
 @inherits DashboardPageBase
 @inject DashboardService Dashboard
+@inject NavigationManager Navigation
+@inject ILogger<Execution> Logger
 <PageTitle>@T["Execution"] · FlowBlox</PageTitle>
 <a class="back" href="/executions">← @T["Executions"]</a>
-@if (_entry != null)
+@if (_entry == null)
+{
+    <p class="notice">@T["ExecutionUnavailable"]</p>
+}
+else
 {
     <h1>@_entry.Project.Name</h1>
     <p class="description">@_entry.ProjectDescription</p>
@@ -26,6 +32,10 @@
         @if (_entry.IsRunning) { <div class="loading-line"></div> }
         else
         {
+            @if (_entry.Response?.ExecutionEnvironmentPrerequisiteFailures?.Count > 0)
+            {
+                <p class="notice" role="status">@T["ExecutionSetupRequired"]</p>
+            }
             <p class="prewrap">@ErrorDetails</p>
             @if (_entry.Response?.Warnings.Count > 0)
             {
@@ -42,6 +52,11 @@
             @if (!_confirmStop) { <button class="danger" @onclick="() => _confirmStop = true"><MdiIcon Name="stop" /> @T["StopProcess"]</button> }
             else { <span>@T["ConfirmStop"]</span><button @onclick="StopAsync">@T["Confirm"]</button><button @onclick="() => _confirmStop = false">@T["Cancel"]</button> }
         }
+        @if (!Dashboard.Executions.CanTerminate(_entry))
+        {
+            @if (!_confirmRemove) { <button class="danger" @onclick="() => _confirmRemove = true"><MdiIcon Name="delete" /> @T["RemoveExecution"]</button> }
+            else { <span>@T["ConfirmRemoveExecution"]</span><button class="danger" @onclick="RemoveAsync">@T["Confirm"]</button><button @onclick="() => _confirmRemove = false">@T["Cancel"]</button> }
+        }
     </footer>
 }
 @code {
@@ -49,7 +64,7 @@
     [SupplyParameterFromQuery(Name = "view")] public string? View { get; set; }
     private ProjectExecutionEntry? _entry;
     private string? _projectId;
-    private bool _confirmStop, _error;
+    private bool _confirmStop, _confirmRemove, _error;
     private bool ShowInputs => View == "input" || View != "outputs" && _entry?.IsRunning == true;
     private string ErrorDetails => string.Join(Environment.NewLine, new[]
     {
@@ -64,9 +79,25 @@
     protected override Task OnParametersSetAsync() => RefreshAsync();
     private Task RefreshAsync()
     {
-        _entry = Dashboard.GetExecution(Id);
+        _entry = Dashboard.Executions.GetAll().FirstOrDefault(entry => entry.Id == Id);
+        if (_entry == null) return Task.CompletedTask;
         _projectId = Dashboard.Projects.FirstOrDefault(project => ProjectShortcutIdentity.Matches(project.Shortcut, _entry.Project))?.Id;
         return Task.CompletedTask;
+    }
+    private async Task RemoveAsync()
+    {
+        if (!await HasSessionAsync()) return;
+        try
+        {
+            if (!Dashboard.Executions.RemoveInactive(Id) && Dashboard.Executions.GetAll().Any(entry => entry.Id == Id))
+                throw new InvalidOperationException("The execution is still active.");
+            Navigation.NavigateTo("/executions");
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "Could not remove dashboard execution history entry.");
+            _error = true;
+        }
     }
     private async Task StopAsync() { if (!await HasSessionAsync()) return; try { Dashboard.Executions.Terminate(Id); _confirmStop = false; } catch { _error = true; } }
 }

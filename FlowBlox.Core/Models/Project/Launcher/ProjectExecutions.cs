@@ -211,8 +211,8 @@ public sealed class ProjectExecutions
                 throw new TimeoutException("The runner process did not exit after termination.");
 
             // Preserve a response that the runner finished writing just before it exited.
-            RefreshCore();
-            if (_store.Read().Single(candidate => candidate.Id == executionId).IsRunning)
+            RefreshCore(recoverOrphans: false);
+            if (_store.Read().SingleOrDefault(candidate => candidate.Id == executionId)?.IsRunning == true)
             {
                 RunnerJson.WriteFile(entry.ResponseFile, new RunnerResponse
                 {
@@ -231,18 +231,27 @@ public sealed class ProjectExecutions
         }
     }
 
-    private bool RefreshCore()
+    private bool RefreshCore(bool recoverOrphans = true)
     {
+        using var operation = InterprocessFileLock.Acquire(Path.Combine(_directory, "operations"));
         var completed = new Dictionary<Guid, RunnerResponse>();
-        foreach (var entry in _store.Read().Where(x => x.IsRunning && File.Exists(x.ResponseFile)))
+        var abandoned = new HashSet<Guid>();
+        var now = DateTime.UtcNow;
+        foreach (var entry in _store.Read().Where(x => x.IsRunning))
         {
             try
             {
-                var response = JsonConvert.DeserializeObject<RunnerResponse>(
-                    File.ReadAllText(entry.ResponseFile),
-                    new JsonSerializerSettings { DateParseHandling = DateParseHandling.None });
-                if (response != null && response.FinishedUtc != default)
-                    completed[entry.Id] = response;
+                if (File.Exists(entry.ResponseFile))
+                {
+                    var response = JsonConvert.DeserializeObject<RunnerResponse>(
+                        File.ReadAllText(entry.ResponseFile),
+                        new JsonSerializerSettings { DateParseHandling = DateParseHandling.None });
+                    if (response != null && response.FinishedUtc != default)
+                    {
+                        completed[entry.Id] = response;
+                        continue;
+                    }
+                }
             }
             catch (IOException)
             {
@@ -252,12 +261,35 @@ public sealed class ProjectExecutions
             {
                 // An incomplete response does not complete the execution.
             }
+
+            // Leave time for launch metadata and response files to become visible.
+            // The shared operation lock also excludes a cooperating launcher still starting its process.
+            if (!recoverOrphans || now - entry.StartedUtc < TimeSpan.FromMinutes(1) || !IsProcessUnavailable(entry))
+                continue;
+
+            if (entry.ProcessId is not > 0)
+            {
+                abandoned.Add(entry.Id);
+                continue;
+            }
+
+            completed[entry.Id] = new RunnerResponse
+            {
+                Success = false,
+                ExitCode = RunnerExitCodes.RuntimeError,
+                ProjectName = entry.Project.Name,
+                StartedUtc = entry.StartedUtc,
+                FinishedUtc = now,
+                ErrorMessage = FlowBloxResourceUtil.GetLocalizedString(
+                    "ProjectExecutions_ProcessUnavailable", typeof(FlowBloxTexts))
+            };
         }
-        if (completed.Count == 0)
+        if (completed.Count == 0 && abandoned.Count == 0)
             return false;
 
         _store.Update(entries =>
         {
+            entries.RemoveAll(entry => abandoned.Contains(entry.Id) && entry.IsRunning && entry.ProcessId is not > 0);
             foreach (var entry in entries)
             {
                 if (completed.TryGetValue(entry.Id, out var response))
@@ -270,14 +302,37 @@ public sealed class ProjectExecutions
         return true;
     }
 
+    private static bool IsProcessUnavailable(ProjectExecutionEntry entry)
+    {
+        if (entry.ProcessId is not > 0)
+            return true;
+
+        try
+        {
+            using var process = Process.GetProcessById(entry.ProcessId.Value);
+            return process.HasExited || !entry.ProcessStartedUtc.HasValue
+                || process.StartTime.ToUniversalTime() != entry.ProcessStartedUtc.Value;
+        }
+        catch (ArgumentException) { return true; }
+        catch (InvalidOperationException) { return true; }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            // A process we cannot inspect may still be alive; never infer termination from access denial.
+            return false;
+        }
+    }
+
     /// <summary>Resets output only while no active desktop or web runner uses the same directory tree.</summary>
     public int ClearArtifacts(string directory)
     {
-        using var operation = InterprocessFileLock.Acquire(Path.Combine(_directory, "operations"));
-        Refresh();
-        if (IsArtifactDirectoryInUse(directory))
-            throw new InvalidOperationException("An active execution is using this artifact directory.");
-        return new ProjectArtifacts(directory).Clear();
+        lock (_refreshLock)
+        {
+            using var operation = InterprocessFileLock.Acquire(Path.Combine(_directory, "operations"));
+            RefreshCore();
+            if (IsArtifactDirectoryInUse(directory))
+                throw new InvalidOperationException("An active execution is using this artifact directory.");
+            return new ProjectArtifacts(directory).Clear();
+        }
     }
 
     public bool IsArtifactDirectoryInUse(string directory)
@@ -293,4 +348,22 @@ public sealed class ProjectExecutions
 
     // Removing a shortcut never terminates its runner or deletes its request/response/log files.
     public void Remove(Guid id) => _store.Update(entries => entries.RemoveAll(x => x.Id == id));
+
+    public bool RemoveInactive(Guid id)
+    {
+        lock (_refreshLock)
+        {
+            using var operation = InterprocessFileLock.Acquire(Path.Combine(_directory, "operations"));
+            var removed = false;
+            _store.Update(entries =>
+            {
+                var entry = entries.SingleOrDefault(candidate => candidate.Id == id);
+                if (entry == null || CanTerminate(entry))
+                    return;
+
+                removed = entries.Remove(entry);
+            });
+            return removed;
+        }
+    }
 }

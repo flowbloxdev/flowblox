@@ -15,11 +15,12 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Returns a lightweight JSON snapshot for a specific component. Use only for targeted follow-up steps (for example: after linking a test definition to inspect generated entries) to avoid unnecessary traffic.",
+            "Returns component JSON. Filters preserve full subtrees and original paths; invalid/unmatched paths fail.",
             new JObject
             {
                 ["kind"] = "string (flowBlock|managedObject|field)",
-                ["name"] = "string"
+                ["name"] = "string",
+                ["jsonFilter"] = "string[]? (absolute JPaths, e.g. [\"$.Name\",\"$.MappingEntries\"]; omit for full JSON)"
             });
 
         public override Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
@@ -63,13 +64,29 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             var snapshotJson = JsonConvert.SerializeObject(component, JsonSettings.ComponentSnapshotExport());
             var snapshotToken = JToken.Parse(snapshotJson);
 
-            return Task.FromResult(ToolHandlerUtilities.Ok(new JObject
+            var result = new JObject
             {
                 ["kind"] = normalizedKind,
                 ["name"] = componentName,
-                ["typeFullName"] = component.GetType().FullName,
-                ["snapshot"] = snapshotToken
-            }));
+                ["typeFullName"] = component.GetType().FullName
+            };
+            if (args.TryGetValue("jsonFilter", out var jsonFilter))
+            {
+                try
+                {
+                    result["matches"] = SnapshotJsonFilter.Select(snapshotToken, jsonFilter);
+                }
+                catch (ArgumentException exception)
+                {
+                    return Task.FromResult(ToolHandlerUtilities.Fail(exception.Message));
+                }
+            }
+            else
+            {
+                result["snapshot"] = snapshotToken;
+            }
+
+            return Task.FromResult(ToolHandlerUtilities.Ok(result));
         }
     }
 }

@@ -19,6 +19,9 @@ Only the latest Project Space content is used; version selection is not part of 
 # Include your own public projects as well.
 .\FlowBlox.exe --list-ps-projects --mine | ConvertFrom-Json
 
+# Filter by project purpose; omit this option to include all classifications.
+.\FlowBlox.exe --list-ps-projects --classification Function | ConvertFrom-Json
+
 # Download to the configured project directory.
 .\FlowBlox.exe --download-ps-project <PS-GUID> --private | Out-String
 
@@ -39,6 +42,9 @@ Only the latest Project Space content is used; version selection is not part of 
 
 # Explicitly choose visibility. An existing project's visibility is otherwise preserved.
 .\FlowBlox.exe --upload-ps-project .\work\Example.fbprj --visibility public | Out-String
+
+# Classify a reusable function or a complete solution. Existing classification is otherwise preserved.
+.\FlowBlox.exe --upload-ps-project .\work\Example.fbprj --classification Function | Out-String
 ```
 
 The PowerShell pipeline waits for the Windows GUI executable and captures its console output.

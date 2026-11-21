@@ -8,7 +8,7 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
     Title="{x:Static resources:ToolboxWindow.Title}"
-    Height="500"
+    Height="640"
     Width="900"
     WindowStartupLocation="CenterOwner">
 
@@ -25,7 +25,38 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
+    <DockPanel>
+        <Border Style="{DynamicResource FlowBlox.DialogHeader}" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <iconPacks:PackIconMaterial Kind="ToolboxOutline" Width="32" Height="32"
+                                            Margin="0,0,10,0" Foreground="{DynamicResource FlowBlox.Brush.DialogHeaderText}" />
+                <TextBlock Text="{x:Static resources:ToolboxWindow.Title}"
+                           Style="{DynamicResource FlowBlox.DialogHeaderTitle}" />
+            </StackPanel>
+        </Border>
+        <Border Style="{DynamicResource FlowBlox.DialogDescription}" DockPanel.Dock="Top">
+            <TextBlock Text="{x:Static resources:ToolboxWindow.Description}"
+                       Style="{DynamicResource FlowBlox.DialogDescriptionText}" />
+        </Border>
+        <Border DockPanel.Dock="Bottom" Padding="10,5" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource FlowBlox.Brush.Border}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="{x:Static resources:ToolboxWindow.Button_Back}"
+                        Style="{StaticResource FlowBlox.WindowActionButton.Back}"
+                        mah:ControlsHelper.ContentCharacterCasing="Normal" IsCancel="True" Click="Back_Click" />
+                <Button Command="{Binding SelectCommand}"
+                        Style="{StaticResource FlowBlox.WindowActionButton}"
+                        mah:ControlsHelper.ContentCharacterCasing="Normal"
+                        Visibility="{Binding IsSelectionMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="ContentPaste" Width="16" Height="16" Margin="0,0,7,0"
+                                                    Foreground="#3A6EA5" VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Static resources:ToolboxWindow.Button_Select}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="1.5*" />
@@ -103,8 +134,9 @@
                     Content="{x:Static resources:ToolboxWindow.Button_Save}"
                     Command="{Binding SaveCommand}"
                     HorizontalAlignment="Right"
-                    Style="{StaticResource FlowBlox.WindowActionButton.Save}"
-                    IsEnabled="{Binding DataContext.CanSave}"/>
+                    Style="{StaticResource FlowBlox.WindowActionButton.Apply}"
+                    mah:ControlsHelper.ContentCharacterCasing="Normal"
+                    IsEnabled="{Binding CanSave}"/>
         </Grid>
 
         <!-- No Items Found Message -->
@@ -113,9 +145,6 @@
             <TextBlock Text="{x:Static resources:ToolboxWindow.Message_NoToolboxElementsFound}" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding NoToolboxElementsFoundVisibility}" />
         </StackPanel>
 
-        <!-- Bottom Panel for Selection Mode -->
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Visibility="{Binding IsSelectionMode, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Button Content="{x:Static resources:ToolboxWindow.Button_Select}" Command="{Binding SelectCommand}" Margin="5"/>
-        </StackPanel>
     </Grid>
+    </DockPanel>
 </mah:MetroWindow>

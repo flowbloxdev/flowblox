@@ -2,13 +2,52 @@
 @attribute [Authorize]
 @inherits DashboardPageBase
 @inject DashboardService Dashboard
+@inject ILogger<Executions> Logger
 <PageTitle>@T["Executions"] · FlowBlox</PageTitle>
 <h1>@T["Executions"]</h1>
+@if (_error) { <p role="alert" class="notice error">@T["OperationFailed"]</p> }
 <section class="panel execution-list">
-    @foreach (var entry in Dashboard.Executions.GetAll())
-    { <a class="execution-row" href="@($"/executions/{entry.Id}")"><ExecutionStatus Entry="entry" /><strong>@entry.Project.Name</strong><time datetime="@entry.StartedUtc.ToString("O")">@entry.StartedUtc.ToString("u")</time><span>›</span></a> }
-    @if (Dashboard.Executions.GetAll().Count == 0) { <p class="empty">ⓘ @T["NoExecutions"]</p> }
+    @foreach (var entry in _entries)
+    {
+        <div class="execution-list-item" @key="entry.Id">
+            <a class="execution-row" href="@($"/executions/{entry.Id}")"><ExecutionStatus Entry="entry" /><strong>@entry.Project.Name</strong><time datetime="@entry.StartedUtc.ToString("O")">@entry.StartedUtc.ToString("u")</time><span>›</span></a>
+            @if (!Dashboard.Executions.CanTerminate(entry))
+            {
+                <button class="quiet icon-button danger" title="@T["RemoveExecution"]" aria-label="@T["RemoveExecution"]" @onclick="() => _confirmRemove = entry.Id"><MdiIcon Name="delete" /></button>
+            }
+        </div>
+        @if (_confirmRemove == entry.Id)
+        {
+            <div class="execution-remove-confirm"><span>@T["ConfirmRemoveExecution"]</span><button class="danger" @onclick="() => RemoveAsync(entry.Id)">@T["Confirm"]</button><button @onclick="() => _confirmRemove = null">@T["Cancel"]</button></div>
+        }
+    }
+    @if (_entries.Count == 0) { <p class="empty">@T["NoExecutions"]</p> }
 </section>
 @code {
-    protected override void OnInitialized() => BeginRefreshing(() => Task.CompletedTask);
+    private IReadOnlyList<ProjectExecutionEntry> _entries = [];
+    private Guid? _confirmRemove;
+    private bool _error;
+    protected override void OnInitialized()
+    {
+        RefreshEntries();
+        BeginRefreshing(() => { RefreshEntries(); return Task.CompletedTask; });
+    }
+    private void RefreshEntries() => _entries = Dashboard.Executions.GetAll();
+    private async Task RemoveAsync(Guid id)
+    {
+        if (!await HasSessionAsync()) return;
+        try
+        {
+            if (!Dashboard.Executions.RemoveInactive(id) && Dashboard.Executions.GetAll().Any(entry => entry.Id == id))
+                throw new InvalidOperationException("The execution is still active.");
+            _confirmRemove = null;
+            _error = false;
+            RefreshEntries();
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "Could not remove dashboard execution history entry.");
+            _error = true;
+        }
+    }
 }

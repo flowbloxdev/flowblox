@@ -7,6 +7,7 @@
     <ApplicationIcon>..\FlowBlox.WorkerService\FlowBloxMainIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Markdig" Version="1.6.0" />
     <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
     <ProjectReference Include="..\FlowBlox.Core\FlowBlox.Core.csproj" />
     <ProjectReference Include="..\FlowBlox.RunnerHost\FlowBlox.RunnerHost.csproj" ReferenceOutputAssembly="false" GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained">

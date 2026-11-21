@@ -70,7 +70,18 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Save ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
+        /// </summary>
+        public static string Button_Back
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Apply ähnelt.
         /// </summary>
         public static string Button_Save
         {
@@ -81,13 +92,24 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Select ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Insert ähnelt.
         /// </summary>
         public static string Button_Select
         {
             get
             {
                 return ResourceManager.GetString("Button_Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Browse and manage reusable templates, suggestions and examples. Insert a template into an input field; parameter placeholders guide you through selecting fields or entering values manually. ähnelt.
+        /// </summary>
+        public static string Description
+        {
+            get
+            {
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         

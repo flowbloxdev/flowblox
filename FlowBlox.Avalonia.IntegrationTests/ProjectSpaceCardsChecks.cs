@@ -25,9 +25,11 @@ internal sealed partial class WorkspaceIntegrationChecks
             Guid = Guid.NewGuid().ToString(),
             Name = index == 1 ? "Duplicate File Review - Build a safe deletion script" : $"Project Space example {index}",
             Description = "Find duplicate files recursively, verify their binary content and prepare a deletion script for manual review.",
+            DownloadCount = (41 - index) * 10_000,
             UpdatedAt = new DateTime(2026, 11, 10, 12, 30, 0),
             Versions = [new FbProjectVersionResult { VersionNumber = index, Comment = "Published project" }]
-        }).ToList();
+        }).Reverse().ToList();
+        check(model.SearchResults[0].DownloadCount == 400_000, "Project cards rank the full result by downloads");
         Exception failure = null;
         dialog.ContentRendered += (_, _) =>
         {

@@ -6,7 +6,9 @@ Explaining Project Space:
   requests, XML selection and username substitution; a shared mail-settings flow can supply these settings from an email address.
   Never invent GUIDs or input/output names.
 - Respect the user's preference for shared subflows or local implementation; ask before adding a shared dependency if that preference is unclear.
-- GetPSProjects(searchForNames=..., visibility=public|private|all) searches names and descriptions with case-insensitive contains-OR
+- Prefer GetPSProjects(classification=Function) for reusable components; Solution denotes complete task workflows.
+  Classification is independent of usage; usedByCount reports reuse by visible projects. Omit classification to include both.
+- GetPSProjects(searchForNames=..., visibility=public|private|all, classification=Solution|Function) searches names and descriptions with case-insensitive contains-OR
   matching. Empty terms list all matches. Results include descriptions, projectSpaceGuid, stableVersions and projectSpaceVersion.
   Discovery reads metadata only; it does not download project content.
 

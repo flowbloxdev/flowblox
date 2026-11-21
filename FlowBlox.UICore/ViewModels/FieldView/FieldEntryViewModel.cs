@@ -88,7 +88,7 @@ namespace FlowBlox.UICore.ViewModels.FieldView
 
         public PackIconMaterialKind IconKind => IsUserField ? PackIconMaterialKind.Account : PackIconMaterialKind.LinkVariant;
 
-        public ImageSource IconSource { get; }
+        public ImageSource IconSource { get; private set; }
 
         public bool IsFlowBlockSelected
         {
@@ -128,7 +128,7 @@ namespace FlowBlox.UICore.ViewModels.FieldView
 
             if (IsUserField)
             {
-                IconSource = WpfIconHelper.CreateMaterialIcon(PackIconMaterialKind.Account, 14);
+                IconSource = SkiaWpfImageHelper.ConvertToImageSource(fieldElement.Icon16);
             }
             else
             {
@@ -149,6 +149,11 @@ namespace FlowBlox.UICore.ViewModels.FieldView
         {
             _rawFieldValue = value ?? string.Empty;
             _isPendingValue = pending;
+            if (IsUserField)
+            {
+                IconSource = SkiaWpfImageHelper.ConvertToImageSource(FieldElement.Icon16);
+                OnPropertyChanged(nameof(IconSource));
+            }
             FieldValue = GetDisplayFieldValue(_rawFieldValue, _isPendingValue, _singleLineFieldValues, FieldElement?.IsPassword == true);
         }
 

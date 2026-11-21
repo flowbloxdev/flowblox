@@ -2803,6 +2803,54 @@ namespace FlowBlox.AvaloniaDesktop.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Yes, keep running ähnelt.
+        /// </summary>
+        internal static string WebServer_ExitKeepRunning
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_ExitKeepRunning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The FlowBlox Web App server is running. Should it remain available after you close FlowBlox?
+        ///
+        ///You can stop it later by opening FlowBlox and choosing {0}.
+        ///
+        ///Stopping the server will make the Web App unavailable. ähnelt.
+        /// </summary>
+        internal static string WebServer_ExitMessage
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_ExitMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No, stop web server ähnelt.
+        /// </summary>
+        internal static string WebServer_ExitStop
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_ExitStop", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keep the Web App available? ähnelt.
+        /// </summary>
+        internal static string WebServer_ExitTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("WebServer_ExitTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Web server ähnelt.
         /// </summary>
         internal static string WebServer_Menu

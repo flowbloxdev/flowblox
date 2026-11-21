@@ -31,12 +31,15 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:ProjectCreatorNameConverter x:Key="ProjectCreatorNameConverter" />
 
-            <Style x:Key="ProjectVisibilityBadge" TargetType="Border">
-                <Setter Property="Visibility" Value="Collapsed" />
+            <Style x:Key="ProjectBadge" TargetType="Border">
                 <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="8,3" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="ProjectVisibilityBadge" TargetType="Border" BasedOn="{StaticResource ProjectBadge}">
+                <Setter Property="Visibility" Value="Collapsed" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Visibility}" Value="{x:Static api:FbProjectVisibility.Public}">
                         <Setter Property="Visibility" Value="Visible" />
@@ -51,6 +54,19 @@
                         <Setter Property="BorderBrush" Value="#E2C6A0" />
                         <Setter Property="TextElement.Foreground" Value="#87591E" />
                         <Setter Property="Tag" Value="{x:Static resources:PSProjectsWindow.Visibility_Private}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="ProjectClassificationBadge" TargetType="Border" BasedOn="{StaticResource ProjectBadge}">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="Margin" Value="0,0,6,0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Classification}" Value="{x:Static api:FbProjectClassification.Function}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Setter Property="Background" Value="#E6EEF8"/>
+                        <Setter Property="BorderBrush" Value="#B5C9E1"/>
+                        <Setter Property="TextElement.Foreground" Value="#3A6EA5"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -103,6 +119,7 @@
                 </Style.Triggers>
             </Style>
 
+            <converters:CompactCountConverter x:Key="CompactCountConverter"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
@@ -235,7 +252,13 @@
 
                 <!-- Search -->
                 <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-                    <TextBox Width="260"
+                    <ComboBox SelectedValue="{Binding ClassificationFilter}" SelectedValuePath="Tag" MinWidth="112" mah:TextBoxHelper.Watermark="{x:Static resources:PSProjectsWindow.AllFlows}" Margin="0,0,6,0"
+                              ToolTip="{x:Static resources:PSProjectsWindow.Classification}">
+                        <ComboBoxItem Content="{x:Static resources:PSProjectsWindow.AllFlows}" Tag="{x:Null}"/>
+                        <ComboBoxItem Content="{x:Static resources:PSProjectsWindow.SolutionFlow}" Tag="{x:Static api:FbProjectClassification.Solution}"/>
+                        <ComboBoxItem Content="{x:Static resources:PSProjectsWindow.FunctionFlow}" Tag="{x:Static api:FbProjectClassification.Function}"/>
+                    </ComboBox>
+                    <TextBox Width="200"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                              KeyDown="SearchTextBox_KeyDown"/>
                     <Button Margin="6,0,0,0" Command="{Binding SearchCommand}">
@@ -279,6 +302,9 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="8,0,0,0">
+                                        <Border Style="{StaticResource ProjectClassificationBadge}" ToolTip="{x:Static resources:PSProjectsWindow.ClassificationTooltip}">
+                                            <TextBlock Text="{Binding Classification, Converter={StaticResource EnumDisplayNameConverter}}" FontSize="11" FontWeight="SemiBold"/>
+                                        </Border>
                                         <Border Style="{StaticResource ProjectVisibilityBadge}">
                                             <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=Border}}"
                                                        FontSize="11" FontWeight="SemiBold" />
@@ -325,6 +351,20 @@
                                                    Margin="0,4,0,0" Foreground="#546E7A" MaxHeight="54"
                                                    TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
                                         <WrapPanel Margin="0,9,0,0">
+                                            <TextBlock Text="{Binding UsedByCount, StringFormat={x:Static resources:PSProjectsWindow.UsedByFormat}}"
+                                                Visibility="{Binding UsedByCount, Converter={StaticResource CountToVisibilityConverter}}"
+                                                FontSize="11" Foreground="#78909C" Margin="0,0,12,0"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0"
+                                                        AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Downloads}"
+                                                        AutomationProperties.HelpText="{Binding DownloadCount, StringFormat={}{0:N0}}"
+                                                        ToolTip="{Binding DownloadCount, StringFormat={}{0:N0}}">
+                                                <iconPacks:PackIconMaterial Kind="Download" Width="12" Height="12" Margin="0,0,5,0"
+                                                                           VerticalAlignment="Center" Foreground="#78909C"/>
+                                                <TextBlock Text="{Binding DownloadCount, Converter={StaticResource CompactCountConverter}}"
+                                                           AutomationProperties.Name="{x:Static resources:PSProjectsWindow.Downloads}"
+                                                           AutomationProperties.HelpText="{Binding DownloadCount, StringFormat={}{0:N0}}"
+                                                           FontSize="11" Foreground="#78909C"/>
+                                            </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="0,0,12,0"
                                                         Visibility="{Binding CreatedBy, Converter={StaticResource NullToVisibilityConverter}}"
                                                         ToolTip="{x:Static resources:PSProjectsWindow.Tooltip_CreatedBy}">
@@ -473,6 +513,9 @@
                                     </Button>
                                 </StackPanel>
 
+                                <Label Content="{x:Static resources:PSProjectsWindow.Classification}" FontWeight="DemiBold"/>
+                                <TextBlock Text="{Binding SelectedProject.Classification, Converter={StaticResource EnumDisplayNameConverter}}" Margin="5,0,0,5"/>
+                                <TextBlock Text="{Binding SelectedProject.UsedByCount, StringFormat={x:Static resources:PSProjectsWindow.UsedByFormat}}" Margin="5,0,0,5"/>
                                 <Label Content="{x:Static resources:PSProjectsWindow.Label_CreatedAt}"
                                        FontWeight="DemiBold"
                                        Margin="0,5,0,5"/>
@@ -573,6 +616,12 @@
                                                     <DataTemplate>
                                                         <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm:ss}}"/>
                                                     </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="{x:Static resources:PSProjectsWindow.Downloads}" Width="85">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate><TextBlock Text="{Binding DownloadCount, Converter={StaticResource CompactCountConverter}}"
+                                                        ToolTip="{Binding DownloadCount, StringFormat={}{0:N0}}"/></DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
                                             <GridViewColumn Header="{x:Static resources:PSProjectsWindow.Header_Comment}"

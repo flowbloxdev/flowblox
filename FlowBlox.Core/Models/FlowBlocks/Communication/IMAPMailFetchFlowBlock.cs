@@ -323,7 +323,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
             if (onlyUnread)
                 criteria.Add("UNSEEN");
             if (startDate.HasValue)
-                criteria.Add("SINCE " + startDate.Value.Date.AddDays(-1).ToString("d-MMM-yyyy", CultureInfo.InvariantCulture));
+                criteria.Add("SINCE " + startDate.Value.Date.ToString("d-MMM-yyyy", CultureInfo.InvariantCulture));
             if (endDate.HasValue)
                 criteria.Add("BEFORE " + endDate.Value.Date.AddDays(1).ToString("d-MMM-yyyy", CultureInfo.InvariantCulture));
             return string.Join(" ", criteria);
@@ -337,7 +337,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Communication
                 query = query.And(SearchQuery.NotSeen);
 
             if (startDate.HasValue)
-                query = query.And(SearchQuery.DeliveredAfter(startDate.Value.Date.AddDays(-1)));
+                query = query.And(SearchQuery.DeliveredAfter(startDate.Value.Date));
 
             if (endDate.HasValue)
                 query = query.And(SearchQuery.DeliveredBefore(endDate.Value.Date.AddDays(1)));

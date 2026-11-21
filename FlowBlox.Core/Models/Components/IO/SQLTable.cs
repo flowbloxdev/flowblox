@@ -10,6 +10,7 @@ using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Util.FullTextSearch;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 
@@ -52,6 +53,9 @@ namespace FlowBlox.Core.Models.Components.IO
                  ResourceType = typeof(FlowBloxTexts), Order = 4)]
         [FlowBloxUI(UISelectionButtons.None)]
         public bool UseFieldValuesAsParameters { get; set; } = true;
+
+        [Display(Name = "SQL_EnableFullTextSearch", Description = "SQL_EnableFullTextSearch_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 5)]
+        public bool EnableFullTextSearch { get; set; }
 
         public bool CanRead(BaseRuntime runtime = null)
         {
@@ -109,7 +113,9 @@ namespace FlowBlox.Core.Models.Components.IO
                     dbType,
                     out parameters,
                     useFieldValuesAsParameters: UseFieldValuesAsParameters);
-                return DbConnectionUtil.GetOutputAsDataTable(sqlStatement, parameters, dbConnection);
+                return this.Resolve(table => table.EnableFullTextSearch)
+                    ? FullTextSearchBase.For(dbType).Read(sqlStatement, parameters, dbConnection)
+                    : DbConnectionUtil.GetOutputAsDataTable(sqlStatement, parameters, dbConnection);
             }
             throw new InvalidOperationException($"Unable to connect to \"{SQLConnectionstring}\".");
         }

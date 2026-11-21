@@ -6,13 +6,17 @@
 @inject ILogger<Project> Logger
 <PageTitle>@(_project?.Shortcut.Name) · FlowBlox</PageTitle>
 @if (_error) { <p role="alert" class="notice error">@T["OperationFailed"]</p> }
-@if (_form == null) { <div class="loading-line" role="status" aria-label="@T["Loading"]"></div> }
+@if (_form == null)
+{
+    @if (!_error) { <div class="loading-line" role="status" aria-label="@T["Loading"]"></div> }
+    else { <button @onclick="RetryAsync">@T["Retry"]</button> }
+}
 else
 {
     <a class="back" href="/">← @T["Projects"]</a>
     <div class="heading"><h1>@_project!.Shortcut.Name</h1></div>
     <p class="description">@_form.Description</p>
-    @if (!string.IsNullOrWhiteSpace(_form.Notice)) { <details class="notes"><summary>☀ @T["ProjectNotes"]</summary><p><LinkedText Text="@_form.Notice" /></p></details> }
+    @if (!string.IsNullOrWhiteSpace(_form.Notice)) { <details class="notes"><summary>☀ @T["ProjectNotes"]</summary><ProjectNoticeMarkdown Text="@_form.Notice" /></details> }
     <nav class="execution-tabs" aria-label="@T["Project"]">
         <button class="@(!_showOutputs ? "active" : null)" aria-pressed="@(!_showOutputs)" @onclick="() => _showOutputs = false"><MdiIcon Name="form-textbox" /> @T["Inputs"]</button>
         <button class="@(_showOutputs ? "active" : null)" aria-pressed="@_showOutputs" @onclick="() => _showOutputs = true"><MdiIcon Name="file-export" /> @T["Outputs"]</button>
@@ -68,6 +72,11 @@ else
         catch (Exception exception) { Logger.LogWarning(exception, "Could not load the web project editor."); _error = true; }
     }
     private void ConfigurationApplied() => StateHasChanged();
+    private async Task RetryAsync()
+    {
+        if (!await HasSessionAsync()) return;
+        await OnParametersSetAsync();
+    }
     private async Task ClearAsync()
     {
         if (!await HasSessionAsync()) return;

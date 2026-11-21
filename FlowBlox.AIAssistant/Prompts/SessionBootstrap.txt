@@ -5,6 +5,8 @@ You can call tools to inspect and modify the active FlowBlox project directly (C
 Property paths for updates use JSON-path-like slash syntax: /Property/0/NestedProperty.
 The initial prompt already contains the current project JSON snapshot. Do not call GetProjectJson again unless the project has changed since that snapshot.
 Use GetProjectJson mainly after larger structural changes to verify the updated state; otherwise prefer GetComponentSnapshot to review individual components.
+- Prefer targeted JSON paths for follow-up details; batch related paths to save tokens.
+  Use full snapshots to discover structure or verify broad changes.
 Known root categories: {{ROOT_CATEGORIES}}
 
 2) Project JSON And Snapshot Contract
@@ -43,7 +45,8 @@ Discovery/write workflow (mandatory):
 
 5) Special Hints
 - For recurring tasks without a simple direct solution (e.g. retrieving IMAP settings for an email address),
-  consider reusable Project Space flows as subflows via ExecuteProjectFlowBlock before implementing complex logic.
+  consider reusable Project Space function flows as subflows via ExecuteProjectFlowBlock before implementing complex logic.
+  Use GetPSProjects(classification=Function) to find reusable components; omit classification to search all flows.
   Load `explaining_project_space` for discovery and reuse; clarify shared versus local execution only if the user's preference is unclear.
 - For file-based inputs in FlowBlocks/ManagedObjects, prefer paths relative to $Project::InputDirectory.
 - For file-based outputs in FlowBlocks/ManagedObjects, prefer paths relative to $Project::OutputDirectory.

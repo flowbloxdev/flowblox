@@ -315,7 +315,13 @@ namespace FlowBlox.UICore.ViewModels
             if (sender is not FieldElement field)
                 return;
 
-            if (e.PropertyName != nameof(FieldElement.IsPassword))
+            if (!string.IsNullOrEmpty(e.PropertyName)
+                && e.PropertyName != nameof(FieldElement.IsPassword)
+                && e.PropertyName != nameof(FieldElement.StringValue)
+                && e.PropertyName != nameof(FieldElement.DefaultValue)
+                && e.PropertyName != nameof(FieldElement.Pending)
+                && e.PropertyName != nameof(FieldElement.IsRequiredAtRuntimeStartup)
+                && e.PropertyName != nameof(FieldElement.UserFieldType))
                 return;
 
             SynchronizationContextHelper.PostToUi(_uiContext, () =>

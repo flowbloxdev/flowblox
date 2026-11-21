@@ -15,7 +15,13 @@
         </section>
     }
 </div>
-@if (!_busy && Dashboard.Projects.Count == 0) { <p class="empty">ⓘ @T["NoProjects"]</p> }
+@if (!_busy && !_error && Dashboard.Projects.Count == 0)
+{
+    <section class="notice" role="status">
+        <strong>@T["NoProjects"]</strong>
+        <p>@T["PrepareFirstProject"]</p>
+    </section>
+}
 @code {
     private bool _busy, _error;
     protected override async Task OnInitializedAsync() { if (Dashboard.Projects.Count == 0) await RefreshAsync(); BeginRefreshing(() => Task.CompletedTask); }

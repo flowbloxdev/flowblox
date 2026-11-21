@@ -259,4 +259,8 @@ Adjust the search criteria or try a different search term.</value>
   <data name="Hint_PublishWorkflow" xml:space="preserve">
     <value>To publish: create an account, open "Manage own extensions", then add a new extension and version.</value>
   </data>
+  <data name="Downloads" xml:space="preserve"><value>Downloads</value></data>
+  <data name="UpdatedAt" xml:space="preserve"><value>Updated</value></data>
+  <data name="VersionDownloads" xml:space="preserve"><value>Downloads of this version</value></data>
+  <data name="RuntimeVersion" xml:space="preserve"><value>FlowBlox runtime version</value></data>
 </root>

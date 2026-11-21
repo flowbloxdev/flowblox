@@ -56,6 +56,12 @@ if (!this.ResolveOrCreateNotification(
 - Low-level `FlowBloxFieldHelper` methods remain appropriate for arbitrary text or validation candidates rather than
   property access. Keep specialized SQL/math evaluation and intentional fallback behavior unchanged.
 
+File-system comparison operators (`FileExists`, `DirectoryExists`, `FileIsEmpty`, `DirectoryIsEmpty`)
+operate on the selected field's resolved path and need no right-hand value. Empty means zero bytes
+for a file or no files anywhere in the directory tree; empty subdirectories do not count as content.
+A missing file or directory also
+counts as empty; errors encountered while reading an existing path return false.
+
 Project import recognizes old `<Property>_SelectedField` JSON members centrally and
 writes their field names to the map, including JSON reference resolution. New exports
 contain only the map. No per-FlowBlock compatibility properties or file migration are needed.

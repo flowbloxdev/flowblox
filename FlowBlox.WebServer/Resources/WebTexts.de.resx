@@ -88,4 +88,10 @@
   <data name="SelectConfiguration" xml:space="preserve"><value>Konfiguration auswählen</value></data>
   <data name="ProjectDefaults" xml:space="preserve"><value>Projektvorgaben</value></data>
   <data name="Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="RemoveExecution" xml:space="preserve"><value>Ausführungseintrag entfernen</value></data>
+  <data name="ConfirmRemoveExecution" xml:space="preserve"><value>Diesen Verlaufseintrag entfernen? Projektdateien, Protokolle und Ausgaben bleiben erhalten.</value></data>
+  <data name="ExecutionUnavailable" xml:space="preserve"><value>Dieser Ausführungseintrag ist nicht mehr vorhanden.</value></data>
+  <data name="Retry" xml:space="preserve"><value>Erneut versuchen</value></data>
+  <data name="PrepareFirstProject" xml:space="preserve"><value>Öffne, erstelle oder lade zuerst einen Flow aus dem Project Space in der Desktop-App herunter. Führe ihn einmal lokal aus und richte dabei ggf. benötigte externe Komponenten ein. Nach einem erfolgreichen Test kannst du den Flow remote verwenden.</value></data>
+  <data name="ExecutionSetupRequired" xml:space="preserve"><value>Für diesen Flow sind noch Einrichtungsschritte erforderlich. Starten Sie ihn einmal in der Desktop-App und folgen Sie den Einrichtungshinweisen. Versuchen Sie es anschließend hier erneut.</value></data>
 </root>

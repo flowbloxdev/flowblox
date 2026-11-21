@@ -18,8 +18,20 @@ public sealed class ImapSearchTests
             expression,
             true);
 
-        // Keep the existing date-filter semantics shared with the simple search.
-        Assert.AreEqual($"({expression}) UNSEEN SINCE 31-Oct-2026 BEFORE 18-Nov-2026", query);
+        Assert.AreEqual($"({expression}) UNSEEN SINCE 1-Nov-2026 BEFORE 18-Nov-2026", query);
+    }
+
+    [TestMethod]
+    public void StartDate_IncludesTheSelectedDayWithoutIncludingThePreviousYear()
+    {
+        var query = IMAPMailFetchFlowBlock.BuildRawSearchQuery(
+            new DateTime(2025, 1, 1),
+            null,
+            "ALL",
+            false);
+
+        Assert.AreEqual("(ALL) SINCE 1-Jan-2025", query);
+        Assert.AreEqual("(ALL) SINCE 1-Jan-0001", IMAPMailFetchFlowBlock.BuildRawSearchQuery(DateTime.MinValue, null, "ALL", false));
     }
 
     [TestMethod]

@@ -1,0 +1,36 @@
+@using Markdig
+
+<div class="notes-content">@((MarkupString)_html)</div>
+
+@code {
+    [Parameter] public string? Text { get; set; }
+
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
+        .DisableHtml()
+        .UseAutoLinks()
+        .Build();
+
+    private string? _previousText;
+    private string _html = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if (Text == _previousText)
+            return;
+
+        _previousText = Text;
+        using var writer = new StringWriter();
+        var renderer = new Markdig.Renderers.HtmlRenderer(writer) { LinkRewriter = SafeLink };
+        Pipeline.Setup(renderer);
+        renderer.Render(Markdown.Parse(Text ?? string.Empty, Pipeline));
+        _html = writer.ToString();
+    }
+
+    private static string SafeLink(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeMailto)
+            ? uri.AbsoluteUri
+            : "#";
+    }
+}

@@ -46,7 +46,9 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var description = FlowBloxResourceUtil.GetDescription(display);
             var attribute = property.GetCustomAttribute<FlowBloxImageColumnAttribute>();
             object header = headerText;
-            if (attribute != null && attribute.IconDefinition.TryCreateSKImage(out var headerIcon))
+            if (attribute?.ShowHeader == false)
+                header = string.Empty;
+            else if (attribute != null && attribute.IconDefinition.TryCreateSKImage(out var headerIcon))
             {
                 header = new Image
                 {
@@ -57,20 +59,21 @@ namespace FlowBlox.UICore.Factory.PropertyView
             }
 
             var image = new FrameworkElementFactory(typeof(Image));
-            image.SetValue(Image.WidthProperty, 16.0);
-            image.SetValue(Image.HeightProperty, 16.0);
+            image.SetValue(Image.WidthProperty, attribute?.IconSize ?? 16.0);
+            image.SetValue(Image.HeightProperty, attribute?.IconSize ?? 16.0);
+            image.SetValue(Image.OpacityProperty, attribute?.Opacity ?? 1.0);
             image.SetValue(Image.HorizontalAlignmentProperty, HorizontalAlignment.Center);
             image.SetValue(Image.VerticalAlignmentProperty, VerticalAlignment.Center);
             image.SetBinding(Image.SourceProperty, new Binding(property.Name) { Converter = Icon16Converter });
-            if (!string.IsNullOrWhiteSpace(attribute?.ToolTipMemberName))
+            if (attribute?.ShowToolTip != false && !string.IsNullOrWhiteSpace(attribute?.ToolTipMemberName))
                 image.SetBinding(Image.ToolTipProperty, new Binding(attribute.ToolTipMemberName));
-            else
+            else if (attribute?.ShowToolTip != false)
                 image.SetValue(Image.ToolTipProperty, description);
 
             var columnHeader = new GridViewColumnHeader
             {
                 Content = header,
-                ToolTip = description,
+                ToolTip = attribute?.ShowToolTip == false ? null : description,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 Padding = new Thickness(0)
@@ -79,7 +82,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             return new GridViewColumn
             {
                 Header = columnHeader,
-                Width = 32,
+                Width = attribute?.Width ?? 32,
                 CellTemplate = new DataTemplate { VisualTree = image }
             };
         }
@@ -115,7 +118,8 @@ namespace FlowBlox.UICore.Factory.PropertyView
             iconFactory.SetValue(Image.HeightProperty, 16.0);
             iconFactory.SetValue(Image.MarginProperty, new Thickness(0, 0, 6, 0));
             iconFactory.SetValue(Image.VerticalAlignmentProperty, VerticalAlignment.Center);
-            iconFactory.SetBinding(Image.SourceProperty, new Binding(".")
+            iconFactory.SetBinding(Image.SourceProperty, new Binding(
+                typeof(FieldElement).IsAssignableFrom(_listItemType) ? nameof(FieldElement.Icon16) : ".")
             {
                 Converter = Icon16Converter
             });

@@ -9,7 +9,9 @@ namespace FlowBloxTest.Models.Project;
 public sealed class ExecutionProcessTerminationTests
 {
     [TestMethod]
-    public void Terminate_StopsMatchingRunnerAndPersistsUserCancellation()
+    [DataRow(false)]
+    [DataRow(true)]
+    public void Terminate_StopsMatchingRunnerAndPersistsUserCancellation(bool longRunning)
     {
         var directory = Path.Combine(Path.GetTempPath(), "FlowBloxTermination-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
@@ -18,6 +20,8 @@ public sealed class ExecutionProcessTerminationTests
         {
             var path = Path.Combine(directory, "executions.json");
             var entry = CreateEntry(process, directory);
+            if (longRunning)
+                entry.StartedUtc = DateTime.UtcNow.AddHours(-1);
             new LauncherJsonStore<ProjectExecutionEntry>(path).Update(entries => entries.Add(entry));
             var executions = new ProjectExecutions(path);
             Assert.IsTrue(executions.CanTerminate(entry));

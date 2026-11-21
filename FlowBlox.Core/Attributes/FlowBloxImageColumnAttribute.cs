@@ -14,6 +14,12 @@ public sealed class FlowBloxImageColumnAttribute : Attribute
 
     public Type IconResourceType { get; }
     public string IconResourceKey { get; }
+    public double IconSize { get; set; } = 16;
+    public double Opacity { get; set; } = 1;
+    public double Width { get; set; } = 32;
+    public bool ShowHeader { get; set; } = true;
+    public bool ShowToolTip { get; set; } = true;
+
     public string IconColor { get; set; } = "#546E7A";
     public string ToolTipMemberName { get; set; } = string.Empty;
 

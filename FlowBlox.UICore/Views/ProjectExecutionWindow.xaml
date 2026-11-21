@@ -4,6 +4,7 @@
     xmlns:views="clr-namespace:FlowBlox.UICore.Views"
     xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:md="clr-namespace:MdXaml;assembly=MdXaml"
     x:Class="FlowBlox.UICore.Views.ProjectExecutionWindow"
     Title="{x:Static resources:ProjectLauncher.Title}"
     Style="{DynamicResource FlowBlox.Window}"
@@ -17,6 +18,12 @@
         <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/PropertyViewStyles.xaml" />
       </ResourceDictionary.MergedDictionaries>
       <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+      <Style x:Key="Execution.NoticeMarkdown" TargetType="{x:Type FlowDocument}" BasedOn="{x:Static md:MarkdownStyle.Standard}">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="DarkSlateGray" />
+        <Setter Property="PagePadding" Value="0" />
+      </Style>
       <Style x:Key="Execution.SectionBorder" TargetType="Border" BasedOn="{StaticResource PropertyView.LabelBorderStyle}">
         <Setter Property="Padding" Value="4" />
         <Setter Property="Background" Value="#CDDDEB" />
@@ -142,9 +149,10 @@
       </Expander.Header>
       <Border Background="{DynamicResource FlowBlox.Brush.InformationBackground}"
               BorderBrush="{DynamicResource FlowBlox.Brush.Border}" BorderThickness="1" CornerRadius="4" Padding="10">
-        <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-          <TextBlock x:Name="ProjectNoticeText" TextWrapping="Wrap" Foreground="DarkSlateGray" />
-        </ScrollViewer>
+        <md:MarkdownScrollViewer x:Name="ProjectNoticeText" MaxHeight="180"
+                                 MarkdownStyle="{StaticResource Execution.NoticeMarkdown}"
+                                 IsToolBarVisible="False" Background="Transparent" BorderThickness="0"
+                                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" />
       </Border>
     </Expander>
     <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">

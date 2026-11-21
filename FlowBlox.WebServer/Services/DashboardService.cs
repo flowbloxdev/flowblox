@@ -12,6 +12,7 @@ using FlowBlox.Core.Provider.Project;
 using FlowBlox.Core.Runner.Contracts;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Projects;
+using FlowBlox.Core.Util.DistributedData;
 using FlowBlox.Core.Util.Vault;
 using FlowBlox.WebServer.Models;
 using Newtonsoft.Json.Linq;
@@ -83,6 +84,8 @@ public sealed class DashboardService(ILogger<DashboardService> logger)
 
     private static void AddProject(List<WebProject> projects, ProjectShortcut shortcut, string group)
     {
+        if (DistributedDataCatalog.IsDistributedDataPath(shortcut.ProjectFile))
+            return;
         if (string.IsNullOrEmpty(shortcut.ProjectFile) && string.IsNullOrEmpty(shortcut.ProjectSpaceGuid))
             return;
         if (string.IsNullOrEmpty(shortcut.ProjectFile) && string.IsNullOrEmpty(shortcut.ApiEndpoint))
@@ -171,7 +174,8 @@ public sealed class DashboardService(ILogger<DashboardService> logger)
         overrides.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value)
             ? Path.Combine(Environment.ExpandEnvironmentVariables(value), IOUtil.GetValidFileName(project.ProjectName).Trim()) : fallback;
 
-    public ProjectExecutionEntry GetExecution(Guid id) => Executions.GetAll().Single(entry => entry.Id == id);
+    public ProjectExecutionEntry GetExecution(Guid id) => Executions.GetAll().SingleOrDefault(entry => entry.Id == id)
+        ?? throw new KeyNotFoundException("Execution history entry was not found.");
 
     public async Task<ProjectArtifacts> ArtifactsAsync(string projectId, Guid? executionId = null)
     {

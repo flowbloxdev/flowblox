@@ -63,7 +63,7 @@ namespace FlowBlox.Core.Models.ObjectManager
 
         [Display(Name = "UserFieldObjectManager_InputFields", GroupName = "UserFieldObjectManager_InputFields", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxUI(DisplayLabel = false, Maximize = true)]
-        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name) }, SplitMode = true)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name), nameof(FieldElement.ValueStatusIcon) }, SplitMode = true)]
         [FlowBloxAssociation(
             Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete,
             ItemFactory = typeof(UserFieldInputItemFactory))]
@@ -71,7 +71,7 @@ namespace FlowBlox.Core.Models.ObjectManager
 
         [Display(Name = "UserFieldObjectManager_MemoryFields", GroupName = "UserFieldObjectManager_MemoryFields", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxUI(DisplayLabel = false, Maximize = true)]
-        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name) }, SplitMode = true)]
+        [FlowBloxListView(ColumnMemberNames = new[] { nameof(FieldElement.Name), nameof(FieldElement.ValueStatusIcon) }, SplitMode = true)]
         [FlowBloxAssociation(
             Operations = UIOperations.Create | UIOperations.Edit | UIOperations.Delete,
             ItemFactory = typeof(UserFieldMemoryItemFactory))]

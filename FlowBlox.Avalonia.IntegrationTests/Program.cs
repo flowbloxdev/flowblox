@@ -13,6 +13,7 @@ internal static class Program
         // metadata. WPF otherwise resolves /Icons/... against this runner executable.
         System.Reflection.Assembly.SetEntryAssembly(typeof(AvaloniaDesktop.App).Assembly);
         var invalidMode = args.Length == 3
+            && args[2] != "--project-space-only"
             && args[2] != "--field-selection-only"
             && args[2] != "--launcher-only"
             && args[2] != "--execution-views-only"
@@ -21,7 +22,7 @@ internal static class Program
             && args[2] != "--quick-starts-only";
         if (args.Length < 2 || args.Length > 3 || invalidMode)
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--field-selection-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save]");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--project-space-only|--field-selection-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save]");
             return 2;
         }
 
@@ -48,6 +49,7 @@ internal static class Program
                     ? await new WorkspaceIntegrationChecks(window).LayoutAndSaveAsync(directory, sourceProjectPath)
                     : await new WorkspaceIntegrationChecks(window).RunAsync(
                     directory, sourceProjectPath,
+                    projectSpaceOnly: args.Length == 3 && args[2] == "--project-space-only",
                     fieldSelectionOnly: args.Length == 3 && args[2] == "--field-selection-only",
                     launcherOnly: args.Length == 3 && args[2] == "--launcher-only",
                     quickStartsOnly: args.Length == 3 && args[2] == "--quick-starts-only",

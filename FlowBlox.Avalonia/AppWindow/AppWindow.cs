@@ -867,13 +867,12 @@ namespace FlowBlox.AppWindow
             }
 
             UpdateUI_ProjectName();
-            if (!string.IsNullOrWhiteSpace(project.Notice))
+            if (!string.IsNullOrWhiteSpace(project.Notice)
+                && !FlowBlox.Core.Util.Projects.ProjectNoticeReadState.IsRead(
+                    project,
+                    FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.ProjectsReadNotices).PersistentValue))
             {
-                await DesktopDialogs.Messages.ShowAsync(
-                    project.Notice,
-                    FlowBloxResourceUtil.GetLocalizedString("AppWindow_ProjectNotice_Title", typeof(FlowBloxMainUITexts)),
-                    MessageBoxButtons.Ok,
-                    MessageBoxIcon.Information);
+                WpfDialogHost.ShowDialog(new ProjectNoticeWindow(project), this);
             }
             return true;
         }
@@ -932,9 +931,30 @@ namespace FlowBlox.AppWindow
             }
         }
 
-        private void AppWindow_FormClosing(object sender, global::Avalonia.Controls.WindowClosingEventArgs e)
+        private async void AppWindow_FormClosing(object sender, global::Avalonia.Controls.WindowClosingEventArgs e)
         {
             if (IsProjectEditingReadOnly) { e.Cancel = true; return; }
+            if (!_webExitApproved)
+            {
+                e.Cancel = true;
+                if (_webExitPending)
+                    return;
+
+                _webExitPending = true;
+                try
+                {
+                    if (await ConfirmWebServerExitAsync())
+                    {
+                        _webExitApproved = true;
+                        global::Avalonia.Threading.Dispatcher.UIThread.Post(() => Close());
+                    }
+                }
+                finally
+                {
+                    _webExitPending = false;
+                }
+                return;
+            }
             SaveLayout();
             if (!string.IsNullOrWhiteSpace(_installerPathToLaunchOnClose)) LaunchInstaller(_installerPathToLaunchOnClose);
             _appNotificationService.NotificationsChanged -= AppNotificationService_NotificationsChanged;

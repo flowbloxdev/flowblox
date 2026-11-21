@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
+using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Util;
 using Newtonsoft.Json;
@@ -49,12 +49,18 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi
             }
         }
 
-        public async Task<ApiResponse<List<FbProjectResult>>> GetProjectsAsync(string userToken = "", bool mine = false, string searchForName = "")
+        public async Task<ApiResponse<List<FbProjectResult>>> GetProjectsAsync(
+            string userToken = "",
+            bool mine = false,
+            string searchForName = "",
+            FbProjectClassification? classification = null)
         {
             var query = Uri.EscapeDataString(searchForName ?? string.Empty);
             string url = mine
                 ? UriHelper.ConcatUri(_baseUrl, $"projects.php?mine=1&searchForName={query}")
                 : UriHelper.ConcatUri(_baseUrl, $"projects.php?searchForName={query}");
+            if (classification.HasValue)
+                url += "&classification=" + Uri.EscapeDataString(classification.Value.ToString());
 
             if (!string.IsNullOrEmpty(userToken))
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userToken);

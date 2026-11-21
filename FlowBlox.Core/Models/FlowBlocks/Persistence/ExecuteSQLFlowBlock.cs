@@ -7,6 +7,7 @@ using FlowBlox.Core.Models.Runtime;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Fields;
+using FlowBlox.Core.Util.FullTextSearch;
 using FlowBlox.Core.Util.Resources;
 using SkiaSharp;
 using System.ComponentModel.DataAnnotations;
@@ -41,6 +42,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
         [FlowBloxUI(UISelectionButtons.None)]
         public bool UseFieldValuesAsParameters { get; set; } = true;
 
+        [Display(Name = "SQL_EnableFullTextSearch", Description = "SQL_EnableFullTextSearch_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 4)]
+        public bool EnableFullTextSearch { get; set; }
+
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.database_cog, 16, SKColors.IndianRed);
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.database_cog, 32, SKColors.IndianRed);
 
@@ -60,7 +64,9 @@ namespace FlowBlox.Core.Models.FlowBlocks.Persistence
                     dbType,
                     out parameters,
                     useFieldValuesAsParameters: UseFieldValuesAsParameters);
-                return DbConnectionUtil.ExecuteSqlQuery(sqlStatement, parameters, dbConnection);
+                return this.Resolve(block => block.EnableFullTextSearch)
+                    ? FullTextSearchBase.For(dbType).Execute(sqlStatement, parameters, dbConnection)
+                    : DbConnectionUtil.ExecuteSqlQuery(sqlStatement, parameters, dbConnection);
             }
             throw new InvalidOperationException($"Unable to connect to \"{sqlConnectionstring}\".");
         }

@@ -70,6 +70,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die All flows ähnelt.
+        /// </summary>
+        public static string AllFlows
+        {
+            get
+            {
+                return ResourceManager.GetString("AllFlows", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Back ähnelt.
         /// </summary>
         public static string Button_Back
@@ -213,6 +224,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Flow type ähnelt.
+        /// </summary>
+        public static string Classification
+        {
+            get
+            {
+                return ResourceManager.GetString("Classification", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Solution: complete task workflow. Function: reusable shared component. ähnelt.
+        /// </summary>
+        public static string ClassificationTooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("ClassificationTooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Permanently delete the project “{0}”? This cannot be undone. ähnelt.
         /// </summary>
         public static string Confirm_DeleteProject_Message
@@ -234,6 +267,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Downloads ähnelt.
+        /// </summary>
+        public static string Downloads
+        {
+            get
+            {
+                return ResourceManager.GetString("Downloads", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The project could not be deleted. ähnelt.
         /// </summary>
@@ -289,6 +333,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Function flows ähnelt.
+        /// </summary>
+        public static string FunctionFlow
+        {
+            get
+            {
+                return ResourceManager.GetString("FunctionFlow", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Comment ähnelt.
         /// </summary>
@@ -510,6 +565,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Solution flows ähnelt.
+        /// </summary>
+        public static string SolutionFlow
+        {
+            get
+            {
+                return ResourceManager.GetString("SolutionFlow", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Details ähnelt.
         /// </summary>
         public static string Tab_Details
@@ -652,6 +718,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Used by {0} flows ähnelt.
+        /// </summary>
+        public static string UsedByFormat
+        {
+            get
+            {
+                return ResourceManager.GetString("UsedByFormat", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Private ähnelt.
         /// </summary>

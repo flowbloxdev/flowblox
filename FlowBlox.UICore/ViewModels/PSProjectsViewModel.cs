@@ -22,6 +22,20 @@ namespace FlowBlox.UICore.ViewModels
     {
         private Window _ownerWindow;
 
+        private FbProjectClassification? _classificationFilter;
+        public FbProjectClassification? ClassificationFilter
+        {
+            get => _classificationFilter;
+            set
+            {
+                if (_classificationFilter == value)
+                    return;
+                _classificationFilter = value;
+                OnPropertyChanged();
+                ExecuteSearch();
+            }
+        }
+
         private string _searchText;
         private bool _isMine;
         private bool _isDeletingProject;
@@ -82,7 +96,9 @@ namespace FlowBlox.UICore.ViewModels
             get => _searchResults;
             set
             {
-                _searchResults = value;
+                _searchResults = value?
+                    .OrderByDescending(project => ProjectSpaceRelevance.GetScore(project.DownloadCount, project.Relevance))
+                    .ToList();
                 _creatorNames = new Dictionary<int, string>();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(CreatorNames));
@@ -358,7 +374,8 @@ namespace FlowBlox.UICore.ViewModels
             var resp = await _flowBloxWebApiService.Value.GetProjectsAsync(
                 userToken: token,
                 mine: IsMine,
-                searchForName: SearchText ?? "");
+                searchForName: SearchText ?? "",
+                classification: ClassificationFilter);
 
             if (!resp.Success)
             {
@@ -377,7 +394,7 @@ namespace FlowBlox.UICore.ViewModels
             {
                 SearchResults = resp.ResultObject;
                 SelectedProject = null;
-                _ = LoadCreatorNamesAsync(resp.ResultObject, endpoint);
+                _ = LoadCreatorNamesAsync(SearchResults, endpoint);
             }
         }
 

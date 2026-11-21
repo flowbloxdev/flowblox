@@ -88,4 +88,10 @@
   <data name="SelectConfiguration" xml:space="preserve"><value>Select configuration</value></data>
   <data name="ProjectDefaults" xml:space="preserve"><value>Project defaults</value></data>
   <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="RemoveExecution" xml:space="preserve"><value>Remove execution entry</value></data>
+  <data name="ConfirmRemoveExecution" xml:space="preserve"><value>Remove this history entry? Project files, logs and outputs will be kept.</value></data>
+  <data name="ExecutionUnavailable" xml:space="preserve"><value>This execution entry is no longer available.</value></data>
+  <data name="Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="PrepareFirstProject" xml:space="preserve"><value>Open, create, or download a flow from Project Space in the desktop app. Run it locally once and follow any setup instructions for required external components. After a successful test, you can run it remotely.</value></data>
+  <data name="ExecutionSetupRequired" xml:space="preserve"><value>This flow requires additional setup. Run it once in the desktop app and follow the setup instructions, then try again here.</value></data>
 </root>

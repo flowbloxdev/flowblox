@@ -863,4 +863,20 @@ Der RecursiveCall-Flow-Block ruft den verbundenen, früheren Ziel-Flow-Block ern
   <data name="AppWindow_ReloadProjectSpace_Failed" xml:space="preserve">
     <value>Das Projekt konnte nicht erneut aus dem Project Space geladen werden: {0}</value>
   </data>
+  <data name="WebServer_ExitTitle" xml:space="preserve">
+    <value>Web App weiter bereitstellen?</value>
+  </data>
+  <data name="WebServer_ExitMessage" xml:space="preserve">
+    <value>Der FlowBlox-Webserver läuft. Soll die Web App nach dem Schließen von FlowBlox weiterhin verfügbar bleiben?
+
+Sie können den Server später jederzeit beenden: Öffnen Sie FlowBlox und wählen Sie {0}.
+
+Wenn Sie den Server beenden, ist die Web App nicht mehr erreichbar.</value>
+  </data>
+  <data name="WebServer_ExitKeepRunning" xml:space="preserve">
+    <value>Ja, weiterlaufen lassen</value>
+  </data>
+  <data name="WebServer_ExitStop" xml:space="preserve">
+    <value>Nein, Webserver beenden</value>
+  </data>
 </root>

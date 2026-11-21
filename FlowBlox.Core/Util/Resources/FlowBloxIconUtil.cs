@@ -73,6 +73,35 @@ namespace FlowBlox.Core.Util.Resources
             return image;
         }
 
+        private static readonly ConcurrentDictionary<(uint, uint, SKRect), Lazy<SKImage>> OverlayCache = new();
+
+        /// <summary>
+        /// Composes an overlay at the requested pixel bounds without modifying either source image.
+        /// The result is shared and cached; callers must not dispose it or the cached source icons.
+        /// </summary>
+        public static SKImage AttachOverlay(SKImage image, SKImage overlay, SKRect bounds)
+        {
+            ArgumentNullException.ThrowIfNull(image);
+            ArgumentNullException.ThrowIfNull(overlay);
+            if (!float.IsFinite(bounds.Left) || !float.IsFinite(bounds.Top)
+                || !float.IsFinite(bounds.Right) || !float.IsFinite(bounds.Bottom)
+                || bounds.Width <= 0 || bounds.Height <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bounds));
+
+            return OverlayCache.GetOrAdd(
+                (image.UniqueId, overlay.UniqueId, bounds),
+                _ => new Lazy<SKImage>(() => ComposeOverlay(image, overlay, bounds))).Value;
+        }
+
+        private static SKImage ComposeOverlay(SKImage image, SKImage overlay, SKRect bounds)
+        {
+            using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
+            surface.Canvas.Clear(SKColors.Transparent);
+            surface.Canvas.DrawImage(image, 0, 0);
+            surface.Canvas.DrawImage(overlay, bounds);
+            return surface.Snapshot();
+        }
+
         private static string ComputeHashKey(byte[] data, int size, SKColor? color)
         {
             using var sha = SHA256.Create();

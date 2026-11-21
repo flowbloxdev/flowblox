@@ -5091,7 +5091,41 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="TableSelectorMappingEntry_FallbackValue" xml:space="preserve">
     <value>Missing-column fallback</value>
   </data>
-  <data name="PDF2TextFlowBlock_UseOcr" xml:space="preserve"><value>Use OCR</value></data>  <data name="PDF2TextFlowBlock_UseOcr_Tooltip" xml:space="preserve"><value>Recognize scanned PDF pages locally using Tesseract. German and English language data are included. The original PDF text remains available separately.</value></data>  <data name="PDF2TextFlowBlock_OcrMode" xml:space="preserve"><value>OCR pages</value></data>  <data name="PdfOcrMode_EmptyPages" xml:space="preserve"><value>Pages without PDF text</value></data>  <data name="PdfOcrMode_AllPages" xml:space="preserve"><value>All pages, including mixed text and scans</value></data>  <data name="PDF2TextFlowBlock_OcrLanguages" xml:space="preserve"><value>OCR languages</value></data>  <data name="PDF2TextFlowBlock_OcrLanguages_Tooltip" xml:space="preserve"><value>Tesseract language names separated by +, for example deu+eng. Other languages require their traineddata files.</value></data>  <data name="PDF2TextFlowBlock_OcrDataDirectory" xml:space="preserve"><value>OCR language data directory</value></data>  <data name="PDF2TextFlowBlock_OcrDataDirectory_Tooltip" xml:space="preserve"><value>Optional custom tessdata directory. Leave empty to use the bundled German and English data.</value></data>  <data name="PDF2TextFlowBlock_OcrDpi" xml:space="preserve"><value>OCR rendering DPI</value></data>  <data name="PDF2TextFlowBlock_OcrDpi_Tooltip" xml:space="preserve"><value>PDF page resolution for OCR. Default: 300 DPI. Higher values require more memory and processing time.</value></data>  <data name="PDF2TextFlowBlock_PdfTextResult" xml:space="preserve"><value>Original PDF text field</value></data>  <data name="PDF2TextFlowBlock_OcrTextResult" xml:space="preserve"><value>OCR text field</value></data>  <data name="PDF2TextFlowBlock_PageNumberResult" xml:space="preserve"><value>Page number field</value></data></root>
+  <data name="PDF2TextFlowBlock_UseOcr" xml:space="preserve"><value>Use OCR</value></data>
+  <data name="PDF2TextFlowBlock_UseOcr_Tooltip" xml:space="preserve"><value>Recognize scanned PDF pages locally using Tesseract. German and English language data are included. The original PDF text remains available separately.</value></data>
+  <data name="PDF2TextFlowBlock_OcrMode" xml:space="preserve"><value>OCR pages</value></data>
+  <data name="PdfOcrMode_EmptyPages" xml:space="preserve"><value>Pages without PDF text</value></data>
+  <data name="PdfOcrMode_AllPages" xml:space="preserve"><value>All pages, including mixed text and scans</value></data>
+  <data name="PDF2TextFlowBlock_OcrLanguages" xml:space="preserve"><value>OCR languages</value></data>
+  <data name="PDF2TextFlowBlock_OcrLanguages_Tooltip" xml:space="preserve"><value>Tesseract language names separated by +, for example deu+eng. Other languages require their traineddata files.</value></data>
+  <data name="PDF2TextFlowBlock_OcrDataDirectory" xml:space="preserve"><value>OCR language data directory</value></data>
+  <data name="PDF2TextFlowBlock_OcrDataDirectory_Tooltip" xml:space="preserve"><value>Optional custom tessdata directory. Leave empty to use the bundled German and English data.</value></data>
+  <data name="PDF2TextFlowBlock_OcrDpi" xml:space="preserve"><value>OCR rendering DPI</value></data>
+  <data name="PDF2TextFlowBlock_OcrDpi_Tooltip" xml:space="preserve"><value>PDF page resolution for OCR. Default: 300 DPI. Higher values require more memory and processing time.</value></data>
+  <data name="PDF2TextFlowBlock_PdfTextResult" xml:space="preserve"><value>Original PDF text field</value></data>
+  <data name="PDF2TextFlowBlock_OcrTextResult" xml:space="preserve"><value>OCR text field</value></data>
+  <data name="PDF2TextFlowBlock_PageNumberResult" xml:space="preserve"><value>Page number field</value></data>
+  <data name="ProjectExecutions_ProcessUnavailable" xml:space="preserve"><value>The runner process is no longer available and did not provide a completed result.</value></data>
+  <data name="FieldElement_ValueStatusIcon" xml:space="preserve"><value>Value status</value></data>
+  <data name="FieldElement_ValueStatusIcon_Tooltip" xml:space="preserve"><value>Value supplied, required value missing, or optional field empty.</value></data>
+  <data name="FieldElement_ValueSupplied" xml:space="preserve"><value>Field filled in</value></data>
+  <data name="FieldElement_RequiredInputEmpty" xml:space="preserve"><value>Required field, please enter a value</value></data>
+  <data name="FieldElement_OptionalValueEmpty" xml:space="preserve"><value>Optional field, not filled in</value></data>
+  <data name="FieldElement_RequiredInput" xml:space="preserve"><value>Required input</value></data>
+  <data name="FbProjectClassification_Solution" xml:space="preserve"><value>Solution</value></data>
+  <data name="FbProjectClassification_Function" xml:space="preserve"><value>Function</value></data>
+  <data name="SQL_EnableFullTextSearch" xml:space="preserve"><value>Enable native full-text search</value></data>
+  <data name="SQL_EnableFullTextSearch_Tooltip" xml:space="preserve"><value>Automatically selects the database's native full-text index and relevance ranking. Use FULLTEXT_MATCH($Field::Keywords) and optionally FULLTEXT_RANK() in a single-table SELECT. Text columns are derived from the physical table. Requires index creation permissions and provider capabilities.</value></data>
+  <data name="ComparisonOperator_FileExists" xml:space="preserve"><value>File exists</value></data>
+  <data name="ComparisonOperator_FileExists_Tooltip" xml:space="preserve"><value>Checks whether the field contains an existing file path. No comparison value is needed.</value></data>
+  <data name="ComparisonOperator_DirectoryExists" xml:space="preserve"><value>Directory exists</value></data>
+  <data name="ComparisonOperator_DirectoryExists_Tooltip" xml:space="preserve"><value>Checks whether the field contains an existing directory path. No comparison value is needed.</value></data>
+  <data name="EnumerationGroup_FileSystemOperators" xml:space="preserve"><value>File system operators</value></data>
+  <data name="ComparisonOperator_FileIsEmpty" xml:space="preserve"><value>File is empty</value></data>
+  <data name="ComparisonOperator_FileIsEmpty_Tooltip" xml:space="preserve"><value>True if the file is missing or has a size of zero bytes. No comparison value is needed.</value></data>
+  <data name="ComparisonOperator_DirectoryIsEmpty" xml:space="preserve"><value>Directory is empty</value></data>
+  <data name="ComparisonOperator_DirectoryIsEmpty_Tooltip" xml:space="preserve"><value>True if the directory is missing or contains no files, including all subdirectories. Empty subdirectories are ignored. No comparison value is needed.</value></data>
+</root>
 
 
 

@@ -142,15 +142,17 @@
 		<value>Content:</value>
 	</data>
 	<data name="Button_Save" xml:space="preserve">
-		<value>Save</value>
+		<value>Apply</value>
 	</data>
 	<data name="Message_NoToolboxElementsFound" xml:space="preserve">
 		<value>No toolbox elements available.</value>
 	</data>
 	<data name="Button_Select" xml:space="preserve">
-		<value>Select</value>
+		<value>Insert</value>
 	</data>
 	<data name="Message_SaveSuccessful" xml:space="preserve">
 		<value>Saved successfully.</value>
 	</data>
+  <data name="Description" xml:space="preserve"><value>Browse and manage reusable templates, suggestions and examples. Insert a template into an input field; parameter placeholders guide you through selecting fields or entering values manually.</value></data>
+  <data name="Button_Back" xml:space="preserve"><value>Back</value></data>
 </root>

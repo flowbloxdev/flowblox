@@ -1,0 +1,57 @@
+<mah:MetroWindow x:Class="FlowBlox.UICore.Views.ProjectNoticeWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:md="clr-namespace:MdXaml;assembly=MdXaml"
+    xmlns:texts="clr-namespace:FlowBlox.UICore.Resources"
+    Style="{DynamicResource FlowBlox.Window}"
+    Title="{x:Static texts:ProjectNoticeWindow.Title}"
+    Width="780" Height="640" MaxHeight="800" MinHeight="320"
+    ShowMinButton="False" ShowMaxRestoreButton="False"
+    WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FlowBlox.UICore;component/Views/MahAppMetroResources.xaml" />
+                <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="NoticeMarkdownStyle" TargetType="{x:Type FlowDocument}"
+                   BasedOn="{x:Static md:MarkdownStyle.Standard}">
+                <Setter Property="FontFamily" Value="Segoe UI" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Foreground" Value="#374151" />
+                <Setter Property="PagePadding" Value="0" />
+                <Setter Property="LineHeight" Value="21" />
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <Border Style="{DynamicResource FlowBlox.DialogHeader}" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <icons:PackIconMaterial Kind="NoteTextOutline" Width="32" Height="32" Margin="0,0,10,0"
+                                       Foreground="{DynamicResource FlowBlox.Brush.DialogHeaderText}" />
+                <TextBlock Text="{x:Static texts:ProjectNoticeWindow.Title}"
+                           Style="{DynamicResource FlowBlox.DialogHeaderTitle}" />
+            </StackPanel>
+        </Border>
+        <Border Style="{DynamicResource FlowBlox.DialogDescription}" DockPanel.Dock="Top">
+            <TextBlock x:Name="ProjectDescription" Style="{DynamicResource FlowBlox.DialogDescriptionText}" />
+        </Border>
+        <Border DockPanel.Dock="Bottom" Padding="12,8" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource FlowBlox.Brush.Border}">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Right" Content="{x:Static texts:ProjectNoticeWindow.Continue}"
+                        Style="{StaticResource FlowBlox.WindowActionButton.Apply}"
+                        mah:ControlsHelper.ContentCharacterCasing="Normal"
+                        IsDefault="True" Click="Continue_Click" />
+                <CheckBox x:Name="ReadNotice" Content="{x:Static texts:ProjectNoticeWindow.MarkRead}"
+                          VerticalAlignment="Center" Margin="4,0,12,0" />
+            </DockPanel>
+        </Border>
+        <md:MarkdownScrollViewer x:Name="NoticeMarkdown" Margin="20,12"
+                                 MarkdownStyle="{StaticResource NoticeMarkdownStyle}"
+                                 IsToolBarVisible="False" Background="Transparent" BorderThickness="0"
+                                 HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" />
+    </DockPanel>
+</mah:MetroWindow>

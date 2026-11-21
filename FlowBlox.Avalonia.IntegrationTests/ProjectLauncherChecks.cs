@@ -140,8 +140,14 @@ internal sealed partial class WorkspaceIntegrationChecks
             try
             {
                 var fields = (WpfPanel)dialog.FindName("FieldsPanel");
-                check(FindLauncherVisuals<WpfTextBlock>(fields).Any(x => x.Text == "Choice *"),
-                    "Execution inputs show required markers next to the field name");
+                check(FindLauncherVisuals<WpfTextBlock>(fields).Any(x => x.Text == "Choice")
+                    && FindLauncherVisuals<System.Windows.Controls.Image>(fields).Any(image => image.Width == 16 && image.Source != null),
+                    "Execution inputs show the field icon beside the name without duplicating its required marker");
+                var completionDot = FindLauncherVisuals<System.Windows.Controls.Image>(fields).Single(image => image.Width == 8);
+                var missingSource = completionDot.Source;
+                var missingDescription = completionDot.ToolTip;
+                check(missingSource != null && missingDescription != null,
+                    "An empty required input has an accessible completion indicator");
                 check(FindLauncherVisuals<SelectionDropDownControl>(fields).Any(),
                     "Execution inputs reuse the possible-values combo-box editor");
                 check(FlowBloxProjectManager.Instance.ActiveProject == null,
@@ -159,6 +165,18 @@ internal sealed partial class WorkspaceIntegrationChecks
                 field.StringValue = "example";
                 FlowBlox.Core.Util.FlowBlocks.FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
                 check(execute.IsEnabled, "Filling a required input immediately enables execution");
+                check(completionDot.Source != missingSource && !Equals(completionDot.ToolTip, missingDescription),
+                    "Filling a required input immediately refreshes its completion indicator");
+                foreach (var value in new[] { "false", "0", "   " })
+                {
+                    field.StringValue = value;
+                    FlowBlox.Core.Util.FlowBlocks.FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
+                    var supplied = !string.IsNullOrWhiteSpace(value);
+                    check(execute.IsEnabled == supplied && Equals(completionDot.ToolTip, missingDescription) != supplied,
+                        "Completion and execution availability agree for false, zero and whitespace values");
+                }
+                field.StringValue = "example";
+                FlowBlox.Core.Util.FlowBlocks.FlowBloxComponentHelper.RaisePropertyChanged(field, nameof(FieldElement.StringValue));
                 CaptureProjectCards(dialog, Path.Combine(directory, "project-execution-inputs.png"));
                 ((WpfButton)dialog.FindName("ExecuteButton")).RaiseEvent(new System.Windows.RoutedEventArgs(WpfButton.ClickEvent));
                 check(store.GetAll().Count == 1, "Execution is persisted before the runner is monitored");
@@ -223,7 +241,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             {
                 var fields = (WpfPanel)dialog.FindName("FieldsPanel");
                 var labels = FindLauncherVisuals<WpfTextBlock>(fields).Select(label => label.Text).ToList();
-                check(inputs.All(field => labels.Contains(field.Name + (field.IsRequiredAtRuntimeStartup ? " *" : string.Empty))),
+                check(inputs.All(field => labels.Contains(field.Name)),
                     "Every deserialized input is displayed with its field name and required marker");
                 check(((WpfTextBlock)dialog.FindName("ProjectDescription")).Text == project.ProjectDescription,
                     "Execution preview displays the description from the loaded project file");

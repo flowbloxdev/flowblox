@@ -18,7 +18,14 @@ internal sealed partial class MessageBoxWindow : Window
     private static readonly IBrush LinkBrush = Brush.Parse("#82C5FF");
     private static readonly IBrush HoverLinkBrush = Brush.Parse("#B7DFFF");
 
-    public MessageBoxWindow(string message, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
+    public MessageBoxWindow(
+        string message,
+        string title,
+        MessageBoxButtons buttons,
+        MessageBoxIcon icon,
+        string yesButtonText = null,
+        string noButtonText = null,
+        MessageBoxResult defaultResult = MessageBoxResult.No)
     {
         AvaloniaXamlLoader.Load(this);
         Title = title;
@@ -37,11 +44,11 @@ internal sealed partial class MessageBoxWindow : Window
         var german = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de";
         var affirmative = this.FindControl<Button>("Affirmative");
         var negative = this.FindControl<Button>("Negative");
-        affirmative.Content = buttons == MessageBoxButtons.YesNo ? german ? "Ja" : "Yes" : "OK";
-        negative.Content = german ? "Nein" : "No";
+        affirmative.Content = buttons == MessageBoxButtons.YesNo ? yesButtonText ?? (german ? "Ja" : "Yes") : "OK";
+        negative.Content = noButtonText ?? (german ? "Nein" : "No");
         negative.IsVisible = buttons == MessageBoxButtons.YesNo;
-        affirmative.IsDefault = buttons == MessageBoxButtons.Ok;
-        negative.IsDefault = buttons == MessageBoxButtons.YesNo;
+        affirmative.IsDefault = buttons == MessageBoxButtons.Ok || defaultResult == MessageBoxResult.Yes;
+        negative.IsDefault = buttons == MessageBoxButtons.YesNo && defaultResult == MessageBoxResult.No;
         affirmative.Click += (_, _) => Close(buttons == MessageBoxButtons.YesNo ? MessageBoxResult.Yes : MessageBoxResult.Ok);
         negative.Click += (_, _) => Close(MessageBoxResult.No);
         var (symbol, color) = icon switch
@@ -53,12 +60,12 @@ internal sealed partial class MessageBoxWindow : Window
         };
         this.FindControl<TextBlock>("Symbol").Text = symbol;
         this.FindControl<Border>("SymbolBackground").Background = Brush.Parse(color);
-        Opened += (_, _) => (buttons == MessageBoxButtons.YesNo ? negative : affirmative).Focus();
+        Opened += (_, _) => (negative.IsDefault ? negative : affirmative).Focus();
         KeyDown += (_, e) =>
         {
             if (e.Key != Key.Escape) return;
             e.Handled = true;
-            Close(buttons == MessageBoxButtons.YesNo ? MessageBoxResult.No : MessageBoxResult.Ok);
+            Close(buttons == MessageBoxButtons.YesNo ? defaultResult : MessageBoxResult.Ok);
         };
     }
 

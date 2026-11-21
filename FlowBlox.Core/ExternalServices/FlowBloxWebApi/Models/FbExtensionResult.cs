@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models
@@ -8,6 +8,12 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models
         private string _description;
         private bool _active;
         private bool _isDirty;
+
+        public long DownloadCount { get; set; }
+        public double? Relevance { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public Guid Guid { get; set; }
 

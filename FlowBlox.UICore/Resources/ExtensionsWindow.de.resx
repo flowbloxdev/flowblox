@@ -259,4 +259,8 @@ Passen Sie die Suchkriterien an oder versuchen Sie einen anderen Suchbegriff.</v
   <data name="Hint_PublishWorkflow" xml:space="preserve">
     <value>Zum Veröffentlichen: Account erstellen, "Eigene Erweiterungen verwalten" öffnen und danach neue Erweiterung plus Version hinzufügen.</value>
   </data>
+  <data name="Downloads" xml:space="preserve"><value>Downloads</value></data>
+  <data name="UpdatedAt" xml:space="preserve"><value>Aktualisiert</value></data>
+  <data name="VersionDownloads" xml:space="preserve"><value>Downloads dieser Version</value></data>
+  <data name="RuntimeVersion" xml:space="preserve"><value>FlowBlox-Laufzeitversion</value></data>
 </root>

@@ -73,6 +73,26 @@ namespace FlowBlox.Core.Enums
         [Display(Name = "ComparisonOperator_NotContainsLine", Description = "ComparisonOperator_NotContainsLine_Tooltip", ResourceType = typeof(FlowBloxTexts))]
         [FlowBloxEnumerationGroup("EnumerationGroup_LineSetOperators", ResourceType = typeof(FlowBloxTexts),
             IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.text_box_search_outline), IconColor = "#00897B")]
-        NotContainsLine
+        NotContainsLine,
+
+        [Display(Name = "ComparisonOperator_FileExists", Description = "ComparisonOperator_FileExists_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_FileSystemOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.folder_open), IconColor = "#546E7A")]
+        FileExists,
+
+        [Display(Name = "ComparisonOperator_DirectoryExists", Description = "ComparisonOperator_DirectoryExists_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_FileSystemOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.folder_open), IconColor = "#546E7A")]
+        DirectoryExists,
+
+        [Display(Name = "ComparisonOperator_FileIsEmpty", Description = "ComparisonOperator_FileIsEmpty_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_FileSystemOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.folder_open), IconColor = "#546E7A")]
+        FileIsEmpty,
+
+        [Display(Name = "ComparisonOperator_DirectoryIsEmpty", Description = "ComparisonOperator_DirectoryIsEmpty_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxEnumerationGroup("EnumerationGroup_FileSystemOperators", ResourceType = typeof(FlowBloxTexts),
+            IconResourceType = typeof(FlowBloxIcons), IconResourceKey = nameof(FlowBloxIcons.folder_open), IconColor = "#546E7A")]
+        DirectoryIsEmpty
     }
 }

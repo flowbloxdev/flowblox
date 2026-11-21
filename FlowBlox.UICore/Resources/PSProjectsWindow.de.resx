@@ -267,4 +267,11 @@
   <data name="Error_DeleteProjectFailed" xml:space="preserve"><value>Das Projekt konnte nicht gelöscht werden.</value></data>
   <data name="Visibility_Public" xml:space="preserve"><value>Öffentlich</value></data>
   <data name="Visibility_Private" xml:space="preserve"><value>Privat</value></data>
+  <data name="Downloads" xml:space="preserve"><value>Downloads</value></data>
+  <data name="Classification" xml:space="preserve"><value>Flow-Typ</value></data>
+  <data name="ClassificationTooltip" xml:space="preserve"><value>Lösung: vollständiger Aufgabenablauf. Funktion: wiederverwendbarer gemeinsamer Baustein.</value></data>
+  <data name="AllFlows" xml:space="preserve"><value>Alle Flows</value></data>
+  <data name="SolutionFlow" xml:space="preserve"><value>Lösungsflows</value></data>
+  <data name="FunctionFlow" xml:space="preserve"><value>Funktionsflows</value></data>
+  <data name="UsedByFormat" xml:space="preserve"><value>Von {0} Flows verwendet</value></data>
 </root>

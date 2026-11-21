@@ -37,6 +37,7 @@ public partial class ProjectExecutionWindow : MetroWindow
     private readonly ProjectInputConfigurations _inputConfigurations = ProjectInputConfigurations.Instance;
     private readonly FlowBloxProject? _project;
     private readonly List<FieldElement> _fields = new();
+    private readonly Dictionary<FieldElement, Image> _fieldStatusImages = new();
     private readonly IReadOnlyList<ProjectOutputDirectoryChoice> _outputDirectories = Array.Empty<ProjectOutputDirectoryChoice>();
     private readonly Dictionary<string, string> _initialValues = new(StringComparer.OrdinalIgnoreCase);
     private readonly ObservableCollection<FlowBloxTaskOptionOverrideViewModel> _options = new();
@@ -63,7 +64,8 @@ public partial class ProjectExecutionWindow : MetroWindow
             (projectNames ?? Enumerable.Empty<string>()).Append(project.ProjectName));
         ProjectTitle.Text = project.ProjectName;
         ProjectDescription.Text = project.ProjectDescription;
-        TextBlockLinkHelper.SetFormattedText(ProjectNoticeText, project.Notice);
+        ProjectNoticeText.Markdown = project.Notice ?? string.Empty;
+        ProjectNoticeText.Engine.HyperlinkCommand = new RelayCommand(OpenNoticeLink);
         ProjectNoticeExpander.Visibility = string.IsNullOrWhiteSpace(project.Notice) ? Visibility.Collapsed : Visibility.Visible;
         OptionsGrid.ItemsSource = _options;
         BuildFields();
@@ -131,7 +133,7 @@ public partial class ProjectExecutionWindow : MetroWindow
             var bindingContext = new PropertyControlBindingContext(field);
             var model = resolver.Resolve(property, field, false, null, bindingContext);
             var editor = AddOutputDirectoryButton(field, model.Control);
-            AddField(field.Name + (field.IsRequiredAtRuntimeStartup ? " *" : string.Empty), editor);
+            AddField(field.Name, editor, field);
             field.PropertyChanged += InputField_PropertyChanged;
         }
     }
@@ -180,23 +182,63 @@ public partial class ProjectExecutionWindow : MetroWindow
 
     private void InputField_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(FieldElement.StringValue))
+        if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(FieldElement.StringValue)
+            || e.PropertyName == nameof(FieldElement.DefaultValue))
             UpdateExecuteAvailability();
     }
 
     private void UpdateExecuteAvailability()
     {
+        foreach (var pair in _fieldStatusImages)
+        {
+            pair.Value.Source = SkiaWpfImageHelper.ConvertToImageSource(pair.Key.ValueStatusIcon);
+            pair.Value.ToolTip = pair.Key.ValueStatusDescription;
+            System.Windows.Automation.AutomationProperties.SetName(pair.Value, pair.Key.ValueStatusDescription);
+        }
+
         ExecuteButton.IsEnabled = _entry == null && _fields
             .Where(field => field.IsRequiredAtRuntimeStartup)
             .All(field => !string.IsNullOrWhiteSpace(field.StringValue));
     }
 
-    private void AddField(string name, FrameworkElement editor)
+    private void AddField(string name, FrameworkElement editor, FieldElement? field = null)
     {
         var label = new TextBlock { Text = name, Style = (Style)FindResource("Execution.ParameterLabel") };
+        var header = new DockPanel { LastChildFill = true };
+        if (field != null)
+        {
+            var icon = new Image
+            {
+                Source = SkiaWpfImageHelper.ConvertToImageSource(field.Icon16),
+                Width = 16,
+                Height = 16,
+                Margin = new Thickness(0, 0, 5, 0)
+            };
+            DockPanel.SetDock(icon, Dock.Left);
+            header.Children.Add(icon);
+
+            var status = new Image
+            {
+                Width = 8,
+                Height = 8,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(8, 0, 2, 0)
+            };
+            DockPanel.SetDock(status, Dock.Right);
+            header.Children.Add(status);
+            _fieldStatusImages[field] = status;
+            if (field.IsRequiredAtRuntimeStartup)
+            {
+                var requiredText = FlowBloxResourceUtil.GetLocalizedString("FieldElement_RequiredInput", typeof(Core.FlowBloxTexts));
+                icon.ToolTip = requiredText;
+                System.Windows.Automation.AutomationProperties.SetHelpText(editor, requiredText);
+                System.Windows.Automation.AutomationProperties.SetIsRequiredForForm(editor, true);
+            }
+        }
+        header.Children.Add(label);
         FieldsPanel.Children.Add(new Border
         {
-            Child = label,
+            Child = header,
             Style = (Style)FindResource("Execution.ParameterBorder"),
             Margin = new Thickness(0, 0, 0, 3)
         });
@@ -604,6 +646,22 @@ public partial class ProjectExecutionWindow : MetroWindow
         {
             FlowBloxLogManager.Instance.GetLogger().Warn("Failed to read the execution's project description.", exception);
             return string.Empty;
+        }
+    }
+
+    private static void OpenNoticeLink(object parameter)
+    {
+        if (!Uri.TryCreate(parameter?.ToString(), UriKind.Absolute, out var uri)
+            || uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp)
+            return;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+        }
+        catch (Exception exception)
+        {
+            FlowBloxLogManager.Instance.GetLogger().Warn("Failed to open an execution notice hyperlink.", exception);
         }
     }
 

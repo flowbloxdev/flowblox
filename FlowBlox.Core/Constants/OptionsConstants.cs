@@ -114,6 +114,8 @@ namespace FlowBlox.Core.Constants
         public const string PopUpYtDlpQuickStartCompleted = "PopUp.YtDlp.QuickStartCompleted.V2";
 
         public const string WebBrowserServiceName = "WebBrowser.ServiceName";
+        public const string WebServerConfirmOnApplicationExit = "WebServer.ConfirmOnApplicationExit";
+        public const string ProjectsReadNotices = "Projects.ReadNotices";
         public const string WebBrowserServiceSettings = "WebBrowser.ServiceSettings";
 
         public const string WebRequestAccept = "WebRequest.Accept";

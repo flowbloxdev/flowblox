@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models
 {
     public class FbProjectVersionResult
     {
+        public long DownloadCount { get; set; }
+
         public int VersionNumber { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string Comment { get; set; }

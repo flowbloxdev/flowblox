@@ -61,7 +61,8 @@ internal static class ProjectSpaceCommand
         if (options.Query != null && !options.List || options.Directory != null && options.Download == null
             || options.Mine && !options.List || options.Mine && options.Private
             || options.Overwrite && options.Download == null && options.Reload == null || options.New && options.Upload == null
-            || options.Description != null && options.Upload == null || options.Visibility != null && options.Upload == null)
+            || options.Description != null && options.Upload == null || options.Visibility != null && options.Upload == null
+            || options.Classification != null && options.Upload == null && !options.List)
             throw new ArgumentException("An option does not apply to the selected command. Use --ps-help for usage.");
         if (options.Reload != null && !options.Overwrite)
             throw new ArgumentException("Reload discards local project changes. Pass --overwrite to confirm replacement.");
@@ -92,8 +93,8 @@ internal static class ProjectSpaceCommand
         object result;
         if (options.List)
         {
-            result = (await tools.ListAsync(options.Private, options.Query ?? string.Empty, options.Mine).ConfigureAwait(false))
-                .Select(project => new { ProjectSpaceGuid = project.Guid, project.Name, project.Description, project.Visibility })
+            result = (await tools.ListAsync(options.Private, options.Query ?? string.Empty, options.Mine, options.Classification).ConfigureAwait(false))
+                .Select(project => new { ProjectSpaceGuid = project.Guid, project.Name, project.Description, project.Visibility, project.Classification })
                 .ToList();
         }
         else if (options.Download != null)
@@ -107,7 +108,7 @@ internal static class ProjectSpaceCommand
         }
         else
         {
-            result = await tools.UploadAsync(options.Upload, options.New, options.Description, visibility).ConfigureAwait(false);
+            result = await tools.UploadAsync(options.Upload, options.New, options.Description, visibility, options.Classification).ConfigureAwait(false);
         }
         Console.Out.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented, new StringEnumConverter()));
     }

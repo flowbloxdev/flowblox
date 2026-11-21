@@ -546,6 +546,7 @@ namespace FlowBlox.Core.Models.Project
                 if (!string.IsNullOrWhiteSpace(fileNameForAdjustments))
                     AdjustFileContentBeforeDeserialization(fileNameForAdjustments, ref projectFileContent);
 
+                projectFileContent = MigrateJson(projectFileContent);
                 var project = JsonConvert.DeserializeObject<FlowBloxProject>(projectFileContent, settings);
                 if (project == null)
                     throw new Exception("Failed to deserialize FlowBloxProject from JSON.");
@@ -717,7 +718,6 @@ namespace FlowBlox.Core.Models.Project
         {
             string directoryPath = Path.GetDirectoryName(fileName);
             json = json.Replace(ProjectDirectoryPlaceholder, directoryPath.Replace(@"\", @"\\"));
-            json = MigrateJson(json);
         }
 
         private static void AdjustFileContentAfterSerialization(string fileName, ref string json)

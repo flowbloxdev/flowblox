@@ -50,7 +50,25 @@ namespace FlowBlox.UICore.ViewModels
             }
         }
 
-        public List<FbExtensionResult> SearchResults { get; set; }
+        private List<FbExtensionResult> _searchResults = new();
+        private readonly ProjectSpaceUserNameCache _creatorNameCache = new();
+        private IReadOnlyDictionary<int, string> _creatorNames = new Dictionary<int, string>();
+
+        public IReadOnlyDictionary<int, string> CreatorNames => _creatorNames;
+
+        public List<FbExtensionResult> SearchResults
+        {
+            get => _searchResults;
+            set
+            {
+                _searchResults = value?
+                    .OrderByDescending(extension => ProjectSpaceRelevance.GetScore(extension.DownloadCount, extension.Relevance))
+                    .ToList() ?? new List<FbExtensionResult>();
+                _creatorNames = new Dictionary<int, string>();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CreatorNames));
+            }
+        }
         public FbExtensionResult SelectedExtension
         {
             get => _selectedExtension;
@@ -164,7 +182,8 @@ namespace FlowBlox.UICore.ViewModels
             Window ownerWindow,
             FlowBloxProject project = null,
             Action<FlowBloxProject> prepareProjectForSave = null,
-            Action<FlowBloxProject> restoreProjectAfterSaveAttempt = null) : this()
+            Action<FlowBloxProject> restoreProjectAfterSaveAttempt = null,
+            bool loadRemoteData = true) : this()
         {
             _ownerWindow = ownerWindow;
             _project = project;
@@ -181,8 +200,11 @@ namespace FlowBlox.UICore.ViewModels
                 CommandManager.InvalidateRequerySuggested();
             };
 
-            ExecuteSearch();
-            _ = LoadApiMetadataAsync();
+            if (loadRemoteData)
+            {
+                ExecuteSearch();
+                _ = LoadApiMetadataAsync();
+            }
         }
 
         private async Task LoadApiMetadataAsync()
@@ -265,7 +287,26 @@ namespace FlowBlox.UICore.ViewModels
             if (searchResultsResp.Success && searchResultsResp.ResultObject != null)
             {
                 SearchResults = searchResultsResp.ResultObject;
-                OnPropertyChanged(nameof(SearchResults));
+                _ = LoadCreatorNamesAsync(SearchResults, ApiUrl);
+            }
+        }
+
+        private async Task LoadCreatorNamesAsync(List<FbExtensionResult> extensions, string endpoint)
+        {
+            var names = new Dictionary<int, string>();
+            foreach (var userId in extensions.Where(item => item.CreatedBy.HasValue).Select(item => item.CreatedBy.Value).Distinct())
+            {
+                var name = await _creatorNameCache.GetDisplayNameAsync(endpoint, userId);
+                if (!ReferenceEquals(SearchResults, extensions)
+                    || FlowBloxApiUrlNomalizer.Normalize(endpoint) != FlowBloxApiUrlNomalizer.Normalize(ApiUrl))
+                    return;
+
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    names[userId] = name;
+                    _creatorNames = new Dictionary<int, string>(names);
+                    OnPropertyChanged(nameof(CreatorNames));
+                }
             }
         }
 

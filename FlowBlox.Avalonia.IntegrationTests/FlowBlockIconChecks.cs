@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using FlowBlox.Core.Models.FlowBlocks;
+using FlowBlox.Core.Constants;
+using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.ViewModels.ProjectPanel;
 using FlowBlox.UICore.Views;
@@ -20,15 +22,19 @@ internal sealed partial class WorkspaceIntegrationChecks
         var node = new FlowBlockNodeViewModel(block);
         panel.ViewModel.Nodes.Add(node);
         var window = new Window { Content = panel, Width = 440, Height = 380, ShowInTaskbar = false, ShowActivated = false };
+        var endpoint = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.ApiProjectServiceBaseUrl);
+        var previousEndpoint = endpoint.PersistentValue;
         try
         {
+            // Icon refresh must not look up metadata from a real Project Space service.
+            endpoint.PersistentValue = string.Empty;
             window.Show();
             window.UpdateLayout();
             var image = MenuVisuals<Image>(panel).Single(item => ReferenceEquals(item.DataContext, node));
             var localPixels = ReadIconPixels((BitmapSource)image.Source);
             SaveMenuImage(directory, panel, "execute-project-local-icon.png");
 
-            block.ProjectSpaceGuid = "e267c48d7dccad99d9454364016bd03c";
+            block.ProjectSpaceGuid = Guid.NewGuid().ToString("N");
             FlowBloxComponentHelper.RaisePropertyChanged(block, nameof(block.ProjectSpaceGuid));
             await Task.Delay(50);
             check(!localPixels.SequenceEqual(ReadIconPixels((BitmapSource)image.Source)),
@@ -45,6 +51,7 @@ internal sealed partial class WorkspaceIntegrationChecks
         {
             window.Close();
             panel.ViewModel.Dispose();
+            endpoint.PersistentValue = previousEndpoint;
         }
     }
 

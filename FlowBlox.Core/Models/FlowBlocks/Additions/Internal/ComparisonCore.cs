@@ -125,6 +125,15 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
 
         public bool Check(ComparisonOperator op, string rawRightValue, string left)
         {
+            if (op == ComparisonOperator.FileExists)
+                return File.Exists(left);
+
+            if (op == ComparisonOperator.DirectoryExists)
+                return Directory.Exists(left);
+
+            if (op == ComparisonOperator.FileIsEmpty || op == ComparisonOperator.DirectoryIsEmpty)
+                return CheckEmptyPath(left, op == ComparisonOperator.DirectoryIsEmpty);
+
             string right = GetRuntimeValue(rawRightValue);
 
             switch (op)
@@ -173,6 +182,21 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
                     return CheckXPath(op, left, right);
                 default:
                     throw new NotSupportedException("This operator is not supported.");
+            }
+        }
+
+        private static bool CheckEmptyPath(string path, bool directory)
+        {
+            try
+            {
+                return directory
+                    ? !Directory.Exists(path) || !Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).Any()
+                    : !File.Exists(path) || new FileInfo(path).Length == 0;
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                FlowBloxLogManager.Instance.GetLogger().Warn("Could not check whether a file system path is empty; the condition returns false.", exception);
+                return false;
             }
         }
 

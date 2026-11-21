@@ -131,6 +131,10 @@ This file summarizes core project conventions for AI/coding agents working in th
 - FlowBlocks without meaningful user-facing configuration may rely on the base implementation.
 
 ## Unit-Test Scope
+
+- Keep tests and developer documentation independent of specific external or Project Space flows.
+  Use synthetic projects, identifiers and local fixtures/mock servers. Do not add flow-completion reports,
+  deployment inventories, real PS GUIDs, user-specific live-run details or dependencies on published flow contents.
 - Give each test one clear behavioral outcome. Split independent scenarios; do not lock prompt wording or metadata cleanup
   through keyword presence/absence checks. Keep text assertions when the text itself is functional output or protects sensitive data.
 - Keep tests for meaningful behavior with at least 3/10 complexity. Do not add trivial baseline, configuration-only,
@@ -214,6 +218,7 @@ This file summarizes core project conventions for AI/coding agents working in th
 - If the icon is not imported yet, use `FlowBloxComponent` icon as temporary compile-safe fallback and switch to the final icon after import.
 
 ## FlowBlock Execute Contract
+- `BaseSingleResultFlowBlock` exposes exactly one output `FieldElement` (`ResultField`). Do not add output fields or override `Fields` to expose multiple outputs. Use a suitable multi-result base class for such contracts.
 - Keep notifications scoped to the concrete operation/context of the flow block.
 - Do not rely on `BaseFlowBlock` generic unexpected-error notification for expected domain failures.
 - In `Execute(...)`, always leave via exactly one flow contract action:

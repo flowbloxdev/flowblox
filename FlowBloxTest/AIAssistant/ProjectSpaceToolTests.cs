@@ -19,8 +19,10 @@ namespace FlowBloxTest.AIAssistant;
 [TestCategory(FlowBloxTestCategories.UnitTest)]
 public sealed class ProjectSpaceToolTests
 {
-    private const string ProjectGuid = "ab1ba60a8b4d41908b011648d111503d";
+    private static readonly string ProjectGuid = Guid.NewGuid().ToString("N");
     private string _previousEndpoint = null!;
+    private string _previousAppDataDirectory = null!;
+    private string _directory = null!;
     private OptionElement _previousLoginOption = null!;
     private FlowBloxProject? _previousProject;
 
@@ -28,6 +30,11 @@ public sealed class ProjectSpaceToolTests
     public void Initialize()
     {
         var options = FlowBloxOptions.GetOptionInstance();
+        var appData = options.GetOption(OptionsConstants.PathsLocalAppDataDir);
+        _previousAppDataDirectory = appData.PersistentValue;
+        _directory = Path.Combine(Path.GetTempPath(), "FlowBloxProjectSpaceToolTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_directory);
+        appData.PersistentValue = _directory;
         _previousEndpoint = options.GetOption(OptionsConstants.ApiProjectServiceBaseUrl).Value;
         _previousLoginOption = options.GetOption(OptionsConstants.AccountLoginData);
         options.OptionCollection[OptionsConstants.AccountLoginData] = new OptionElement
@@ -45,7 +52,9 @@ public sealed class ProjectSpaceToolTests
         var options = FlowBloxOptions.GetOptionInstance();
         options.GetOption(OptionsConstants.ApiProjectServiceBaseUrl).Value = _previousEndpoint;
         options.OptionCollection[OptionsConstants.AccountLoginData] = _previousLoginOption;
+        options.GetOption(OptionsConstants.PathsLocalAppDataDir).PersistentValue = _previousAppDataDirectory;
         FlowBloxProjectManager.Instance.ActiveProject = _previousProject;
+        Directory.Delete(_directory, recursive: true);
     }
 
     [TestMethod]
@@ -55,14 +64,14 @@ public sealed class ProjectSpaceToolTests
         {
             Body = JsonConvert.SerializeObject(new object[]
             {
-                new { Guid = ProjectGuid, Name = "Mail settings", Description = "Thunderbird provider lookup", Visibility = "Public", Versions = new[] { new { VersionNumber = 2, HasContent = true } } },
-                new { Guid = Guid.NewGuid().ToString("N"), Name = "File2Text", Description = "Document conversion", Visibility = "Public", Versions = Array.Empty<object>() },
-                new { Guid = Guid.NewGuid().ToString("N"), Name = "Private Thunderbird", Description = "Private project", Visibility = "Private", Versions = Array.Empty<object>() }
+                new { Guid = ProjectGuid, Name = "Reusable alpha", Description = "Delta test function", Visibility = "Public", Versions = new[] { new { VersionNumber = 2, HasContent = true } } },
+                new { Guid = Guid.NewGuid().ToString("N"), Name = "Reusable beta", Description = "Another test function", Visibility = "Public", Versions = Array.Empty<object>() },
+                new { Guid = Guid.NewGuid().ToString("N"), Name = "Private delta", Description = "Private project", Visibility = "Private", Versions = Array.Empty<object>() }
             })
         });
         SetEndpoint(server);
 
-        var response = await ExecuteAsync("GetPSProjects", new JObject { ["searchForNames"] = "THUNDERBIRD, File2Text" });
+        var response = await ExecuteAsync("GetPSProjects", new JObject { ["searchForNames"] = "DELTA, reusable beta" });
 
         Assert.IsTrue(response.Ok, response.Error);
         var projects = (JArray)response.Result["projects"]!;
@@ -71,6 +80,27 @@ public sealed class ProjectSpaceToolTests
         Assert.HasCount(1, server.Requests);
         StringAssert.StartsWith(server.Requests[0].Path, "/projects.php?");
         Assert.IsFalse(server.Requests[0].Headers.ContainsKey("Authorization"));
+    }
+
+    [TestMethod]
+    public async Task Search_FunctionFilter_UsesMetadataOnlyAndReturnsClassificationAndUsage()
+    {
+        using var server = new KnowledgeHttpServer(_ => new KnowledgeHttpResponse
+        {
+            Body = JsonConvert.SerializeObject(new[]
+            {
+                new { Guid = ProjectGuid, Name = "Reusable helper", Description = "Shared function", Visibility = "Public", Classification = "Function", UsedByCount = 3, Versions = Array.Empty<object>() }
+            })
+        });
+        SetEndpoint(server);
+
+        var response = await ExecuteAsync("GetPSProjects", new JObject { ["classification"] = "Function" });
+
+        Assert.IsTrue(response.Ok, response.Error);
+        StringAssert.Contains(server.Requests.Single().Path, "classification=Function");
+        var project = response.Result["projects"]!.Single()!;
+        Assert.AreEqual("Function", project.Value<string>("classification"));
+        Assert.AreEqual(3, project.Value<int>("usedByCount"));
     }
 
     [TestMethod]
@@ -110,7 +140,7 @@ public sealed class ProjectSpaceToolTests
         var response = await api.ExecuteAsync(new ToolRequest
         {
             ToolName = "ExecuteExternalProject",
-            Arguments = new JObject { ["projectSpaceGuid"] = ProjectGuid, ["reason"] = "Use the shared provider lookup" }
+            Arguments = new JObject { ["projectSpaceGuid"] = ProjectGuid, ["reason"] = "Inspect the reusable test function" }
         }, CancellationToken.None);
 
         Assert.IsNotNull(confirmation);
@@ -148,7 +178,7 @@ public sealed class ProjectSpaceToolTests
             Name = "Path", UserField = true, UserFieldType = UserFieldTypes.Input,
             DefaultValue = "$Project::InputDirectory/data"
         };
-        var project = new FlowBloxProject { ProjectName = "Mail settings", UserFields = [field], FlowBlocks = [] };
+        var project = new FlowBloxProject { ProjectName = "Reusable helper", UserFields = [field], FlowBlocks = [] };
         using var bytes = new MemoryStream();
         using (var zip = new ZipArchive(bytes, ZipArchiveMode.Create, leaveOpen: true))
         using (var writer = new StreamWriter(zip.CreateEntry("project_file.json").Open()))
@@ -160,7 +190,7 @@ public sealed class ProjectSpaceToolTests
                 ? content
                 : JsonConvert.SerializeObject(new
                 {
-                    Guid = ProjectGuid, Name = "Mail settings", Description = "Provider lookup", Visibility = "Public",
+                    Guid = ProjectGuid, Name = "Reusable helper", Description = "Reusable test function", Visibility = "Public",
                     Versions = stable ? new[] { new { VersionNumber = 1 }, new { VersionNumber = 3 }, new { VersionNumber = 2 } } : []
                 })
         });

@@ -14,6 +14,7 @@ internal sealed class GetPSProjectsHandler : ToolHandlerBase
         new JObject
         {
             ["searchForNames"] = "string? (comma/space-separated terms; case-insensitive contains OR; empty lists all)",
+            ["classification"] = "string? (Solution|Function; empty or omitted lists both)",
             ["visibility"] = "string? (public|private|all; default public; private means your private projects)"
         });
 
@@ -25,17 +26,25 @@ internal sealed class GetPSProjectsHandler : ToolHandlerBase
             var visibility = (args.Value<string>("visibility") ?? "public").Trim().ToLowerInvariant();
             if (visibility is not ("public" or "private" or "all"))
                 return ToolHandlerUtilities.Fail("visibility must be public, private or all.");
+            var classificationText = args.Value<string>("classification");
+            FbProjectClassification? classification = null;
+            if (!string.IsNullOrWhiteSpace(classificationText))
+            {
+                if (!Enum.TryParse<FbProjectClassification>(classificationText, true, out var parsed) || !Enum.IsDefined(parsed))
+                    return ToolHandlerUtilities.Fail("classification must be Solution or Function.");
+                classification = parsed;
+            }
             var client = await ProjectSpaceToolClient.CreateAsync(visibility != "public").ConfigureAwait(false);
             var projects = new List<FbProjectResult>();
             if (visibility != "private")
             {
-                var response = await client.Api.GetProjectsAsync().ConfigureAwait(false);
+                var response = await client.Api.GetProjectsAsync(classification: classification).ConfigureAwait(false);
                 ProjectSpaceToolClient.RequireSuccess(response);
                 projects.AddRange((response.ResultObject ?? []).Where(project => project.Visibility == FbProjectVisibility.Public));
             }
             if (visibility != "public")
             {
-                var response = await client.Api.GetProjectsAsync(client.Token, mine: true).ConfigureAwait(false);
+                var response = await client.Api.GetProjectsAsync(client.Token, mine: true, classification: classification).ConfigureAwait(false);
                 ProjectSpaceToolClient.RequireSuccess(response);
                 projects.AddRange((response.ResultObject ?? []).Where(project => project.Visibility == FbProjectVisibility.Private));
             }
@@ -52,6 +61,8 @@ internal sealed class GetPSProjectsHandler : ToolHandlerBase
                     ["projectName"] = project.Name,
                     ["description"] = project.Description,
                     ["visibility"] = project.Visibility.ToString(),
+                    ["classification"] = project.Classification.ToString(),
+                    ["usedByCount"] = project.UsedByCount,
                     ["stableVersions"] = new JArray(ProjectSpaceToolClient.StableVersions(project)),
                     ["projectSpaceVersion"] = ProjectSpaceToolClient.StableVersions(project).Cast<int?>().FirstOrDefault()
                 });

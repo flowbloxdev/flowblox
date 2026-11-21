@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
@@ -14,6 +14,9 @@ namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models
         private string _archivePath;
         private byte[] _archiveContent;
         private List<FbVersionDependency> _dependencies;
+
+        public long DownloadCount { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         public FbVersionResult()
         {

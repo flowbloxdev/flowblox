@@ -1,6 +1,7 @@
 param(
     [string]$Configuration = 'Debug',
     [switch]$WithoutPassword,
+    [switch]$EmptyCatalog,
     [string]$ExecutablePath = ''
 )
 
@@ -43,10 +44,26 @@ $fixture = @{
     UserFields = @(
         @{ Name = 'Suggested'; UserField = $true; UserFieldType = 'Input'; Index = 0; StringValue = 'initial default'; FieldType = @{ FieldType = 'Text' }; ListOfValues = @(@{ DisplayName = 'Demo suggestion'; Value = 'demo-suggestion' }) }
         @{ Name = 'Allowed'; UserField = $true; UserFieldType = 'Input'; Index = 1; FieldType = @{ FieldType = 'Text' }; LoVType = 'PossibleValues'; ListOfValues = @(@{ DisplayName = 'Allowed demo'; Value = 'allowed-demo' }) }
-        @{ Name = 'LocalPassword'; UserField = $true; UserFieldType = 'Input'; Index = 2; FieldType = @{ FieldType = 'Text' }; IsPassword = $true; StoreValueLocally = $true; StringValue = 'must-not-render-local-secret' }
+        @{ Name = 'LocalPassword'; IsRequiredAtRuntimeStartup = $true; UserField = $true; UserFieldType = 'Input'; Index = 2; FieldType = @{ FieldType = 'Text' }; IsPassword = $true; StoreValueLocally = $true; StringValue = 'must-not-render-local-secret' }
+        @{ Name = 'FalseDefault'; UserField = $true; UserFieldType = 'Input'; Index = 3; IsRequiredAtRuntimeStartup = $true; DefaultValue = 'false'; FieldType = @{ FieldType = 'Boolean' } }
+        @{ Name = 'ZeroDefault'; UserField = $true; UserFieldType = 'Input'; Index = 4; IsRequiredAtRuntimeStartup = $true; DefaultValue = '0'; FieldType = @{ FieldType = 'Integer' } }
     )
 }
-[IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fbprj'), ($fixture | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+if (-not $EmptyCatalog) {
+    [IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fbprj'), ($fixture | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+} else {
+    $demoProject = Join-Path $repoDirectory 'FlowBlox.Build/data/example_project/CsvToJson.fbprj'
+    if (-not (Test-Path -LiteralPath $demoProject)) { throw 'Bundled example fixture is missing.' }
+    $recent = @(@{ ProjectName = 'Bundled desktop example fixture'; ProjectFilePath = $demoProject })
+    [IO.File]::WriteAllText((Join-Path $testDirectory 'recentProjects.json'), (ConvertTo-Json -InputObject $recent), [Text.UTF8Encoding]::new($false))
+}
+$abandonedId = [Guid]::NewGuid()
+$missingProcessId = [Guid]::NewGuid()
+$history = @(
+    @{ Id = $abandonedId; Project = @{ Name = 'Abandoned launch fixture' }; StartedUtc = [DateTime]::UtcNow.AddMinutes(-5); RequestFile = ''; ResponseFile = '' }
+    @{ Id = $missingProcessId; Project = @{ Name = 'Missing runner fixture' }; StartedUtc = [DateTime]::UtcNow.AddMinutes(-5); ProcessId = [int]::MaxValue; ProcessStartedUtc = [DateTime]::UtcNow.AddMinutes(-5); RequestFile = ''; ResponseFile = '' }
+)
+[IO.File]::WriteAllText((Join-Path $testDirectory 'fbexecutions.json'), ($history | ConvertTo-Json -Depth 10), [Text.UTF8Encoding]::new($false))
 $process = $null
 $handler = [Net.Http.HttpClientHandler]::new()
 $handler.AllowAutoRedirect = $false
@@ -98,6 +115,12 @@ try {
     $dashboard = $client.GetAsync("$base/").GetAwaiter().GetResult()
     if ([int]$dashboard.StatusCode -ne 200) { throw 'Authenticated dashboard failed.' }
     $html = $dashboard.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ($EmptyCatalog) {
+        if ($html -match '/projects/[A-F0-9]+' -or $html -match 'Bundled desktop example fixture') { throw 'Bundled desktop examples leaked into the web catalog.' }
+        if ($html -notmatch '<section class="notice" role="status">' -or $html -notmatch 'Project Space') { throw 'Empty catalog setup guidance is missing.' }
+        Write-Host 'Passed: empty catalog setup guidance and exclusion of bundled desktop examples.'
+        return
+    }
     $projectPath = [regex]::Match($html, '/projects/[A-F0-9]+').Value
     if (-not $projectPath) { throw 'The fixture project is missing.' }
     $projectResponse = $client.GetAsync($base + $projectPath).GetAwaiter().GetResult()
@@ -108,8 +131,37 @@ try {
     }
     if ($projectHtml -match 'must-not-render-local-secret') { throw 'Locally stored field value was rendered.' }
     if ($projectHtml -notmatch '(?s)<textarea[^>]*>initial default</textarea>') { throw 'Project default did not populate the text field.' }
+    if ([regex]::Matches($projectHtml, 'field-value-status filled').Count -ne 3) { throw 'Defaults, false or zero were not marked as supplied.' }
+    if ([regex]::Matches($projectHtml, 'field-value-status missing').Count -ne 1) { throw 'The empty required password was not marked as missing.' }
+    if ([regex]::Matches($projectHtml, 'field-value-status empty').Count -ne 1) { throw 'The empty optional input was not neutral.' }
+    if ($projectHtml -notmatch '<input[^>]*aria-required="true"[^>]*aria-describedby="field-[^"]+-status"[^>]*type="password"') { throw 'Password completion is not accessible.' }
+    foreach ($icon in @('circle', 'star')) {
+        if ([int]$client.GetAsync("$base/icons/$icon.svg").GetAwaiter().GetResult().StatusCode -ne 200) { throw "Field icon is not served: $icon" }
+    }
+    Write-Host 'Passed: input completion, required password accessibility and false/zero defaults.'
     $artifactResponse = $client.GetAsync($base + $projectPath + '/artifacts').GetAwaiter().GetResult()
     if ([int]$artifactResponse.StatusCode -ne 200) { throw 'Artifact browser failed.' }
+    $recovered = $false
+    for ($attempt = 0; $attempt -lt 15; $attempt++) {
+        $executionsResponse = $client.GetAsync("$base/executions").GetAwaiter().GetResult()
+        $executionsHtml = $executionsResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+        if ([int]$executionsResponse.StatusCode -ne 200) { throw 'Execution history failed to render.' }
+        if ($executionsHtml -notmatch 'Abandoned launch fixture' -and $executionsHtml -match 'Missing runner fixture' -and $executionsHtml -notmatch 'class="loader"') { $recovered = $true; break }
+        Start-Sleep -Seconds 1
+    }
+    if (-not $recovered) { throw 'Abandoned or missing-runner execution remained loading.' }
+    if ($executionsHtml -notmatch 'icons/delete.svg') { throw 'Execution list removal action is missing.' }
+    $executionResponse = $client.GetAsync("$base/executions/$missingProcessId").GetAwaiter().GetResult()
+    $executionHtml = $executionResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ([int]$executionResponse.StatusCode -ne 200 -or $executionHtml -notmatch 'icons/delete.svg') { throw 'Execution detail removal action is missing.' }
+    $removedResponse = $client.GetAsync("$base/executions/$abandonedId").GetAwaiter().GetResult()
+    if ([int]$removedResponse.StatusCode -ne 200) { throw 'Automatically removed execution detail failed to render.' }
+    $removedLogResponse = $client.GetAsync("$base/logs/$abandonedId").GetAwaiter().GetResult()
+    if ([int]$removedLogResponse.StatusCode -ne 404) { throw 'Removed execution log did not return not found.' }
+    $badProjectResponse = $client.GetAsync("$base/projects/missing-project").GetAwaiter().GetResult()
+    $badProjectHtml = $badProjectResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ([int]$badProjectResponse.StatusCode -ne 200 -or $badProjectHtml -match 'class="loading-line"' -or $badProjectHtml -notmatch 'Retry') { throw 'Failed project loading did not offer retry without a spinner.' }
+    Write-Host 'Passed: orphan recovery, execution removal actions and failed-project retry rendering.'
     Write-Host 'Passed: anonymous access, antiforgery, login, authenticated dashboard and static Blazor assets.'
 } catch {
     $log = Join-Path $testDirectory 'webserver\server.log'

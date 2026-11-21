@@ -88,6 +88,9 @@ namespace FlowBlox.Core.Util.Fields
 
             // Field elements
             var registry = FlowBloxRegistryProvider.GetRegistry();
+            // TODO: Support multi-level field references using recursive resolution with cycle protection.
+            // HIGH IMPACT: This resolver is shared across FlowBlox. Thoroughly test all consumers
+            // and backward compatibility before changing the current single-pass behavior.
             foreach (FieldElement fieldElement in registry?.GetFieldElements() ?? Enumerable.Empty<FieldElement>())
             {
                 if (!value.Contains(fieldElement.FullyQualifiedName))

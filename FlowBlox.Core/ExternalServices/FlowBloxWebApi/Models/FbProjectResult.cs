@@ -1,7 +1,13 @@
-﻿namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models
+namespace FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models
 {
     public class FbProjectResult
     {
+        public FbProjectClassification Classification { get; set; }
+        public int UsedByCount { get; set; }
+
+        public long DownloadCount { get; set; }
+        public double? Relevance { get; set; }
+
         public FbProjectResult()
         {
             Versions = new List<FbProjectVersionResult>();

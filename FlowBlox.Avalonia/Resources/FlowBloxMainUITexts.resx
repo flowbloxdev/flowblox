@@ -863,4 +863,20 @@ The Recursive Call flow block invokes the connected earlier target flow block ag
   <data name="AppWindow_ReloadProjectSpace_Failed" xml:space="preserve">
     <value>The project could not be reloaded from Project Space: {0}</value>
   </data>
+  <data name="WebServer_ExitTitle" xml:space="preserve">
+    <value>Keep the Web App available?</value>
+  </data>
+  <data name="WebServer_ExitMessage" xml:space="preserve">
+    <value>The FlowBlox Web App server is running. Should it remain available after you close FlowBlox?
+
+You can stop it later by opening FlowBlox and choosing {0}.
+
+Stopping the server will make the Web App unavailable.</value>
+  </data>
+  <data name="WebServer_ExitKeepRunning" xml:space="preserve">
+    <value>Yes, keep running</value>
+  </data>
+  <data name="WebServer_ExitStop" xml:space="preserve">
+    <value>No, stop web server</value>
+  </data>
 </root>

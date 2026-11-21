@@ -1,4 +1,5 @@
 using CommandLine;
+using FlowBlox.Core.ExternalServices.FlowBloxWebApi.Models;
 
 namespace FlowBlox.AvaloniaDesktop.CommandLine;
 
@@ -39,6 +40,9 @@ internal sealed class ProjectSpaceCommandOptions
 
     [Option("visibility", HelpText = "Upload visibility: private or public. Existing visibility is preserved by default.")]
     public string Visibility { get; set; }
+
+    [Option("classification", HelpText = "Project classification: Solution or Function. Filters lists; sets upload metadata. Existing classification is otherwise preserved.")]
+    public FbProjectClassification? Classification { get; set; }
 
     [Option("ps-help", HelpText = "Show Project Space command help without opening the UI.")]
     public bool Help { get; set; }

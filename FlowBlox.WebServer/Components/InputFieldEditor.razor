@@ -2,10 +2,16 @@
 @using FlowBlox.Core.Attributes
 @using FlowBlox.Core.Enums
 @using FlowBlox.Core.Util.Resources
+@using FlowBlox.Core.Util.Fields
 @using Microsoft.JSInterop
 @inject IJSRuntime JavaScript
 <div class="field-editor">
-    <div class="field-heading"><label for="@_id">@Field.Name @(Field.IsRequiredAtRuntimeStartup ? "*" : "")</label>
+    <div class="field-heading"><label for="@_id">@Field.Name
+        @if (Required)
+        {
+            <span class="field-required" role="img" aria-label="@RequiredText" title="@RequiredText"><MdiIcon Name="star" /></span>
+        }
+    </label>
         <div class="field-actions">
         @if (References.Count > 0 && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
         {
@@ -46,17 +52,19 @@
         { <button type="button" class="quiet small-action icon-button" title="@T["Paste"]" aria-label="@T["Paste"]" disabled="@Disabled" data-paste-target="@_id"><MdiIcon Name="content-paste" /></button> }
         </div>
     </div>
+    <div class="field-value-row">
+    <div class="field-value-control">
     @if (Field.GetValueDropDownMode() == DropDownMode.SelectionOnly && !Field.IsPassword)
     {
-        <select id="@_id" disabled="@Disabled" value="@Value" @onchange="ChangeAsync"><option value=""></option>
+        <select id="@_id" aria-required="@Required.ToString().ToLowerInvariant()" aria-describedby="@(_id + "-status")" disabled="@Disabled" value="@Value" @onchange="ChangeAsync"><option value=""></option>
             @foreach (var item in Field.GetPossibleValues()) { <option value="@item.Value">@item.ToString()</option> }
         </select>
     }
     else if (Field.IsPassword)
-    { <PasswordInput Id="@_id" Label="@Field.Name" Disabled="Disabled" Value="@Value" ValueChanged="ValueChanged" /> }
+    { <PasswordInput Id="@_id" Label="@Field.Name" Required="@Required" DescribedBy="@(_id + "-status")" Disabled="Disabled" Value="@Value" ValueChanged="ValueChanged" /> }
     else
     {
-        <textarea id="@_id" disabled="@Disabled" rows="2" @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput"></textarea>
+        <textarea id="@_id" aria-required="@Required.ToString().ToLowerInvariant()" aria-describedby="@(_id + "-status")" disabled="@Disabled" rows="2" @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput"></textarea>
         @if (Field.GetPossibleValues().Any())
         {
             <details class="suggestions"><summary>@T["Suggestions"]</summary><div class="suggestion-values">
@@ -65,6 +73,10 @@
             </div></details>
         }
     }
+    </div>
+    <span class="field-value-status @FieldValuePresentation.GetStateName(Value, Required)" title="@StatusText" aria-hidden="true"><MdiIcon Name="circle" /></span>
+    <span id="@(_id + "-status")" class="visually-hidden">@StatusText</span>
+    </div>
     <small role="status" data-paste-error hidden>@T["PasteUnavailable"]</small>
 </div>
 @code {
@@ -76,6 +88,9 @@
     [Parameter] public IReadOnlyList<FieldReferenceOption> References { get; set; } = [];
     private string OutputDirectoryTitle => FlowBloxResourceUtil.GetLocalizedString(
         "ProjectOutputDirectoryChoice_Select", typeof(FlowBlox.Core.FlowBloxTexts));
+    private bool Required => Field.IsUserInputField() && Field.IsRequiredAtRuntimeStartup;
+    private string RequiredText => FlowBloxResourceUtil.GetLocalizedString("FieldElement_RequiredInput", typeof(FlowBlox.Core.FlowBloxTexts));
+    private string StatusText => FieldValuePresentation.GetDescription(Value, Required);
     private bool _outputsOpen;
     private readonly string _id = "field-" + Guid.NewGuid().ToString("N");
     private bool _clipboard;

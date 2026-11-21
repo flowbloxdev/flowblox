@@ -247,4 +247,11 @@
   <data name="Error_DeleteProjectFailed" xml:space="preserve"><value>The project could not be deleted.</value></data>
   <data name="Visibility_Public" xml:space="preserve"><value>Public</value></data>
   <data name="Visibility_Private" xml:space="preserve"><value>Private</value></data>
+  <data name="Downloads" xml:space="preserve"><value>Downloads</value></data>
+  <data name="Classification" xml:space="preserve"><value>Flow type</value></data>
+  <data name="ClassificationTooltip" xml:space="preserve"><value>Solution: complete task workflow. Function: reusable shared component.</value></data>
+  <data name="AllFlows" xml:space="preserve"><value>All flows</value></data>
+  <data name="SolutionFlow" xml:space="preserve"><value>Solution flows</value></data>
+  <data name="FunctionFlow" xml:space="preserve"><value>Function flows</value></data>
+  <data name="UsedByFormat" xml:space="preserve"><value>Used by {0} flows</value></data>
 </root>

@@ -19,9 +19,9 @@ public sealed class ProjectSpaceTools
         _token = token;
     }
 
-    public async Task<List<FbProjectResult>> ListAsync(bool privateProjects, string query, bool mine = false)
+    public async Task<List<FbProjectResult>> ListAsync(bool privateProjects, string query, bool mine = false, FbProjectClassification? classification = null)
     {
-        var response = await _api.GetProjectsAsync(_token, privateProjects || mine, query);
+        var response = await _api.GetProjectsAsync(_token, privateProjects || mine, query, classification);
         RequireSuccess(response);
         return (response.ResultObject ?? new())
             .Where(project => mine || project.Visibility == (privateProjects ? FbProjectVisibility.Private : FbProjectVisibility.Public))
@@ -70,7 +70,8 @@ public sealed class ProjectSpaceTools
         string file,
         bool createNew,
         string? description,
-        FbProjectVisibility? visibility)
+        FbProjectVisibility? visibility,
+        FbProjectClassification? classification = null)
     {
         file = Path.GetFullPath(file);
         var project = FlowBloxProject.FromFile(file);
@@ -98,6 +99,7 @@ public sealed class ProjectSpaceTools
         {
             var response = await _api.CreateProjectAsync(_token, new FbProjectCreateRequest
             {
+                Classification = classification ?? FbProjectClassification.Solution,
                 Name = project.ProjectName,
                 Description = effectiveDescription,
                 Visibility = effectiveVisibility,
@@ -112,6 +114,7 @@ public sealed class ProjectSpaceTools
         {
             var response = await _api.UpdateProjectAsync(_token, new FbProjectChangeRequest
             {
+                Classification = classification,
                 ProjectGuid = guid,
                 Name = project.ProjectName,
                 Description = effectiveDescription,

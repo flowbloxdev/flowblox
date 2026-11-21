@@ -23,6 +23,14 @@ using System.Text.RegularExpressions;
 
 namespace FlowBlox.Core.Models.Components
 {
+    /// <summary>
+    /// Represents a field in the current unified field model.
+    /// </summary>
+    /// <remarks>
+    /// TODO: Split into RuntimeFieldElement, MemoryFieldElement and InputFieldElement.
+    /// Preserve legacy JSON references, $User:: lookup across input/memory fields and automatic runtime-field creation.
+    /// See <see href="../../../docs/field-element-subtypes.md">the subtype and migration concept</see>.
+    /// </remarks>
     [Display(Name = "FieldElement_DisplayName", ResourceType = typeof(FlowBloxTexts))]
     [FlowBloxUIGroup("Global_Groups_Default", 0, ControlAlignment.Top)]
     [FlowBloxUIGroup("FieldElement_Groups_Behavior", 5, ControlAlignment.Top)]
@@ -78,6 +86,41 @@ namespace FlowBlox.Core.Models.Components
         public override SKImage Icon16 => FlowBloxIconUtil.CreateFromSVG(GetIconSvg(), 16, GetIconColor());
 
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(GetIconSvg(), 32, GetIconColor());
+
+        [JsonIgnore]
+        [Display(Name = "FieldElement_ValueStatusIcon", Description = "FieldElement_ValueStatusIcon_Tooltip", ResourceType = typeof(FlowBloxTexts))]
+        [FlowBloxUI(UISelectionButtons.None, Visible = false)]
+        [FlowBloxImageColumn(typeof(FlowBloxIcons), nameof(FlowBloxIcons.circle), IconSize = 8, Opacity = 0.75, Width = 24, ShowHeader = false, ShowToolTip = false)]
+        public SKImage ValueStatusIcon => FieldValuePresentation.GetIcon(StringValue, IsUserInputField() && IsRequiredAtRuntimeStartup, Pending);
+
+        [JsonIgnore]
+        public string ValueStatusDescription => FieldValuePresentation.GetDescription(StringValue, IsUserInputField() && IsRequiredAtRuntimeStartup, Pending);
+
+        protected override void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
+            if (string.IsNullOrEmpty(propertyName)
+                || propertyName == nameof(StringValue)
+                || propertyName == nameof(DefaultValue)
+                || propertyName == nameof(Pending)
+                || propertyName == nameof(IsPassword)
+                || propertyName == nameof(IsRequiredAtRuntimeStartup)
+                || propertyName == nameof(UserFieldType)
+                || propertyName == nameof(UserField))
+            {
+                base.OnPropertyChanged(nameof(ValueStatusIcon));
+                base.OnPropertyChanged(nameof(ValueStatusDescription));
+            }
+
+            if (string.IsNullOrEmpty(propertyName)
+                || propertyName == nameof(IsRequiredAtRuntimeStartup)
+                || propertyName == nameof(UserFieldType)
+                || propertyName == nameof(UserField))
+            {
+                base.OnPropertyChanged(nameof(Icon16));
+                base.OnPropertyChanged(nameof(Icon32));
+            }
+        }
 
         public override void OnAfterCreate()
         {
@@ -335,11 +378,24 @@ namespace FlowBlox.Core.Models.Components
         [DependsOnProperty(MemberName = nameof(IsRequiredAtRuntimeStartup))]
         public bool ClearOnRuntimeStart { get; set; }
 
+        private bool _isRequiredAtRuntimeStartup;
+
         [ActivationCondition(MemberName = nameof(UserField), Value = true)]
         [Display(Name = "FieldElement_IsRequiredAtRuntimeStartup", Description = "FieldElement_IsRequiredAtRuntimeStartup_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 0)]
         [FlowBloxUI(UISelectionButtons.None, ReadOnlyMethod = nameof(IsStartupRequirementReadOnly))]
         [DependsOnProperty(MemberNames = [nameof(ClearOnRuntimeStart), nameof(UserFieldType)])]
-        public bool IsRequiredAtRuntimeStartup { get; set; }
+        public bool IsRequiredAtRuntimeStartup
+        {
+            get => _isRequiredAtRuntimeStartup;
+            set
+            {
+                if (_isRequiredAtRuntimeStartup == value)
+                    return;
+
+                _isRequiredAtRuntimeStartup = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool IsClearOnRuntimeStartReadOnly() => IsRequiredAtRuntimeStartup && !ClearOnRuntimeStart;
 

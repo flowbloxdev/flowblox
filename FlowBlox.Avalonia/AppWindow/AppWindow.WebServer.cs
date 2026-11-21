@@ -11,6 +11,10 @@ using FlowBlox.Core.Logging;
 using SkiaSharp;
 using FlowBlox.Core.Util;
 using FlowBlox.Core.Util.Resources;
+using FlowBlox.Core.Constants;
+using FlowBlox.Core.DependencyInjection;
+using FlowBlox.UICore.Enums;
+using FlowBlox.UICore.Interfaces;
 using FlowBlox.UICore.ViewModels;
 using FlowBlox.UICore.Views;
 using Texts = FlowBlox.AvaloniaDesktop.Resources.FlowBloxMainUITexts;
@@ -22,10 +26,64 @@ public partial class AppWindow
     private readonly MenuEntry _webStart = new(), _webStop = new(), _webRestart = new(), _webOpen = new(), _webAutostart = new();
     private readonly DispatcherTimer _webStatusTimer = new() { Interval = TimeSpan.FromSeconds(5) };
     private bool _webOperation;
+    private bool _webExitPending;
+    private bool _webExitApproved;
     private string WebServerExecutable => File.Exists(Path.Combine(AppContext.BaseDirectory, "FlowBlox.WebServer.exe"))
         ? Path.Combine(AppContext.BaseDirectory, "FlowBlox.WebServer.exe")
         : Path.Combine(AppContext.BaseDirectory, "WebServer", "FlowBlox.WebServer.exe");
     private static string WebText(string key) => FlowBloxResourceUtil.GetLocalizedString("WebServer_" + key, typeof(Texts));
+
+    private async Task<bool> ConfirmWebServerExitAsync()
+    {
+        try
+        {
+            if (_webOperation)
+                return false;
+
+            if (!(FlowBloxOptions.GetOptionInstance()
+                .GetOption(OptionsConstants.WebServerConfirmOnApplicationExit)?.GetValueBoolean() ?? true))
+                return true;
+
+            using var process = WebServerProcess.GetActiveProcess();
+            if (process == null)
+                return true;
+
+            var messages = FlowBloxServiceLocator.Instance.GetService<IFlowBloxMessageBoxService>();
+            var menuPath = mnItmMisc.Text.Replace("&", "") + " > " + WebText("Menu") + " > " + WebText("Stop");
+            var result = messages.ShowMessageBox(
+                string.Format(WebText("ExitMessage"), menuPath),
+                WebText("ExitTitle"),
+                WebText("ExitKeepRunning"),
+                WebText("ExitStop"),
+                FlowBloxMessageBoxDialogResult.Yes);
+
+            if (result == FlowBloxMessageBoxDialogResult.No)
+            {
+                _webOperation = true;
+                RefreshWebServerStatus();
+                try
+                {
+                    await Task.Run(WebServerProcess.Stop);
+                }
+                finally
+                {
+                    _webOperation = false;
+                    RefreshWebServerStatus();
+                }
+            }
+
+            return true;
+        }
+        catch (Exception exception)
+        {
+            FlowBloxLogManager.Instance.GetLogger().Error("Failed to confirm web server state on application exit.", exception);
+            FlowBloxServiceLocator.Instance.GetService<IFlowBloxMessageBoxService>()?.ShowMessageBox(
+                WebText("Error") + Environment.NewLine + exception.Message,
+                WebText("Menu"),
+                FlowBloxMessageBoxTypes.Error);
+            return false;
+        }
+    }
 
     private void InitializeWebServerMenu()
     {
