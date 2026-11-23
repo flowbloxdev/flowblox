@@ -23,6 +23,16 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["requests"] = "[{toolName,arguments}]"
             });
 
+        /// <summary>
+        /// Executes batch entries with parameters inside an arguments object or directly at the entry root.
+        /// An explicit arguments object takes precedence over root parameters.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// { "requests": [{ "toolName": "GetTypeKindsInfo", "arguments": { "typeFullName": "Example.Type" } }] }
+        /// { "requests": [{ "toolName": "GetTypeKindsInfo", "typeFullName": "Example.Type" }] }
+        /// </code>
+        /// </example>
         public override async Task<ToolResponse> HandleAsync(
             JObject args,
             CancellationToken ct)
@@ -41,20 +51,21 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             foreach (var request in requests.OfType<JObject>())
             {
                 var toolName = request.Value<string>("toolName") ?? string.Empty;
-                var toolArgs = request["arguments"] as JObject ?? new JObject();
+                var argumentToken = request["arguments"];
+                var invalidArguments = argumentToken != null && argumentToken is not JObject;
 
-                if (string.IsNullOrWhiteSpace(toolName)
-                || string.Equals(
-                    toolName,
-                    Name,
-                    StringComparison.OrdinalIgnoreCase))
+                if (invalidArguments
+                    || string.IsNullOrWhiteSpace(toolName)
+                    || string.Equals(toolName, Name, StringComparison.OrdinalIgnoreCase))
                 {
                     allOk = false;
                     batchResults.Add(new JObject
                     {
                         ["toolName"] = toolName,
                         ["ok"] = false,
-                        ["error"] = string.IsNullOrWhiteSpace(toolName)
+                        ["error"] = invalidArguments
+                            ? "arguments must be a JSON object. Omit arguments to pass parameters directly on the batch request."
+                            : string.IsNullOrWhiteSpace(toolName)
                             ? "toolName is required."
                             : "Nested batch not supported."
                     });
@@ -65,6 +76,13 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                     }
 
                     continue;
+                }
+
+                var toolArgs = argumentToken as JObject;
+                if (toolArgs == null)
+                {
+                    toolArgs = (JObject)request.DeepClone();
+                    toolArgs.Remove("toolName");
                 }
 
                 var response = await _executeTool(

@@ -11,9 +11,10 @@
     }
     @foreach (var pair in Request.UserFields)
     {
+        var displayName = InputFieldPresentation.GetDisplayName(pair.Key);
         var isPassword = Request.PasswordFieldNames == null || Request.PasswordFieldNames.Contains(pair.Key, StringComparer.OrdinalIgnoreCase);
-        <label>@pair.Key
-            @if (isPassword) { <PasswordInput Label="@pair.Key" Value="@(pair.Value ?? string.Empty)" ReadOnly="true" /> }
+        <label>@displayName
+            @if (isPassword) { <PasswordInput Label="@displayName" Value="@(pair.Value ?? string.Empty)" ReadOnly="true" /> }
             else { <textarea readonly rows="3">@pair.Value</textarea> }
         </label>
     }

@@ -65,6 +65,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             {
                 await CheckFieldEditorChangesAsync(window, content, directory, check);
                 await CheckPasswordFieldEditorChangesAsync(window, content, check);
+                await CheckListViewEditRefreshAsync(window, directory, check);
                 return;
             }
             var dropdown = MenuVisuals<EnumerationDropDownControl>(window).Single();
@@ -110,6 +111,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             textMenu.IsOpen = false;
             await CheckFieldEditorChangesAsync(window, content, directory, check);
             await CheckPasswordFieldEditorChangesAsync(window, content, check);
+            await CheckListViewEditRefreshAsync(window, directory, check);
         }
         finally
         {

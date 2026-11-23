@@ -166,7 +166,7 @@ namespace FlowBlox.UICore.Manager
 			if (_detached)
 				return;
 
-            _componentProvider.GetCurrentChangelist()?.AddChange(editAction);
+            _componentProvider?.GetCurrentChangelist()?.AddChange(editAction);
         }
 
 		private void StoreProtocol(string protocol, string filePath)

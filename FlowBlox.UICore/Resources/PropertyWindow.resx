@@ -145,4 +145,7 @@
 		<value>Transaction monitor</value>
 	</data>
   <data name="AdditionalInformation" xml:space="preserve"><value>Additional information</value></data>
+  <data name="ComponentAssistant_Toggle" xml:space="preserve">
+    <value>Open or close the component AI assistant</value>
+  </data>
 </root>

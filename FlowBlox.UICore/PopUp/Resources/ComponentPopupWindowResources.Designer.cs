@@ -101,7 +101,18 @@ namespace FlowBlox.UICore.PopUp.Resources
                 return ResourceManager.GetString("Button_Previous", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Mouse wheel: zoom (up to 400%). Drag with the left or middle mouse button to pan. Double-click or Home: fit image. Keyboard: + / − to zoom. ähnelt.
+        /// </summary>
+        public static string Image_InteractionHint
+        {
+            get
+            {
+                return ResourceManager.GetString("Image_InteractionHint", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Image resource not assigned ähnelt.
         /// </summary>

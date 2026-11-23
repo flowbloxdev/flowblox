@@ -88,6 +88,7 @@ namespace FlowBlox.UICore.Views
             var viewModel = new PropertyWindowViewModel(this, propertyWindowArgs);
             viewModel.PropertyViewModel.ValidationFailed += PropertyViewModel_ValidationFailed;
             DataContext = viewModel;
+            ComponentAssistant.Configure(this, propertyWindowArgs, viewModel.PropertyViewModel);
             Closing += PropertyView_Closing;
             Loaded += PropertyWindow_Loaded;
         }
@@ -112,6 +113,7 @@ namespace FlowBlox.UICore.Views
 
         private void PropertyView_Closing(object sender, CancelEventArgs e)
         {
+            ComponentAssistant.Dispose();
             if (DataContext is PropertyWindowViewModel viewModel)
                 viewModel.HandleClosing(sender, e);
         }

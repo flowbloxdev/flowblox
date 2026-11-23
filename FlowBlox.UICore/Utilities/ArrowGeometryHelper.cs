@@ -5,6 +5,38 @@ namespace FlowBlox.UICore.Utilities
 {
     public static class ArrowGeometryHelper
     {
+        /// <summary>
+        /// Intersects the offset connection with both card edges instead of shifting already clipped endpoints.
+        /// </summary>
+        public static (Point Start, Point End) GetConnectionEndpoints(Rect fromBounds, Rect toBounds, double offset)
+        {
+            var fromCenter = new Point(fromBounds.X + fromBounds.Width / 2d, fromBounds.Y + fromBounds.Height / 2d);
+            var toCenter = new Point(toBounds.X + toBounds.Width / 2d, toBounds.Y + toBounds.Height / 2d);
+            var displacement = GetPerpendicularOffset(fromCenter, toCenter, offset);
+
+            // Keep the displaced line inside even short cards so it still intersects both boundaries.
+            var scale = Math.Min(GetOffsetScale(fromBounds, displacement), GetOffsetScale(toBounds, displacement));
+            displacement *= scale;
+            var fromOrigin = fromCenter + displacement;
+            var toOrigin = toCenter + displacement;
+
+            return (
+                GetEdgePoint(fromBounds, fromOrigin, toOrigin),
+                GetEdgePoint(toBounds, toOrigin, fromOrigin));
+        }
+
+        private static double GetOffsetScale(Rect bounds, Vector displacement)
+        {
+            const double inset = 0.5d;
+            var scale = 1d;
+            if (Math.Abs(displacement.X) > 0.001d)
+                scale = Math.Min(scale, Math.Max(0d, bounds.Width / 2d - inset) / Math.Abs(displacement.X));
+            if (Math.Abs(displacement.Y) > 0.001d)
+                scale = Math.Min(scale, Math.Max(0d, bounds.Height / 2d - inset) / Math.Abs(displacement.Y));
+
+            return scale;
+        }
+
         public static Point GetEdgePoint(Rect bounds, Point center, Point other)
         {
             var dx = other.X - center.X;

@@ -18,7 +18,15 @@ Stopping the web server leaves independently running flows alive. Stop an execut
 
 The catalog includes the configured local project directory, recently loaded projects, Project Space favorites and the signed-in user's own Project Space projects. Project Space uses the desktop account's stored sign-in. Refresh reloads the catalog.
 
-Input fields retain their declared order and support suggestions, allowed values, password masking and multiline text. Fresh forms leave fields marked **Store value locally** empty, matching the desktop Run project dialog. History is offered when input fields exist and applies prior submitted input values and supported option overrides as a template. Times are displayed in the browser's local time zone.
+Input fields retain their declared order and support suggestions, allowed values and password masking.
+The Insert menu beside each free-text input offers field references, another project's output directory and clipboard paste when available.
+Selections open in the same menu; insertion uses the focused list entry when in List mode. The gear beside the field title controls presentation.
+Text inputs default to a single line and automatically expand when the value contains line breaks, including pasted text.
+Each free-text field has a small display-settings menu: Automatic, Single line, Multiline or List.
+List mode offers newline, semicolon or comma separators, editable entries and Add/Remove actions; it preserves whitespace and empty entries.
+Changing display mode or separator does not rewrite the value; editing a list joins its entries using the selected separator.
+Preferences take effect immediately and are saved in browser local storage per internal project GUID and field name, independently of execution.
+No input values are saved there. Settings are local to that browser/origin; if storage is blocked or the project has no GUID, the editor remains usable without persistence. Fresh forms leave fields marked **Store value locally** empty, matching the desktop Run project dialog. History is offered when input fields exist and applies prior submitted input values and supported option overrides as a template. Times are displayed in the browser's local time zone.
 
 Artifact folders, counts and downloads are available from project and execution pages. Execution artifacts use that execution's recorded output directory, including path overrides. Reset requires confirmation, retains the root output directory and refuses to clear a directory used by an active execution. Browsing and downloads reject absolute paths, traversal outside the selected output directory and symbolic links/junctions. Output directories are server-selected, never arbitrary browser-supplied paths. Runtime logs are downloadable from completed execution details when available.
 
@@ -41,4 +49,4 @@ Build `FlowBlox.WebServer/FlowBlox.WebServer.csproj` or the desktop application.
 
 Server logs are under `%LOCALAPPDATA%\FlowBlox\webserver`: `server.log` (rotated at 2 MB) and `startup.log` for initialization failures. For an isolated profile, start with `--data-directory <absolute-directory>` before any options or launcher stores initialize.
 
-`scripts/tests/Test-WebServer.ps1` performs a loopback HTTP contract check with an isolated profile, including password access, antiforgery, static Blazor assets and project metadata rendering. `-WithoutPassword` checks direct access. It does not execute a flow or open a browser. Domain tests cover artifact boundaries, store concurrency, password storage and existing runner/history behavior.
+`scripts/tests/Test-WebServer.ps1` performs a loopback HTTP contract check with an isolated profile, including password access, antiforgery, static Blazor assets and project metadata rendering. `-WithoutPassword` checks direct access. Add `-WithoutPassword -BrowserInputs` for interactive editor checks and desktop/mobile screenshots with Node 22+ and installed Chrome/Edge (no npm dependencies). These checks use synthetic projects and do not execute a flow. Domain tests cover artifact boundaries, store concurrency, password storage and existing runner/history behavior.

@@ -149,7 +149,7 @@
                 CornerRadius="4"
                 Margin="0,0,0,6"
                 Visibility="{Binding ShowIntroHeader, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="{x:Static resources:AiAssistantChatView.Header_Description}"
+            <TextBlock Text="{Binding HeaderDescription}"
                        Foreground="DarkSlateGray"
                        TextWrapping="Wrap" />
         </Border>

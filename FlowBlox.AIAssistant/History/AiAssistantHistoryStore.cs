@@ -15,6 +15,8 @@ namespace FlowBlox.AIAssistant.History
         private const string HistoryJsonEntryName = "history.json";
         private const int HistoryPreviewMaxLength = 255;
         private readonly object _sync = new();
+        private readonly Dictionary<string, (long Length, DateTime ModifiedUtc, AiAssistantHistoryListItem? Item)> _listIndex =
+            new(StringComparer.OrdinalIgnoreCase);
         private bool _isInitialized;
 
         public static AiAssistantHistoryStore Instance { get; } = new();
@@ -62,14 +64,53 @@ namespace FlowBlox.AIAssistant.History
         public IReadOnlyList<AiAssistantHistoryListItem> LoadList(Guid? projectGuid = null)
         {
             var directory = GetHistoryDirectory();
-            return Directory.EnumerateFiles(directory, HistorySearchPattern)
+            var files = Directory.EnumerateFiles(directory, HistorySearchPattern)
                 .Where(IsSupportedHistoryFile)
-                .Select(TryLoadListItem)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            lock (_sync)
+            {
+                foreach (var removed in _listIndex.Keys.Except(files, StringComparer.OrdinalIgnoreCase).ToList())
+                    _listIndex.Remove(removed);
+            }
+
+            return files
+                .Select(LoadIndexedListItem)
                 .Where(x => x != null)
                 .Select(x => x!)
                 .Where(x => projectGuid == null || x.ProjectGuid == projectGuid.Value)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
+        }
+
+        private AiAssistantHistoryListItem? LoadIndexedListItem(string filePath)
+        {
+            try
+            {
+                var file = new FileInfo(filePath);
+                lock (_sync)
+                {
+                    if (_listIndex.TryGetValue(filePath, out var cached) &&
+                        cached.Length == file.Length && cached.ModifiedUtc == file.LastWriteTimeUtc)
+                    {
+                        return cached.Item;
+                    }
+
+                    var item = TryLoadListItem(filePath);
+                    if (item != null)
+                        _listIndex[filePath] = (file.Length, file.LastWriteTimeUtc, item);
+                    else
+                        _listIndex.Remove(filePath);
+                    return item;
+                }
+            }
+            catch (IOException)
+            {
+                return null;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return null;
+            }
         }
 
         public AiAssistantHistoryDocument? Load(string filePath)
@@ -115,6 +156,8 @@ namespace FlowBlox.AIAssistant.History
 
             Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
             WriteHistoryJson(filePath, JsonConvert.SerializeObject(document, Formatting.Indented));
+            lock (_sync)
+                _listIndex.Remove(filePath);
             UpsertListItem(ToListItem(document, filePath));
             return filePath;
         }
@@ -131,6 +174,7 @@ namespace FlowBlox.AIAssistant.History
             {
                 if (File.Exists(item.FilePath))
                     File.Delete(item.FilePath);
+                _listIndex.Remove(item.FilePath);
 
                 var existing = Histories.FirstOrDefault(x =>
                     x.HistoryGuid == item.HistoryGuid ||
@@ -189,6 +233,7 @@ namespace FlowBlox.AIAssistant.History
                 HistoryGuid = document.HistoryGuid,
                 FilePath = filePath,
                 ProjectGuid = document.ProjectGuid,
+                ComponentScope = document.ComponentScope,
                 CreatedAt = document.CreatedAt,
                 UpdatedAt = document.UpdatedAt,
                 Preview = BuildPreviewText(document)

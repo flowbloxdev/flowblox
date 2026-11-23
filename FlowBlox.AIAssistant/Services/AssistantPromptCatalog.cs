@@ -6,6 +6,7 @@ namespace FlowBlox.AIAssistant.Services
 {
     internal static class AssistantPromptCatalog
     {
+        public const string ComponentScopeKey = "explaining_component_scope";
         public const string SystemMessageKey = "system_message";
         public const string SessionBootstrapKey = "session_bootstrap";
         public const string FlowLogicKey = "explaining_flow_logic";
@@ -35,6 +36,12 @@ namespace FlowBlox.AIAssistant.Services
         private static readonly IReadOnlyDictionary<string, PromptEntryDefinition> Definitions =
             new Dictionary<string, PromptEntryDefinition>(StringComparer.OrdinalIgnoreCase)
             {
+                [ComponentScopeKey] = new PromptEntryDefinition(
+                    ComponentScopeKey,
+                    "Component editor scope",
+                    "FlowBlox.AIAssistant.Prompts.ExplainingComponentScope.txt",
+                    "Component editor boundaries and owned FlowBlock objects.",
+                    false),
                 [SystemMessageKey] = new PromptEntryDefinition(
                     SystemMessageKey,
                     "System Message",

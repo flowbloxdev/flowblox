@@ -15,12 +15,12 @@ namespace FlowBlox.AIAssistant.Tools.Handler
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
             Name,
-            "Returns component JSON. Filters preserve full subtrees and original paths; invalid/unmatched paths fail.",
+            "Returns compact component JSON, or filters complete JSON including null/default values. Invalid/unmatched paths fail.",
             new JObject
             {
                 ["kind"] = "string (flowBlock|managedObject|field)",
                 ["name"] = "string",
-                ["jsonFilter"] = "string[]? (absolute JPaths, e.g. [\"$.Name\",\"$.MappingEntries\"]; omit for full JSON)"
+                ["jsonFilter"] = "string[]? (absolute JPaths, e.g. [\"$.Name\",\"$.MappingEntries\"]; omit for compact JSON)"
             });
 
         public override Task<ToolResponse> HandleAsync(JObject args, CancellationToken ct)
@@ -61,7 +61,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 return Task.FromResult(ToolHandlerUtilities.Fail($"{kind} '{name}' was not found."));
             }
 
-            var snapshotJson = JsonConvert.SerializeObject(component, JsonSettings.ComponentSnapshotExport());
+            var hasFilter = args.TryGetValue("jsonFilter", out var jsonFilter);
+            var snapshotJson = JsonConvert.SerializeObject(component, JsonSettings.ComponentSnapshotExport(compact: !hasFilter));
             var snapshotToken = JToken.Parse(snapshotJson);
 
             var result = new JObject
@@ -70,7 +71,7 @@ namespace FlowBlox.AIAssistant.Tools.Handler
                 ["name"] = componentName,
                 ["typeFullName"] = component.GetType().FullName
             };
-            if (args.TryGetValue("jsonFilter", out var jsonFilter))
+            if (hasFilter)
             {
                 try
                 {

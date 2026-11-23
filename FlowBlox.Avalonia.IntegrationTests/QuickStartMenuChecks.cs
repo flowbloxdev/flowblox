@@ -8,6 +8,7 @@ using FlowBlox.Core.Models.Components.Knowledge;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.UICore.PopUp.Provider;
 using FlowBlox.UICore.PopUp.Views;
+using FlowBlox.UICore.Views;
 
 namespace FlowBlox.Avalonia.IntegrationTests;
 
@@ -33,7 +34,10 @@ internal sealed partial class WorkspaceIntegrationChecks
                 var popup = Application.Current.Windows.OfType<ComponentPopupWindow>().Single();
                 opened = popup.IsVisible && !string.IsNullOrWhiteSpace(popup.Title);
                 if (provider.TargetType == typeof(AIPromptFlowBlock))
+                {
                     CheckAIPromptQuickStartNavigation(popup, directory, check);
+                    CheckQuickStartImageZoom(popup, directory, check);
+                }
                 if (provider.TargetType == typeof(VectorStore))
                     CheckVectorStoreQuickStartNavigation(popup, directory, check);
 
@@ -50,6 +54,7 @@ internal sealed partial class WorkspaceIntegrationChecks
 
             check(opened, $"Help opens registered Quick Start without a configured target: {provider.TargetType.Name}");
         }
+        CheckLocalAISetupInPropertyWindow(check, directory);
     }
 
     private static void CheckVectorStoreQuickStartNavigation(
@@ -57,7 +62,7 @@ internal sealed partial class WorkspaceIntegrationChecks
         string directory,
         Action<bool, string> check)
     {
-        var image = (Image)popup.FindName("StepImage");
+        var image = (ZoomableImageView)popup.FindName("StepImage");
         var next = (Button)popup.FindName("NextButton");
         var previous = (Button)popup.FindName("PreviousButton");
         for (var step = 1; step <= 3; step++)
@@ -81,7 +86,7 @@ internal sealed partial class WorkspaceIntegrationChecks
         string directory,
         Action<bool, string> check)
     {
-        var image = (Image)popup.FindName("StepImage");
+        var image = (ZoomableImageView)popup.FindName("StepImage");
         var next = (Button)popup.FindName("NextButton");
         var previous = (Button)popup.FindName("PreviousButton");
         var firstImage = image.Source;

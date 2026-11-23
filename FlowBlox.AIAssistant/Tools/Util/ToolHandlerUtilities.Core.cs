@@ -112,9 +112,20 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
         private static string GetCurrentSessionCacheKey() => CurrentSessionGuidScope.Value ?? "default-session";
 
+        private static readonly AsyncLocal<AssistantComponentContext?> ComponentScope = new();
+
+        public static AssistantComponentContext? CurrentComponentContext => ComponentScope.Value;
+
+        public static IDisposable BeginComponentScope(AssistantComponentContext? context)
+        {
+            var previous = ComponentScope.Value;
+            ComponentScope.Value = context;
+            return new ComponentScopeLease(previous);
+        }
+
         public static FlowBloxRegistry GetRegistry()
         {
-            return GetProject().FlowBloxRegistry;
+            return CurrentComponentContext?.Registry ?? GetProject().FlowBloxRegistry;
         }
 
         public static FlowBloxProject GetProject()

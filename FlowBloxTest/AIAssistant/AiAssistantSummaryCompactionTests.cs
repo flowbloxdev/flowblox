@@ -23,7 +23,7 @@ public class AiAssistantSummaryCompactionTests
             }
         });
 
-        await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None);
+        await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         var compaction = executor.Requests.Single(request => request.Source == "FlowBloxAIAssistantCompaction");
         StringAssert.Contains(compaction.Messages.Single().Content, "CURRENT-TASK");
@@ -48,7 +48,7 @@ public class AiAssistantSummaryCompactionTests
         var summary = new string('s', summaryLength);
         service.RestoreSession(new AiAssistantHistoryDocument { ConversationSummary = summary });
 
-        await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None);
+        await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         Assert.AreEqual(1, executor.Requests.Count);
         Assert.AreEqual(summary, service.CurrentConversationSummary);
@@ -72,7 +72,7 @@ public class AiAssistantSummaryCompactionTests
             }
         });
 
-        await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None);
+        await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         Assert.AreEqual("FlowBloxAIAssistantSummary", executor.Requests[0].Source);
         Assert.AreEqual("FlowBloxAIAssistantCompaction", executor.Requests[1].Source);
@@ -101,7 +101,7 @@ public class AiAssistantSummaryCompactionTests
         var service = CreateService(executor, configuration);
         service.RestoreSession(new AiAssistantHistoryDocument { ConversationSummary = new string('s', 101) });
 
-        await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None);
+        await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         Assert.AreEqual(2, attempts);
         Assert.AreEqual(new string('c', 35), service.CurrentConversationSummary);
@@ -124,7 +124,7 @@ public class AiAssistantSummaryCompactionTests
         var service = CreateService(executor);
         service.RestoreSession(new AiAssistantHistoryDocument { ConversationSummary = new string('s', 101) });
 
-        await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None, runControl);
+        await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None, runControl);
 
         Assert.AreEqual(1, executor.ChatRequests.Single().Messages.Count(message =>
             message.Role == "user" && message.Content == "STAGED-DURING-COMPACTION"));
@@ -143,7 +143,7 @@ public class AiAssistantSummaryCompactionTests
         var original = new string('s', 101);
         service.RestoreSession(new AiAssistantHistoryDocument { ConversationSummary = original });
 
-        await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None);
+        await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         Assert.AreEqual(2, executor.Requests.Count(request => request.Source == "FlowBloxAIAssistantCompaction"));
         Assert.AreEqual(original, service.CurrentConversationSummary);
@@ -162,7 +162,7 @@ public class AiAssistantSummaryCompactionTests
         var original = new string('s', 101);
         service.RestoreSession(new AiAssistantHistoryDocument { ConversationSummary = original });
 
-        var result = await service.GenerateProjectAsync("CURRENT-TASK", CancellationToken.None);
+        var result = await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         Assert.IsTrue(result.Success);
         Assert.AreEqual(original, service.CurrentConversationSummary);

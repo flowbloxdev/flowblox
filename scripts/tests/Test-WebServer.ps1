@@ -2,11 +2,13 @@ param(
     [string]$Configuration = 'Debug',
     [switch]$WithoutPassword,
     [switch]$EmptyCatalog,
+    [switch]$BrowserInputs,
     [string]$ExecutablePath = ''
 )
 
-# HTTP contract smoke test. Uses an isolated profile, no browser, project execution or external API.
+# Isolated HTTP contract smoke test; BrowserInputs optionally adds headless UI checks. Never executes a flow.
 $ErrorActionPreference = 'Stop'
+if ($BrowserInputs -and (-not $WithoutPassword -or $EmptyCatalog)) { throw 'BrowserInputs requires WithoutPassword and a fixture catalog.' }
 Add-Type -AssemblyName System.Net.Http
 Add-Type -AssemblyName System.Security
 $repoDirectory = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
@@ -39,7 +41,7 @@ $xml.Save((Join-Path $testDirectory 'global_configuration.xml'))
 $projectsDirectory = Join-Path $testDirectory 'projects'
 New-Item -ItemType Directory -Path $projectsDirectory | Out-Null
 $fixture = @{
-    ProjectName = 'HTTP contract fixture'; ProjectDescription = 'Isolated HTTP test; never executed.'; Notice = 'Setup: https://example.com/'
+    ProjectGuid = '2c312829-4c61-423c-aa6b-ef85f20e3f1c'; ProjectName = 'HTTP contract fixture'; ProjectDescription = 'Isolated HTTP test; never executed.'; Notice = 'Setup: https://example.com/'
     FlowBlocks = @(); ManagedObjects = @(); ProjectDependendDataObjects = @(); InputFiles = @()
     UserFields = @(
         @{ Name = 'Suggested'; UserField = $true; UserFieldType = 'Input'; Index = 0; StringValue = 'initial default'; FieldType = @{ FieldType = 'Text' }; ListOfValues = @(@{ DisplayName = 'Demo suggestion'; Value = 'demo-suggestion' }) }
@@ -49,8 +51,20 @@ $fixture = @{
         @{ Name = 'ZeroDefault'; UserField = $true; UserFieldType = 'Input'; Index = 4; IsRequiredAtRuntimeStartup = $true; DefaultValue = '0'; FieldType = @{ FieldType = 'Integer' } }
     )
 }
+if ($BrowserInputs) {
+    $fixture.UserFields += @(
+        @{ Name = 'Multiline'; UserField = $true; UserFieldType = 'Input'; DefaultValue = "first`nsecond"; FieldType = @{ FieldType = 'Text' } }
+        @{ Name = 'ListFixture'; UserField = $true; UserFieldType = 'Input'; DefaultValue = 'alpha; beta;;'; FieldType = @{ FieldType = 'Text' } }
+    )
+}
 if (-not $EmptyCatalog) {
     [IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fbprj'), ($fixture | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+    if ($BrowserInputs) {
+        $second = $fixture.Clone()
+        $second.ProjectGuid = '8eb64b97-a31b-4ab9-933e-edf9ce2bc58c'
+        $second.ProjectName = 'Second input fixture'
+        [IO.File]::WriteAllText((Join-Path $projectsDirectory 'second.fbprj'), ($second | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+    }
     $localData = @{ LocalUserFieldValues = @{ Suggested = 'local developer value'; LocalPassword = 'must-not-render-local-secret' } }
     [IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fblocaldata'), ($localData | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } else {
@@ -92,6 +106,10 @@ try {
     if ($WithoutPassword) {
         if ($login -notmatch '/projects/[A-F0-9]+') { throw 'Password-free dashboard is missing the fixture project.' }
         Write-Host 'Passed: direct dashboard access without an app password.'
+        if ($BrowserInputs) {
+            & node (Join-Path $PSScriptRoot 'web-input-editors.mjs') $base (Join-Path $testDirectory 'browser') (Join-Path $repoDirectory 'FlowBlox.Avalonia.IntegrationTests/TestResults/web-input-editors')
+            if ($LASTEXITCODE -ne 0) { throw 'Interactive input editor checks failed.' }
+        }
         return
     }
     $token = [regex]::Match($login, 'name="__RequestVerificationToken" value="([^"]+)"').Groups[1].Value
@@ -134,8 +152,8 @@ try {
     if ($projectHtml -match 'must-not-render-local-secret') { throw 'Locally stored field value was rendered.' }
     if ($projectHtml -notmatch '<option value="00000000-0000-0000-0000-000000000000"') { throw 'Local developer configuration is missing.' }
     if ($projectHtml -match 'local developer value') { throw 'Local profile values were applied without selection.' }
-    if ($projectHtml -notmatch '(?s)<textarea[^>]*>initial default</textarea>') { throw 'Project default did not populate the text field.' }
-    if ([regex]::Matches($projectHtml, 'field-value-status filled').Count -ne 3) { throw 'Defaults, false or zero were not marked as supplied.' }
+    if ($projectHtml -notmatch '<input[^>]*value="initial default"') { throw 'Project default did not populate the text field.' }
+    if ([regex]::Matches($projectHtml, 'field-value-status filled').Count -ne $(if ($BrowserInputs) { 5 } else { 3 })) { throw 'Defaults, false or zero were not marked as supplied.' }
     if ([regex]::Matches($projectHtml, 'field-value-status missing').Count -ne 1) { throw 'The empty required password was not marked as missing.' }
     if ([regex]::Matches($projectHtml, 'field-value-status empty').Count -ne 1) { throw 'The empty optional input was not neutral.' }
     if ($projectHtml -notmatch '<input[^>]*aria-required="true"[^>]*aria-describedby="field-[^"]+-status"[^>]*type="password"') { throw 'Password completion is not accessible.' }

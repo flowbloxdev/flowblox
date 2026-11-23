@@ -10,6 +10,7 @@ namespace FlowBlox.UICore.ViewModels
     public sealed class AIAssistantProjectStateSnapshot
     {
         public Guid ProjectGuid { get; init; }
+        public string ComponentScope { get; init; } = string.Empty;
         public string ProjectName { get; init; }
         public string ProjectFilePath { get; init; }
         public string ProjectJson { get; init; }
@@ -46,6 +47,8 @@ namespace FlowBlox.UICore.ViewModels
             }
         }
 
+        public bool IsComponentMode => ChatViewModel.IsComponentMode;
+
         public bool IsChatVisible => !IsHistoryOverviewVisible;
         public string CurrentConversationSummary => ChatViewModel.CurrentConversationSummary;
 
@@ -69,20 +72,23 @@ namespace FlowBlox.UICore.ViewModels
 
             ChatViewModel.NewHistoryRequested += (_, _) => StartNewChat();
             ChatViewModel.HistoryRequested += (_, _) => ShowHistoryOverview();
-            ChatViewModel.PropertyChanged += (_, _) => InvalidateToolbarCommands();
+            ChatViewModel.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(AiAssistantChatViewModel.IsComponentMode))
+                    OnPropertyChanged(nameof(IsComponentMode));
+                InvalidateToolbarCommands();
+            };
 
             HistoryViewModel.NewHistoryRequested += (_, _) => StartNewChat();
             HistoryViewModel.HistoryOpenRequested += (_, item) => OpenHistory(item);
             HistoryViewModel.Histories.CollectionChanged += Histories_CollectionChanged;
 
-            HistoryViewModel.Refresh();
-            ShowHistoryOverview();
+            RefreshChatNavigationState();
         }
 
         public void ResetForProjectInitialization()
         {
             ChatViewModel.ResetForProjectInitialization();
-            HistoryViewModel.Refresh();
             ShowHistoryOverview();
         }
 
@@ -92,7 +98,8 @@ namespace FlowBlox.UICore.ViewModels
         {
             ChatViewModel.ConfigureProjectStateAccess(captureProjectState, restoreProjectState);
             HistoryViewModel.ConfigureProjectStateAccess(captureProjectState);
-            ShowHistoryOverview();
+            IsHistoryOverviewVisible = true;
+            RefreshChatNavigationState();
         }
 
         public void ConfigureBeforeAutomaticLayoutAdjustment(Action beforeAutomaticLayoutAdjustment)
@@ -160,6 +167,7 @@ namespace FlowBlox.UICore.ViewModels
         public void Dispose()
         {
             ChatViewModel.Dispose();
+            HistoryViewModel.Dispose();
         }
     }
 }

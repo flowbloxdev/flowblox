@@ -8,4 +8,5 @@
   <data name="Button_Close" xml:space="preserve"><value>Close</value></data>
   <data name="Image_Placeholder" xml:space="preserve"><value>Image resource not assigned</value></data>
   <data name="Button_Previous" xml:space="preserve"><value>Back</value></data>
+  <data name="Image_InteractionHint" xml:space="preserve"><value>Mouse wheel: zoom (up to 400%). Drag with the left or middle mouse button to pan. Double-click or Home: fit image. Keyboard: + / − to zoom.</value></data>
 </root>

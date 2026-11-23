@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -472,4 +472,5 @@
   <data name="star" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\star.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/star/ (Apache-2.0).</comment></data>
   <data name="circle" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\circle.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/circle/ (Apache-2.0).</comment></data>
   <data name="folder_download_outline" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\folder-download-outline.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/folder-download-outline/ (Apache-2.0).</comment></data>
+  <data name="brain" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\brain.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/brain/ (Apache-2.0).</comment></data>
 </root>

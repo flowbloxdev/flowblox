@@ -39,6 +39,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
         protected readonly object _parent;
         private IDialogService _dialogService;
         protected FrameworkElement _emptyMessage;
+        private ListView _listView;
 
         private static GridViewColumn CreateImageColumn(PropertyInfo property, DisplayAttribute display)
         {
@@ -108,6 +109,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             {
                 Margin = new Thickness(0, 5, 0, 10)
             };
+            _listView = listView;
             ParentScrollViewerMouseWheelForwarder.Register(listView);
 
             var gridView = new GridView();
@@ -447,7 +449,11 @@ namespace FlowBlox.UICore.Factory.PropertyView
             {
                 var success = WpfPropertyWindowProvider.CreatePropertyWindowAndShowDialog(_window, _target, item, _readOnly);
                 if (success)
+                {
+                    // Saving can update the same item instance without property or collection notifications.
+                    _listView?.Items.Refresh();
                     FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
+                }
             }
         }
 

@@ -33,7 +33,13 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <DockPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <views:ComponentAssistantView x:Name="ComponentAssistant" Grid.Column="1" />
+        <DockPanel>
 
         <!-- Header -->
         <Border Style="{DynamicResource FlowBlox.DialogHeader}" DockPanel.Dock="Top">
@@ -175,10 +181,11 @@
             </StackPanel>
         </Border>
 
-        <views:PropertyWindowFooter DockPanel.Dock="Bottom" />
+        <views:PropertyWindowFooter DockPanel.Dock="Bottom" IsEnabled="{Binding EditorEnabled, ElementName=ComponentAssistant}" />
 
         <!-- PropertyView Embedding -->
-        <views:PropertyView DataContext="{Binding PropertyViewModel}" />
+        <views:PropertyView DataContext="{Binding PropertyViewModel}" IsEnabled="{Binding EditorEnabled, ElementName=ComponentAssistant}" />
 
-    </DockPanel>
+        </DockPanel>
+    </Grid>
 </mah:MetroWindow>

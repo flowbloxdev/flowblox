@@ -12,6 +12,13 @@ namespace FlowBlox.Core.Util.Json.ContractResolver
 {
     internal sealed class ComponentSnapshotContractResolver : DefaultContractResolver
     {
+        private readonly bool _compact;
+
+        public ComponentSnapshotContractResolver(bool compact = true)
+        {
+            _compact = compact;
+        }
+
         private static readonly HashSet<string> IgnoredPropertyNames = new(StringComparer.Ordinal)
         {
             nameof(FlowBloxReactiveObject.Icon16),
@@ -29,7 +36,7 @@ namespace FlowBlox.Core.Util.Json.ContractResolver
                 return property;
             }
 
-            if (AiAssistantJsonPropertySerializationRules.IsIgnoredComponentProperty(member, property))
+            if (AiAssistantJsonPropertySerializationRules.IsIgnoredProperty(member, property))
             {
                 property.Ignored = true;
                 return property;
@@ -50,8 +57,11 @@ namespace FlowBlox.Core.Util.Json.ContractResolver
                     instance => instance is not FieldElement field || !field.IsPassword);
             }
 
-            AiAssistantJsonPropertySerializationRules.WriteEmptyEnumerablesAsKeyword(property);
-            AiAssistantJsonPropertySerializationRules.WriteEnumerableTypeAsCollectionKeyword(property);
+            if (_compact)
+            {
+                AiAssistantJsonPropertySerializationRules.WriteEmptyEnumerablesAsKeyword(property);
+                AiAssistantJsonPropertySerializationRules.WriteEnumerableTypeAsCollectionKeyword(property);
+            }
 
             return property;
         }

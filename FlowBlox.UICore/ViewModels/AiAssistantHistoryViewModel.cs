@@ -11,13 +11,13 @@ using System.Globalization;
 
 namespace FlowBlox.UICore.ViewModels
 {
-    public sealed class AiAssistantHistoryViewModel : INotifyPropertyChanged
+    public sealed class AiAssistantHistoryViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly AiAssistantHistoryStore _historyStore = AiAssistantHistoryStore.Instance;
         private readonly IFlowBloxMessageBoxService? _messageBoxService;
         private Func<AIAssistantProjectStateSnapshot?>? _captureProjectState;
 
-        public ObservableCollection<AiAssistantHistoryListItem> Histories => _historyStore.Histories;
+        public ObservableCollection<AiAssistantHistoryListItem> Histories { get; } = new();
         public RelayCommand NewHistoryCommand { get; }
         public RelayCommand OpenHistoryCommand { get; }
         public RelayCommand DeleteHistoryCommand { get; }
@@ -38,6 +38,7 @@ namespace FlowBlox.UICore.ViewModels
             OpenHistoryCommand = new RelayCommand(OpenHistory, parameter => parameter is AiAssistantHistoryListItem);
             DeleteHistoryCommand = new RelayCommand(DeleteHistory, parameter => parameter is AiAssistantHistoryListItem);
             Histories.CollectionChanged += Histories_CollectionChanged;
+            _historyStore.Histories.CollectionChanged += StoreHistories_CollectionChanged;
         }
 
         public void ConfigureProjectStateAccess(Func<AIAssistantProjectStateSnapshot?> captureProjectState)
@@ -48,9 +49,14 @@ namespace FlowBlox.UICore.ViewModels
 
         public void Refresh()
         {
-            var projectGuid = _captureProjectState?.Invoke()?.ProjectGuid;
-            _historyStore.Initialize(projectGuid);
-            _historyStore.Refresh(projectGuid);
+            var snapshot = _captureProjectState?.Invoke();
+            var scope = snapshot?.ComponentScope ?? string.Empty;
+            var items = _historyStore.LoadList(snapshot?.ProjectGuid)
+                .Where(item => string.Equals(item.ComponentScope, scope, StringComparison.Ordinal))
+                .ToList();
+            Histories.Clear();
+            foreach (var item in items)
+                Histories.Add(item);
             OnPropertyChanged(nameof(HasHistories));
         }
 
@@ -92,6 +98,13 @@ namespace FlowBlox.UICore.ViewModels
         private void Histories_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(HasHistories));
+        }
+
+        private void StoreHistories_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => Refresh();
+
+        public void Dispose()
+        {
+            _historyStore.Histories.CollectionChanged -= StoreHistories_CollectionChanged;
         }
 
         private void OnPropertyChanged(string propertyName)

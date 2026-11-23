@@ -45,6 +45,18 @@ namespace FlowBlox.UICore.ViewModels.PropertyView
         public PropertyWindowCommitStatus CommitStatus =>
             _transactionEventHandler?.CommitStatus ?? PropertyWindowCommitStatus.None;
 
+        public object WorkingCopy => _transientTarget;
+
+        public object AppendWorkingCopy(object value) => _transactionEventHandler.Append(value);
+
+        public event EventHandler WorkingCopyChanged;
+
+        public async Task RefreshAfterAssistantAsync()
+        {
+            await ResolveTabsAndRestoreSelectedTab(GetSelectedTabGroupKey());
+            IsDirty = true;
+        }
+
         public bool HasActiveTransaction => _transactionEventHandler?.HasActiveTransaction == true;
 
         public TabViewModel SelectedTab
@@ -288,6 +300,7 @@ namespace FlowBlox.UICore.ViewModels.PropertyView
                 return false;
 
             _transientTarget = _transactionEventHandler.WorkingCopy;
+            WorkingCopyChanged?.Invoke(this, EventArgs.Empty);
             await ResolveTabsAndRestoreSelectedTab(selectedTabGroupKey);
             IsDirty = false;
             return true;

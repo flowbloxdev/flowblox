@@ -57,9 +57,21 @@ def dependencies():
     return main_export, hf_hub_download, AutoTokenizer
 
 
+def normalize_provider(value: str) -> str:
+    value = value.lower()
+    return "cpu" if value == "default" else value
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Export an extractive question-answering model for FlowBlox."
+    )
+    parser.add_argument(
+        "--provider",
+        type=normalize_provider,
+        choices=("cpu", "cuda", "directml"),
+        default="cpu",
+        help="Intended runtime provider (Default/CPU, CUDA, DirectML). Export is portable; GPU runtimes are managed by FlowBlox.",
     )
     parser.add_argument(
         "--model-id",
@@ -125,6 +137,7 @@ def has_tokenizer_metadata(target: Path) -> bool:
 
 def main() -> None:
     args = parse_args()
+    print(f"Preparing portable ONNX QA model for runtime provider: {args.provider}", flush=True)
     model_name = args.model_id.rstrip("/").rsplit("/", 1)[-1]
     target = args.output_directory or (args.model_root_directory / model_name)
     target = target.expanduser().resolve()

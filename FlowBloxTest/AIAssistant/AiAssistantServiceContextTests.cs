@@ -20,12 +20,12 @@ namespace FlowBloxTest.AIAssistant
     public class AiAssistantServiceContextTests
     {
         [TestMethod]
-        public async Task GenerateProjectAsync_IncludesMessagesStagedDuringSummaryInImmediatelyFollowingRequest()
+        public async Task ExecutePromptAsync_IncludesMessagesStagedDuringSummaryInImmediatelyFollowingRequest()
         {
             var executor = new RecordingAiExecutor();
             var service = CreateService(executor, CreateConfiguration(maxLatestMessages: 2, minLatestMessages: 2));
-            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-1", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-2", CancellationToken.None);
 
             var runControl = new AssistantRunControl();
             var stagedDuringSummary = false;
@@ -35,7 +35,7 @@ namespace FlowBloxTest.AIAssistant
                 stagedDuringSummary = true;
             };
 
-            var result = await service.GenerateProjectAsync("USER-3", CancellationToken.None, runControl);
+            var result = await service.ExecutePromptAsync("USER-3", CancellationToken.None, runControl);
 
             Assert.IsTrue(stagedDuringSummary);
             Assert.IsTrue(result.Success);
@@ -48,14 +48,14 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_ContinuesForMessageStagedDuringFinalSummaryRetry()
+        public async Task ExecutePromptAsync_ContinuesForMessageStagedDuringFinalSummaryRetry()
         {
             var executor = new RecordingAiExecutor();
             var configuration = CreateConfiguration(maxLatestMessages: 2, minLatestMessages: 2);
             configuration.MaxToolRounds = 3;
             var service = CreateService(executor, configuration);
-            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-1", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-2", CancellationToken.None);
 
             var runControl = new AssistantRunControl();
             var summaryRequests = 0;
@@ -70,7 +70,7 @@ namespace FlowBloxTest.AIAssistant
                     messageAccepted = runControl.TryStageUserMessage("INTERMEDIATE-DURING-FINAL-SUMMARY");
             };
 
-            var result = await service.GenerateProjectAsync("USER-3", CancellationToken.None, runControl);
+            var result = await service.ExecutePromptAsync("USER-3", CancellationToken.None, runControl);
 
             Assert.IsTrue(messageAccepted, "Messages must still be accepted during final summarization.");
             Assert.IsTrue(result.Success);
@@ -81,14 +81,14 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_SummarizesOnlyMessagesLeavingLatestWindow()
+        public async Task ExecutePromptAsync_SummarizesOnlyMessagesLeavingLatestWindow()
         {
             var executor = new RecordingAiExecutor();
             var service = CreateService(executor, CreateConfiguration(maxLatestMessages: 2, minLatestMessages: 2));
 
-            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-3", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-1", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-2", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-3", CancellationToken.None);
 
             var summaryRequests = executor.Requests
                 .Where(x => x.Source == "FlowBloxAIAssistantSummary")
@@ -101,7 +101,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_CompactsSummaryByConfiguredRateWhenSummaryIsRequired()
+        public async Task ExecutePromptAsync_CompactsSummaryByConfiguredRateWhenSummaryIsRequired()
         {
             var executor = new RecordingAiExecutor();
             var service = CreateService(executor, CreateConfiguration(
@@ -109,11 +109,11 @@ namespace FlowBloxTest.AIAssistant
                 minLatestMessages: 2,
                 summaryCompactionRate: 0.4d));
 
-            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-3", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-4", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-5", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-1", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-2", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-3", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-4", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-5", CancellationToken.None);
 
             var summaryRequests = executor.Requests
                 .Where(x => x.Source == "FlowBloxAIAssistantSummary")
@@ -128,14 +128,14 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_PreservesAllPriorMessagesThroughSummaryAndLatestWindow()
+        public async Task ExecutePromptAsync_PreservesAllPriorMessagesThroughSummaryAndLatestWindow()
         {
             var executor = new RecordingAiExecutor();
             var service = CreateService(executor, CreateConfiguration(maxLatestMessages: 2));
 
-            await service.GenerateProjectAsync("USER-1", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-2", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-3", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-1", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-2", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-3", CancellationToken.None);
 
             var thirdChatRequest = executor.ChatRequests[2];
             var combinedContext = string.Join(
@@ -436,7 +436,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_CompactsHistoryAndSendsNativeSemanticKernelToolMessages()
+        public async Task ExecutePromptAsync_CompactsHistoryAndSendsNativeSemanticKernelToolMessages()
         {
             FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject();
 
@@ -487,7 +487,7 @@ namespace FlowBloxTest.AIAssistant
 
             var service = CreateService(new AiProviderExecutor(), toolApi, config);
 
-            var result = await service.GenerateProjectAsync("USER-MESSAGE-1", CancellationToken.None);
+            var result = await service.ExecutePromptAsync("USER-MESSAGE-1", CancellationToken.None);
 
             Assert.IsTrue(result.Success, string.Join(Environment.NewLine, result.Errors));
             Assert.IsTrue(provider.SummaryRequestCount > 0);
@@ -525,7 +525,7 @@ namespace FlowBloxTest.AIAssistant
 
 
         [TestMethod]
-        public async Task GenerateProjectAsync_SummarizesMessagesExcludedByEffectiveTokenWindow()
+        public async Task ExecutePromptAsync_SummarizesMessagesExcludedByEffectiveTokenWindow()
         {
             var executor = new RecordingAiExecutor();
             var config = CreateConfiguration(maxLatestMessages: 4);
@@ -534,9 +534,9 @@ namespace FlowBloxTest.AIAssistant
             config.ApproximateCharactersPerToken = 1;
             var service = CreateService(executor, config);
 
-            await service.GenerateProjectAsync("USER-1-LONG", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-2-LONG", CancellationToken.None);
-            await service.GenerateProjectAsync("USER-3-LONG", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-1-LONG", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-2-LONG", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-3-LONG", CancellationToken.None);
 
             var thirdChatRequest = executor.ChatRequests[2];
             var combinedContext = string.Join(
@@ -563,7 +563,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_PersistsTechnicalSessionMessagesIncludingToolRounds()
+        public async Task ExecutePromptAsync_PersistsTechnicalSessionMessagesIncludingToolRounds()
         {
             var executor = new QueuedAiExecutor(
                 "{\"assistantMessage\":\"Reading project details.\",\"final\":false,\"toolCalls\":[{\"toolName\":\"GetProjectJson\",\"arguments\":{}}]}",
@@ -572,7 +572,7 @@ namespace FlowBloxTest.AIAssistant
             config.MaxToolRounds = 2;
             var service = CreateService(executor, config);
 
-            await service.GenerateProjectAsync("USER-TOOL-ROUND", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-TOOL-ROUND", CancellationToken.None);
 
             var history = new AiAssistantHistoryDocument();
             service.UpdateHistorySessionMetadata(history);
@@ -632,7 +632,7 @@ namespace FlowBloxTest.AIAssistant
                 ]
             });
 
-            await service.GenerateProjectAsync("NEXT-USER", CancellationToken.None);
+            await service.ExecutePromptAsync("NEXT-USER", CancellationToken.None);
 
             var combinedContext = string.Join(
                 "\n",
@@ -670,7 +670,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_PersistsAssistantToolRequestWhenToolProcessingIsCanceled()
+        public async Task ExecutePromptAsync_PersistsAssistantToolRequestWhenToolProcessingIsCanceled()
         {
             var executor = new QueuedAiExecutor(
                 "{\"assistantMessage\":\"I will update the flow.\",\"final\":false,\"toolCalls\":[{\"toolName\":\"CancelingTool\",\"arguments\":{}}]}");
@@ -681,7 +681,7 @@ namespace FlowBloxTest.AIAssistant
 
             try
             {
-                await service.GenerateProjectAsync("USER-CANCEL", CancellationToken.None);
+                await service.ExecutePromptAsync("USER-CANCEL", CancellationToken.None);
                 Assert.Fail("Expected OperationCanceledException.");
             }
             catch (OperationCanceledException)
@@ -699,7 +699,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_PersistsNormalizedInstructionInsteadOfRawAssistantOutput()
+        public async Task ExecutePromptAsync_PersistsNormalizedInstructionInsteadOfRawAssistantOutput()
         {
             var executor = new QueuedAiExecutor(
                 "preface that should not be persisted {\"assistantMessage\":\"Reading project details.\",\"final\":false,\"toolCalls\":[{\"toolName\":\"GetProjectJson\",\"arguments\":{}}]} trailing text",
@@ -708,7 +708,7 @@ namespace FlowBloxTest.AIAssistant
             config.MaxToolRounds = 2;
             var service = CreateService(executor, config);
 
-            await service.GenerateProjectAsync("USER-NORMALIZED", CancellationToken.None);
+            await service.ExecutePromptAsync("USER-NORMALIZED", CancellationToken.None);
 
             var history = new AiAssistantHistoryDocument();
             service.UpdateHistorySessionMetadata(history);
@@ -749,7 +749,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_AddsFormatFailureDetailsToRetryPrompt()
+        public async Task ExecutePromptAsync_AddsFormatFailureDetailsToRetryPrompt()
         {
             var executor = new QueuedAiExecutor(
                 "{\"assistantMessage\":\"Broken\",\"final\":false,\"toolCalls\":[}",
@@ -758,7 +758,7 @@ namespace FlowBloxTest.AIAssistant
             config.MaxToolRounds = 2;
             var service = CreateService(executor, config);
 
-            var result = await service.GenerateProjectAsync("USER-FORMAT-RETRY", CancellationToken.None);
+            var result = await service.ExecutePromptAsync("USER-FORMAT-RETRY", CancellationToken.None);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual(2, executor.ChatRequests.Count);
@@ -768,7 +768,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task GenerateProjectAsync_LoadedExplanationBecomesVisibleInDebuggerAndNextRequest()
+        public async Task ExecutePromptAsync_LoadedExplanationBecomesVisibleInDebuggerAndNextRequest()
         {
             var retrieve = "{\"assistantMessage\":\"Read guidance.\",\"final\":false,\"toolCalls\":[{\"toolName\":\"LoadExplanation\",\"arguments\":{\"key\":\"explaining_generators\"}}]}";
             var executor = new QueuedAiExecutor(
@@ -782,7 +782,7 @@ namespace FlowBloxTest.AIAssistant
                 config);
             var snapshots = new List<AssistantDebugSnapshot>();
             service.DebugStateChanged += (_, _) => snapshots.Add(service.GetDebugSnapshot());
-            var result = await service.GenerateProjectAsync("READ-GUIDANCE", CancellationToken.None);
+            var result = await service.ExecutePromptAsync("READ-GUIDANCE", CancellationToken.None);
             Assert.IsTrue(result.Success, string.Join(Environment.NewLine, result.Errors));
             Assert.AreEqual(2, executor.ChatRequests[0].SystemMessages.Count);
             Assert.AreEqual(3, executor.ChatRequests[1].SystemMessages.Count);

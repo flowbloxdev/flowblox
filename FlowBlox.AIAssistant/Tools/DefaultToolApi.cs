@@ -16,6 +16,7 @@ namespace FlowBlox.AIAssistant.Tools
         private readonly ToolNameResolver _toolNameResolver;
         private readonly List<ToolDefinition> _definitions;
         public Func<ToolRequest, bool>? ToolExecutionConfirmationCallback { get; set; }
+        public AssistantComponentContext? ComponentContext { get; set; }
 
         public DefaultToolApi(Func<AssistantConfiguration>? assistantConfigurationProvider = null)
         {
@@ -89,6 +90,8 @@ namespace FlowBlox.AIAssistant.Tools
                     RememberProjectApproval = request.RememberProjectApproval
                 };
 
+                ComponentContext?.ValidateTool(request);
+
                 if (RequiresUserConfirmation(request))
                 {
                     request = await CreateConfirmationRequestAsync(request, ct).ConfigureAwait(false);
@@ -114,13 +117,59 @@ namespace FlowBlox.AIAssistant.Tools
 
         private async Task<ToolResponse> ExecuteHandlerAndNotifyChanges(IToolHandler handler, ToolRequest request, CancellationToken ct)
         {
+            if (ComponentContext?.DispatchAsync != null)
+                return await ComponentContext.DispatchAsync(() => ExecuteHandlerInScopeAsync(handler, request, ct)).ConfigureAwait(false);
+
+            return await ExecuteHandlerInScopeAsync(handler, request, ct).ConfigureAwait(false);
+        }
+
+        private async Task<ToolResponse> ExecuteHandlerInScopeAsync(IToolHandler handler, ToolRequest request, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            ComponentContext?.ValidateTool(request);
+            using var componentScope = ToolHandlerUtilities.BeginComponentScope(ComponentContext);
             var project = ToolHandlerUtilities.TryGetProject();
             using var registryScope = project == null
                 ? null
-                : FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
-            var response = await handler
-                .HandleAsync(request.Arguments ?? new JObject(), ct)
-                .ConfigureAwait(false);
+                : FlowBloxRegistryProvider.BeginScopedRegistry(ComponentContext?.Registry ?? project.FlowBloxRegistry);
+            var registeredBeforeCreation = ComponentContext != null &&
+                (request.ToolName == "CreateField" || request.ToolName == "CreateManagedObject")
+                    ? ComponentContext.CaptureRegisteredObjects()
+                    : null;
+            ToolResponse response;
+            try
+            {
+                response = await handler.HandleAsync(request.Arguments ?? new JObject(), ct);
+            }
+            catch (Exception exception) when (ComponentContext != null && exception is not OperationCanceledException)
+            {
+                response = ToolHandlerUtilities.Fail(exception.Message);
+            }
+
+            if (ComponentContext != null)
+            {
+                if (registeredBeforeCreation != null)
+                    ComponentContext.TrackCreatedObjects(registeredBeforeCreation);
+                if (request.ToolName.StartsWith("Update", StringComparison.Ordinal) || registeredBeforeCreation != null)
+                {
+                    var refresh = response.RefreshBeforeSerialization;
+                    var context = ComponentContext;
+                    response.RefreshBeforeSerialization = () =>
+                    {
+                        refresh?.Invoke();
+                        context.RefreshCreationWarning(response.Result);
+                    };
+                    response.RefreshForSerialization();
+                }
+                response.IsLayoutRelevantForAutoAdjustment = false;
+                if (request.ToolName.StartsWith("Update", StringComparison.Ordinal) ||
+                    request.ToolName.StartsWith("Create", StringComparison.Ordinal))
+                {
+                    if (ComponentContext.ChangedAsync != null)
+                        await ComponentContext.ChangedAsync();
+                }
+                return response;
+            }
 
             response.IsLayoutRelevantForAutoAdjustment =
                 response.IsLayoutRelevantForAutoAdjustment ||

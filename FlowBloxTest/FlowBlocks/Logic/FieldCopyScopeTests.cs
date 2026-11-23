@@ -30,6 +30,7 @@ namespace FlowBloxTest.FlowBlocks.Logic
             var input = Registry.CreateUserField(UserFieldTypes.Input);
             var memory = Registry.CreateUserField(UserFieldTypes.Memory);
 
+            copy.InputFieldScope = FieldCopyInputScope.DirectPredecessors;
             CollectionAssert.AreEquivalent(new[] { predecessorField }, copy.GetPossibleInputFields());
 
             copy.InputFieldScope = FieldCopyInputScope.AllFields;

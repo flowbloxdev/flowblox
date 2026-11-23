@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Attributes;
+using FlowBlox.Core.Constants;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Base;
 using FlowBlox.Core.Models.Components;
@@ -21,7 +22,8 @@ namespace FlowBlox.AIAssistant.Tools.Util
         internal const string TypeInfoCacheDescription =
             "Includes base members and nested ReactiveObjects. Repeated retrieval promotes complete declaring types to runtime system messages. " +
             "omitted=[{type,properties}] means promoted; type identifies the defining declaration. A repeated requested type returns only a promotion notice. " +
-            "Conflicting inherited/overridden property names include declaringType. Promotions reset after application restart.";
+            "Conflicting inherited/overridden property names include declaringType. Promotions reset after application restart. " +
+            TypeDescriptionCompactionLayer.Description;
 
         public static ToolResponse CreateUnifiedTypeInfoResponse(string? fullName)
         {
@@ -52,7 +54,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     "type:" + declaringType,
                     declaringType,
                     AssistantSystemMessageKind.TypeInfo,
-                    CompressTypeAliases(RenderTypePayload(
+                    FormatTypePayload(RenderTypePayload(
                         declaringType,
                         descriptions,
                         cache,
@@ -60,7 +62,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     true));
             var response = Ok(new JObject());
             response.RefreshBeforeSerialization = () =>
-                response.Result = CompressTypeAliases(RenderTypePayload(
+                response.Result = FormatTypePayload(RenderTypePayload(
                     type.FullName!,
                     descriptions,
                     cache,
@@ -176,6 +178,16 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 result["omitted"] = omitted;
 
             return result;
+        }
+
+        private static JObject FormatTypePayload(JObject payload)
+        {
+            var compact = FlowBloxOptions.GetOptionInstance()
+                .GetOption(OptionsConstants.AICompactTypeDescriptions)?.Value;
+            if (!bool.TryParse(compact, out var enabled) || enabled)
+                payload = TypeDescriptionCompactionLayer.Compact(payload);
+
+            return CompressTypeAliases(payload);
         }
 
         private static JObject CompressTypeAliases(JObject payload)

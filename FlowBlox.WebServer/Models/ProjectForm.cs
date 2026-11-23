@@ -4,6 +4,7 @@ namespace FlowBlox.WebServer.Models;
 
 public sealed class ProjectForm
 {
+    public Guid ProjectGuid { get; init; }
     public string Description { get; init; } = string.Empty;
     public string Notice { get; init; } = string.Empty;
     public string InputDirectory { get; set; } = string.Empty;

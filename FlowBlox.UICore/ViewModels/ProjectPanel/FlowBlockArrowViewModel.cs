@@ -46,15 +46,11 @@ namespace FlowBlox.UICore.ViewModels.ProjectPanel
             }
         }
 
-        private Point FromCenter => new(From.X + (From.Width / 2d), From.Y + (From.Height / 2d));
-        private Point ToCenter => new(To.X + (To.Width / 2d), To.Y + (To.Height / 2d));
         private Rect FromBounds => new(From.X, From.Y, From.Width, From.Height);
         private Rect ToBounds => new(To.X, To.Y, To.Width, To.Height);
-        private Point BaseStartPoint => ArrowGeometryHelper.GetEdgePoint(FromBounds, FromCenter, ToCenter);
-        private Point BaseEndPoint => ArrowGeometryHelper.GetEdgePoint(ToBounds, ToCenter, FromCenter);
-        private Vector OffsetVector => ArrowGeometryHelper.GetPerpendicularOffset(BaseStartPoint, BaseEndPoint, Offset);
-        private Point StartPoint => BaseStartPoint + OffsetVector;
-        private Point EndPoint => BaseEndPoint + OffsetVector;
+        private (Point Start, Point End) Endpoints => ArrowGeometryHelper.GetConnectionEndpoints(FromBounds, ToBounds, Offset);
+        private Point StartPoint => Endpoints.Start;
+        private Point EndPoint => Endpoints.End;
 
         public double X1 => StartPoint.X;
         public double Y1 => StartPoint.Y;

@@ -38,7 +38,7 @@ else
                 <div class="toolbar"><button class="quiet" disabled="@_busy" @onclick="ClearAsync"><MdiIcon Name="backup-restore" /> @T["Clear"]</button></div>
                 @foreach (var field in _form.Fields)
                 {
-                    <InputFieldEditor @key="field.Name" Field="field" Disabled="_busy" OutputDirectories="_outputDirectories" References="_form.FieldReferences" @bind-Value="_form.Values[field.Name]" />
+                    <InputFieldEditor @key="field.Name" Field="field" ProjectGuid="_form.ProjectGuid" Disabled="_busy" OutputDirectories="_outputDirectories" References="_form.FieldReferences" @bind-Value="_form.Values[field.Name]" />
                 }
             }
             <details class="overrides"><summary>@T["OptionOverrides"] <span class="badge">@_form.Overrides.Count</span></summary>

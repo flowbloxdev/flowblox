@@ -8,6 +8,7 @@
     xmlns:resources="clr-namespace:FlowBlox.UICore.PopUp.Resources"
     xmlns:md="clr-namespace:MdXaml;assembly=MdXaml"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:views="clr-namespace:FlowBlox.UICore.Views"
     mc:Ignorable="d"
     Width="560"
     Height="760"
@@ -63,11 +64,9 @@
                     CornerRadius="4"
                     ClipToBounds="True">
                 <Grid>
-                    <Image x:Name="StepImage"
-                           Stretch="Uniform"
-                           RenderOptions.BitmapScalingMode="HighQuality"
-                           UseLayoutRounding="True"
-                           SnapsToDevicePixels="True" />
+                    <views:ZoomableImageView x:Name="StepImage"
+                                             ToolTip="{x:Static resources:ComponentPopupWindowResources.Image_InteractionHint}"
+                                             AutomationProperties.Name="{x:Static resources:ComponentPopupWindowResources.Image_InteractionHint}" />
                     <TextBlock x:Name="ImagePlaceholderTextBlock"
                                Text="{x:Static resources:ComponentPopupWindowResources.Image_Placeholder}"
                                Foreground="#6B7280"

@@ -59,29 +59,39 @@ namespace FlowBlox.AIAssistant.Builder
 
         public static string BuildInitialUserPrompt(
             string userPrompt,
-            string? projectJson,
-            ProjectAttachmentInformation projectAttachmentInformation,
-            string? activeSkillProjectName = null)
+            string? contextJson,
+            SnapshotAttachmentInformation attachmentInformation,
+            string? activeSkillProjectName = null,
+            AssistantComponentContext? componentContext = null)
         {
             var sb = new StringBuilder();
+            if (componentContext != null)
+            {
+                sb.Append("Current editor context: ");
+                sb.AppendLine(componentContext.Describe());
+                sb.AppendLine();
+            }
+
             sb.AppendLine("User prompt:");
             sb.AppendLine(userPrompt);
             sb.AppendLine();
 
             AppendSkillProjectContext(sb, activeSkillProjectName);
 
-            var attachmentReasonText = BuildProjectAttachmentInformationText(projectAttachmentInformation);
+            var attachmentReasonText = componentContext == null
+                ? BuildProjectAttachmentInformationText(attachmentInformation)
+                : BuildComponentAttachmentInformationText(attachmentInformation);
             if (!string.IsNullOrWhiteSpace(attachmentReasonText))
             {
-                sb.AppendLine("Project attachment note:");
+                sb.AppendLine(componentContext == null ? "Project attachment note:" : "Component attachment note:");
                 sb.AppendLine(attachmentReasonText);
                 sb.AppendLine();
             }
 
-            if (!string.IsNullOrWhiteSpace(projectJson))
+            if (!string.IsNullOrWhiteSpace(contextJson))
             {
-                sb.AppendLine("Current project JSON:");
-                sb.AppendLine(projectJson);
+                sb.AppendLine(componentContext == null ? "Current project JSON:" : "Current component JSON:");
+                sb.AppendLine(contextJson);
                 sb.AppendLine();
             }
 
@@ -145,21 +155,49 @@ namespace FlowBlox.AIAssistant.Builder
             return sb.ToString().TrimEnd();
         }
 
-        private static string BuildProjectAttachmentInformationText(ProjectAttachmentInformation projectAttachmentReason)
+        private static string BuildComponentAttachmentInformationText(SnapshotAttachmentInformation attachmentReason)
+        {
+            return attachmentReason switch
+            {
+                SnapshotAttachmentInformation.InitialTransmission =>
+                    "The current component JSON is attached because it has not yet been provided in this conversation. " +
+                    "Treat it as the initial component state.",
+                SnapshotAttachmentInformation.ChangedSinceLastConversation =>
+                    "The current component JSON is attached because the component changed since the last conversation state was saved. " +
+                    "Treat it as the latest component state.",
+                SnapshotAttachmentInformation.UnchangedSinceLastConversation =>
+                    "The current component JSON is omitted because the component has not changed since the last conversation state was saved. " +
+                    "Continue using the latest component state already available in this conversation.",
+                SnapshotAttachmentInformation.JsonDisabledInitialState =>
+                    "The current component JSON is omitted because automatic JSON attachment is disabled. " +
+                    "No component hash/state is stored for this conversation yet. Request a component snapshot if component context is needed.",
+                SnapshotAttachmentInformation.JsonDisabledStateChanged =>
+                    "The current component JSON is omitted because automatic JSON attachment is disabled. " +
+                    "The component changed since the last saved conversation state. " +
+                    "Request a component snapshot if the current component state is needed.",
+                SnapshotAttachmentInformation.JsonDisabledStateUnchanged =>
+                    "The current component JSON is omitted because automatic JSON attachment is disabled. " +
+                    "The component has not changed since the last saved conversation state. " +
+                    "Continue using the latest component state already available in this conversation, if one was requested earlier.",
+                _ => string.Empty
+            };
+        }
+
+        private static string BuildProjectAttachmentInformationText(SnapshotAttachmentInformation projectAttachmentReason)
         {
             return projectAttachmentReason switch
             {
-                ProjectAttachmentInformation.InitialTransmission =>
+                SnapshotAttachmentInformation.InitialTransmission =>
                     "The current project JSON is attached because it has not yet been provided in this conversation. Treat it as the initial project state.",
-                ProjectAttachmentInformation.ProjectChangedSinceLastConversation =>
+                SnapshotAttachmentInformation.ChangedSinceLastConversation =>
                     "The current project JSON is attached because the project changed since the last conversation state was saved. Treat it as the latest project state.",
-                ProjectAttachmentInformation.ProjectUnchangedSinceLastConversation =>
+                SnapshotAttachmentInformation.UnchangedSinceLastConversation =>
                     "The current project JSON is omitted because the project has not changed since the last conversation state was saved. Continue using the latest project state already available in this conversation.",
-                ProjectAttachmentInformation.ProjectJsonDisabledInitialState =>
+                SnapshotAttachmentInformation.JsonDisabledInitialState =>
                     "The current project JSON is omitted because automatic project JSON attachment is disabled. No project hash/state is stored for this conversation yet. Request the project JSON with the available project tool if project context is needed.",
-                ProjectAttachmentInformation.ProjectJsonDisabledProjectChanged =>
+                SnapshotAttachmentInformation.JsonDisabledStateChanged =>
                     "The current project JSON is omitted because automatic project JSON attachment is disabled. The project changed since the last saved conversation state. Request the project JSON with the available project tool if the current project state is needed.",
-                ProjectAttachmentInformation.ProjectJsonDisabledProjectUnchanged =>
+                SnapshotAttachmentInformation.JsonDisabledStateUnchanged =>
                     "The current project JSON is omitted because automatic project JSON attachment is disabled. The project has not changed since the last saved conversation state. Continue using the latest project state already available in this conversation, if one was requested earlier.",
                 _ => string.Empty
             };

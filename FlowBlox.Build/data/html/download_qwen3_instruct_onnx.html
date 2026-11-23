@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowBlox Qwen3 Instruct ONNX GenAI download script</title>
+  <style>html, body, iframe { width: 100%; height: 100%; margin: 0; border: 0; } body { overflow: hidden; }</style>
+</head>
+<body>
+  <iframe id="page" src="export-script-base.html" title="FlowBlox model script"></iframe>
+  <script>
+    const page = {
+      "documentTitle": "FlowBlox Qwen3 Instruct ONNX GenAI download script",
+      "title": "Download Qwen3-4B-Instruct-2507 for ONNX Runtime GenAI",
+      "notice": "<strong>Before you start:</strong> the CPU INT4 package is approximately 2.6 GB; GPU packages are approximately 3 GB each. Python, internet access and sufficient disk space and RAM are required for initial setup.",
+      "description": "Provisions the multilingual, non-thinking Qwen3-4B-Instruct-2507 model using pinned CPU, CUDA or DirectML ONNX Runtime GenAI exports. CPU is the default; <span class=\"path\">--provider Default</span> also selects CPU. Use <span class=\"path\">--provider CUDA</span> for NVIDIA or <span class=\"path\">--provider DirectML</span> for compatible Windows GPUs. Each provider has a separate model folder below <span class=\"path\">%USERPROFILE%\\.flowblox\\onnx\\genai</span>, named <span class=\"path\">Qwen3-4B-Instruct-2507-ONNX-cpu</span>, <span class=\"path\">-cuda</span> or <span class=\"path\">-directml</span>. Complete existing packages are reused. The script installs the Hugging Face client if missing and does not require the optional PyYAML C extension.",
+      "specialHint": "<strong>FlowBlox setup:</strong> Add the script under <strong>Tools &gt; Manage input files</strong>, enable <strong>Execute before runtime start</strong>, and use:<br><code class=\"path\">python &quot;$InputFile::Path&quot; --provider &quot;$User::Provider&quot; --model-root-directory &quot;$Options::AI.Onnx.GenAI.ModelRootDirectory&quot; --model-directory-link &quot;$Project::InputDirectory/answer-model&quot;</code><br>Set the ONNX GenAI block to the same Provider and <span class=\"path\">$Project::InputDirectory/answer-model</span>. The directory link switches to the selected provider package without copying weights; existing ordinary directories are protected. Use <span class=\"path\">--output-directory &lt;folder&gt;</span> for an exact model folder or <span class=\"path\">--model-root-directory &lt;folder&gt;</span> for a custom root.<br><br><strong>Qwen chat template:</strong> Enable <strong>Use chat template</strong> and use this template instead of a Phi template:<br><code class=\"path\">&lt;|im_start|&gt;system\n{SystemPrompt}&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n{UserPrompt}&lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</code><br><strong>Provider requirements:</strong> GPU execution needs compatible hardware, drivers and native ONNX Runtime GenAI provider libraries. CPU execution has been tested in FlowBlox; GPU packages have not been runtime-tested here. Restart FlowBlox when switching the native provider.",
+      "filename": "download_qwen3_instruct_onnx.py",
+      "scriptUrl": "../python/download_qwen3_instruct_onnx.py"
+};
+    const frame = document.getElementById('page');
+    const send = () => frame.contentWindow.postMessage({ type: 'flowblox-export-script', page }, '*');
+    frame.addEventListener('load', send);
+    window.addEventListener('message', event => {
+      if (event.source === frame.contentWindow && event.data?.type === 'flowblox-export-script-ready') send();
+    });
+  </script>
+</body>
+</html>

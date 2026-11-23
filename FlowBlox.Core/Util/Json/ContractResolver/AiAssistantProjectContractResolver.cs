@@ -18,7 +18,7 @@ namespace FlowBlox.Core.Util.Json.ContractResolver
                 property.Ignored = true;
             }
 
-            if (AiAssistantJsonPropertySerializationRules.IsIgnoredComponentProperty(member, property))
+            if (AiAssistantJsonPropertySerializationRules.IsIgnoredProperty(member, property))
             {
                 property.Ignored = true;
                 return property;

@@ -27,6 +27,9 @@ namespace FlowBlox.UICore.ViewModels
     public class AiAssistantChatViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly AiAssistantService _service;
+        private readonly DefaultToolApi _toolApi;
+        public AssistantComponentContext? ComponentContext => _service.ComponentContext;
+        public bool IsComponentMode => ComponentContext != null;
         private readonly IDialogService _dialogService;
         private readonly IFlowBloxMessageBoxService _messageBoxService;
         private readonly IRuntimeStateService _runtimeStateService;
@@ -111,7 +114,7 @@ namespace FlowBlox.UICore.ViewModels
         public bool CanEditInput => true;
         public bool IsInputEmpty => string.IsNullOrEmpty(CurrentInput);
         public string InputWatermark => FlowBloxResourceUtil.GetLocalizedString(
-            IsBusy ? "Watermark_FollowUpPrompt" : "Watermark_InitialPrompt",
+            IsBusy ? "Watermark_FollowUpPrompt" : IsComponentMode ? "Watermark_ComponentPrompt" : "Watermark_InitialPrompt",
             typeof(Resources.AiAssistantChatView));
         public string ContinueButtonText => FlowBloxResourceUtil.GetLocalizedString(
             "Button_Continue", typeof(Resources.AiAssistantChatView));
@@ -137,7 +140,12 @@ namespace FlowBlox.UICore.ViewModels
         }
 
         public bool ShowProviderConfigurationWarning => !_isProviderConfigured;
-        public bool ShowIntroHeader => Transcript.Count == 0;
+        public bool ShowIntroHeader => IsComponentMode || Transcript.Count == 0;
+        public string HeaderDescription => IsComponentMode
+            ? string.Format(CultureInfo.CurrentCulture,
+                FlowBloxResourceUtil.GetLocalizedString("Header_ComponentDescription", typeof(Resources.AiAssistantChatView)),
+                ComponentContext.Target.Name)
+            : FlowBloxResourceUtil.GetLocalizedString("Header_Description", typeof(Resources.AiAssistantChatView));
         public int EstimatedUsedTokens
         {
             get => _estimatedUsedTokens;
@@ -205,6 +213,7 @@ namespace FlowBlox.UICore.ViewModels
             {
                 ToolExecutionConfirmationCallback = ConfirmToolExecutionRequest
             };
+            _toolApi = toolApi;
             _service = new AiAssistantService(
                 new AiProviderExecutor(),
                 toolApi,
@@ -239,6 +248,16 @@ namespace FlowBlox.UICore.ViewModels
             }
 
             RefreshProviderConfigurationState();
+        }
+
+        public void ConfigureComponentContext(AssistantComponentContext context)
+        {
+            _service.ComponentContext = context;
+            _toolApi.ComponentContext = context;
+            OnPropertyChanged(nameof(IsComponentMode));
+            OnPropertyChanged(nameof(HeaderDescription));
+            OnPropertyChanged(nameof(ShowIntroHeader));
+            OnPropertyChanged(nameof(InputWatermark));
         }
 
         private void OpenDemoPrompts()
@@ -327,7 +346,7 @@ namespace FlowBlox.UICore.ViewModels
                 _runtimeStateService?.SetExternalProjectEditActive(true);
                 _cts = new CancellationTokenSource();
 
-                await _service.GenerateProjectAsync(input, _cts.Token, _runControl);
+                await _service.ExecutePromptAsync(input, _cts.Token, _runControl);
                 promptCompleted = true;
             }
             catch (OperationCanceledException)
@@ -372,7 +391,7 @@ namespace FlowBlox.UICore.ViewModels
             bool promptCompleted,
             AIAssistantProjectStateSnapshot? stateBeforePrompt)
         {
-            if (!promptCompleted || stateBeforePrompt == null)
+            if (IsComponentMode || !promptCompleted || stateBeforePrompt == null)
                 return;
 
             var stateAfterPrompt = _captureProjectState?.Invoke();
@@ -782,6 +801,7 @@ namespace FlowBlox.UICore.ViewModels
             {
                 HistoryGuid = Guid.NewGuid(),
                 ProjectGuid = snapshot?.ProjectGuid ?? Guid.Empty,
+                ComponentScope = snapshot?.ComponentScope ?? string.Empty,
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now
             };
@@ -796,7 +816,8 @@ namespace FlowBlox.UICore.ViewModels
                 return;
 
             var history = _historyStore.Load(item.FilePath);
-            if (history == null)
+            if (history == null || !string.Equals(history.ComponentScope,
+                _captureProjectState?.Invoke()?.ComponentScope ?? string.Empty, StringComparison.Ordinal))
                 return;
 
             _currentHistory = history;
@@ -822,6 +843,7 @@ namespace FlowBlox.UICore.ViewModels
             {
                 HistoryGuid = Guid.NewGuid(),
                 ProjectGuid = snapshot?.ProjectGuid ?? Guid.Empty,
+                ComponentScope = snapshot?.ComponentScope ?? string.Empty,
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now
             };
@@ -992,6 +1014,7 @@ namespace FlowBlox.UICore.ViewModels
 
         public void Dispose()
         {
+            _cts?.Cancel();
             if (_runtimeStateService != null)
                 _runtimeStateService.StateChanged -= RuntimeStateService_StateChanged;
 

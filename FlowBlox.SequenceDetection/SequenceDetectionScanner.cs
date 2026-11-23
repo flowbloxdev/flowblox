@@ -12,6 +12,10 @@ namespace FlowBlox.SequenceDetection
             @"[a-zA-Z0-9äöüÄÖÜß]+|[^\r\na-zA-Z0-9äöüÄÖÜß]+|\r\n|\r|\n",
             RegexOptions.Compiled | RegexOptions.Multiline);
 
+        static readonly Regex RegexFindSequencesReverse = new Regex(
+            RegexFindSequences.ToString(),
+            RegexFindSequences.Options | RegexOptions.RightToLeft);
+
         const int SequenceLimit = 500;
         const double AverageLengthTolerance = 0.75;
         const int CombinationRange = 2;
@@ -31,7 +35,10 @@ namespace FlowBlox.SequenceDetection
         {
             string contentUntilMatch = content.Substring(0, match.Index);
             string contentAfterMatch = content.Substring(match.Index + match.Length);
-            var listOfAllPhrases = CreateListOfAllPhrases(contentUntilMatch, contentAfterMatch);
+            var listOfAllPhrases = CreateListOfAllPhrases(
+                contentUntilMatch,
+                contentAfterMatch,
+                countAfterwards: count > 1);
             var orderedByDesc = listOfAllPhrases.OrderByDescending(x => x.Score);
             SequenceDetectionTraceWriter.Write(
                 $"Layer {layer}: match index {match.Index}, {listOfAllPhrases.Count} phrase candidate(s).");
@@ -200,13 +207,25 @@ namespace FlowBlox.SequenceDetection
                 .Replace("\n", "\\n", StringComparison.Ordinal);
         }
 
-        private void AddCombinations(string content, string contentAfterMatch, bool rightMode, MatchCollection matchCollection, int index, int range, Dictionary<string, int> phraseToCount, List<PhraseEntry> phrases)
+        private void AddCombinations(
+            string content,
+            string contentAfterMatch,
+            bool rightMode,
+            IReadOnlyList<Match> matchCollection,
+            int index,
+            int range,
+            Dictionary<string, int> phraseToCount,
+            List<PhraseEntry> phrases,
+            bool countAfterwards)
         {
             var relevantMatches = matchCollection.Skip(index - range).Take(range * 2 + 1);
             for (int length = relevantMatches.Count(); length > 0; length--)
             {
                 for (int i = 0; i < length; i++)
                 {
+                    if (_cancellationToken?.IsCancellationRequested == true)
+                        return;
+
                     var matchesToCombine = relevantMatches.Skip(i).Take(length);
                     if (matchesToCombine.Count() < length)
                         break;
@@ -235,7 +254,10 @@ namespace FlowBlox.SequenceDetection
                             Distance = !rightMode ? content.Length - mEnds : mIndex,
                             Index = mIndex,
                             Length = mLength,
-                            NumberOfPhrasesInAfterwards = RegexUtil.CountOccurences(contentAfterMatch, phrase),
+                            // A single expected result needs no iteration boundary or tail occurrence counts.
+                            NumberOfPhrasesInAfterwards = countAfterwards && contentAfterMatch.Length > 0
+                                ? RegexUtil.CountOccurences(contentAfterMatch, phrase)
+                                : 0,
                         });
                             
                         if (!phraseToCount.ContainsKey(phrase))
@@ -247,23 +269,72 @@ namespace FlowBlox.SequenceDetection
             }
         }
 
-        private List<PhraseEntry> CreateListOfAllPhrases(string content, string contentAfterMatch = "", long requiredCount = 0, bool rightMode = false)
+        private List<Match> GetRelevantTokenMatches(string content, bool rightMode)
         {
-            var matchCollection = RegexFindSequences.Matches(content);
+            var regex = rightMode ? RegexFindSequences : RegexFindSequencesReverse;
+            var matches = new List<Match>();
+            // Keep neighboring tokens needed by combinations at the edge of the existing search window.
+            var limit = SequenceLimit + CombinationRange;
+            for (var match = regex.Match(content); match.Success && matches.Count < limit; match = match.NextMatch())
+            {
+                if (_cancellationToken?.IsCancellationRequested == true)
+                    break;
+
+                matches.Add(match);
+            }
+
+            if (!rightMode)
+                matches.Reverse();
+
+            return matches;
+        }
+
+        private List<PhraseEntry> CreateListOfAllPhrases(
+            string content,
+            string contentAfterMatch = "",
+            long requiredCount = 0,
+            bool rightMode = false,
+            bool countAfterwards = true)
+        {
+            var matchCollection = GetRelevantTokenMatches(content, rightMode);
             var result = new List<PhraseEntry>();
             Dictionary<string, int> phraseToCount = new Dictionary<string, int>();
             if (rightMode)
             {
                 for (int index = 0; index < Math.Min(matchCollection.Count, SequenceLimit); index++)
                 {
-                    AddCombinations(content, contentAfterMatch, rightMode, matchCollection, index, CombinationRange, phraseToCount, result);
+                    if (_cancellationToken?.IsCancellationRequested == true)
+                        break;
+
+                    AddCombinations(
+                        content,
+                        contentAfterMatch,
+                        rightMode,
+                        matchCollection,
+                        index,
+                        CombinationRange,
+                        phraseToCount,
+                        result,
+                        countAfterwards);
                 }
             }
             else
             {
                 for (int index = matchCollection.Count - 1; index >= Math.Max(matchCollection.Count - SequenceLimit, 0); index--)
                 {
-                    AddCombinations(content, contentAfterMatch, rightMode, matchCollection, index, CombinationRange, phraseToCount, result);
+                    if (_cancellationToken?.IsCancellationRequested == true)
+                        break;
+
+                    AddCombinations(
+                        content,
+                        contentAfterMatch,
+                        rightMode,
+                        matchCollection,
+                        index,
+                        CombinationRange,
+                        phraseToCount,
+                        result,
+                        countAfterwards);
                 }
             }
             result.ForEach(x => x.CalculateScore(requiredCount, rightMode));

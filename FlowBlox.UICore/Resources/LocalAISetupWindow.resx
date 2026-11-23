@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Local AI setup assistant</value></data>
+  <data name="Description" xml:space="preserve"><value>Prepare local AI for this ONNX block. Other models compatible with the block’s ONNX runtime can use a matching Python script via Tools &gt; Manage input files. This assistant configures the project; download or export runs at the next execution.</value></data>
+  <data name="Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Configure" xml:space="preserve"><value>Set up</value></data>
+  <data name="SelectModel" xml:space="preserve"><value>Choose a model</value></data>
+  <data name="MemoryNote" xml:space="preserve"><value>Sizes are estimates for CPU packages. Memory use and speed depend on context length, hardware and provider. GPU execution requires compatible drivers and runtimes. CPU is the default.</value></data>
+  <data name="Steps" xml:space="preserve"><value>Setup steps</value></data>
+  <data name="Running" xml:space="preserve"><value>In progress…</value></data>
+  <data name="Done" xml:space="preserve"><value>Completed</value></data>
+  <data name="ProviderReused" xml:space="preserve"><value>Provider input reused: {0}</value></data>
+  <data name="ProviderCreated" xml:space="preserve"><value>Provider input created: {0}</value></data>
+  <data name="ScriptReused" xml:space="preserve"><value>Script already configured: {0}</value></data>
+  <data name="ScriptConfigured" xml:space="preserve"><value>Startup script configured: {0}</value></data>
+  <data name="Success" xml:space="preserve"><value>Local AI setup completed. Save the project. The model will be downloaded or exported at the next execution; an existing model will be reused.</value></data>
+  <data name="Qwen3InstructTitle" xml:space="preserve"><value>Qwen3 4B Instruct</value></data>
+  <data name="Qwen3InstructDescription" xml:space="preserve"><value>Multilingual text generation, document questions and keyword extraction. A compact INT4 option for local workflows.</value></data>
+  <data name="Qwen3InstructDetails" xml:space="preserve"><value>CPU download: about 2.6 GB · Plan for roughly 6–8 GB RAM or more, depending on context. CPU, CUDA or DirectML.</value></data>
+  <data name="Phi4MiniTitle" xml:space="preserve"><value>Phi-4 Mini Instruct</value></data>
+  <data name="Phi4MiniDescription" xml:space="preserve"><value>Multilingual general-purpose text generation and instructions. INT4 model; CPU execution trades speed for broad hardware support.</value></data>
+  <data name="Phi4MiniDetails" xml:space="preserve"><value>CPU download: about 4.9 GB · Plan for roughly 6–8 GB RAM or more, depending on context. CPU, CUDA or DirectML.</value></data>
+  <data name="ExtractiveQATitle" xml:space="preserve"><value>Multilingual extractive QA</value></data>
+  <data name="ExtractiveQADescription" xml:space="preserve"><value>mDeBERTa SQuAD2 extracts an answer directly from supplied text. Suitable for short factual answers; does not generate free-form responses.</value></data>
+  <data name="ExtractiveQADetails" xml:space="preserve"><value>Portable ONNX export · Model files exceed 1 GB; export needs additional disk space and RAM. CPU, CUDA or DirectML at runtime.</value></data>
+  <data name="Step1Title" xml:space="preserve"><value>1. Check project and script</value></data>
+  <data name="Step1Description" xml:space="preserve"><value>Check compatibility, bundled script availability and existing provider fields before changing the project.</value></data>
+  <data name="Step2Title" xml:space="preserve"><value>2. Configure provider input</value></data>
+  <data name="Step2Description" xml:space="preserve"><value>Reuse a suitable mapped input or create OnnxProvider with CPU as the default and a provider selection list.</value></data>
+  <data name="Step3Title" xml:space="preserve"><value>3. Add startup script</value></data>
+  <data name="Step3Description" xml:space="preserve"><value>Add or update the project input script and pass the provider input to its startup command.</value></data>
+  <data name="Step4Title" xml:space="preserve"><value>4. Configure ONNX provider</value></data>
+  <data name="Step4Description" xml:space="preserve"><value>Link the shared provider input to the ONNX block.</value></data>
+  <data name="GlobalChangeNote" xml:space="preserve"><value>Created or updated globally outside the current transaction. Cannot be undone with Ctrl+Z; cancelling the property editor keeps these changes.</value></data>
+  <data name="OverwriteExisting" xml:space="preserve"><value>Overwrite conflicting existing settings</value></data>
+  <data name="OverwriteExistingTooltip" xml:space="preserve"><value>Allow replacing an existing selection or conflicting configuration in this step.</value></data>
+  <data name="SaveBlockRequired" xml:space="preserve"><value>Setup is only complete after saving the ONNX FlowBlock in the property editor.</value></data>
+  <data name="StepColumn" xml:space="preserve"><value>Step</value></data>
+  <data name="DescriptionColumn" xml:space="preserve"><value>Description</value></data>
+  <data name="StatusColumn" xml:space="preserve"><value>Status</value></data>
+  <data name="Step5Title" xml:space="preserve"><value>5. Configure ONNX model</value></data>
+  <data name="Step5Description" xml:space="preserve"><value>Set the model folder and, for GenAI, the matching chat template. Existing prompt text is retained.</value></data>
+  <data name="OverwriteColumn" xml:space="preserve"><value>Overwrite</value></data>
+</root>

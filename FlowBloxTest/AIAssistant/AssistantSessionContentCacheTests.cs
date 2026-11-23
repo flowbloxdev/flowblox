@@ -56,7 +56,7 @@ public sealed class AssistantSessionContentCacheTests
             });
         try
         {
-            var result = await service.GenerateProjectAsync("Build the flow", CancellationToken.None);
+            var result = await service.ExecutePromptAsync("Build the flow", CancellationToken.None);
             Assert.IsTrue(result.Success, string.Join("\n", result.Errors));
             Assert.AreEqual(4, executor.ChatRequests.Count);
             Assert.IsTrue(executor.Requests.Any(x => x.Source == "FlowBloxAIAssistantSummary"));
@@ -136,7 +136,7 @@ public sealed class AssistantSessionContentCacheTests
 
             service.RestoreSession(history);
             Assert.IsFalse(service.GetDebugSnapshot().SystemMessages.Any(x => x.IsRuntimeBound));
-            var resumed = await service.GenerateProjectAsync("Retrieve TableReader after restore", CancellationToken.None);
+            var resumed = await service.ExecutePromptAsync("Retrieve TableReader after restore", CancellationToken.None);
             Assert.IsTrue(resumed.Success, string.Join("\n", resumed.Errors));
             var fresh = Results((AssistantMessagePair)service.GetDebugSnapshot().History.Select(x => x.Message)
                 .OfType<AssistantMessagePair>()
@@ -177,7 +177,8 @@ public sealed class AssistantSessionContentCacheTests
             foreach (var type in new[] { typeof(BaseFlowBlock),
                 typeof(BaseSingleResultFlowBlock) })
             {
-                var kind = JObject.Parse(system.Single(x => x.Key == "type:" + type.FullName).Content)["kind"]!;
+                var payload = JObject.Parse(system.Single(x => x.Key == "type:" + type.FullName).Content);
+                var kind = TypeDescriptionCompactionLayerTests.Expand(payload)["kind"]!;
                 Assert.IsTrue(kind["properties"]!.Children<JObject>().Any(x => x.Value<string>("name") == "Name"));
             }
         }
@@ -320,7 +321,7 @@ public sealed class AssistantSessionContentCacheTests
 
     private static string Compact(Type type) => AiAssistantTypeAliasHelper.CompressTypeName(type.FullName!);
 
-    private static JObject[] Properties(JObject payload) => payload["kind"]?["properties"]?.Children<JObject>()
+    private static JObject[] Properties(JObject payload) => TypeDescriptionCompactionLayerTests.Expand(payload)["kind"]?["properties"]?.Children<JObject>()
             .ToArray() ?? [];
 
     private static void AssertOmitted(
@@ -338,7 +339,7 @@ public sealed class AssistantSessionContentCacheTests
 
     private static Dictionary<string, JObject> SystemTypes(FlowBlox.Core.Models.FlowBlocks.AIRemote.Base.AIChatRequest request) =>
         request.SystemMessages.Skip(2)
-            .Select(x => (JObject)JObject.Parse(x.Content)["kind"]!)
+            .Select(x => (JObject)TypeDescriptionCompactionLayerTests.Expand(JObject.Parse(x.Content))["kind"]!)
             .ToDictionary(x => x.Value<string>("fullName")!);
 
     private static JObject[] Results(AssistantMessagePair pair) => pair.ToolApiResponse.Split('\n')

@@ -97,4 +97,22 @@
   <data name="LocalConfigurationReadOnly" xml:space="preserve">
     <value>Schreibgeschützte Vorlage aus den lokalen Projektdaten. Sie können Werte für diesen Lauf ändern oder als neue Konfiguration speichern.</value>
   </data>
+  <data name="InputDisplaySettings" xml:space="preserve"><value>Eingabedarstellung einstellen</value></data>
+  <data name="InputDisplayMode" xml:space="preserve"><value>Darstellung</value></data>
+  <data name="InputModeAutomatic" xml:space="preserve"><value>Automatisch</value></data>
+  <data name="InputModeSingleLine" xml:space="preserve"><value>Einzeilig</value></data>
+  <data name="InputModeMultiline" xml:space="preserve"><value>Mehrzeilig</value></data>
+  <data name="InputModeList" xml:space="preserve"><value>Liste</value></data>
+  <data name="InputListSeparator" xml:space="preserve"><value>Trennzeichen</value></data>
+  <data name="InputSeparatorLineFeed" xml:space="preserve"><value>Zeilenumbruch</value></data>
+  <data name="InputSeparatorSemicolon" xml:space="preserve"><value>Semikolon (;)</value></data>
+  <data name="InputSeparatorComma" xml:space="preserve"><value>Komma (,)</value></data>
+  <data name="InputSeparatorHint" xml:space="preserve"><value>Das Trennzeichen teilt den aktuellen Wert in Einträge und verbindet bearbeitete Einträge. Ein Darstellungswechsel ändert den Wert nicht.</value></data>
+  <data name="InputAddItem" xml:space="preserve"><value>Eintrag hinzufügen</value></data>
+  <data name="InputListItem" xml:space="preserve"><value>Eintrag {0}</value></data>
+  <data name="InputRemoveItem" xml:space="preserve"><value>Eintrag {0} entfernen</value></data>
+  <data name="InputInsert" xml:space="preserve"><value>Einfügen</value></data>
+  <data name="InputChooseField" xml:space="preserve"><value>Feld wählen…</value></data>
+  <data name="InputChooseProjectOutput" xml:space="preserve"><value>Ausgabeverzeichnis eines anderen Projekts…</value></data>
+  <data name="InputPasteClipboard" xml:space="preserve"><value>Aus Zwischenablage einfügen</value></data>
 </root>

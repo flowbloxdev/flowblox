@@ -64,7 +64,14 @@ def ensure_model_link(link: Path | None, target: Path) -> None:
             raise RuntimeError(f"Model link path already exists and is not a link: {link}")
     link.parent.mkdir(parents=True, exist_ok=True)
     if sys.platform == "win32":
-        subprocess.check_call(["cmd", "/d", "/c", "mklink", "/J", str(link), str(target)])
+        env = os.environ.copy()
+        env["FLOWBLOX_MODEL_LINK"] = str(link)
+        env["FLOWBLOX_MODEL_TARGET"] = str(target)
+        subprocess.check_call(
+            'mklink /J "%FLOWBLOX_MODEL_LINK%" "%FLOWBLOX_MODEL_TARGET%"',
+            shell=True,
+            env=env,
+        )
     else:
         link.symlink_to(target, target_is_directory=True)
 

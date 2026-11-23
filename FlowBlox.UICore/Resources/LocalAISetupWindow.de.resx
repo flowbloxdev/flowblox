@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Local AI Einrichtungsassistent</value></data>
+  <data name="Description" xml:space="preserve"><value>Richten Sie lokale KI für diesen ONNX-Block ein. Weitere Modelle, die mit der ONNX-Laufzeit des Blocks kompatibel sind, können über ein passendes Python-Skript unter Tools &gt; Eingabedateien verwalten eingebunden werden. Der Assistent konfiguriert das Projekt; Download oder Export erfolgen beim nächsten Start.</value></data>
+  <data name="Back" xml:space="preserve"><value>Zurück</value></data>
+  <data name="Configure" xml:space="preserve"><value>Einrichten</value></data>
+  <data name="SelectModel" xml:space="preserve"><value>Modell auswählen</value></data>
+  <data name="MemoryNote" xml:space="preserve"><value>Größen sind Richtwerte für CPU-Pakete. Speicherbedarf und Geschwindigkeit hängen von Kontextlänge, Hardware und Provider ab. GPU-Ausführung benötigt passende Treiber und Laufzeiten. CPU ist die Voreinstellung.</value></data>
+  <data name="Steps" xml:space="preserve"><value>Einrichtungsschritte</value></data>
+  <data name="Running" xml:space="preserve"><value>Wird ausgeführt…</value></data>
+  <data name="Done" xml:space="preserve"><value>Abgeschlossen</value></data>
+  <data name="ProviderReused" xml:space="preserve"><value>Provider-Eingabe wiederverwendet: {0}</value></data>
+  <data name="ProviderCreated" xml:space="preserve"><value>Provider-Eingabe angelegt: {0}</value></data>
+  <data name="ScriptReused" xml:space="preserve"><value>Skript bereits eingerichtet: {0}</value></data>
+  <data name="ScriptConfigured" xml:space="preserve"><value>Startskript eingerichtet: {0}</value></data>
+  <data name="Success" xml:space="preserve"><value>Local AI wurde erfolgreich eingerichtet. Speichern Sie das Projekt. Beim nächsten Start wird das Modell heruntergeladen oder exportiert; ein vorhandenes Modell wird wiederverwendet.</value></data>
+  <data name="Qwen3InstructTitle" xml:space="preserve"><value>Qwen3 4B Instruct</value></data>
+  <data name="Qwen3InstructDescription" xml:space="preserve"><value>Mehrsprachige Textgenerierung, Dokumentfragen und Schlüsselwortextraktion. Eine kompakte INT4-Option für lokale Workflows.</value></data>
+  <data name="Qwen3InstructDetails" xml:space="preserve"><value>CPU-Download: etwa 2,6 GB · Planen Sie je nach Kontext ungefähr 6–8 GB RAM oder mehr ein. CPU, CUDA oder DirectML.</value></data>
+  <data name="Phi4MiniTitle" xml:space="preserve"><value>Phi-4 Mini Instruct</value></data>
+  <data name="Phi4MiniDescription" xml:space="preserve"><value>Mehrsprachige Textgenerierung und allgemeine Anweisungen. INT4-Modell; CPU-Ausführung bietet breite Hardwareunterstützung bei geringerer Geschwindigkeit.</value></data>
+  <data name="Phi4MiniDetails" xml:space="preserve"><value>CPU-Download: etwa 4,9 GB · Planen Sie je nach Kontext ungefähr 6–8 GB RAM oder mehr ein. CPU, CUDA oder DirectML.</value></data>
+  <data name="ExtractiveQATitle" xml:space="preserve"><value>Mehrsprachige extraktive QA</value></data>
+  <data name="ExtractiveQADescription" xml:space="preserve"><value>mDeBERTa SQuAD2 entnimmt die Antwort direkt dem übergebenen Text. Geeignet für kurze Faktenantworten; erzeugt keine freien Antworten.</value></data>
+  <data name="ExtractiveQADetails" xml:space="preserve"><value>Portabler ONNX-Export · Modelldateien über 1 GB; der Export benötigt zusätzlichen Speicherplatz und RAM. Zur Laufzeit CPU, CUDA oder DirectML.</value></data>
+  <data name="Step1Title" xml:space="preserve"><value>1. Projekt und Skript prüfen</value></data>
+  <data name="Step1Description" xml:space="preserve"><value>Kompatibilität, mitgeliefertes Skript und vorhandene Provider-Felder vor Änderungen am Projekt prüfen.</value></data>
+  <data name="Step2Title" xml:space="preserve"><value>2. Provider-Eingabe einrichten</value></data>
+  <data name="Step2Description" xml:space="preserve"><value>Geeignete verknüpfte Eingabe wiederverwenden oder OnnxProvider mit CPU als Voreinstellung und Provider-Auswahl anlegen.</value></data>
+  <data name="Step3Title" xml:space="preserve"><value>3. Startskript hinzufügen</value></data>
+  <data name="Step3Description" xml:space="preserve"><value>Projekt-Eingabeskript hinzufügen oder aktualisieren und die Provider-Eingabe an dessen Startbefehl übergeben.</value></data>
+  <data name="Step4Title" xml:space="preserve"><value>4. ONNX-Provider konfigurieren</value></data>
+  <data name="Step4Description" xml:space="preserve"><value>Gemeinsame Provider-Eingabe am ONNX-Block verknüpfen.</value></data>
+  <data name="GlobalChangeNote" xml:space="preserve"><value>Wird global außerhalb der aktuellen Transaktion angelegt oder aktualisiert. Nicht per Strg+Z rückgängig zu machen; bleibt beim Abbrechen des Eigenschaftsfensters erhalten.</value></data>
+  <data name="OverwriteExisting" xml:space="preserve"><value>Abweichende vorhandene Einstellungen überschreiben</value></data>
+  <data name="OverwriteExistingTooltip" xml:space="preserve"><value>Erlaubt das Ersetzen einer vorhandenen Auswahl oder abweichenden Konfiguration in diesem Schritt.</value></data>
+  <data name="SaveBlockRequired" xml:space="preserve"><value>Die Einrichtung ist erst nach dem Speichern des ONNX-FlowBlocks im Eigenschaftsfenster vollständig abgeschlossen.</value></data>
+  <data name="StepColumn" xml:space="preserve"><value>Schritt</value></data>
+  <data name="DescriptionColumn" xml:space="preserve"><value>Beschreibung</value></data>
+  <data name="StatusColumn" xml:space="preserve"><value>Status</value></data>
+  <data name="Step5Title" xml:space="preserve"><value>5. ONNX-Modell konfigurieren</value></data>
+  <data name="Step5Description" xml:space="preserve"><value>Modellordner und bei GenAI die passende Chatvorlage setzen. Vorhandener Prompt-Text bleibt erhalten.</value></data>
+  <data name="OverwriteColumn" xml:space="preserve"><value>Überschreiben</value></data>
+</root>

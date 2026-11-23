@@ -20,7 +20,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Logic
         [Display(Name = "FieldCopyFlowBlock_InputFieldScope", Description = "FieldCopyFlowBlock_InputFieldScope_Tooltip",
             ResourceType = typeof(FlowBloxTexts), Order = -1)]
         [FlowBloxUI(UISelectionButtons.None)]
-        public FieldCopyInputScope InputFieldScope { get; set; }
+        public FieldCopyInputScope InputFieldScope { get; set; } = FieldCopyInputScope.AllFields;
 
         private FieldElement _inputField;
 

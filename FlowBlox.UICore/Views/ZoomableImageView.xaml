@@ -1,0 +1,35 @@
+<UserControl x:Class="FlowBlox.UICore.Views.ZoomableImageView"
+             x:Name="ImageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <UserControl.Resources>
+        <sys:Double x:Key="MahApps.Sizes.ScrollBar.Width">8</sys:Double>
+        <sys:Double x:Key="MahApps.Sizes.ScrollBar.Height">8</sys:Double>
+        <sys:Double x:Key="MahApps.Sizes.ScrollBar.HorizontalRepeatButton.Width">8</sys:Double>
+        <sys:Double x:Key="MahApps.Sizes.ScrollBar.VerticalRepeatButton.Height">8</sys:Double>
+    </UserControl.Resources>
+    <ScrollViewer x:Name="ImageScroller"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalContentAlignment="Center"
+                  VerticalContentAlignment="Center"
+                  CanContentScroll="False"
+                  PanningMode="Both"
+                  SizeChanged="ImageScroller_SizeChanged"
+                  PreviewMouseWheel="ImageScroller_MouseWheel"
+                  PreviewMouseDown="ImageScroller_MouseDown"
+                  PreviewMouseMove="ImageScroller_MouseMove"
+                  PreviewMouseUp="ImageScroller_MouseUp"
+                  LostMouseCapture="ImageScroller_LostMouseCapture"
+                  PreviewKeyDown="ImageScroller_KeyDown">
+        <Image x:Name="Picture"
+               Source="{Binding Source, ElementName=ImageView}"
+               Stretch="Fill"
+               RenderOptions.BitmapScalingMode="HighQuality"
+               UseLayoutRounding="True"
+               SnapsToDevicePixels="True" />
+    </ScrollViewer>
+</UserControl>

@@ -22,7 +22,21 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
         public static ToolResponse ApplyUpdates(JObject args, object target, FlowBloxRegistry registry, string kind, string name)
         {
+            CurrentComponentContext?.EnsureWritable(target);
             var updates = CollectUpdates(args);
+            if (CurrentComponentContext != null)
+            {
+                foreach (var update in updates)
+                {
+                    var root = ParsePath(update.Path).FirstOrDefault()?.PropertyName;
+                    if (target is BaseFlowBlock && (root == nameof(BaseFlowBlock.ReferencedFlowBlocks) ||
+                        root == nameof(BaseFlowBlock.DefinedManagedObjects) || root == nameof(BaseFlowBlock.Location) ||
+                        root == nameof(BaseFlowBlock.Size)))
+                        return Fail($"Property '{root}' is outside component configuration scope.");
+                    if (target is FieldElement && (root == nameof(FieldElement.Source) || root == nameof(FieldElement.UserField)))
+                        return Fail("Field ownership cannot be changed in component mode.");
+                }
+            }
             if (updates.Count == 0)
             {
                 return Fail("No update operations provided. Use path/value or updates[].");
@@ -415,8 +429,13 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (operation == TerminalOperation.Set)
             {
                 EnsureNoDirectReactiveObjectJsonAssignment(property.PropertyType, value, path);
+                var elementType = GetElementType(property.PropertyType);
+                if (CurrentComponentContext != null && elementType != null && IsReferenceComponentType(elementType) && value.Type != JTokenType.Null)
+                    throw new InvalidOperationException("Use Link/Unlink for component reference collections in component mode.");
                 var convertedValue = ConvertToken(value, property.PropertyType, registry);
                 EnsureReferenceValueIsSelectable(current, parent, property, convertedValue, path);
+                if (convertedValue != null && CurrentComponentContext != null)
+                    convertedValue = CurrentComponentContext.PrepareLink(current, property, convertedValue);
                 property.SetValue(current, convertedValue);
                 if (current is FlowBloxReactiveObject reactiveObject && FlowBloxFieldSelection.SupportsScalar(property.PropertyType))
                     reactiveObject.SetPropertySelectedField(property.Name, null);
@@ -697,6 +716,8 @@ namespace FlowBlox.AIAssistant.Tools.Util
                             return;
                     }
 
+                    if (CurrentComponentContext != null)
+                        toLink = CurrentComponentContext.PrepareLink(current, property, toLink);
                     collection.Add(toLink);
                     return;
                 }
@@ -742,6 +763,8 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 }
 
                 EnsureReferenceValueIsSelectable(current, parent, property, resolved, path);
+                if (CurrentComponentContext != null)
+                    resolved = CurrentComponentContext.PrepareLink(current, property, resolved);
                 property.SetValue(current, resolved);
                 return;
             }

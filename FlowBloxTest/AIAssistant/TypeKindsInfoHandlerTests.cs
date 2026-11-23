@@ -41,7 +41,7 @@ namespace FlowBloxTest.AIAssistant
                 CancellationToken.None);
 
             Assert.IsTrue(response.Ok, response.Error);
-            var activationConditions = response.Result["kind"]?["properties"]?
+            var activationConditions = TypeDescriptionCompactionLayerTests.Expand(response.Result)["kind"]?["properties"]?
                 .Children<JObject>()
                 .SingleOrDefault(x => x.Value<string>("name") == "ActivationConditions");
 
@@ -88,7 +88,7 @@ namespace FlowBloxTest.AIAssistant
                 },
                 CancellationToken.None);
             Assert.IsTrue(response.Ok, response.Error);
-            var names = response.Result["kind"]!["properties"]!.Children<JObject>()
+            var names = TypeDescriptionCompactionLayerTests.Expand(response.Result)["kind"]!["properties"]!.Children<JObject>()
                 .Select(x => x.Value<string>("name"))
                 .ToArray();
             CollectionAssert.IsSubsetOf(
@@ -115,7 +115,7 @@ namespace FlowBloxTest.AIAssistant
                 CancellationToken.None);
 
             Assert.IsTrue(response.Ok, response.Error);
-            var propertyNames = response.Result["kind"]?["properties"]?
+            var propertyNames = TypeDescriptionCompactionLayerTests.Expand(response.Result)["kind"]?["properties"]?
                 .Children<JObject>()
                 .Select(x => x.Value<string>("name"))
                 .ToList();
@@ -172,7 +172,7 @@ namespace FlowBloxTest.AIAssistant
                 CancellationToken.None);
 
             Assert.IsTrue(response.Ok, response.Error);
-            var propertyNames = response.Result["kind"]?["properties"]?
+            var propertyNames = TypeDescriptionCompactionLayerTests.Expand(response.Result)["kind"]?["properties"]?
                 .Children<JObject>()
                 .Select(x => x.Value<string>("name"))
                 .ToList();
@@ -202,7 +202,7 @@ namespace FlowBloxTest.AIAssistant
                 CancellationToken.None);
 
             Assert.IsTrue(response.Ok, response.Error);
-            var properties = response.Result["kind"]!["properties"]!.Children<JObject>()
+            var properties = TypeDescriptionCompactionLayerTests.Expand(response.Result)["kind"]!["properties"]!.Children<JObject>()
                 .ToDictionary(property => property.Value<string>("name")!);
             Assert.AreEqual("[FLD]", properties[nameof(SQLTable.SQLStatement)].Value<string>("uiFlags"));
             Assert.AreEqual("[FLD]", properties[nameof(SQLTable.DbType)].Value<string>("uiFlags"));
@@ -220,12 +220,13 @@ namespace FlowBloxTest.AIAssistant
                 CancellationToken.None);
 
             Assert.IsTrue(response.Ok, response.Error);
-            var properties = response.Result["kind"]!["properties"]!.Children<JObject>().ToArray();
+            var expanded = TypeDescriptionCompactionLayerTests.Expand(response.Result);
+            var properties = expanded["kind"]!["properties"]!.Children<JObject>().ToArray();
             var reference = properties.Single(property => property.Value<string>("name") == nameof(TableReaderFlowBlock.ReferencedTable));
             var collection = properties.Single(property => property.Value<string>("name") == nameof(TableReaderFlowBlock.MappingEntries));
             Assert.AreEqual("CLUED", reference.Value<string>("uiFlags"));
             Assert.AreEqual("CLUED", collection.Value<string>("uiFlags"));
-            var nested = response.Result["additionalTypeKindsInfo"]!.Children<JObject>()
+            var nested = expanded["additionalTypeKindsInfo"]!.Children<JObject>()
                 .Single(type => type.Value<string>("fullName") == Compact(typeof(TableSelectorColumnCondition)));
             var columnType = nested["properties"]!.Children<JObject>()
                 .Single(property => property.Value<string>("name") == nameof(TableSelectorColumnCondition.ColumnType));

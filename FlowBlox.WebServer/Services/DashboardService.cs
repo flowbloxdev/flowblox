@@ -111,6 +111,7 @@ public sealed class DashboardService(ILogger<DashboardService> logger)
             var fields = project.FlowBloxRegistry.GetUserFields(UserFieldTypes.Input);
             return new ProjectForm
             {
+                ProjectGuid = project.ProjectGuid,
                 Description = project.ProjectDescription ?? string.Empty,
                 Notice = project.Notice ?? string.Empty,
                 InputDirectory = project.ProjectInputDirectory,

@@ -63,6 +63,7 @@ namespace FlowBlox.UICore.PopUp.Views
             HeadlineTextBlock.Text = item.Headline;
             SetDescription(item.Description);
             StepImage.Source = item.Image;
+            StepImage.ResetToFit();
             StepImage.Visibility = item.Image != null ? Visibility.Visible : Visibility.Collapsed;
             ImagePlaceholderTextBlock.Visibility = item.Image == null ? Visibility.Visible : Visibility.Collapsed;
             PreviousButton.Visibility = _currentIndex > 0 ? Visibility.Visible : Visibility.Collapsed;

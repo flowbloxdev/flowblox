@@ -82,16 +82,16 @@ namespace FlowBlox.Core.Util.Json
             return jsonSettings;
         }
 
-        public static JsonSerializerSettings ComponentSnapshotExport()
+        public static JsonSerializerSettings ComponentSnapshotExport(bool compact = true)
         {
             var jsonSettings = new JsonSerializerSettings
             {
                 Formatting = Formatting.None,
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
+                NullValueHandling = compact ? NullValueHandling.Ignore : NullValueHandling.Include,
+                DefaultValueHandling = compact ? DefaultValueHandling.Ignore : DefaultValueHandling.Include,
                 TypeNameHandling = TypeNameHandling.None,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                ContractResolver = new ComponentSnapshotContractResolver(),
+                ContractResolver = new ComponentSnapshotContractResolver(compact),
                 SerializationBinder = new AiAssistantTypeAliasSerializationBinder()
             };
 

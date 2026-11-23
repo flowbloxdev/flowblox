@@ -13,8 +13,11 @@ internal static class Program
         // metadata. WPF otherwise resolves /Icons/... against this runner executable.
         System.Reflection.Assembly.SetEntryAssembly(typeof(AvaloniaDesktop.App).Assembly);
         var invalidMode = args.Length == 3
+            && args[2] != "--component-assistant-only"
+            && args[2] != "--component-assistant-live"
             && args[2] != "--project-space-only"
             && args[2] != "--field-selection-only"
+            && args[2] != "--list-view-edit-only"
             && args[2] != "--launcher-only"
             && args[2] != "--execution-views-only"
             && args[2] != "--password-editors-only"
@@ -22,7 +25,7 @@ internal static class Program
             && args[2] != "--quick-starts-only";
         if (args.Length < 2 || args.Length > 3 || invalidMode)
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--project-space-only|--field-selection-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save]");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--component-assistant-only|--component-assistant-live|--project-space-only|--field-selection-only|--list-view-edit-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save]");
             return 2;
         }
 
@@ -47,6 +50,8 @@ internal static class Program
                 EnableInteractiveStartup = false,
                 OnStarted = async window => passed = args.Length == 3 && args[2] == "--layout-save"
                     ? await new WorkspaceIntegrationChecks(window).LayoutAndSaveAsync(directory, sourceProjectPath)
+                    : args.Length == 3 && args[2].StartsWith("--component-assistant", StringComparison.Ordinal)
+                        ? await new WorkspaceIntegrationChecks(window).RunComponentAssistantAsync(directory, args[2] == "--component-assistant-live")
                     : await new WorkspaceIntegrationChecks(window).RunAsync(
                     directory, sourceProjectPath,
                     projectSpaceOnly: args.Length == 3 && args[2] == "--project-space-only",
@@ -54,7 +59,8 @@ internal static class Program
                     launcherOnly: args.Length == 3 && args[2] == "--launcher-only",
                     quickStartsOnly: args.Length == 3 && args[2] == "--quick-starts-only",
                     executionViewsOnly: args.Length == 3 && args[2] == "--execution-views-only",
-                    passwordEditorsOnly: args.Length == 3 && args[2] == "--password-editors-only")
+                    passwordEditorsOnly: args.Length == 3 && args[2] == "--password-editors-only",
+                    listViewEditOnly: args.Length == 3 && args[2] == "--list-view-edit-only")
             });
             return exitCode != 0 ? exitCode : passed ? 0 : 1;
         }

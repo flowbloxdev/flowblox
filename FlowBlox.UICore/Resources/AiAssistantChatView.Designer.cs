@@ -158,6 +158,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0}: Configure this component. Save applies your changes; Cancel discards pending changes. ähnelt.
+        /// </summary>
+        public static string Header_ComponentDescription
+        {
+            get
+            {
+                return ResourceManager.GetString("Header_ComponentDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The AI Assistant can help you adjust the current flow or create a complete flow from a description. ähnelt.
         /// </summary>
         public static string Header_Description
@@ -608,6 +619,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Describe what you want to change in this component. ähnelt.
+        /// </summary>
+        public static string Watermark_ComponentPrompt
+        {
+            get
+            {
+                return ResourceManager.GetString("Watermark_ComponentPrompt", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Add instructions or clarifications while the assistant is working. ähnelt.
         /// </summary>

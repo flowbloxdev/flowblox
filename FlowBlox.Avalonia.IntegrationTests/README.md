@@ -47,11 +47,21 @@ A second run reuses the isolated saved layout to exercise restoration at startup
 For focused Quick Start checks, append `--quick-starts-only` to the direct runner command.
 This opens every registered Quick Start from Help without a configured target, navigates both AI Prompt pages,
 and writes `ai-prompt-quick-start-1.png` through `ai-prompt-quick-start-2.png` into the result directory.
+The Quick Start image checks also cover wheel zoom, the 400% limit, slim scrollbars,
+left/middle-button capture and release, fitting with Home and resetting zoom on page changes.
+They write `quick-start-image-fitted.png` and `quick-start-image-zoomed.png`.
+The same mode opens Local AI setup from a real property transaction in English and German,
+checks ownership and overwrite defaults, and writes `local-ai-setup-in-property-window-en-US.png`
+and `local-ai-setup-in-property-window-de-DE.png`.
 
 For focused property editor checks, append `--field-selection-only` to the direct
 runner command. This runs the real desktop lifecycle and checks explicitly enabled field
 buttons, scalar selection/unlink, password and combobox editors, grid cells and Project Space project cards
 without running unrelated authentication and workspace checks.
+Use `--list-view-edit-only` for the focused Split separator row regression. It edits and saves
+the generated separator dialog, verifies visible cells and selection, checks cancellation and
+clearing Special, and confirms changes remain in the parent property transaction.
+It writes `split-separator-list-after-edit.png`.
 
 `ProjectSpaceCardsChecks.cs` uses prepared projects without remote API calls to verify card selection, version details,
 mouse-wheel scrolling and opening with Enter. It writes `project-space-cards.png` alongside the desktop report.
@@ -63,3 +73,22 @@ The reference to `FlowBlox.Avalonia` is one-way. `InternalsVisibleTo` permits th
 runner to inspect internal application state without introducing public test APIs.
 The shared desktop startup path accepts hosted-session settings; the normal
 application keeps its interactive defaults and standard per-user workspace.
+
+## Component assistant
+
+Use `--component-assistant-only` for a synthetic desktop check covering expansion/collapse,
+working-copy updates, history navigation, fresh chats and cancelling the editor.
+It also writes `assistant-opening-timings.json` with property-window construction,
+first-open synchronous work, time until dispatcher idle and reopening time. Fixed test
+delays are excluded. Initialization phases are recorded in the application log.
+For history-size profiling, place synthetic history files in the result directory's
+`assistant-history` subdirectory before starting the test; real chat files are not needed.
+
+`--component-assistant-live` additionally runs the configured assistant, checks its regex against
+an independent extraction from a real page, commits the editor, and saves the sample flow via
+Project Panel layout/save. Supply `FLOWBLOX_COMPONENT_ASSISTANT_URL`,
+`FLOWBLOX_COMPONENT_ASSISTANT_PROMPT` and `FLOWBLOX_COMPONENT_ASSISTANT_EXPECTED_PATTERN`.
+The expected pattern's first capture group supplies the expected values. This opt-in check
+uses the current provider and temporarily isolates chat histories in the result directory.
+It accepts one-time research-skill approvals only when their input contains the supplied URL.
+It writes `regex-result.json`, screenshots, a transcript and `smoke-result.json`.

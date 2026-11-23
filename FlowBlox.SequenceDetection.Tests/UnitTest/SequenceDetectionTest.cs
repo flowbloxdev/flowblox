@@ -122,6 +122,33 @@ namespace FlowBlox.SequenceDetectionTests.UnitTest
         }
 
         [TestMethod]
+        public void FindPatternForLargeDocuments_WithOneExpectedResult()
+        {
+            var padding = string.Concat(Enumerable.Repeat(
+                "<record><label>Unrelated content</label></record>\r\n", 30000));
+            var first = padding + "<item><value>alpha17</value></item>" + padding;
+            var second = padding + "<item><value>beta23</value></item>" + padding;
+            var pattern = SequenceDetectionService.Instance.Detect(new SequenceDetectionInputData
+            {
+                Timeout = 5,
+                Entries =
+                [
+                    new SequenceDetectionInputEntry(first, "alpha17", 1),
+                    new SequenceDetectionInputEntry(second, "beta23", 1)
+                ]
+            });
+
+            Assert.IsNotNull(pattern);
+            var firstResults = new List<string>();
+            var secondResults = new List<string>();
+            SequenceSearch.Instance.SearchFor(first, pattern, ref firstResults);
+            SequenceSearch.Instance.SearchFor(second, pattern, ref secondResults);
+
+            CollectionAssert.AreEqual(new[] { "alpha17" }, firstResults);
+            CollectionAssert.AreEqual(new[] { "beta23" }, secondResults);
+        }
+
+        [TestMethod]
         public void FindPatternForBooksToScrape_ProductRatingWithDuplicateRating()
         {
             var content = ResourceUtil.GetResourceAsStringRelatedTo<SequenceDetectionTest>(

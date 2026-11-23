@@ -20,6 +20,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
             OptionsConstants.VaultValues,
             OptionsConstants.AIAssistantConfiguration,
             OptionsConstants.AIApprovedSkillProjects,
+            OptionsConstants.AICompactTypeDescriptions,
             OptionsConstants.AICommuncationProtocolDir,
             OptionsConstants.AIAssistantHistoryDirectory,
             OptionsConstants.AccountLicenseToken,

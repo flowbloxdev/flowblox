@@ -43,7 +43,8 @@ internal sealed partial class WorkspaceIntegrationChecks
         bool quickStartsOnly = false,
         bool executionViewsOnly = false,
         bool passwordEditorsOnly = false,
-        bool projectSpaceOnly = false)
+        bool projectSpaceOnly = false,
+        bool listViewEditOnly = false)
     {
         var results = new List<string>();
         string error = null;
@@ -56,6 +57,11 @@ internal sealed partial class WorkspaceIntegrationChecks
         }
         try
         {
+            if (listViewEditOnly)
+            {
+                await CheckListViewEditRefreshAsync(null, directory, Check);
+                return true;
+            }
             Directory.CreateDirectory(directory);
             if (projectSpaceOnly)
             {

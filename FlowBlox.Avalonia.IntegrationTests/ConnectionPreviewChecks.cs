@@ -23,6 +23,14 @@ internal sealed partial class WorkspaceIntegrationChecks
         await Task.Delay(150);
         var control = ProjectPanelView.WpfControl;
         var model = control.ViewModel;
+        foreach (var arrow in model.Arrows)
+        {
+            check(IsOnConnectionCardEdge(arrow.From, arrow.X1, arrow.Y1),
+                $"{arrow.Kind} connection starts on the source card edge ({arrow.From.Name})");
+            check(IsOnConnectionCardEdge(arrow.To, arrow.X2, arrow.Y2),
+                $"{arrow.Kind} connection ends on the target card edge ({arrow.To.Name})");
+        }
+
         var canvas = (FrameworkElement)control.FindName("ProjectCanvas");
         var previewNames = new[] { "ConnectionPreviewLine", "ConnectionPreviewStartDot", "ConnectionPreviewArrowHead" };
         var flags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -95,5 +103,18 @@ internal sealed partial class WorkspaceIntegrationChecks
                 model.SelectModeCommand.Execute(null);
             }
         }
+    }
+
+    private static bool IsOnConnectionCardEdge(
+        FlowBlox.UICore.ViewModels.ProjectPanel.FlowBlockNodeViewModel node,
+        double x,
+        double y)
+    {
+        const double tolerance = 0.01d;
+        var bounds = new Rect(node.X, node.Y, node.Width, node.Height);
+        return x >= bounds.Left - tolerance && x <= bounds.Right + tolerance
+            && y >= bounds.Top - tolerance && y <= bounds.Bottom + tolerance
+            && (Math.Abs(x - bounds.Left) < tolerance || Math.Abs(x - bounds.Right) < tolerance
+                || Math.Abs(y - bounds.Top) < tolerance || Math.Abs(y - bounds.Bottom) < tolerance);
     }
 }

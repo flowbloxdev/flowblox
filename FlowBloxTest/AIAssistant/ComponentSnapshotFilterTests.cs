@@ -7,6 +7,9 @@ using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
 using FlowBlox.Core.Provider;
 using FlowBlox.Core.Provider.Project;
 using FlowBlox.Core.Services;
+using FlowBlox.Core.Util.Json;
+using FlowBlox.Core.Models.FlowBlocks.Web;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace FlowBloxTest.AIAssistant;
@@ -43,8 +46,45 @@ public sealed class ComponentSnapshotFilterTests
 
             Assert.IsTrue(filtered.Ok, filtered.Error);
             Assert.IsNull(filtered.Result["snapshot"]);
-            Assert.IsTrue(JToken.DeepEquals(full.Result["snapshot"]!["MappingEntries"], filtered.Result["matches"]![0]!["value"]));
+            var complete = JObject.Parse(JsonConvert.SerializeObject(block, JsonSettings.ComponentSnapshotExport(compact: false)));
+            Assert.IsInstanceOfType<JArray>(filtered.Result["matches"]![0]!["value"]);
+            Assert.IsTrue(JToken.DeepEquals(complete["MappingEntries"], filtered.Result["matches"]![0]!["value"]));
             Assert.AreEqual("$.MappingEntries", filtered.Result["matches"]![0]!["path"]!.Value<string>());
+        }
+        finally
+        {
+            FlowBloxProjectManager.Instance.ActiveProject = previous;
+        }
+    }
+
+    [TestMethod]
+    public async Task FilterIncludesNullPropertiesButRejectsUnknownNames()
+    {
+        var previous = FlowBloxProjectManager.Instance.ActiveProject;
+        var project = new FlowBloxProject();
+        FlowBloxProjectManager.Instance.ActiveProject = project;
+        using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+        try
+        {
+            var block = new WebSelectorFlowBlock { Name = "Selector", XPath = null, AttributeName = null };
+            project.FlowBloxRegistry.RegisterFlowBlock(block);
+            var handler = new GetComponentSnapshotHandler();
+            var args = new JObject { ["kind"] = "flowBlock", ["name"] = block.Name };
+            var compact = await handler.HandleAsync(args, CancellationToken.None);
+            Assert.IsTrue(compact.Ok, compact.Error);
+            Assert.IsNull(compact.Result["snapshot"]!["XPath"]);
+
+            args["jsonFilter"] = new JArray("$.XPath", "$.AttributeName");
+            var filtered = await handler.HandleAsync(args, CancellationToken.None);
+            Assert.IsTrue(filtered.Ok, filtered.Error);
+            Assert.AreEqual(2, filtered.Result["matches"]!.Count());
+            Assert.AreEqual(JTokenType.Null, filtered.Result["matches"]![0]!["value"]!.Type);
+            Assert.AreEqual(JTokenType.Null, filtered.Result["matches"]![1]!["value"]!.Type);
+
+            args["jsonFilter"] = new JArray("$.XPaht");
+            var invalid = await handler.HandleAsync(args, CancellationToken.None);
+            Assert.IsFalse(invalid.Ok);
+            StringAssert.Contains(invalid.Error, "matched no snapshot value");
         }
         finally
         {

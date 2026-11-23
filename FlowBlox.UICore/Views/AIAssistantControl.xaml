@@ -7,6 +7,7 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
              xmlns:viewModels="clr-namespace:FlowBlox.UICore.ViewModels"
+             xmlns:converters="clr-namespace:FlowBlox.UICore.Converters"
              xmlns:views="clr-namespace:FlowBlox.UICore.Views"
              mc:Ignorable="d"
              d:DesignHeight="450"
@@ -22,6 +23,7 @@
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/HostedControlStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:BoolToInverseVisibilityConverter x:Key="ComponentModeVisibilityConverter" />
 
             <Style x:Key="ToolbarButtonStyle" TargetType="{x:Type Button}"
                    BasedOn="{StaticResource FlowBlox.ToolbarButton}">
@@ -81,6 +83,9 @@
                         <Button Style="{StaticResource ToolbarButtonStyle}"
                                 ToolTip="{x:Static resources:AiAssistantControl.Tooltip_Undo}"
                                 Command="{Binding UndoProjectStateCommand}">
+                            <Button.Visibility>
+                                <Binding Path="IsComponentMode" Converter="{StaticResource ComponentModeVisibilityConverter}" />
+                            </Button.Visibility>
                             <iconPacks:PackIconMaterial Kind="Undo"
                                                         Width="18"
                                                         Height="18"
@@ -90,6 +95,9 @@
                         <Button Style="{StaticResource ToolbarButtonStyle}"
                                 ToolTip="{x:Static resources:AiAssistantControl.Tooltip_Redo}"
                                 Command="{Binding RedoProjectStateCommand}">
+                            <Button.Visibility>
+                                <Binding Path="IsComponentMode" Converter="{StaticResource ComponentModeVisibilityConverter}" />
+                            </Button.Visibility>
                             <iconPacks:PackIconMaterial Kind="Redo"
                                                         Width="18"
                                                         Height="18"

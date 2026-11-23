@@ -5131,6 +5131,19 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="ProjectInputConfiguration_ReadOnly" xml:space="preserve">
     <value>The local developer configuration is read-only. Save a new configuration to keep your changes.</value>
   </data>
+  <data name="LocalAISetup_Action" xml:space="preserve"><value>Set up local AI…</value></data>
+  <data name="LocalAISetup_Action_Tooltip" xml:space="preserve"><value>Configure the model script, provider input and ONNX block. Provider input and script are project-wide changes outside the property transaction.</value></data>
+  <data name="LocalAISetup_IncompatibleBlock" xml:space="preserve"><value>Select an ONNX block in the current project and a compatible model.</value></data>
+  <data name="LocalAISetup_MissingScript" xml:space="preserve"><value>The bundled model script is unavailable. Check the application installation.</value></data>
+  <data name="LocalAISetup_ProviderConflict" xml:space="preserve"><value>The field "{0}" cannot be reused. Use a text input field with Default, CUDA or DirectML as its provider value.</value></data>
+  <data name="LocalAISetup_DuplicateScripts" xml:space="preserve"><value>Several input files use this script name. Keep one entry before configuring the model.</value></data>
+  <data name="LocalAISetup_CPU" xml:space="preserve"><value>CPU (default)</value></data>
+  <data name="LocalAISetup_SharedProviderConflict" xml:space="preserve"><value>This model script already uses a different provider input. Map this block to the same input before running setup.</value></data>
+  <data name="LocalAISetup_ProviderRequired" xml:space="preserve"><value>Configure the provider field first.</value></data>
+  <data name="LocalAISetup_NotPrepared" xml:space="preserve"><value>Check the project configuration before applying setup.</value></data>
+  <data name="LocalAISetup_ScriptConflict" xml:space="preserve"><value>The existing startup script has different contents or settings. Enable overwrite to replace it.</value></data>
+  <data name="LocalAISetup_BlockModelConflict" xml:space="preserve"><value>The ONNX block already has a model folder. Enable overwrite for the model step.</value></data>
+  <data name="LocalAISetup_BlockProviderConflict" xml:space="preserve"><value>The ONNX block already has a provider selection. Enable overwrite for the block provider step.</value></data>
 </root>
 
 

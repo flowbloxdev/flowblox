@@ -97,4 +97,22 @@
   <data name="LocalConfigurationReadOnly" xml:space="preserve">
     <value>Read-only source from the local project data. You can change values for this run or save them as a new configuration.</value>
   </data>
+  <data name="InputDisplaySettings" xml:space="preserve"><value>Input display settings</value></data>
+  <data name="InputDisplayMode" xml:space="preserve"><value>Display</value></data>
+  <data name="InputModeAutomatic" xml:space="preserve"><value>Automatic</value></data>
+  <data name="InputModeSingleLine" xml:space="preserve"><value>Single line</value></data>
+  <data name="InputModeMultiline" xml:space="preserve"><value>Multiline</value></data>
+  <data name="InputModeList" xml:space="preserve"><value>List</value></data>
+  <data name="InputListSeparator" xml:space="preserve"><value>Separator</value></data>
+  <data name="InputSeparatorLineFeed" xml:space="preserve"><value>Line break</value></data>
+  <data name="InputSeparatorSemicolon" xml:space="preserve"><value>Semicolon (;)</value></data>
+  <data name="InputSeparatorComma" xml:space="preserve"><value>Comma (,)</value></data>
+  <data name="InputSeparatorHint" xml:space="preserve"><value>The separator splits the current value into items and joins edited items. Changing the display does not change the value.</value></data>
+  <data name="InputAddItem" xml:space="preserve"><value>Add item</value></data>
+  <data name="InputListItem" xml:space="preserve"><value>Item {0}</value></data>
+  <data name="InputRemoveItem" xml:space="preserve"><value>Remove item {0}</value></data>
+  <data name="InputInsert" xml:space="preserve"><value>Insert</value></data>
+  <data name="InputChooseField" xml:space="preserve"><value>Choose field…</value></data>
+  <data name="InputChooseProjectOutput" xml:space="preserve"><value>Output directory of another project…</value></data>
+  <data name="InputPasteClipboard" xml:space="preserve"><value>Paste from clipboard</value></data>
 </root>

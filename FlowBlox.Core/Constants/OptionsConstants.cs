@@ -9,6 +9,7 @@ namespace FlowBlox.Core.Constants
         public const string VaultValues = "Vault.Values";
 
         public const string AIApprovedSkillProjects = "AI.ApprovedSkillProjects";
+        public const string AICompactTypeDescriptions = "AI.CompactTypeDescriptions";
         public const string AIAssistantConfiguration = "AI.AssistantConfiguration";
         public const string AIAssistantHistoryDirectory = "AI.AssistantHistoryDirectory";
         public const string AICommuncationProtocolDir = "AI.CommuncationProtocolDir";

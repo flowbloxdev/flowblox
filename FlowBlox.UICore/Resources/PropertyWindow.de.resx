@@ -145,4 +145,7 @@
 		<value>Transaktionsmonitor</value>
 	</data>
   <data name="AdditionalInformation" xml:space="preserve"><value>Zusätzliche Informationen</value></data>
+  <data name="ComponentAssistant_Toggle" xml:space="preserve">
+    <value>KI-Assistent für diese Komponente öffnen oder schließen</value>
+  </data>
 </root>

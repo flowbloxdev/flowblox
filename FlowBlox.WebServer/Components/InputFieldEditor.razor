@@ -5,51 +5,44 @@
 @using FlowBlox.Core.Util.Fields
 @using Microsoft.JSInterop
 @inject IJSRuntime JavaScript
-<div class="field-editor">
-    <div class="field-heading"><label for="@_id">@Field.Name
+@implements IAsyncDisposable
+<div class="field-editor" id="@(_id + "-editor")" data-field-name="@Field.Name">
+    <div class="field-heading"><label for="@_id">
+        <span class="field-value-status @FieldValuePresentation.GetStateName(Value, Required)" title="@StatusText" aria-hidden="true"><MdiIcon Name="circle" /></span>
+        <span class="field-title-text">@DisplayName</span>
         @if (Required)
         {
             <span class="field-required" role="img" aria-label="@RequiredText" title="@RequiredText"><MdiIcon Name="star" /></span>
         }
     </label>
         <div class="field-actions">
-        @if (References.Count > 0 && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
+        @if (CanChangePresentation)
         {
-            <details class="field-reference-picker">
-                <summary class="small-action" aria-label="@T["InsertField"]" title="@T["InsertField"]">(x)</summary>
-                <div class="field-reference-options">
-                    @foreach (var group in References.GroupBy(reference => reference.Group))
+            <details class="field-presentation-picker">
+                <summary class="quiet small-action icon-button" aria-label="@T["InputDisplaySettings"]" title="@T["InputDisplaySettings"]"><MdiIcon Name="cog-outline" /></summary>
+                <div class="field-presentation-options">
+                    <label>@T["InputDisplayMode"]
+                        <select class="field-mode" value="@_preferences.Mode" @onchange="ChangeModeAsync">
+                            <option value="Automatic">@T["InputModeAutomatic"]</option>
+                            <option value="SingleLine">@T["InputModeSingleLine"]</option>
+                            <option value="Multiline">@T["InputModeMultiline"]</option>
+                            <option value="List">@T["InputModeList"]</option>
+                        </select>
+                    </label>
+                    @if (_preferences.Mode == InputEditorMode.List)
                     {
-                        <strong>@T[group.Key]</strong>
-                        @foreach (var reference in group)
-                        {
-                            <button type="button" disabled="@Disabled" data-field-target="@_id" data-field-reference="@reference.Reference">@reference.Name</button>
-                        }
+                        <label>@T["InputListSeparator"]
+                            <select class="field-separator" value="@_preferences.Separator" @onchange="ChangeSeparatorAsync">
+                                <option value="LineFeed">@T["InputSeparatorLineFeed"]</option>
+                                <option value="Semicolon">@T["InputSeparatorSemicolon"]</option>
+                                <option value="Comma">@T["InputSeparatorComma"]</option>
+                            </select>
+                        </label>
+                        <small>@T["InputSeparatorHint"]</small>
                     }
                 </div>
             </details>
         }
-        @if (Field.LoVType != LoVType.PossibleValues && OutputDirectories.Count > 0)
-        {
-            <div class="project-output-picker">
-                <button type="button" class="quiet small-action icon-button" title="@OutputDirectoryTitle"
-                        aria-label="@OutputDirectoryTitle" aria-expanded="@_outputsOpen" disabled="@Disabled"
-                        @onclick="() => _outputsOpen = !_outputsOpen">
-                    <MdiIcon Name="folder-upload-outline" />
-                </button>
-                @if (_outputsOpen && !Disabled)
-                {
-                    <div class="project-output-options" @onkeydown="OutputPicker_KeyDown">
-                        @foreach (var choice in OutputDirectories)
-                        {
-                            <button type="button" @onclick="() => SelectOutputDirectoryAsync(choice)">@choice.DisplayName</button>
-                        }
-                    </div>
-                }
-            </div>
-        }
-        @if (_clipboard && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
-        { <button type="button" class="quiet small-action icon-button" title="@T["Paste"]" aria-label="@T["Paste"]" disabled="@Disabled" data-paste-target="@_id"><MdiIcon Name="content-paste" /></button> }
         </div>
     </div>
     <div class="field-value-row">
@@ -61,10 +54,38 @@
         </select>
     }
     else if (Field.IsPassword)
-    { <PasswordInput Id="@_id" Label="@Field.Name" Required="@Required" DescribedBy="@(_id + "-status")" Disabled="Disabled" Value="@Value" ValueChanged="ValueChanged" /> }
+    { <PasswordInput Id="@_id" Label="@DisplayName" Required="@Required" DescribedBy="@(_id + "-status")" Disabled="Disabled" Value="@Value" ValueChanged="ValueChanged" /> }
     else
     {
-        <textarea id="@_id" aria-required="@Required.ToString().ToLowerInvariant()" aria-describedby="@(_id + "-status")" disabled="@Disabled" rows="2" @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput"></textarea>
+        @if (_preferences.Mode == InputEditorMode.List)
+        {
+            <div class="field-list" role="group" aria-label="@DisplayName">
+                @foreach (var entry in _entries)
+                {
+                    var entryId = EntryId(entry);
+                    <div class="field-list-row" @key="entry.Id">
+                        <textarea id="@entryId" rows="@(HasLineBreak(entry.Value) ? 3 : 1)" class="field-list-value"
+                                  aria-label="@T["InputListItem", _entries.IndexOf(entry) + 1]" disabled="@Disabled"
+                                  @bind:get="entry.Value" @bind:set="value => ChangeEntryAsync(entry, value)" @bind:event="oninput"
+                                  @onfocus="() => _activeEntryId = entryId"></textarea>
+                        <button type="button" class="quiet small-action icon-button" aria-label="@T["InputRemoveItem", _entries.IndexOf(entry) + 1]"
+                                title="@T["Remove"]" disabled="@Disabled" @onclick="() => RemoveEntryAsync(entry)"><MdiIcon Name="delete" /></button>
+                    </div>
+                }
+                <button type="button" class="quiet small-action field-list-add" disabled="@Disabled" @onclick="AddEntryAsync">+ @T["InputAddItem"]</button>
+            </div>
+        }
+        else if (IsMultiline)
+        {
+            <textarea id="@_id" aria-required="@Required.ToString().ToLowerInvariant()" aria-describedby="@(_id + "-status")"
+                      disabled="@Disabled" rows="5" @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput"></textarea>
+        }
+        else
+        {
+            <input id="@_id" type="text" data-auto-multiline="@(_preferences.Mode == InputEditorMode.Automatic ? "true" : null)"
+                   aria-required="@Required.ToString().ToLowerInvariant()" aria-describedby="@(_id + "-status")" disabled="@Disabled"
+                   @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput" />
+        }
         @if (Field.GetPossibleValues().Any())
         {
             <details class="suggestions"><summary>@T["Suggestions"]</summary><div class="suggestion-values">
@@ -74,43 +95,256 @@
         }
     }
     </div>
-    <span class="field-value-status @FieldValuePresentation.GetStateName(Value, Required)" title="@StatusText" aria-hidden="true"><MdiIcon Name="circle" /></span>
+    @if (Field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
+    {
+        <details class="field-insert-picker" data-insert-picker>
+            <summary class="quiet small-action" aria-label="@T["InputInsert"]" title="@T["InputInsert"]"
+                     aria-disabled="@Disabled.ToString().ToLowerInvariant()" tabindex="@(Disabled ? -1 : 0)">
+                <MdiIcon Name="content-paste" /><span class="field-insert-caption">@T["InputInsert"]</span><span aria-hidden="true">&#9662;</span>
+            </summary>
+            <div class="field-insert-options">
+                <div data-insert-panel="main">
+                    @if (References.Count > 0)
+                    {
+                        <button type="button" disabled="@Disabled" data-insert-view="fields">(x) <span>@T["InputChooseField"]</span></button>
+                    }
+                    @if (Field.LoVType != LoVType.PossibleValues && OutputDirectories.Count > 0)
+                    {
+                        <button type="button" disabled="@Disabled" data-insert-view="outputs"><MdiIcon Name="folder-upload-outline" /><span>@T["InputChooseProjectOutput"]</span></button>
+                    }
+                    @if (_clipboard)
+                    {
+                        <button type="button" disabled="@Disabled" data-paste-target="@ReferenceTargetId"><MdiIcon Name="content-paste" /><span>@T["InputPasteClipboard"]</span></button>
+                    }
+                    else
+                    {
+                        <small>@T["PasteUnavailable"]</small>
+                    }
+                </div>
+                <div data-insert-panel="fields" hidden>
+                    <button type="button" class="field-insert-back" data-insert-view="main">&#8592; @T["Back"]</button>
+                    <strong>@T["InputChooseField"]</strong>
+                    @foreach (var group in References.GroupBy(reference => reference.Group))
+                    {
+                        <small>@T[group.Key]</small>
+                        @foreach (var reference in group)
+                        {
+                            <button type="button" disabled="@Disabled" data-field-target="@ReferenceTargetId" data-field-reference="@reference.Reference">@reference.Name</button>
+                        }
+                    }
+                </div>
+                <div data-insert-panel="outputs" hidden>
+                    <button type="button" class="field-insert-back" data-insert-view="main">&#8592; @T["Back"]</button>
+                    <strong>@T["InputChooseProjectOutput"]</strong>
+                    @foreach (var choice in OutputDirectories)
+                    {
+                        <button type="button" disabled="@Disabled" data-field-target="@ReferenceTargetId" data-field-reference="@choice.Value">@choice.DisplayName</button>
+                    }
+                </div>
+            </div>
+        </details>
+    }
     <span id="@(_id + "-status")" class="visually-hidden">@StatusText</span>
     </div>
     <small role="status" data-paste-error hidden>@T["PasteUnavailable"]</small>
 </div>
 @code {
     [Parameter, EditorRequired] public FieldElement Field { get; set; } = default!;
+    [Parameter] public Guid ProjectGuid { get; set; }
     [Parameter] public string Value { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public IReadOnlyList<ProjectOutputDirectoryChoice> OutputDirectories { get; set; } = [];
     [Parameter] public IReadOnlyList<FieldReferenceOption> References { get; set; } = [];
-    private string OutputDirectoryTitle => FlowBloxResourceUtil.GetLocalizedString(
-        "ProjectOutputDirectoryChoice_Select", typeof(FlowBlox.Core.FlowBloxTexts));
     private bool Required => Field.IsUserInputField() && Field.IsRequiredAtRuntimeStartup;
     private string RequiredText => FlowBloxResourceUtil.GetLocalizedString("FieldElement_RequiredInput", typeof(FlowBlox.Core.FlowBloxTexts));
     private string StatusText => FieldValuePresentation.GetDescription(Value, Required);
-    private bool _outputsOpen;
+    private string DisplayName => InputFieldPresentation.GetDisplayName(Field.Name);
+    private bool CanChangePresentation => !Field.IsPassword && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly;
+    private bool IsMultiline => _preferences.Mode == InputEditorMode.Multiline ||
+        (_preferences.Mode == InputEditorMode.Automatic && HasLineBreak(Value));
+    private string Separator => _preferences.Separator switch
+    {
+        InputListSeparator.Comma => ",",
+        InputListSeparator.Semicolon => ";",
+        _ => "\n"
+    };
+    private string ReferenceTargetId => _preferences.Mode == InputEditorMode.List ? _activeEntryId ?? _id : _id;
+    private bool _clipboard, _loadPreferences, _focusInput;
     private readonly string _id = "field-" + Guid.NewGuid().ToString("N");
-    private bool _clipboard;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private InputEditorPreferences _preferences = new();
+    private readonly List<InputListEntry> _entries = [];
+    private string _scope = string.Empty;
+    private string _listSource = string.Empty;
+    private string? _activeEntryId;
+    private DotNetObjectReference<InputFieldEditor>? _receiver;
+
+    protected override void OnParametersSet()
     {
-        if (!firstRender) return;
-        _clipboard = await JavaScript.InvokeAsync<bool>("flowBloxClipboardAvailable");
-        if (_clipboard) StateHasChanged();
-    }
-    private Task ChangeAsync(ChangeEventArgs args) => ValueChanged.InvokeAsync(args.Value?.ToString() ?? string.Empty);
-    private Task SetValueAsync(string value) => ValueChanged.InvokeAsync(value);
-    private Task SelectOutputDirectoryAsync(ProjectOutputDirectoryChoice choice)
-    {
-        _outputsOpen = false;
-        return ValueChanged.InvokeAsync(choice.Value);
+        var scope = ProjectGuid.ToString("D") + ":" + Field.Name;
+        if (_scope != scope)
+        {
+            _scope = scope;
+            _preferences = new();
+            _loadPreferences = true;
+            _entries.Clear();
+            _activeEntryId = null;
+        }
+        if (_preferences.Mode == InputEditorMode.List && (_entries.Count == 0 || _listSource != Value))
+            ReadList();
     }
 
-    private void OutputPicker_KeyDown(KeyboardEventArgs args)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (args.Key == "Escape")
-            _outputsOpen = false;
+        try
+        {
+            if (firstRender)
+            {
+                _receiver = DotNetObjectReference.Create(this);
+                await JavaScript.InvokeVoidAsync("FlowBloxFieldEditors.attach", _id + "-editor", _receiver);
+                _clipboard = await JavaScript.InvokeAsync<bool>("flowBloxClipboardAvailable");
+                StateHasChanged();
+            }
+            if (_loadPreferences)
+            {
+                _loadPreferences = false;
+                var scope = _scope;
+                var preferences = ProjectGuid == Guid.Empty || !CanChangePresentation ? null :
+                    await JavaScript.InvokeAsync<InputEditorPreferences?>("FlowBloxFieldEditors.load", ProjectGuid.ToString("D"), Field.Name);
+                if (scope == _scope && preferences != null && Enum.IsDefined(preferences.Mode) && Enum.IsDefined(preferences.Separator))
+                {
+                    _preferences = preferences;
+                    ReadList();
+                    StateHasChanged();
+                }
+            }
+            if (_focusInput)
+            {
+                _focusInput = false;
+                await JavaScript.InvokeVoidAsync("FlowBloxFieldEditors.focus", ReferenceTargetId);
+            }
+        }
+        catch (JSException) { }
+        catch (JSDisconnectedException) { }
     }
+
+    private static bool HasLineBreak(string value) => value.Contains('\r') || value.Contains('\n');
+    private string EntryId(InputListEntry entry) => ReferenceEquals(entry, _entries.FirstOrDefault()) ? _id : _id + "-" + entry.Id;
+
+    private void ReadList()
+    {
+        _entries.Clear();
+        var value = _preferences.Separator == InputListSeparator.LineFeed ? Value.Replace("\r\n", "\n").Replace('\r', '\n') : Value;
+        foreach (var item in value.Split(Separator, StringSplitOptions.None))
+            _entries.Add(new InputListEntry { Value = item });
+        _listSource = Value;
+        _activeEntryId = null;
+    }
+
+    private async Task ChangeModeAsync(ChangeEventArgs args)
+    {
+        if (!Enum.TryParse<InputEditorMode>(args.Value?.ToString(), out var mode) || !Enum.IsDefined(mode))
+            return;
+        _preferences.Mode = mode;
+        if (mode == InputEditorMode.List)
+            ReadList();
+        await SavePreferencesAsync();
+    }
+
+    private async Task ChangeSeparatorAsync(ChangeEventArgs args)
+    {
+        if (!Enum.TryParse<InputListSeparator>(args.Value?.ToString(), out var separator) || !Enum.IsDefined(separator))
+            return;
+        _preferences.Separator = separator;
+        ReadList();
+        await SavePreferencesAsync();
+    }
+
+    private async Task SavePreferencesAsync()
+    {
+        if (ProjectGuid == Guid.Empty)
+            return;
+        try { await JavaScript.InvokeVoidAsync("FlowBloxFieldEditors.save", ProjectGuid.ToString("D"), Field.Name, _preferences); }
+        catch (JSException) { }
+        catch (JSDisconnectedException) { }
+    }
+
+    private async Task ChangeEntryAsync(InputListEntry entry, string value)
+    {
+        if (Disabled)
+            return;
+        if (_preferences.Separator == InputListSeparator.LineFeed)
+            value = value.Replace("\r\n", "\n").Replace('\r', '\n');
+        var parts = value.Split(Separator, StringSplitOptions.None);
+        entry.Value = parts[0];
+        var index = _entries.IndexOf(entry);
+        foreach (var part in parts.Skip(1))
+        {
+            var added = new InputListEntry { Value = part };
+            _entries.Insert(++index, added);
+            _activeEntryId = EntryId(added);
+            _focusInput = true;
+        }
+        await PublishListAsync();
+    }
+
+    private async Task AddEntryAsync()
+    {
+        if (Disabled)
+            return;
+        var entry = new InputListEntry();
+        _entries.Add(entry);
+        _activeEntryId = EntryId(entry);
+        _focusInput = true;
+        await PublishListAsync();
+    }
+
+    private async Task RemoveEntryAsync(InputListEntry entry)
+    {
+        if (Disabled)
+            return;
+        _entries.Remove(entry);
+        if (_entries.Count == 0)
+            _entries.Add(new InputListEntry());
+        _activeEntryId = null;
+        await PublishListAsync();
+    }
+
+    private Task PublishListAsync()
+    {
+        _listSource = string.Join(Separator, _entries.Select(entry => entry.Value));
+        return ValueChanged.InvokeAsync(_listSource);
+    }
+
+    [JSInvokable]
+    public async Task ReceiveTextAsync(string inputId, string value)
+    {
+        if (Disabled)
+            return;
+        if (_preferences.Mode == InputEditorMode.List && CanChangePresentation)
+        {
+            var entry = _entries.FirstOrDefault(item => EntryId(item) == inputId);
+            if (entry != null)
+                await ChangeEntryAsync(entry, value);
+        }
+        else
+        {
+            _focusInput = _preferences.Mode == InputEditorMode.Automatic && HasLineBreak(value);
+            await ValueChanged.InvokeAsync(value);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_receiver == null)
+            return;
+        try { await JavaScript.InvokeVoidAsync("FlowBloxFieldEditors.detach", _id + "-editor"); }
+        catch (JSException) { }
+        catch (JSDisconnectedException) { }
+        finally { _receiver.Dispose(); }
+    }
+
+    private Task ChangeAsync(ChangeEventArgs args) => ValueChanged.InvokeAsync(args.Value?.ToString() ?? string.Empty);
+    private Task SetValueAsync(string value) => ValueChanged.InvokeAsync(value);
 }

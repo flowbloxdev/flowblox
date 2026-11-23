@@ -116,6 +116,12 @@ namespace FlowBlox.Core.Util
                 new OptionElement("PropertyWindow.ApplyButtonSelection", "ApplyWithoutVerification", "Action executed by the Apply split button. Possible values: Apply, ApplyWithoutVerification.", OptionElement.OptionType.Text),
                 new OptionElement("PropertyWindow.SaveButtonSelection", "Save", "Action executed by the Save split button. Possible values: Save, SaveWithoutVerification.", OptionElement.OptionType.Text),
                 new OptionElement("AI.ApprovedSkillProjects", string.Empty, "Skill projects approved for AI Assistant execution without further confirmation. One entry per line: filename for a distributed skill project template, full path for a custom project. Remove an entry to revoke approval.", OptionElement.OptionType.Text),
+                new OptionElement(
+                    "AI.CompactTypeDescriptions",
+                    "true",
+                    "Compact AI Assistant type descriptions into property rows without removing metadata. Disable to use named property objects. Applies to newly rendered descriptions; existing cached system messages remain unchanged.",
+                    OptionElement.OptionType.Boolean,
+                    "AI: Compact Type Descriptions"),
                 new OptionElement(OptionsConstants.ProjectsReadNotices, string.Empty, "Read project notices, stored as project identities and content hashes. Changed notices are shown again. Clear entries to show previously read notices.", OptionElement.OptionType.Text, "Projects: Read notices"),
 
                 new OptionElement("Paths.DocumentsDir", @"%userprofile%\Documents\FlowBlox", "Root directory for user documents managed by FlowBlox.", OptionElement.OptionType.Text, isPlaceholderEnabled: true),

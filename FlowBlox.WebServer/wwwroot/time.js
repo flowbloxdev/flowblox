@@ -33,8 +33,13 @@ document.addEventListener('click', async event => {
     try {
         const text = await navigator.clipboard.readText();
         const input = document.getElementById(button.dataset.pasteTarget);
-        input.value = text;
-        input.dispatchEvent(new Event('input', {bubbles:true}));
+        if (!input || input.disabled || input.readOnly) return;
+        if (!window.FlowBloxFieldEditors.setValue(input, text)) {
+            input.value = text;
+            input.dispatchEvent(new Event('input', {bubbles:true}));
+        }
         hint.hidden = true;
+        button.closest('details').open = false;
+        input.focus();
     } catch { hint.hidden = false; }
 });

@@ -54,7 +54,7 @@ public sealed class AssistantPauseTests
         var tools = new RecordingToolApi();
         var service = CreateService(executor, tools);
         using var cancellation = new CancellationTokenSource();
-        var run = service.GenerateProjectAsync(
+        var run = service.ExecutePromptAsync(
             "Build something",
             cancellation.Token,
             control);
@@ -100,7 +100,7 @@ public sealed class AssistantPauseTests
             OnExecute = _ => control.RequestPause()
         };
         var service = CreateService(executor, tools);
-        var run = service.GenerateProjectAsync(
+        var run = service.ExecutePromptAsync(
             originalMessage,
             CancellationToken.None,
             control);
@@ -171,7 +171,7 @@ public sealed class AssistantPauseTests
         });
         var service = CreateService(executor, new RecordingToolApi());
         using var cancellation = new CancellationTokenSource();
-        var run = service.GenerateProjectAsync(
+        var run = service.ExecutePromptAsync(
             "Request",
             cancellation.Token,
             control);
@@ -207,7 +207,7 @@ public sealed class AssistantPauseTests
         var service = CreateService(executor, tools);
         try
         {
-            await service.GenerateProjectAsync(
+            await service.ExecutePromptAsync(
                 "Request",
                 cancellation.Token,
                 control);

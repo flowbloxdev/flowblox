@@ -8,4 +8,5 @@
   <data name="Button_Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Image_Placeholder" xml:space="preserve"><value>Bild-Resource nicht zugewiesen</value></data>
   <data name="Button_Previous" xml:space="preserve"><value>Zurück</value></data>
+  <data name="Image_InteractionHint" xml:space="preserve"><value>Mausrad: zoomen (bis 400 %). Mit linker oder mittlerer Maustaste ziehen zum Verschieben. Doppelklick oder Pos1: Bild einpassen. Tastatur: + / − zum Zoomen.</value></data>
 </root>

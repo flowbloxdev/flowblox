@@ -1,4 +1,4 @@
-﻿using FlowBlox.Core.Constants;
+using FlowBlox.Core.Constants;
 using System.Text;
 using FlowBlox.Core;
 using FlowBlox.AIAssistant.Builder;
@@ -39,6 +39,8 @@ namespace FlowBlox.AIAssistant.Services
         private readonly object _sessionSync = new();
         private int _activeRunCount;
         private AssistantSessionState? _session;
+
+        public AssistantComponentContext? ComponentContext { get; set; }
 
         public event EventHandler<AssistantTranscriptLine>? TranscriptLineAdded;
         public event EventHandler<int>? EstimatedUsedTokensChanged;
@@ -89,7 +91,7 @@ namespace FlowBlox.AIAssistant.Services
                 {
                     ConversationSummary = history?.ConversationSummary ?? string.Empty,
                     SummarizedMessageCount = Math.Max(0, history?.SummarizedMessageCount ?? 0),
-                    LastProjectJsonHash = history?.LastProjectJsonHash ?? string.Empty,
+                    LastContextJsonHash = history?.LastContextJsonHash ?? string.Empty,
                     EstimatedUsedTokens = Math.Max(0, history?.EstimatedUsedTokens ?? 0)
                 };
 
@@ -117,7 +119,7 @@ namespace FlowBlox.AIAssistant.Services
             lock (_sessionSync)
             {
                 var session = _session ?? new AssistantSessionState();
-                history.LastProjectJsonHash = session.LastProjectJsonHash;
+                history.LastContextJsonHash = session.LastContextJsonHash;
                 history.ConversationSummary = session.ConversationSummary;
                 history.SummarizedMessageCount = session.SummarizedMessageCount;
                 history.EstimatedUsedTokens = session.EstimatedUsedTokens;
@@ -219,7 +221,10 @@ namespace FlowBlox.AIAssistant.Services
             };
         }
 
-        public async Task<AssistantResult> GenerateProjectAsync(string userPrompt, CancellationToken ct, AssistantRunControl? runControl = null)
+        public async Task<AssistantResult> ExecutePromptAsync(
+            string userPrompt,
+            CancellationToken ct,
+            AssistantRunControl? runControl = null)
         {
             var result = new AssistantResult();
 
@@ -241,10 +246,12 @@ namespace FlowBlox.AIAssistant.Services
                 return result;
             }
 
+            ComponentContext?.EnsureActive();
+            using var componentScope = ToolHandlerUtilities.BeginComponentScope(ComponentContext);
             var project = FlowBloxProjectManager.Instance.ActiveProject;
             using var registryScope = project == null
                 ? null
-                : FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+                : FlowBloxRegistryProvider.BeginScopedRegistry(ComponentContext?.Registry ?? project.FlowBloxRegistry);
 
             var maxToolRounds = Math.Clamp(
                 config.MaxToolRounds,
@@ -268,15 +275,20 @@ namespace FlowBlox.AIAssistant.Services
                 session.LastSummaryCompactionAttemptKey = string.Empty;
             _outputFormatFeedbackQueue.ClearIncorrectOutputFormatData();
             ToolHandlerUtilities.SetCurrentSessionGuid(session.SessionId);
-            var currentProjectJson = GetCurrentProjectJson();
-            var currentProjectJsonHash = ComputeProjectJsonHash(currentProjectJson);
-            var hasKnownProjectJsonHash = !string.IsNullOrWhiteSpace(session.LastProjectJsonHash);
-            var projectJsonChanged = !string.Equals(session.LastProjectJsonHash, currentProjectJsonHash, StringComparison.OrdinalIgnoreCase);
-            var shouldAttachProjectJson = config.AttachProjectJsonAutomatically && projectJsonChanged;
-            var projectAttachmentInformation = ResolveProjectAttachmentInformation(
+            if (ComponentContext != null &&
+                AssistantPromptCatalog.TryGetEntry(AssistantPromptCatalog.ComponentScopeKey, out var scopeExplanation))
+            {
+                ToolHandlerUtilities.CurrentContentCache.LoadExplanation(scopeExplanation.Key, scopeExplanation.Title, scopeExplanation.Content);
+            }
+            var currentContextJson = ComponentContext?.CaptureJson() ?? GetCurrentProjectJson();
+            var currentContextJsonHash = ComputeJsonHash(currentContextJson);
+            var hasKnownContextJsonHash = !string.IsNullOrWhiteSpace(session.LastContextJsonHash);
+            var contextJsonChanged = !string.Equals(session.LastContextJsonHash, currentContextJsonHash, StringComparison.OrdinalIgnoreCase);
+            var shouldAttachContextJson = config.AttachProjectJsonAutomatically && contextJsonChanged;
+            var attachmentInformation = ResolveSnapshotAttachmentInformation(
                 config.AttachProjectJsonAutomatically,
-                hasKnownProjectJsonHash,
-                projectJsonChanged);
+                hasKnownContextJsonHash,
+                contextJsonChanged);
             var toolDefinitions = _tools.GetToolDefinitions();
             var systemPrompt = AssistantPromptBuilder.BuildSystemPrompt();
             var sessionBootstrapPrompt = AssistantPromptBuilder.BuildSessionBootstrapPrompt(toolDefinitions, session.RuntimeBindingsReset);
@@ -306,9 +318,10 @@ namespace FlowBlox.AIAssistant.Services
                     var initialUserPrompt = toolRound == 1
                         ? AssistantPromptBuilder.BuildInitialUserPrompt(
                             userPrompt,
-                            shouldAttachProjectJson ? currentProjectJson : null,
-                            projectAttachmentInformation,
-                            ToolHandlerUtilities.GetActiveSkillProjectName())
+                            shouldAttachContextJson ? currentContextJson : null,
+                            attachmentInformation,
+                            ToolHandlerUtilities.GetActiveSkillProjectName(),
+                            ComponentContext)
                         : string.Empty;
                     var modelPrompt = toolRound == 1
                         ? initialUserPrompt
@@ -417,7 +430,7 @@ namespace FlowBlox.AIAssistant.Services
                         result.Errors.Add("Assistant returned an invalid response format twice. Aborting execution.");
                         AddTranscript(result, AssistantTranscriptKind.Error,
                             "Invalid response format repeated after correction. Aborting.");
-                        UpdateKnownProjectJsonHash(session);
+                        UpdateKnownContextJsonHash(session);
                         await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
                         return result;
                     }
@@ -452,7 +465,7 @@ namespace FlowBlox.AIAssistant.Services
                         result.Success = true;
                         result.AssistantText = instruction.AssistantMessage;
                         result.Summary = "Assistant response generated.";
-                        UpdateKnownProjectJsonHash(session);
+                        UpdateKnownContextJsonHash(session);
                         await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
 
                         // Keep accepting messages until all asynchronous completion work is finished.
@@ -569,7 +582,7 @@ namespace FlowBlox.AIAssistant.Services
                 result.Errors.Add($"Assistant reached max tool rounds ({maxToolRounds}) without a final response.");
                 AddTranscript(result, AssistantTranscriptKind.Error,
                     $"Reached max tool rounds ({maxToolRounds}) without a final response.");
-                UpdateKnownProjectJsonHash(session);
+                UpdateKnownContextJsonHash(session);
                 await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
                 return result;
             }
@@ -980,9 +993,9 @@ namespace FlowBlox.AIAssistant.Services
             }
         }
 
-        private static string ComputeProjectJsonHash(string projectJson)
+        private static string ComputeJsonHash(string? json)
         {
-            return HashHelper.ComputeSHA256Hash(Encoding.UTF8.GetBytes(projectJson ?? string.Empty));
+            return HashHelper.ComputeSHA256Hash(Encoding.UTF8.GetBytes(json ?? string.Empty));
         }
 
         private void AddEstimatedTokenUsage(AssistantSessionState session, int tokenCount)
@@ -1079,36 +1092,36 @@ namespace FlowBlox.AIAssistant.Services
             CommunicationStatusChanged?.Invoke(this, args);
         }
 
-        private static ProjectAttachmentInformation ResolveProjectAttachmentInformation(
-            bool attachProjectJsonAutomatically,
-            bool hasKnownProjectJsonHash,
-            bool projectJsonChanged)
+        private static SnapshotAttachmentInformation ResolveSnapshotAttachmentInformation(
+            bool attachJsonAutomatically,
+            bool hasKnownJsonHash,
+            bool jsonChanged)
         {
-            if (attachProjectJsonAutomatically)
+            if (attachJsonAutomatically)
             {
-                if (!projectJsonChanged)
-                    return ProjectAttachmentInformation.ProjectUnchangedSinceLastConversation;
+                if (!jsonChanged)
+                    return SnapshotAttachmentInformation.UnchangedSinceLastConversation;
 
-                return hasKnownProjectJsonHash
-                    ? ProjectAttachmentInformation.ProjectChangedSinceLastConversation
-                    : ProjectAttachmentInformation.InitialTransmission;
+                return hasKnownJsonHash
+                    ? SnapshotAttachmentInformation.ChangedSinceLastConversation
+                    : SnapshotAttachmentInformation.InitialTransmission;
             }
             else
             {
-                if (!hasKnownProjectJsonHash)
-                    return ProjectAttachmentInformation.ProjectJsonDisabledInitialState;
+                if (!hasKnownJsonHash)
+                    return SnapshotAttachmentInformation.JsonDisabledInitialState;
 
-                return projectJsonChanged
-                    ? ProjectAttachmentInformation.ProjectJsonDisabledProjectChanged
-                    : ProjectAttachmentInformation.ProjectJsonDisabledProjectUnchanged;
+                return jsonChanged
+                    ? SnapshotAttachmentInformation.JsonDisabledStateChanged
+                    : SnapshotAttachmentInformation.JsonDisabledStateUnchanged;
             }
         }
 
-        private static void UpdateKnownProjectJsonHash(AssistantSessionState session)
+        private void UpdateKnownContextJsonHash(AssistantSessionState session)
         {
             ArgumentNullException.ThrowIfNull(session);
 
-            session.LastProjectJsonHash = ComputeProjectJsonHash(GetCurrentProjectJson());
+            session.LastContextJsonHash = ComputeJsonHash(ComponentContext?.CaptureJson() ?? GetCurrentProjectJson());
         }
 
         private static string GetCurrentProjectJson()
@@ -1379,7 +1392,7 @@ namespace FlowBlox.AIAssistant.Services
             public string ConversationSummary { get; set; } = string.Empty;
             public string LastSummaryCompactionAttemptKey { get; set; } = string.Empty;
             public int SummarizedMessageCount { get; set; }
-            public string LastProjectJsonHash { get; set; } = string.Empty;
+            public string LastContextJsonHash { get; set; } = string.Empty;
             public int EstimatedUsedTokens { get; set; }
             public List<AssistantSessionMessage> Messages { get; set; } = new();
         }
