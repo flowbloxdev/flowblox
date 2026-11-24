@@ -57,10 +57,11 @@
     <PropertyGroup><WebServerOutput>..\FlowBlox.WebServer\bin\$(Configuration)\$(TargetFramework)\</WebServerOutput></PropertyGroup>
     <ItemGroup>
       <WebServerFiles Include="$(WebServerOutput)FlowBlox.WebServer.*" />
+      <WebServerDependencies Include="$(WebServerOutput)*.dll" Exclude="$(WebServerOutput)FlowBlox.WebServer.dll" />
       <WebServerStaticFiles Include="$(WebServerOutput)wwwroot\**\*" />
       <WebServerResources Include="$(WebServerOutput)**\FlowBlox.WebServer.resources.dll" Exclude="$(WebServerOutput)publish\**" />
     </ItemGroup>
-    <Copy SourceFiles="@(WebServerFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebServerFiles);@(WebServerDependencies)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebServerStaticFiles)" DestinationFiles="@(WebServerStaticFiles->'$(TargetDir)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebServerResources)" DestinationFiles="@(WebServerResources->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>

@@ -147,9 +147,9 @@ if (-not (Test-Path $publishDirResolved)) {
     throw "Publish directory not found: $publishDirResolved"
 }
 
-foreach ($executable in @('FlowBlox.exe', 'FlowBlox.CLI.exe', 'FlowBlox.RunnerHost.exe', 'FlowBlox.WorkerService.exe', 'FlowBlox.WebServer.exe')) {
-    if (-not (Test-Path -LiteralPath (Join-Path $publishDirResolved $executable) -PathType Leaf)) {
-        throw "Required application executable missing from MSI payload: $executable. Rebuild without -NoPublish to refresh the payload."
+foreach ($requiredFile in @('FlowBlox.exe', 'FlowBlox.CLI.exe', 'FlowBlox.RunnerHost.exe', 'FlowBlox.WorkerService.exe', 'FlowBlox.WebServer.exe', 'Markdig.dll')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $publishDirResolved $requiredFile) -PathType Leaf)) {
+        throw "Required application file missing from MSI payload: $requiredFile. Rebuild without -NoPublish to refresh the payload."
     }
 }
 

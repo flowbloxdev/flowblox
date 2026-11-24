@@ -41,7 +41,7 @@ $xml.Save((Join-Path $testDirectory 'global_configuration.xml'))
 $projectsDirectory = Join-Path $testDirectory 'projects'
 New-Item -ItemType Directory -Path $projectsDirectory | Out-Null
 $fixture = @{
-    ProjectGuid = '2c312829-4c61-423c-aa6b-ef85f20e3f1c'; ProjectName = 'HTTP contract fixture'; ProjectDescription = 'Isolated HTTP test; never executed.'; Notice = 'Setup: https://example.com/'
+    ProjectGuid = '2c312829-4c61-423c-aa6b-ef85f20e3f1c'; ProjectName = 'HTTP contract fixture'; ProjectDescription = 'Isolated HTTP test; never executed.'; Notice = '**Research setup**: https://example.com/'
     FlowBlocks = @(); ManagedObjects = @(); ProjectDependendDataObjects = @(); InputFiles = @()
     UserFields = @(
         @{ Name = 'Suggested'; UserField = $true; UserFieldType = 'Input'; Index = 0; StringValue = 'initial default'; FieldType = @{ FieldType = 'Text' }; ListOfValues = @(@{ DisplayName = 'Demo suggestion'; Value = 'demo-suggestion' }) }

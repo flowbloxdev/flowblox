@@ -89,6 +89,9 @@ function dotnet {
         if ($name -eq 'FlowBlox.Avalonia') { $name = 'FlowBlox' }
         [System.IO.File]::WriteAllText((Join-Path $outputDirectory "$name.exe"), "fixture $name")
         [System.IO.File]::WriteAllText((Join-Path $outputDirectory 'shared.dll'), 'identical shared dependency')
+        if ($name -eq 'FlowBlox.WebServer') {
+            [System.IO.File]::WriteAllText((Join-Path $outputDirectory 'Markdig.dll'), 'webserver-only dependency')
+        }
     }
     elseif ($arguments[0] -eq 'build') {
         $outputDirectory = ($arguments | Where-Object { $_ -like '/p:OutputPath=*' }).Substring('/p:OutputPath='.Length)
@@ -106,6 +109,22 @@ $expectedChecksum = (Get-FileHash -LiteralPath $fixtureMsi -Algorithm SHA256).Ha
 $actualChecksum = [System.IO.File]::ReadAllText("$fixtureMsi.sha256")
 if ($actualChecksum -cne "$expectedChecksum  FlowBlox_1.2.3.0_x64.msi`n") {
     throw 'The release checksum did not describe the generated installer.'
+}
+
+$markdownDependency = Join-Path $fixture 'artifacts/installer/publish/win-x64/Markdig.dll'
+if ([System.IO.File]::ReadAllText($markdownDependency) -cne 'webserver-only dependency') {
+    throw 'The WebServer Markdown dependency was not merged into the MSI payload.'
+}
+Remove-Item -LiteralPath $markdownDependency
+$rejected = $false
+try {
+    & (Join-Path $fixtureScripts 'Build-FlowBloxMsi.ps1') -NoPublish
+}
+catch {
+    $rejected = $_.Exception.Message.Contains('Markdig.dll')
+}
+if (-not $rejected) {
+    throw 'An MSI payload without the WebServer Markdown dependency was accepted.'
 }
 
 $releaseFixtureState.FailPublish = $true

@@ -77,6 +77,7 @@ try {
     await check(`document.querySelectorAll('a[href^="/projects/"]').length >= 2`, 'Synthetic projects are available.');
     const projects = await evaluate(`Array.from(document.querySelectorAll('a[href^="/projects/"]')).map(a => a.getAttribute('href'))`);
     await send('Page.navigate', { url: base + projects[0] });
+    await check(`document.querySelector('.notes-content strong')?.textContent === 'Research setup' && document.querySelector('.notes-content a')?.getAttribute('href') === 'https://example.com/'`, 'Project notes render Markdown and links without terminating the Blazor circuit.');
     await check(`document.querySelector('[data-field-name="Suggested"] input')?.value === 'initial default'`, 'Automatic mode defaults to a single-line input.');
     await check(`document.querySelector('[data-field-name="Multiline"] textarea')?.value === 'first\\nsecond'`, 'Existing line breaks automatically render multiline.');
     await check(`!document.querySelector('[data-field-name="LocalPassword"] .field-mode') && !document.querySelector('[data-field-name="Allowed"] .field-mode')`, 'Passwords and selection-only fields retain their editors.');
@@ -178,6 +179,16 @@ try {
         const title = field.querySelector('.field-title-text').getBoundingClientRect();
         const menu = field.querySelector('.field-insert-options').getBoundingClientRect();
         return Math.abs(dot.y + dot.height / 2 - title.y - title.height / 2) < 3 && menu.x >= 0 && menu.right <= innerWidth; })()`, 'The dot stays aligned with its title and Insert fits the mobile viewport.');
+    await check(`(() => {
+        const marker = document.querySelector('.inputs .overrides > summary').getBoundingClientRect();
+        return Array.from(document.querySelectorAll('.inputs .field-heading')).every(heading => {
+            const dot = heading.querySelector('.field-value-status').getBoundingClientRect();
+            const icon = heading.querySelector('.field-value-status .mdi-icon').getBoundingClientRect();
+            const title = heading.querySelector('.field-title-text').getBoundingClientRect();
+            return Math.abs(dot.left - marker.left) < 1 && dot.width <= 10.1 && icon.width <= 10.1
+                && title.left - dot.right >= 0 && title.left - dot.right <= 8;
+        });
+    })()`, 'All status dots, including empty fields, align with the disclosure arrow and leave a compact title gap.');
     await screenshot('input-insert-menu-mobile.png');
     await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-insert-picker] > summary').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
     await check(`!document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]').open`, 'Escape closes Insert.');
