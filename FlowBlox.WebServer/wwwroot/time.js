@@ -18,7 +18,7 @@ window.flowBloxClipboardAvailable = () => window.isSecureContext && !!navigator.
 document.addEventListener('click', event => {
     const button = event.target.closest('[data-field-target]');
     if (!button || button.disabled) return;
-    const input = document.getElementById(button.dataset.fieldTarget);
+    const input = window.FlowBloxFieldEditors.target(button, button.dataset.fieldTarget);
     if (!input || input.disabled || input.readOnly) return;
     input.focus();
     input.setRangeText(button.dataset.fieldReference, input.selectionStart, input.selectionEnd, 'end');
@@ -32,7 +32,7 @@ document.addEventListener('click', async event => {
     const hint = button.closest('.field-editor').querySelector('[data-paste-error]');
     try {
         const text = await navigator.clipboard.readText();
-        const input = document.getElementById(button.dataset.pasteTarget);
+        const input = window.FlowBloxFieldEditors.target(button, button.dataset.pasteTarget);
         if (!input || input.disabled || input.readOnly) return;
         if (!window.FlowBloxFieldEditors.setValue(input, text)) {
             input.value = text;

@@ -1,4 +1,5 @@
 using FlowBlox.AIAssistant.Builder;
+using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Services;
 using FlowBlox.AIAssistant.Tools;
 using FlowBlox.AIAssistant.Tools.Handler;
@@ -28,8 +29,9 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task LoadExplanation_PromotesOnDemandContentImmediatelyAndOnlyOnce()
+        public async Task LoadExplanation_ReturnsGuidanceInHistoryAndMarksItForDeferredRetentionWithoutRepeatingItsPayload()
         {
+            using var retention = ToolHandlerUtilities.BeginRetainedContentScope(_ => null);
             var handler = new LoadExplanationHandler();
 
             var first = await handler.HandleAsync(
@@ -41,13 +43,15 @@ namespace FlowBloxTest.AIAssistant
 
             Assert.IsTrue(first.Ok);
             Assert.AreEqual(true, first.Result.Value<bool>("loaded"));
-            Assert.IsNull(first.Result["content"]);
+            Assert.AreEqual(AssistantPromptCatalog.GetPromptContentOrNull(AssistantPromptCatalog.SpecialGeneratorsKey),
+                first.Result.Value<string>("content"));
             Assert.AreEqual(false, second.Result.Value<bool>("loaded"));
             Assert.IsNull(second.Result["content"]);
-            Assert.AreEqual(1, ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Count);
-            CollectionAssert.AreEqual(
-                new[] { AssistantPromptCatalog.SpecialGeneratorsKey },
-                ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Select(x => x.Key.Replace("explanation:", "")).ToArray());
+            var marked = first.RetainedContents.Single();
+            Assert.AreEqual(AssistantSystemMessageKind.Explanation, marked.Kind);
+            Assert.AreEqual(AssistantPromptCatalog.GetPromptContentOrNull(AssistantPromptCatalog.SpecialGeneratorsKey), marked.Content);
+            Assert.AreEqual(marked.Key, second.RetainedContents.Single().Key);
+            Assert.AreEqual(string.Empty, second.RetainedContents.Single().Content);
         }
 
         [TestMethod]
@@ -60,11 +64,11 @@ namespace FlowBloxTest.AIAssistant
             Assert.IsTrue(response.Ok);
             Assert.AreEqual(false, response.Result.Value<bool>("loaded"));
             Assert.IsNull(response.Result["content"]);
-            Assert.AreEqual(0, ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Count);
+            Assert.AreEqual(0, response.RetainedContents.Count);
         }
 
         [TestMethod]
-        public void BuildChatRequest_AddsLoadedExplanationAsCacheableSystemMessage()
+        public void BuildChatRequest_AddsLoadedExplanationAsSystemMessage()
         {
             var explanation = AssistantPromptCatalog.GetPromptContentOrNull(
                 AssistantPromptCatalog.SpecialGeneratorsKey)!;
@@ -88,9 +92,6 @@ namespace FlowBloxTest.AIAssistant
 
             Assert.AreEqual(3, result.Request.SystemMessages.Count);
             Assert.AreEqual(explanation, result.Request.SystemMessages[2].Content);
-            Assert.AreEqual(
-                FlowBlox.Core.Models.FlowBlocks.AIRemote.Base.AIChatCacheBehavior.PreferCache,
-                result.Request.SystemMessages[2].CacheBehavior);
         }
     }
 }

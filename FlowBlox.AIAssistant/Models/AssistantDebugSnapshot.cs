@@ -7,7 +7,8 @@ public enum AssistantSystemMessageKind
     SystemPrompt,
     SessionBootstrap,
     Explanation,
-    TypeInfo
+    TypeInfo,
+    ToolDefinition
 }
 
 public sealed record AssistantSystemMessage(

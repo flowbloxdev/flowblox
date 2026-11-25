@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Discover managed object kinds.")]
     internal sealed class GetManagedObjectsTypesHandler : ToolHandlerBase
     {
         public override string Name => "GetManagedObjectsTypes";

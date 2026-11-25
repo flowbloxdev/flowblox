@@ -5,7 +5,7 @@
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:views="clr-namespace:FlowBlox.UICore.Views"
     xmlns:resources="clr-namespace:FlowBlox.UICore.Resources"
-    Title="{Binding Title}" Height="800" Width="1280" MinHeight="420" MinWidth="760"
+    Title="{Binding Title}" Height="800" Width="1280" MinHeight="560" MinWidth="760"
     WindowStartupLocation="CenterOwner"
     PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
@@ -13,6 +13,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/MahAppMetroResources.xaml" />
                 <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/FlowBloxCustomStyles.xaml" />
+                <ResourceDictionary Source="AiAssistantDebugCardResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="VisibleIfTrue" />
             <Style x:Key="RuntimeButton" TargetType="Button"
@@ -53,30 +54,6 @@
                 <Setter Property="Height" Value="13" />
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
-            </Style>
-            <Style x:Key="CardItem" TargetType="ListBoxItem">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Margin" Value="0,0,0,8" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <Border x:Name="Card" Padding="12" CornerRadius="6" Background="#FFF7F9FB"
-                                    BorderBrush="#FFD8E0E8" BorderThickness="1">
-                                <ContentPresenter />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Card" Property="Background" Value="#FFE8F1FC" />
-                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FF2F6DB3" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FF2F6DB3" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -130,7 +107,7 @@
                 <ColumnDefinition Width="1.8*" MinWidth="260" />
             </Grid.ColumnDefinitions>
             <ListBox ItemsSource="{Binding Topics}" SelectedItem="{Binding SelectedTopic}" BorderThickness="0"
-                     Background="Transparent" ItemContainerStyle="{StaticResource CardItem}"
+                     Background="Transparent" ItemContainerStyle="{StaticResource DebugCardItem}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -142,49 +119,33 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" Background="#FFE2E6EA" />
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-                <TextBlock Text="{Binding Statistics}" TextWrapping="Wrap" Foreground="#FF65737E" Margin="2,0,2,10" />
-                <ListBox Grid.Row="1" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}"
-                         ItemContainerStyle="{StaticResource CardItem}" BorderThickness="0" Background="Transparent"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <DockPanel LastChildFill="True">
-                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="8,0,0,0">
-                                        <icons:PackIconMaterial Kind="Pin" Width="14" Height="14" Margin="0,0,6,0"
-                                            Visibility="{Binding IsPinned, Converter={StaticResource VisibleIfTrue}}" ToolTip="{Binding PinTooltip}" />
-                                        <TextBlock Text="{Binding Type}" FontSize="10" Foreground="#FF2F6DB3" />
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                </DockPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                    <icons:PackIconMaterial Kind="{Binding Icon}" Width="13" Height="13" Margin="0,0,5,0" ToolTip="{Binding Status}" />
-                                    <TextBlock Text="{Binding Status}" FontSize="11" Foreground="#FF65737E" />
-                                </StackPanel>
-                                <TextBlock Text="{Binding Preview}" TextWrapping="Wrap" Margin="0,8,0,0" />
-                                <TextBlock Text="{Binding ResponsePreview}" TextWrapping="Wrap" Margin="0,8,0,0"
-                                           Visibility="{Binding HasResponse, Converter={StaticResource VisibleIfTrue}}" />
-                                <TextBlock Text="{Binding TokensText}" FontSize="11" Foreground="#FF65737E" Margin="0,8,0,0" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <ContentControl Grid.Row="1"
-                    Margin="12"
-                    Visibility="{Binding IsEmpty, Converter={StaticResource VisibleIfTrue}}"
-                    IsHitTestVisible="False"
-                    Content="{Binding EmptyText}"
-                    Style="{StaticResource FlowBlox.EmptyState}" />
-            </Grid>
+            <ContentControl Grid.Column="2" Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value><DataTemplate><views:AiAssistantMessagesView /></DataTemplate></Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsUsageTopic}" Value="True">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value><DataTemplate><views:AiAssistantUsageView /></DataTemplate></Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSystemMessagesTopic}" Value="True">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value><DataTemplate><views:AiAssistantSystemMessagesView /></DataTemplate></Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
             <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Center" Background="#FFE2E6EA" />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                 <DockPanel Margin="6,0,0,8">
-                    <TextBlock DockPanel.Dock="Right" Text="{Binding SelectedCard.TokensText}" Foreground="#FF65737E" Margin="8,0,0,0" />
-                    <TextBlock Text="{Binding SelectedCard.Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding SelectionTokens}" Foreground="#FF65737E" Margin="8,0,0,0" />
+                    <TextBlock Text="{Binding SelectionTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                 </DockPanel>
                 <views:InnerContentView Grid.Row="1" DataContext="{Binding Editor}" />
             </Grid>

@@ -11,8 +11,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Run a project in debug mode and collect runtime output.")]
     internal sealed class RunProjectDebugTestHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "RunProjectDebugTest";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

@@ -3,8 +3,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Set a non-password FlowBlox option.")]
     internal sealed class SetOptionValueHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "SetOptionValue";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

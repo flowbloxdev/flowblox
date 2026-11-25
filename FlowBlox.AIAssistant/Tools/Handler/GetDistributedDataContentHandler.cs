@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Read a distributed data file or example project.")]
     internal sealed class GetDistributedDataContentHandler : ToolHandlerBase
     {
         public override string Name => "GetDistributedDataContent";

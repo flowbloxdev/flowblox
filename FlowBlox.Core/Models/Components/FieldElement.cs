@@ -274,7 +274,7 @@ namespace FlowBlox.Core.Models.Components
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true, 
             AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options | FieldSelectionModes.Vault,
             AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
-        [FlowBloxTextBox(MultiLine = true, IsCodingMode = true,
+        [FlowBloxTextBox(IsMultilineMember = nameof(IsMultiline), IsCodingMode = true,
             IsPasswordMethod = nameof(ShouldMaskValue), SyntaxHighlightingMember = nameof(SyntaxHighlighting),
             DefaultValueMember = nameof(DefaultValue))]
         [FlowBloxItemsSource(
@@ -332,7 +332,7 @@ namespace FlowBlox.Core.Models.Components
         [FlowBloxFieldSelection(DefaultRequiredValue = false, HideRequiredCheckbox = true,
             AllowedFieldSelectionModes = FieldSelectionModes.ProjectProperties | FieldSelectionModes.Options | FieldSelectionModes.Vault,
             AllowedFieldSelectionModesMethod = nameof(GetValueFieldSelectionModes))]
-        [FlowBloxTextBox(MultiLine = true, IsCodingMode = true, SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
+        [FlowBloxTextBox(IsMultilineMember = nameof(IsMultiline), IsCodingMode = true, SyntaxHighlightingMember = nameof(SyntaxHighlighting))]
         [CustomValidation(typeof(FieldElement), nameof(ValidateDefaultValue))]
         [DependsOnProperty(MemberNames = [nameof(IsPassword), nameof(LoVType), nameof(ListOfValues)])]
         public string DefaultValue
@@ -398,6 +398,35 @@ namespace FlowBlox.Core.Models.Components
         }
 
         public bool IsClearOnRuntimeStartReadOnly() => IsRequiredAtRuntimeStartup && !ClearOnRuntimeStart;
+
+        private FieldDisplayMode _displayMode;
+
+        [ActivationCondition(MemberName = nameof(UserField), Value = true)]
+        [Display(Name = "FieldElement_DisplayMode", ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 5)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        public FieldDisplayMode DisplayMode
+        {
+            get => _displayMode;
+            set
+            {
+                if (_displayMode == value)
+                    return;
+
+                _displayMode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsMultiline));
+            }
+        }
+
+        [JsonIgnore]
+        public bool IsMultiline => DisplayMode != FieldDisplayMode.SingleLine;
+
+        [ActivationCondition(MemberName = nameof(DisplayMode), Value = FieldDisplayMode.List)]
+        [Display(Name = "FieldElement_ListSeparator", Description = "FieldElement_ListSeparator_Tooltip",
+            ResourceType = typeof(FlowBloxTexts), GroupName = "FieldElement_Groups_Behavior", Order = 6)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        [Required]
+        public string ListSeparator { get; set; } = @"\n";
 
         public bool IsStartupRequirementReadOnly() => UserFieldType == UserFieldTypes.Memory
             && ClearOnRuntimeStart && !IsRequiredAtRuntimeStartup;

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Read a generated output file.")]
     internal sealed class GetOutputFileContentHandler : ToolHandlerBase
     {
         public override string Name => "GetOutputFileContent";

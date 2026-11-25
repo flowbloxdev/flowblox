@@ -53,8 +53,10 @@ $fixture = @{
 }
 if ($BrowserInputs) {
     $fixture.UserFields += @(
-        @{ Name = 'Multiline'; UserField = $true; UserFieldType = 'Input'; DefaultValue = "first`nsecond"; FieldType = @{ FieldType = 'Text' } }
-        @{ Name = 'ListFixture'; UserField = $true; UserFieldType = 'Input'; DefaultValue = 'alpha; beta;;'; FieldType = @{ FieldType = 'Text' } }
+        @{ Name = 'Multiline'; UserField = $true; UserFieldType = 'Input'; DisplayMode = 'Multiline'; DefaultValue = "first`nsecond"; FieldType = @{ FieldType = 'Text' } }
+        @{ Name = 'ListFixture'; UserField = $true; UserFieldType = 'Input'; DisplayMode = 'List'; ListSeparator = ';'; DefaultValue = 'alpha; beta;;'; FieldType = @{ FieldType = 'Text' } }
+        @{ Name = 'LineFeedList'; UserField = $true; UserFieldType = 'Input'; DisplayMode = 'List'; DefaultValue = "first`r`nsecond`nthird"; FieldType = @{ FieldType = 'Text' } }
+        @{ Name = 'TabList'; UserField = $true; UserFieldType = 'Input'; DisplayMode = 'List'; ListSeparator = '\t'; DefaultValue = "first`tsecond"; FieldType = @{ FieldType = 'Text' } }
     )
 }
 if (-not $EmptyCatalog) {
@@ -63,6 +65,11 @@ if (-not $EmptyCatalog) {
         $second = $fixture.Clone()
         $second.ProjectGuid = '8eb64b97-a31b-4ab9-933e-edf9ce2bc58c'
         $second.ProjectName = 'Second input fixture'
+        $second.UserFields = $fixture.UserFields | ForEach-Object {
+            $field = $_.Clone()
+            if ($field.Name -eq 'ListFixture') { $field.ListSeparator = ',' }
+            $field
+        }
         [IO.File]::WriteAllText((Join-Path $projectsDirectory 'second.fbprj'), ($second | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
     }
     $localData = @{ LocalUserFieldValues = @{ Suggested = 'local developer value'; LocalPassword = 'must-not-render-local-secret' } }

@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Update FlowBlock properties by JSON path.")]
     internal sealed class UpdateFlowBlockHandler : ToolHandlerBase
     {
         public override string Name => "UpdateFlowBlock";

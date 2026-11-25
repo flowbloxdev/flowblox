@@ -1,17 +1,21 @@
 window.FlowBloxFieldEditors = (() => {
     const editors = new Map();
-    const prefix = 'flowblox:input-editor:v1:';
-    const key = (project, field) => prefix + project + ':' + encodeURIComponent(field);
+    const targets = new Map();
+    document.addEventListener('focusin', event => {
+        const input = event.target;
+        const editor = input.closest?.('.field-editor');
+        if (editor && input.matches('input, textarea')) targets.set(editor.id, input.id);
+    });
     return {
         attach(id, receiver) { editors.set(id, receiver); },
-        detach(id) { editors.delete(id); },
-        load(project, field) {
-            try { return JSON.parse(localStorage.getItem(key(project, field))); }
-            catch { return null; }
-        },
-        save(project, field, preferences) {
-            try { localStorage.setItem(key(project, field), JSON.stringify(preferences)); }
-            catch { /* The editor remains usable when browser storage is unavailable. */ }
+        detach(id) { editors.delete(id); targets.delete(id); },
+        target(button, fallback) {
+            const editor = button.closest('.field-editor');
+            const active = document.activeElement;
+            // Resolve in the browser so opening Insert does not depend on a server focus round trip.
+            if (editor?.contains(active) && active.matches('input, textarea')) targets.set(editor.id, active.id);
+            const input = document.getElementById(targets.get(editor?.id));
+            return input && editor.contains(input) ? input : document.getElementById(fallback);
         },
         setValue(input, value) {
             const receiver = editors.get(input.closest('.field-editor')?.id);
@@ -25,17 +29,6 @@ window.FlowBloxFieldEditors = (() => {
         }
     };
 })();
-
-// A native single-line input strips pasted line breaks before Blazor sees oninput.
-// Forward the original text so Automatic mode can switch to a textarea without data loss.
-document.addEventListener('paste', event => {
-    const input = event.target;
-    if (!input.matches?.('input[data-auto-multiline]') || input.disabled || input.readOnly) return;
-    const text = event.clipboardData?.getData('text/plain');
-    if (!text || !/[\r\n]/.test(text)) return;
-    const value = input.value.slice(0, input.selectionStart) + text + input.value.slice(input.selectionEnd);
-    if (window.FlowBloxFieldEditors.setValue(input, value)) event.preventDefault();
-});
 
 function positionInsertMenu(picker) {
     picker.classList.remove('insert-above');

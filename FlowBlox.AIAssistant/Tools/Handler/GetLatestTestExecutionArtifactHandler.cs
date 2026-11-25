@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect executions and results from the latest test run.")]
     internal sealed class GetLatestTestExecutionArtifactHandler : ToolHandlerBase
     {
         public override string Name => "GetLatestTestExecutionArtifact";

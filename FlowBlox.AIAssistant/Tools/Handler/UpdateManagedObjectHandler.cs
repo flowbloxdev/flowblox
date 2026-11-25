@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Update managed object properties by JSON path.")]
     internal sealed class UpdateManagedObjectHandler : ToolHandlerBase
     {
         public override string Name => "UpdateManagedObject";

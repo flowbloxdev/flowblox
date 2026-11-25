@@ -11,6 +11,7 @@ namespace FlowBlox.AIAssistant.Constants
         public const double MinSummaryCompactionRate = 0.1d;
         public const double MaxSummaryCompactionRate = 1.0d;
 
+        public const int DefaultMaxContextTokens = 64000;
         public const int MinContextTokens = 0;
         public const int MinReservedResponseTokens = 0;
 

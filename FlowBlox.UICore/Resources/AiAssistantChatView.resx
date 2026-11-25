@@ -75,4 +75,7 @@
     <value>Describe what you want to change in this component.</value>
   </data>
   <data name="Cost_Unavailable" xml:space="preserve"><value>unavailable / incomplete</value></data>
+  <data name="CacheSavings_Format" xml:space="preserve"><value>Cache savings: {0}</value></data>
+  <data name="CacheSavings_WithRate_Format" xml:space="preserve"><value>Cache savings: {0} ({1})</value></data>
+  <data name="Tooltip_CacheSavings" xml:space="preserve"><value>Estimated savings in USD compared with the same usage without caching. The percentage refers to the cost without caching. Missing usage or pricing data is shown as unavailable.</value></data>
 </root>

@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
+using FlowBlox.AIAssistant.Models;
 
 namespace FlowBlox.AIAssistant.Builder
 {
@@ -9,6 +10,7 @@ namespace FlowBlox.AIAssistant.Builder
         public abstract string Role { get; }
         public abstract string CompleteMessage { get; }
         public int CharacterCount => CompleteMessage?.Length ?? 0;
+        public List<AssistantRetainedContent> RetainedContents { get; set; } = new();
 
         public abstract AssistantSessionMessage Clone();
     }
@@ -29,7 +31,8 @@ namespace FlowBlox.AIAssistant.Builder
             return new AssistantSingleMessage
             {
                 MessageRole = Role,
-                Message = Message
+                Message = Message,
+                RetainedContents = RetainedContents.Select(content => content.Clone()).ToList()
             };
         }
     }
@@ -38,6 +41,10 @@ namespace FlowBlox.AIAssistant.Builder
     {
         public string AssistantRequest { get; set; } = string.Empty;
         public string ToolApiResponse { get; set; } = string.Empty;
+        /// <summary>
+        /// Context-only replacements indexed by tool result position. Original history text remains unchanged.
+        /// </summary>
+        public Dictionary<int, string> CompactedToolResults { get; set; } = new();
         public AIChatMessageMetadata Metadata { get; set; } = new();
 
         public override string Role => "user";
@@ -62,7 +69,9 @@ namespace FlowBlox.AIAssistant.Builder
             {
                 AssistantRequest = AssistantRequest,
                 ToolApiResponse = ToolApiResponse,
-                Metadata = Metadata?.Clone() ?? new AIChatMessageMetadata()
+                CompactedToolResults = new Dictionary<int, string>(CompactedToolResults),
+                Metadata = Metadata?.Clone() ?? new AIChatMessageMetadata(),
+                RetainedContents = RetainedContents.Select(content => content.Clone()).ToList()
             };
         }
     }
@@ -82,6 +91,11 @@ namespace FlowBlox.AIAssistant.Builder
                     writer.WriteValue(pair.AssistantRequest);
                     writer.WritePropertyName(nameof(AssistantMessagePair.ToolApiResponse));
                     writer.WriteValue(pair.ToolApiResponse);
+                    if (pair.CompactedToolResults.Count > 0)
+                    {
+                        writer.WritePropertyName(nameof(AssistantMessagePair.CompactedToolResults));
+                        serializer.Serialize(writer, pair.CompactedToolResults);
+                    }
                     if (pair.Metadata?.HasValues == true)
                     {
                         writer.WritePropertyName(nameof(AssistantMessagePair.Metadata));
@@ -105,6 +119,12 @@ namespace FlowBlox.AIAssistant.Builder
                     throw new JsonSerializationException($"Unsupported assistant session message type '{value.GetType().FullName}'.");
             }
 
+            if (value?.RetainedContents.Count > 0)
+            {
+                writer.WritePropertyName(nameof(AssistantSessionMessage.RetainedContents));
+                serializer.Serialize(writer, value.RetainedContents);
+            }
+
             writer.WriteEndObject();
         }
 
@@ -120,6 +140,8 @@ namespace FlowBlox.AIAssistant.Builder
 
             var obj = Newtonsoft.Json.Linq.JObject.Load(reader);
             var messageType = obj.Value<string>("messageType") ?? obj.Value<string>("MessageType") ?? "single";
+            var retainedContent = (obj[nameof(AssistantSessionMessage.RetainedContents)] ?? obj["RetainOnSummarization"])?
+                .ToObject<List<AssistantRetainedContent>>(serializer) ?? new();
 
             if (string.Equals(messageType, "pair", StringComparison.OrdinalIgnoreCase))
             {
@@ -127,8 +149,11 @@ namespace FlowBlox.AIAssistant.Builder
                 {
                     AssistantRequest = obj.Value<string>(nameof(AssistantMessagePair.AssistantRequest)) ?? string.Empty,
                     ToolApiResponse = obj.Value<string>(nameof(AssistantMessagePair.ToolApiResponse)) ?? string.Empty,
+                    CompactedToolResults = obj[nameof(AssistantMessagePair.CompactedToolResults)]?
+                        .ToObject<Dictionary<int, string>>(serializer) ?? new(),
                     Metadata = obj[nameof(AssistantMessagePair.Metadata)]?.ToObject<AIChatMessageMetadata>(serializer)
-                        ?? new AIChatMessageMetadata()
+                        ?? new AIChatMessageMetadata(),
+                    RetainedContents = retainedContent
                 };
             }
 
@@ -139,7 +164,8 @@ namespace FlowBlox.AIAssistant.Builder
                     ?? "user",
                 Message = obj.Value<string>(nameof(AssistantSingleMessage.Message))
                     ?? obj.Value<string>("Content")
-                    ?? string.Empty
+                    ?? string.Empty,
+                RetainedContents = retainedContent
             };
         }
     }

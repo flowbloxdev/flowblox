@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Run a saved or Project Space project with approval.")]
     internal sealed class ExecuteExternalProjectHandler : ToolHandlerBase
     {
         public override string Name => "ExecuteExternalProject";

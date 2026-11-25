@@ -45,6 +45,9 @@ namespace FlowBloxTest.Services
                 return Task.FromResult(new ChatMessageContent(AuthorRole.Assistant, $"SUMMARY-{SummaryRequestCount}"));
             }
 
+            if (request.Source == "FlowBloxAIAssistantCompaction")
+                return Task.FromResult(new ChatMessageContent(AuthorRole.Assistant, "COMPACTED"));
+
             NormalChatHistories.Add(snapshot);
             return Task.FromResult(new ChatMessageContent(
                 AuthorRole.Assistant,

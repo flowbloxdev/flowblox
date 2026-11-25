@@ -4,6 +4,9 @@ namespace FlowBlox.AIAssistant.Models
 {
     public class ToolResponse
     {
+        [Newtonsoft.Json.JsonIgnore]
+        public List<AssistantRetainedContent> RetainedContents { get; set; } = new();
+
         // Pure metadata rendering only: never re-executes a tool or increments retrieval counters.
         [Newtonsoft.Json.JsonIgnore]
         internal Action? RefreshBeforeSerialization { get; set; }

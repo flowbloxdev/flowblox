@@ -8,42 +8,13 @@
 @implements IAsyncDisposable
 <div class="field-editor" id="@(_id + "-editor")" data-field-name="@Field.Name">
     <div class="field-heading"><label for="@_id">
-        <span class="field-value-status @FieldValuePresentation.GetStateName(Value, Required)" title="@StatusText" aria-hidden="true"><MdiIcon Name="circle" /></span>
         <span class="field-title-text">@DisplayName</span>
         @if (Required)
         {
             <span class="field-required" role="img" aria-label="@RequiredText" title="@RequiredText"><MdiIcon Name="star" /></span>
         }
     </label>
-        <div class="field-actions">
-        @if (CanChangePresentation)
-        {
-            <details class="field-presentation-picker">
-                <summary class="quiet small-action icon-button" aria-label="@T["InputDisplaySettings"]" title="@T["InputDisplaySettings"]"><MdiIcon Name="cog-outline" /></summary>
-                <div class="field-presentation-options">
-                    <label>@T["InputDisplayMode"]
-                        <select class="field-mode" value="@_preferences.Mode" @onchange="ChangeModeAsync">
-                            <option value="Automatic">@T["InputModeAutomatic"]</option>
-                            <option value="SingleLine">@T["InputModeSingleLine"]</option>
-                            <option value="Multiline">@T["InputModeMultiline"]</option>
-                            <option value="List">@T["InputModeList"]</option>
-                        </select>
-                    </label>
-                    @if (_preferences.Mode == InputEditorMode.List)
-                    {
-                        <label>@T["InputListSeparator"]
-                            <select class="field-separator" value="@_preferences.Separator" @onchange="ChangeSeparatorAsync">
-                                <option value="LineFeed">@T["InputSeparatorLineFeed"]</option>
-                                <option value="Semicolon">@T["InputSeparatorSemicolon"]</option>
-                                <option value="Comma">@T["InputSeparatorComma"]</option>
-                            </select>
-                        </label>
-                        <small>@T["InputSeparatorHint"]</small>
-                    }
-                </div>
-            </details>
-        }
-        </div>
+        <span class="field-value-status @FieldValuePresentation.GetStateName(Value, Required)" title="@StatusText" aria-hidden="true"><MdiIcon Name="circle" /></span>
     </div>
     <div class="field-value-row">
     <div class="field-value-control">
@@ -57,7 +28,7 @@
     { <PasswordInput Id="@_id" Label="@DisplayName" Required="@Required" DescribedBy="@(_id + "-status")" Disabled="Disabled" Value="@Value" ValueChanged="ValueChanged" /> }
     else
     {
-        @if (_preferences.Mode == InputEditorMode.List)
+        @if (Field.DisplayMode == FieldDisplayMode.List)
         {
             <div class="field-list" role="group" aria-label="@DisplayName">
                 @foreach (var entry in _entries)
@@ -66,8 +37,7 @@
                     <div class="field-list-row" @key="entry.Id">
                         <textarea id="@entryId" rows="@(HasLineBreak(entry.Value) ? 3 : 1)" class="field-list-value"
                                   aria-label="@T["InputListItem", _entries.IndexOf(entry) + 1]" disabled="@Disabled"
-                                  @bind:get="entry.Value" @bind:set="value => ChangeEntryAsync(entry, value)" @bind:event="oninput"
-                                  @onfocus="() => _activeEntryId = entryId"></textarea>
+                                  @bind:get="entry.Value" @bind:set="value => ChangeEntryAsync(entry, value)" @bind:event="oninput"></textarea>
                         <button type="button" class="quiet small-action icon-button" aria-label="@T["InputRemoveItem", _entries.IndexOf(entry) + 1]"
                                 title="@T["Remove"]" disabled="@Disabled" @onclick="() => RemoveEntryAsync(entry)"><MdiIcon Name="delete" /></button>
                     </div>
@@ -82,7 +52,7 @@
         }
         else
         {
-            <input id="@_id" type="text" data-auto-multiline="@(_preferences.Mode == InputEditorMode.Automatic ? "true" : null)"
+            <input id="@_id" type="text"
                    aria-required="@Required.ToString().ToLowerInvariant()" aria-describedby="@(_id + "-status")" disabled="@Disabled"
                    @bind:get="Value" @bind:set="SetValueAsync" @bind:event="oninput" />
         }
@@ -160,19 +130,12 @@
     private string RequiredText => FlowBloxResourceUtil.GetLocalizedString("FieldElement_RequiredInput", typeof(FlowBlox.Core.FlowBloxTexts));
     private string StatusText => FieldValuePresentation.GetDescription(Value, Required);
     private string DisplayName => InputFieldPresentation.GetDisplayName(Field.Name);
-    private bool CanChangePresentation => !Field.IsPassword && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly;
-    private bool IsMultiline => _preferences.Mode == InputEditorMode.Multiline ||
-        (_preferences.Mode == InputEditorMode.Automatic && HasLineBreak(Value));
-    private string Separator => _preferences.Separator switch
-    {
-        InputListSeparator.Comma => ",",
-        InputListSeparator.Semicolon => ";",
-        _ => "\n"
-    };
-    private string ReferenceTargetId => _preferences.Mode == InputEditorMode.List ? _activeEntryId ?? _id : _id;
-    private bool _clipboard, _loadPreferences, _focusInput;
+    private bool CanUseList => !Field.IsPassword && Field.GetValueDropDownMode() != DropDownMode.SelectionOnly;
+    private bool IsMultiline => Field.DisplayMode == FieldDisplayMode.Multiline;
+    private string Separator => FieldListPresentation.ResolveSeparator(Field.ListSeparator);
+    private string ReferenceTargetId => Field.DisplayMode == FieldDisplayMode.List ? _activeEntryId ?? _id : _id;
+    private bool _clipboard, _focusInput;
     private readonly string _id = "field-" + Guid.NewGuid().ToString("N");
-    private InputEditorPreferences _preferences = new();
     private readonly List<InputListEntry> _entries = [];
     private string _scope = string.Empty;
     private string _listSource = string.Empty;
@@ -185,12 +148,10 @@
         if (_scope != scope)
         {
             _scope = scope;
-            _preferences = new();
-            _loadPreferences = true;
             _entries.Clear();
             _activeEntryId = null;
         }
-        if (_preferences.Mode == InputEditorMode.List && (_entries.Count == 0 || _listSource != Value))
+        if (Field.DisplayMode == FieldDisplayMode.List && (_entries.Count == 0 || _listSource != Value))
             ReadList();
     }
 
@@ -204,19 +165,6 @@
                 await JavaScript.InvokeVoidAsync("FlowBloxFieldEditors.attach", _id + "-editor", _receiver);
                 _clipboard = await JavaScript.InvokeAsync<bool>("flowBloxClipboardAvailable");
                 StateHasChanged();
-            }
-            if (_loadPreferences)
-            {
-                _loadPreferences = false;
-                var scope = _scope;
-                var preferences = ProjectGuid == Guid.Empty || !CanChangePresentation ? null :
-                    await JavaScript.InvokeAsync<InputEditorPreferences?>("FlowBloxFieldEditors.load", ProjectGuid.ToString("D"), Field.Name);
-                if (scope == _scope && preferences != null && Enum.IsDefined(preferences.Mode) && Enum.IsDefined(preferences.Separator))
-                {
-                    _preferences = preferences;
-                    ReadList();
-                    StateHasChanged();
-                }
             }
             if (_focusInput)
             {
@@ -234,57 +182,28 @@
     private void ReadList()
     {
         _entries.Clear();
-        var value = _preferences.Separator == InputListSeparator.LineFeed ? Value.Replace("\r\n", "\n").Replace('\r', '\n') : Value;
-        foreach (var item in value.Split(Separator, StringSplitOptions.None))
+        foreach (var item in FieldListPresentation.Split(Value, Field.ListSeparator))
             _entries.Add(new InputListEntry { Value = item });
         _listSource = Value;
         _activeEntryId = null;
-    }
-
-    private async Task ChangeModeAsync(ChangeEventArgs args)
-    {
-        if (!Enum.TryParse<InputEditorMode>(args.Value?.ToString(), out var mode) || !Enum.IsDefined(mode))
-            return;
-        _preferences.Mode = mode;
-        if (mode == InputEditorMode.List)
-            ReadList();
-        await SavePreferencesAsync();
-    }
-
-    private async Task ChangeSeparatorAsync(ChangeEventArgs args)
-    {
-        if (!Enum.TryParse<InputListSeparator>(args.Value?.ToString(), out var separator) || !Enum.IsDefined(separator))
-            return;
-        _preferences.Separator = separator;
-        ReadList();
-        await SavePreferencesAsync();
-    }
-
-    private async Task SavePreferencesAsync()
-    {
-        if (ProjectGuid == Guid.Empty)
-            return;
-        try { await JavaScript.InvokeVoidAsync("FlowBloxFieldEditors.save", ProjectGuid.ToString("D"), Field.Name, _preferences); }
-        catch (JSException) { }
-        catch (JSDisconnectedException) { }
     }
 
     private async Task ChangeEntryAsync(InputListEntry entry, string value)
     {
         if (Disabled)
             return;
-        if (_preferences.Separator == InputListSeparator.LineFeed)
-            value = value.Replace("\r\n", "\n").Replace('\r', '\n');
-        var parts = value.Split(Separator, StringSplitOptions.None);
-        entry.Value = parts[0];
+
         var index = _entries.IndexOf(entry);
-        foreach (var part in parts.Skip(1))
+        var values = _entries.Select(item => item.Value).ToList();
+        FieldListPresentation.Apply(values, index, value, Field.ListSeparator);
+        for (var row = index; row < values.Count; row++)
         {
-            var added = new InputListEntry { Value = part };
-            _entries.Insert(++index, added);
-            _activeEntryId = EntryId(added);
-            _focusInput = true;
+            if (row < _entries.Count)
+                _entries[row].Value = values[row];
+            else
+                _entries.Add(new InputListEntry { Value = values[row] });
         }
+
         await PublishListAsync();
     }
 
@@ -321,7 +240,7 @@
     {
         if (Disabled)
             return;
-        if (_preferences.Mode == InputEditorMode.List && CanChangePresentation)
+        if (Field.DisplayMode == FieldDisplayMode.List && CanUseList)
         {
             var entry = _entries.FirstOrDefault(item => EntryId(item) == inputId);
             if (entry != null)
@@ -329,7 +248,6 @@
         }
         else
         {
-            _focusInput = _preferences.Mode == InputEditorMode.Automatic && HasLineBreak(value);
             await ValueChanged.InvokeAsync(value);
         }
         await InvokeAsync(StateHasChanged);

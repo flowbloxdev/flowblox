@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect compact component JSON.")]
     internal sealed class GetFlowBloxComponentSnapshotJsonHandler : ToolHandlerBase
     {
         public override string Name => "GetFlowBloxComponentSnapshotJSON";

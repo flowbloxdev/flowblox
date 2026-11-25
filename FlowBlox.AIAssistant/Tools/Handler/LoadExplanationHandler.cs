@@ -4,12 +4,13 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler;
 
+[ToolPurpose("Load domain guidance.", IncludeContractInBootstrap = true)]
 internal sealed class LoadExplanationHandler : ToolHandlerBase
 {
     public override string Name => "LoadExplanation";
     public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
         Name,
-        "Loads on-demand explanation content into subsequent system messages. Preloaded or previously loaded content is not duplicated.",
+        "Loads on-demand guidance in tool history; Verbatim Context Retention copies it into system messages at the next context transition.",
         new JObject
         {
             ["key"] = "string"
@@ -40,9 +41,26 @@ internal sealed class LoadExplanationHandler : ToolHandlerBase
                 ["message"] = $"Already loaded: '{entry.Title}' is part of the initial system guidance."
             }));
 
-        return Task.FromResult(ToolHandlerUtilities.CurrentContentCache.LoadExplanation(
-            entry.Key,
-            entry.Title,
-            entry.Content));
+        var retentionKey = "explanation:" + entry.Key;
+        var location = ToolHandlerUtilities.GetRetainedContentLocation(retentionKey);
+        var alreadyLoaded = location != null;
+        var response = ToolHandlerUtilities.Ok(new JObject
+        {
+            ["key"] = entry.Key,
+            ["loaded"] = !alreadyLoaded,
+            ["message"] = alreadyLoaded
+                ? $"'{entry.Title}' is already available in the current {location}."
+                : $"'{entry.Title}' is available below and will be retained at the next context transition."
+        });
+        if (!alreadyLoaded)
+            response.Result["content"] = entry.Content;
+        ToolHandlerUtilities.RegisterRetainedContent(response, new AssistantRetainedContent
+        {
+            Key = retentionKey,
+            Title = entry.Title,
+            Kind = AssistantSystemMessageKind.Explanation,
+            Content = alreadyLoaded ? string.Empty : entry.Content
+        });
+        return Task.FromResult(response);
     }
 }

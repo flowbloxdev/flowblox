@@ -92,6 +92,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die All visible entries ähnelt.
+        /// </summary>
+        public static string AllEntries
+        {
+            get
+            {
+                return ResourceManager.GetString("AllEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reset filters ähnelt.
+        /// </summary>
+        public static string ClearFilters
+        {
+            get
+            {
+                return ResourceManager.GetString("ClearFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Context estimate: {0:N0} tokens · Effective input limit: {1:N0} tokens. Cached tokens count in full. ähnelt.
         /// </summary>
         public static string ContextStatistics
@@ -99,6 +121,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("ContextStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dynamic ähnelt.
+        /// </summary>
+        public static string Dynamic
+        {
+            get
+            {
+                return ResourceManager.GetString("Dynamic", resourceCulture);
             }
         }
         
@@ -121,6 +154,61 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Explanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die All ähnelt.
+        /// </summary>
+        public static string FilterAll
+        {
+            get
+            {
+                return ResourceManager.GetString("FilterAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0:N0} of {1:N0} messages · {2:N0} of {3:N0} estimated tokens ähnelt.
+        /// </summary>
+        public static string FilteredSystemStatistics
+        {
+            get
+            {
+                return ResourceManager.GetString("FilteredSystemStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Combine kinds and origins. No selection in a group includes all its values. ähnelt.
+        /// </summary>
+        public static string FilterHint
+        {
+            get
+            {
+                return ResourceManager.GetString("FilterHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kind ähnelt.
+        /// </summary>
+        public static string FilterKinds
+        {
+            get
+            {
+                return ResourceManager.GetString("FilterKinds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Origin ähnelt.
+        /// </summary>
+        public static string FilterOrigins
+        {
+            get
+            {
+                return ResourceManager.GetString("FilterOrigins", resourceCulture);
             }
         }
         
@@ -158,6 +246,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use Ctrl to select individual entries or Shift to select a range. ähnelt.
+        /// </summary>
+        public static string MultiSelectionHint
+        {
+            get
+            {
+                return ResourceManager.GetString("MultiSelectionHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Pair ähnelt.
         /// </summary>
         public static string Pair
@@ -191,13 +290,57 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Bound to this session only during the current application runtime. After restarting the application, the AI retrieves this content again when needed. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Loaded dynamically and retained verbatim with the saved conversation history. ähnelt.
         /// </summary>
         public static string RuntimeBindingTooltip
         {
             get
             {
                 return ResourceManager.GetString("RuntimeBindingTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select all ähnelt.
+        /// </summary>
+        public static string SelectAllFilters
+        {
+            get
+            {
+                return ResourceManager.GetString("SelectAllFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Selection ähnelt.
+        /// </summary>
+        public static string Selection
+        {
+            get
+            {
+                return ResourceManager.GetString("Selection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0:N0} selected · {1} ähnelt.
+        /// </summary>
+        public static string SelectionStatistics
+        {
+            get
+            {
+                return ResourceManager.GetString("SelectionStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0:N0} entries selected ähnelt.
+        /// </summary>
+        public static string SelectionTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("SelectionTitle", resourceCulture);
             }
         }
         
@@ -220,6 +363,28 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Single", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Static ähnelt.
+        /// </summary>
+        public static string Static
+        {
+            get
+            {
+                return ResourceManager.GetString("Static", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Initial system instruction or session bootstrap. ähnelt.
+        /// </summary>
+        public static string StaticContentTooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("StaticContentTooltip", resourceCulture);
             }
         }
         
@@ -334,7 +499,18 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Type info ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Tool API description ähnelt.
+        /// </summary>
+        public static string ToolDefinition
+        {
+            get
+            {
+                return ResourceManager.GetString("ToolDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Type description ähnelt.
         /// </summary>
         public static string TypeInfo
         {
@@ -363,6 +539,182 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cached input tokens ähnelt.
+        /// </summary>
+        public static string Usage_CachedInput
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_CachedInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cache hit rate ähnelt.
+        /// </summary>
+        public static string Usage_CacheHitRate
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_CacheHitRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cache write tokens ähnelt.
+        /// </summary>
+        public static string Usage_CacheWrite
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_CacheWrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Context utilization ähnelt.
+        /// </summary>
+        public static string Usage_ContextUtilization
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_ContextUtilization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cost saving ähnelt.
+        /// </summary>
+        public static string Usage_CostSavingRate
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_CostSavingRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Without caching (USD) ähnelt.
+        /// </summary>
+        public static string Usage_CostWithoutCaching
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_CostWithoutCaching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Context / limit (tokens) ähnelt.
+        /// </summary>
+        public static string Usage_CurrentContext
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_CurrentContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated cost (USD) ähnelt.
+        /// </summary>
+        public static string Usage_EstimatedCost
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_EstimatedCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Incomplete usage ähnelt.
+        /// </summary>
+        public static string Usage_IncompleteUsage
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_IncompleteUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Output tokens ähnelt.
+        /// </summary>
+        public static string Usage_Output
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_Output", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Requests ähnelt.
+        /// </summary>
+        public static string Usage_Requests
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_Requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Saved by caching (USD) ähnelt.
+        /// </summary>
+        public static string Usage_SavedByCaching
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_SavedByCaching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Input tokens ähnelt.
+        /// </summary>
+        public static string Usage_TotalInput
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_TotalInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Processed tokens ähnelt.
+        /// </summary>
+        public static string Usage_TotalProcessed
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_TotalProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Uncached input tokens ähnelt.
+        /// </summary>
+        public static string Usage_UncachedInput
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_UncachedInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Unpriced requests ähnelt.
+        /// </summary>
+        public static string Usage_UnpricedRequests
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage_UnpricedRequests", resourceCulture);
             }
         }
         

@@ -6,8 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Execute a test definition and collect results.")]
     internal sealed class RunTestDefinitionHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "RunTestDefinition";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

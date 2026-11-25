@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler;
 
+[ToolPurpose("Search Project Space projects without downloading them.")]
 internal sealed class GetPSProjectsHandler : ToolHandlerBase
 {
+    public override AssistantScope Scope => AssistantScope.Project;
+
     public override string Name => "GetPSProjects";
 
     public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

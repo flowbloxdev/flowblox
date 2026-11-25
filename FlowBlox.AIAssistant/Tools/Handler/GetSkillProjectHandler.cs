@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect a Skill or Project Space project and its execution contract.")]
     internal sealed class GetSkillProjectHandler : ToolHandlerBase
     {
         public override string Name => "GetSkillProject";

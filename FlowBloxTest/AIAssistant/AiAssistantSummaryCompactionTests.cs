@@ -26,8 +26,8 @@ public class AiAssistantSummaryCompactionTests
         await service.ExecutePromptAsync("CURRENT-TASK", CancellationToken.None);
 
         var compaction = executor.Requests.Single(request => request.Source == "FlowBloxAIAssistantCompaction");
-        StringAssert.Contains(compaction.Messages.Single().Content, "CURRENT-TASK");
-        Assert.IsFalse(compaction.Messages.Single().Content.Contains("UNMERGED-HISTORY-MESSAGE", StringComparison.Ordinal));
+        StringAssert.Contains(compaction.GetInputText(), "CURRENT-TASK");
+        Assert.IsFalse(compaction.GetInputText().Contains("UNMERGED-HISTORY-MESSAGE", StringComparison.Ordinal));
         Assert.AreEqual("[COMPACTED]", service.CurrentConversationSummary);
         Assert.AreEqual("FlowBloxAIAssistantCompaction", executor.Requests[0].Source);
         Assert.AreEqual(0, executor.Requests.Count(request => request.Source == "FlowBloxAIAssistantSummary"));
@@ -77,7 +77,7 @@ public class AiAssistantSummaryCompactionTests
         Assert.AreEqual("FlowBloxAIAssistantSummary", executor.Requests[0].Source);
         Assert.AreEqual("FlowBloxAIAssistantCompaction", executor.Requests[1].Source);
         Assert.AreEqual(executor.ChatRequests.Single(), executor.Requests[2]);
-        var compactedInput = executor.Requests[1].Messages.Single().Content;
+        var compactedInput = executor.Requests[1].GetInputText();
         StringAssert.Contains(compactedInput, "OLDER-ANSWER");
         Assert.IsFalse(compactedInput.Contains("LATEST-USER-MESSAGE", StringComparison.Ordinal));
         var history = new AiAssistantHistoryDocument();
@@ -128,7 +128,7 @@ public class AiAssistantSummaryCompactionTests
 
         Assert.AreEqual(1, executor.ChatRequests.Single().Messages.Count(message =>
             message.Role == "user" && message.Content == "STAGED-DURING-COMPACTION"));
-        var compactionInput = executor.Requests[0].Messages.Single().Content;
+        var compactionInput = executor.Requests[0].GetInputText();
         Assert.IsFalse(compactionInput.Contains("STAGED-DURING-COMPACTION", StringComparison.Ordinal));
     }
 

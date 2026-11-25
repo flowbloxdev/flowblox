@@ -152,9 +152,14 @@ namespace FlowBlox.AIAssistant.Models
         [FlowBloxUI(UISelectionButtons.None)]
         public double SummaryCompactionTargetRatio { get; set; } = 0.5d;
 
+        [Display(Name = "AssistantConfiguration_ToolResultCompactionThreshold", Description = "AssistantConfiguration_ToolResultCompactionThreshold_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 10)]
+        [Range(1, int.MaxValue)]
+        [FlowBloxUI(UISelectionButtons.None)]
+        public int ToolResultCompactionThreshold { get; set; } = 4000;
+
         [Display(Name = "AssistantConfiguration_MaxContextTokens", Description = "AssistantConfiguration_MaxContextTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 6)]
         [FlowBloxUI(UISelectionButtons.None)]
-        public int MaxContextTokens { get; set; } = 48000;
+        public int MaxContextTokens { get; set; } = AssistantConfigurationLimits.DefaultMaxContextTokens;
 
         [Display(Name = "AssistantConfiguration_ReservedResponseTokens", Description = "AssistantConfiguration_ReservedResponseTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 7)]
         [FlowBloxUI(UISelectionButtons.None)]

@@ -61,6 +61,21 @@ public string DeclarationName { get; set; }
 Omit redundant `FlowBloxUI` attributes. Preserve literal-only declarations, identifiers, metadata and flow-control settings with `None`.
 New runtime-valued business configuration must still resolve values at consumption time as described in [field-references.md](field-references.md).
 
+## Field text presentation
+
+`FlowBloxTextBox.IsMultilineMember` names a boolean instance property. Generated WPF text and AvalonEdit editors
+bind to it and switch their height, Enter handling and resize grip when the property raises `PropertyChanged`.
+Without a member, the existing `MultiLine` annotation supplies the static setting. Changing presentation preserves stored content.
+
+`FieldElement.DisplayMode` defaults to `SingleLine`; `Multiline` and `List` both use a multiline editor in PropertyView.
+`ListSeparator` defaults independently to escaped `\n` (LineFeed), so switching to `List` immediately uses line breaks.
+Literal separators such as `;`, escaped `\t` and `\r\n` are supported. LF/CRLF/CR input line endings are normalized when splitting a line-separated list.
+The central project metadata includes both settings for launchers and assistant tools.
+
+Web and execution-window list editors use individual rows with add/remove actions and field insertion.
+Separated input fills existing rows from the current row down, then creates missing rows; untouched trailing rows remain.
+Passwords and selection-only fields keep their specialized controls. Browser display preferences no longer override project settings.
+
 ## Associations and collections
 
 ```csharp

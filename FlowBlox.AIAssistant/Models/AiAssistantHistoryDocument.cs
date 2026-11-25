@@ -21,6 +21,7 @@ namespace FlowBlox.AIAssistant.Models
         public AssistantSessionUsage Usage { get; set; } = new();
         public List<string> LoadedExplanationKeys { get; set; } = new();
         public bool ShouldSerializeLoadedExplanationKeys() => false;
+        public List<AssistantRetainedContent> RetainedContents { get; set; } = new();
         public List<AssistantSessionMessage> SessionMessages { get; set; } = new();
         public List<AssistantTranscriptLine> Transcripts { get; set; } = new();
 

@@ -16,7 +16,7 @@
   <data name="HistoryStatistics" xml:space="preserve"><value>Aktive Historie: {0:N0} Tokens · Zusammengefasste Historie: {1:N0} Tokens (lokale Schätzungen)</value></data>
   <data name="SystemStatistics" xml:space="preserve"><value>Systemnachrichten: {0:N0} Tokens</value></data>
   <data name="ContextStatistics" xml:space="preserve"><value>Kontextschätzung: {0:N0} Tokens · Effektives Eingabelimit: {1:N0} Tokens. Gecachte Tokens zählen vollständig.</value></data>
-  <data name="RuntimeBindingTooltip" xml:space="preserve"><value>Nur während der aktuellen Anwendungslaufzeit an diese Session gebunden. Nach einem Anwendungsneustart lädt die AI diesen Inhalt bei Bedarf erneut.</value></data>
+  <data name="RuntimeBindingTooltip" xml:space="preserve"><value>Dynamisch nachgeladen und mit der gespeicherten Nachrichtenhistorie wortgetreu aufbewahrt.</value></data>
   <data name="Active" xml:space="preserve"><value>Aktive Historie</value></data>
   <data name="Summarized" xml:space="preserve"><value>Zusammengefasste Historie</value></data>
   <data name="Pair" xml:space="preserve"><value>Paar</value></data>
@@ -26,8 +26,24 @@
   <data name="ToolAPI" xml:space="preserve"><value>Tool-API</value></data>
   <data name="SystemPrompt" xml:space="preserve"><value>System-Prompt</value></data>
   <data name="SessionBootstrap" xml:space="preserve"><value>Session-Bootstrap</value></data>
-  <data name="Explanation" xml:space="preserve"><value>Explanation</value></data>
-  <data name="TypeInfo" xml:space="preserve"><value>Typinformationen</value></data>
+  <data name="Explanation" xml:space="preserve"><value>Erklärung</value></data>
+  <data name="TypeInfo" xml:space="preserve"><value>Typ-Beschreibung</value></data>
+  <data name="ToolDefinition" xml:space="preserve"><value>Tool-API-Beschreibung</value></data>
+  <data name="Static" xml:space="preserve"><value>Statisch</value></data>
+  <data name="Dynamic" xml:space="preserve"><value>Dynamisch</value></data>
+  <data name="StaticContentTooltip" xml:space="preserve"><value>Initiale Systemvorgabe oder Session-Bootstrap.</value></data>
+  <data name="FilterKinds" xml:space="preserve"><value>Art</value></data>
+  <data name="FilterOrigins" xml:space="preserve"><value>Herkunft</value></data>
+  <data name="FilterAll" xml:space="preserve"><value>Alle</value></data>
+  <data name="SelectAllFilters" xml:space="preserve"><value>Alle auswählen</value></data>
+  <data name="ClearFilters" xml:space="preserve"><value>Filter zurücksetzen</value></data>
+  <data name="FilterHint" xml:space="preserve"><value>Art und Herkunft kombinieren. Ohne Auswahl in einer Gruppe gelten alle ihre Werte.</value></data>
+  <data name="FilteredSystemStatistics" xml:space="preserve"><value>{0:N0} von {1:N0} Nachrichten · {2:N0} von {3:N0} geschätzten Tokens</value></data>
+  <data name="AllEntries" xml:space="preserve"><value>Alle sichtbaren Einträge</value></data>
+  <data name="Selection" xml:space="preserve"><value>Auswahl</value></data>
+  <data name="SelectionTitle" xml:space="preserve"><value>{0:N0} Einträge ausgewählt</value></data>
+  <data name="SelectionStatistics" xml:space="preserve"><value>{0:N0} ausgewählt · {1}</value></data>
+  <data name="MultiSelectionHint" xml:space="preserve"><value>Mit Strg einzelne Einträge oder mit Umschalt einen Bereich auswählen.</value></data>
   <data name="Runtime_Label" xml:space="preserve"><value>AI-Assistant Laufzeit</value></data>
   <data name="Usage" xml:space="preserve"><value>Sitzungsverbrauch</value></data>
   <data name="UsageDescription" xml:space="preserve"><value>Gemessener Sitzungsverbrauch, geschätzte USD-Kosten und aktueller Kontext</value></data>
@@ -51,4 +67,20 @@ Cache-Trefferrate: {13}
 Anfragen ohne Kostenermittlung: {14:N0}
 Anfragen mit unvollständigem Verbrauch: {15:N0}</value></data>
   <data name="ProcessedTokens" xml:space="preserve"><value>Verarbeitete Tokens: {0:N0}</value></data>
+  <data name="Usage_EstimatedCost" xml:space="preserve"><value>Geschätzte Kosten (USD)</value></data>
+  <data name="Usage_CostWithoutCaching" xml:space="preserve"><value>Ohne Caching (USD)</value></data>
+  <data name="Usage_SavedByCaching" xml:space="preserve"><value>Cache-Ersparnis (USD)</value></data>
+  <data name="Usage_CostSavingRate" xml:space="preserve"><value>Kostenersparnis</value></data>
+  <data name="Usage_CurrentContext" xml:space="preserve"><value>Kontext / Limit (Tokens)</value></data>
+  <data name="Usage_ContextUtilization" xml:space="preserve"><value>Kontextauslastung</value></data>
+  <data name="Usage_TotalInput" xml:space="preserve"><value>Eingabe-Tokens</value></data>
+  <data name="Usage_CachedInput" xml:space="preserve"><value>Gecachte Eingabe-Tokens</value></data>
+  <data name="Usage_UncachedInput" xml:space="preserve"><value>Ungecachte Eingabe-Tokens</value></data>
+  <data name="Usage_CacheWrite" xml:space="preserve"><value>Cache-Schreib-Tokens</value></data>
+  <data name="Usage_Output" xml:space="preserve"><value>Ausgabe-Tokens</value></data>
+  <data name="Usage_TotalProcessed" xml:space="preserve"><value>Verarbeitete Tokens</value></data>
+  <data name="Usage_CacheHitRate" xml:space="preserve"><value>Cache-Trefferrate</value></data>
+  <data name="Usage_Requests" xml:space="preserve"><value>Anfragen</value></data>
+  <data name="Usage_UnpricedRequests" xml:space="preserve"><value>Anfragen ohne Preis</value></data>
+  <data name="Usage_IncompleteUsage" xml:space="preserve"><value>Unvollständiger Verbrauch</value></data>
 </root>

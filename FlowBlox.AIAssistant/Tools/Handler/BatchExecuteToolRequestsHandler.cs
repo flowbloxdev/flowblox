@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Execute multiple tool requests in order.", IncludeContractInBootstrap = true)]
     internal sealed class BatchExecuteToolRequestsHandler : ToolHandlerBase
     {
         private readonly Func<ToolRequest, CancellationToken, Task<ToolResponse>> _executeTool;
@@ -122,6 +123,14 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             var result = allOk ? ToolHandlerUtilities.Ok(payload)
                 : ToolHandlerUtilities.Fail("One or more batch requests failed.", payload);
             result.IsLayoutRelevantForAutoAdjustment = isLayoutRelevant;
+            result.RetainedContents = completed
+                .SelectMany(entry => entry.Response.RetainedContents.Select(content =>
+                {
+                    var retained = content.Clone();
+                    retained.BatchResultIndex = batchResults.IndexOf(entry.Item);
+                    return retained;
+                }))
+                .ToList();
             result.RefreshBeforeSerialization = () =>
             {
                 foreach (var entry in completed)

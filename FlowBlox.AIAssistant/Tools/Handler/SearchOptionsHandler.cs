@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Find configurable FlowBlox options.")]
     internal sealed class SearchOptionsHandler : ToolHandlerBase
     {
         public override string Name => "SearchOptions";

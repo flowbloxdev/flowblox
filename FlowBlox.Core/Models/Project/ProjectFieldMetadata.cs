@@ -29,5 +29,7 @@ public sealed class ProjectFieldMetadata
     public LoVType LoVType { get; init; }
     public bool ClearOnRuntimeStart { get; init; }
     public string SyntaxHighlighting { get; init; }
+    public FieldDisplayMode DisplayMode { get; init; }
+    public string ListSeparator { get; init; } = @"\n";
     public IReadOnlyList<string> ListOfValues { get; init; } = [];
 }

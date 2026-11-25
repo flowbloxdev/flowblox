@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Create a FlowBlock result field.")]
     internal sealed class CreateFieldHandler : ToolHandlerBase
     {
         public override string Name => "CreateField";

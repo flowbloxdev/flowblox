@@ -54,6 +54,8 @@ public static class ProjectMetadataReader
         LoVType = field.LoVType,
         ClearOnRuntimeStart = field.ClearOnRuntimeStart,
         SyntaxHighlighting = field.SyntaxHighlighting,
+        DisplayMode = field.DisplayMode,
+        ListSeparator = field.ListSeparator,
         ListOfValues = field.ListOfValues?.Select(value => value.Value).ToList() ?? []
     };
 }

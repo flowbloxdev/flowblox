@@ -11,37 +11,6 @@ using MahApps.Metro.IconPacks;
 
 namespace FlowBlox.UICore.ViewModels;
 
-public enum AiAssistantDebugTopic
-{
-    Usage,
-    Summary,
-    History,
-    SystemMessages
-}
-public sealed record AiAssistantDebugTopicCard(
-    AiAssistantDebugTopic Topic,
-    string Title,
-    string Description);
-public sealed record AiAssistantDebugCard(
-    string Key,
-    string Title,
-    string Preview,
-    string ResponsePreview,
-    string Content,
-    string Type,
-    int EstimatedTokens,
-    bool IsPinned,
-    PackIconMaterialKind Icon,
-    string Status)
-{
-    public bool HasResponse => !string.IsNullOrEmpty(ResponsePreview);
-    public string TokensText => string.Format(
-            CultureInfo.CurrentCulture,
-            AiAssistantDebugViewModel.Text(Key == "usage" ? "ProcessedTokens" : "Tokens"),
-            EstimatedTokens);
-    public string PinTooltip => AiAssistantDebugViewModel.Text("RuntimeBindingTooltip");
-}
-
 public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly AiAssistantService _service;
@@ -51,9 +20,28 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
     private AiAssistantDebugCard? _selectedCard;
     private bool _disposed;
     private int _refreshPending;
+    private bool _refreshingCards;
 
     public ObservableCollection<AiAssistantDebugTopicCard> Topics { get; } = new();
     public ObservableCollection<AiAssistantDebugCard> Cards { get; } = new();
+    public AiAssistantSystemMessageFilters SystemMessageFilters { get; } = new();
+    public IReadOnlyList<AiAssistantDebugCard> SelectedCards { get; private set; } = [];
+    public bool IsUsageTopic => SelectedTopic.Topic == AiAssistantDebugTopic.Usage;
+    public bool IsSystemMessagesTopic => SelectedTopic.Topic == AiAssistantDebugTopic.SystemMessages;
+    public bool IsMessageTopic => !IsUsageTopic && !IsSystemMessagesTopic;
+    public long VisibleSystemMessageTokens { get; private set; }
+    public string SelectionTitle => SelectedCards.Count == 1
+        ? SelectedCards[0].Title
+        : string.Format(CultureInfo.CurrentCulture, Text("SelectionTitle"), SelectedCards.Count);
+    public string SelectionTokens => string.Format(
+        CultureInfo.CurrentCulture,
+        Text(IsUsageTopic ? "ProcessedTokens" : "Tokens"),
+        SelectedCards.Sum(card => card.EstimatedTokens));
+    public string SelectionStatistics => string.Format(
+        CultureInfo.CurrentCulture,
+        Text("SelectionStatistics"),
+        SelectedCards.Count,
+        SelectionTokens);
     public AiAssistantChatViewModel Runtime { get; }
     public string RuntimeLabel => Text("Runtime_Label");
     public InnerContentViewModel Editor { get; } = new() { IsReadOnly = true };
@@ -73,6 +61,9 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
 
             _selectedTopic = value;
             Changed(nameof(SelectedTopic));
+            Changed(nameof(IsUsageTopic));
+            Changed(nameof(IsSystemMessagesTopic));
+            Changed(nameof(IsMessageTopic));
             RefreshCards();
         }
     }
@@ -81,12 +72,7 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
         get => _selectedCard;
         set
         {
-            if (_selectedCard == value)
-                return;
-
-            _selectedCard = value;
-            Editor.ContentText = value?.Content ?? string.Empty;
-            Changed(nameof(SelectedCard));
+            SetSelectedCards(value == null ? [] : [value]);
         }
     }
 
@@ -113,7 +99,32 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
         _selectedTopic = Topics[0];
         _service.DebugStateChanged += ServiceChanged;
         _snapshot = _service.GetDebugSnapshot();
+        SystemMessageFilters.FiltersChanged += FiltersChanged;
         RefreshCards();
+    }
+
+    private void FiltersChanged(object? sender, EventArgs args)
+    {
+        if (IsSystemMessagesTopic)
+            RefreshCards();
+    }
+
+    public void SetSelectedCards(IEnumerable<AiAssistantDebugCard> selection)
+    {
+        if (_refreshingCards)
+            return;
+
+        var selectedKeys = selection.Select(card => card.Key).ToHashSet(StringComparer.Ordinal);
+        SelectedCards = Cards.Where(card => selectedKeys.Contains(card.Key)).ToArray();
+        _selectedCard = SelectedCards.FirstOrDefault();
+        Editor.ContentText = SelectedCards.Count == 1
+            ? SelectedCards[0].Content
+            : string.Join("\n\n", SelectedCards.Select(card => card.Title + "\n" + card.Content));
+        Changed(nameof(SelectedCards));
+        Changed(nameof(SelectedCard));
+        Changed(nameof(SelectionTitle));
+        Changed(nameof(SelectionTokens));
+        Changed(nameof(SelectionStatistics));
     }
 
     private void ServiceChanged(
@@ -180,9 +191,12 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
                     usage.IncompleteUsageRequests == 0 ? usage.CacheHitRate?.ToString("P1") ?? unavailable : unavailable,
                     usage.UnpricedRequests,
                     usage.IncompleteUsageRequests);
-                Statistics = Text("Usage");
-                cards.Add(new("usage", Text("Usage"), Preview(detail), "", detail, Text("Usage"), (int)Math.Min(int.MaxValue, usage.TotalTokens), false,
-                    PackIconMaterialKind.InformationOutline, ""));
+                Statistics = string.Format(CultureInfo.CurrentCulture, Text("ProcessedTokens"), usage.TotalTokens);
+                cards.Add(new("usage", Text("Usage"), Preview(detail), "", detail, Text("Usage"), usage.TotalTokens, false,
+                    PackIconMaterialKind.InformationOutline, "")
+                {
+                    UsageMetrics = CreateUsageMetrics(usage)
+                });
                 break;
             case AiAssistantDebugTopic.Summary:
                 Statistics = string.Format(
@@ -233,10 +247,12 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
             case AiAssistantDebugTopic.SystemMessages:
                 Statistics = string.Format(
                     CultureInfo.CurrentCulture,
-                    Text("SystemStatistics"),
-                    rawSystemTokens,
+                    Text("FilteredSystemStatistics"),
+                    _snapshot.SystemMessages.Count(SystemMessageFilters.Includes),
+                    _snapshot.SystemMessages.Count,
+                    _snapshot.SystemMessages.Where(SystemMessageFilters.Includes).Sum(message => Estimate(message.Content)),
                     rawSystemTokens);
-                foreach (var message in _snapshot.SystemMessages)
+                foreach (var message in _snapshot.SystemMessages.Where(SystemMessageFilters.Includes))
                     cards.Add(new(
                         message.Key,
                         message.IsRuntimeBound ? message.Title : Text(message.Kind.ToString()),
@@ -247,10 +263,14 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
                         Estimate(message.Content),
                         message.IsRuntimeBound,
                         PackIconMaterialKind.TextBoxOutline,
-                        Text(message.Kind.ToString())));
+                        Text(message.Kind.ToString()))
+                    {
+                        SystemMessageKind = message.Kind
+                    });
                 break;
         }
-        var selectedKey = SelectedCard?.Key;
+        var selectedKeys = SelectedCards.Select(card => card.Key).ToHashSet(StringComparer.Ordinal);
+        _refreshingCards = true;
         for (var i = 0; i < cards.Count; i++)
         {
             if (i == Cards.Count)
@@ -262,11 +282,74 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
         while (Cards.Count > cards.Count)
             Cards.RemoveAt(Cards.Count - 1);
 
-        SelectedCard = Cards.FirstOrDefault(x => x.Key == selectedKey) ?? Cards.FirstOrDefault();
+        _refreshingCards = false;
+        var selection = Cards.Where(card => selectedKeys.Contains(card.Key)).ToArray();
+        SetSelectedCards(selection.Length > 0 ? selection : Cards.Take(1));
+        VisibleSystemMessageTokens = IsSystemMessagesTopic ? Cards.Sum(card => card.EstimatedTokens) : 0;
+        Changed(nameof(VisibleSystemMessageTokens));
         Changed(nameof(Statistics));
         Changed(nameof(ContextStatistics));
         Changed(nameof(IsEmpty));
     }
+
+    private IReadOnlyList<AiAssistantUsageMetric> CreateUsageMetrics(AssistantSessionUsage usage)
+    {
+        var unavailable = Text("Unavailable");
+        var currency = CultureInfo.GetCultureInfo("en-US");
+        var priced = usage.UnpricedRequests == 0;
+        var contextShare = _service.EffectiveContextLimit > 0
+            ? ((double)_service.CurrentContextTokens / _service.EffectiveContextLimit).ToString("P1")
+            : unavailable;
+
+        return
+        [
+            UsageMetric(
+                "EstimatedCost",
+                priced ? usage.EstimatedCost.ToString("C2", currency) : unavailable,
+                PackIconMaterialKind.CurrencyUsd),
+            UsageMetric(
+                "CostWithoutCaching",
+                priced ? usage.CostWithoutCaching.ToString("C2", currency) : unavailable,
+                PackIconMaterialKind.CashMultiple),
+            UsageMetric(
+                "SavedByCaching",
+                priced ? usage.SavedByCaching.ToString("C2", currency) : unavailable,
+                PackIconMaterialKind.PiggyBankOutline),
+            UsageMetric(
+                "CostSavingRate",
+                priced ? usage.CostSavingRate?.ToString("P1") ?? unavailable : unavailable,
+                PackIconMaterialKind.Percent),
+            UsageMetric(
+                "CurrentContext",
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    "{0:N0} / {1:N0}",
+                    _service.CurrentContextTokens,
+                    _service.EffectiveContextLimit),
+                PackIconMaterialKind.TextBoxOutline),
+            UsageMetric("ContextUtilization", contextShare, PackIconMaterialKind.Gauge),
+            UsageMetric("TotalInput", usage.TotalInputTokens.ToString("N0"), PackIconMaterialKind.Download),
+            UsageMetric("CachedInput", usage.CachedInputTokens.ToString("N0"), PackIconMaterialKind.DatabaseCheck),
+            UsageMetric("UncachedInput", usage.UncachedInputTokens.ToString("N0"), PackIconMaterialKind.DatabaseOutline),
+            UsageMetric("CacheWrite", usage.CacheWriteInputTokens.ToString("N0"), PackIconMaterialKind.ContentSaveOutline),
+            UsageMetric("Output", usage.OutputTokens.ToString("N0"), PackIconMaterialKind.Upload),
+            UsageMetric("TotalProcessed", usage.TotalTokens.ToString("N0"), PackIconMaterialKind.Sigma),
+            UsageMetric(
+                "CacheHitRate",
+                usage.IncompleteUsageRequests == 0 ? usage.CacheHitRate?.ToString("P1") ?? unavailable : unavailable,
+                PackIconMaterialKind.ChartBar),
+            UsageMetric("Requests", usage.Requests.ToString("N0"), PackIconMaterialKind.MessageTextOutline),
+            UsageMetric("UnpricedRequests", usage.UnpricedRequests.ToString("N0"), PackIconMaterialKind.CashRemove),
+            UsageMetric("IncompleteUsage", usage.IncompleteUsageRequests.ToString("N0"), PackIconMaterialKind.AlertCircleOutline)
+        ];
+    }
+
+    private static AiAssistantUsageMetric UsageMetric(string key, string value, PackIconMaterialKind icon) => new()
+    {
+        Label = Text("Usage_" + key),
+        Value = value,
+        Icon = icon
+    };
 
     internal static string Text(string key) => FlowBloxResourceUtil.GetLocalizedString(key, typeof(Resources.AiAssistantDebugView));
 
@@ -278,5 +361,6 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
     {
         _disposed = true;
         _service.DebugStateChanged -= ServiceChanged;
+        SystemMessageFilters.FiltersChanged -= FiltersChanged;
     }
 }

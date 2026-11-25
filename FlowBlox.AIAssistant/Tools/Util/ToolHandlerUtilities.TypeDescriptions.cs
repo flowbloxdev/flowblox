@@ -33,6 +33,22 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (!type.IsEnum && !typeof(FlowBloxReactiveObject).IsAssignableFrom(type))
                 return Fail($"Type '{fullName}' is not supported for kind info. Only FlowBloxReactiveObject types and Enums are supported.");
 
+            var retentionKey = "type-info:" + type.FullName;
+            var location = GetRetainedContentLocation(retentionKey);
+            if (location != null)
+            {
+                var cached = Ok(new JObject
+                {
+                    ["type"] = AiAssistantTypeAliasHelper.CompressTypeName(type.FullName!),
+                    ["location"] = location,
+                    ["message"] = location == "system"
+                        ? "Type information is available verbatim as a system message."
+                        : "Type information is available in history and eligible for system retention at the next context transition."
+                });
+                RegisterRetainedContent(cached, new AssistantRetainedContent { Key = retentionKey });
+                return cached;
+            }
+
             var descriptions = new Dictionary<string, JObject>(StringComparer.Ordinal);
             if (type.IsEnum)
                 descriptions[type.FullName!] = BuildEnumKindInfo(type);
@@ -42,7 +58,14 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     true,
                     descriptions);
 
-            return Ok(FormatTypePayload(RenderTypePayload(type.FullName!, descriptions)));
+            var response = Ok(FormatTypePayload(RenderTypePayload(type.FullName!, descriptions)));
+            RegisterRetainedContent(response, new AssistantRetainedContent
+            {
+                Key = retentionKey,
+                Title = type.Name,
+                Content = "Type information:\n" + response.Result.ToString(Newtonsoft.Json.Formatting.None)
+            });
+            return response;
         }
 
         private static JObject RenderTypePayload(

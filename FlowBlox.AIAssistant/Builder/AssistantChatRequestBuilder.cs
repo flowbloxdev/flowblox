@@ -3,7 +3,6 @@ using FlowBlox.AIAssistant.Services;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Models;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
-using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
 using FlowBlox.Core.Services;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -32,56 +31,13 @@ namespace FlowBlox.AIAssistant.Builder
             IReadOnlyList<string>? runtimeSystemContents = null,
             int preloadedRuntimeSystemMessageCount = 0)
         {
-            var request = new AIChatRequest();
-            request.SystemMessages.Add(new AIChatMessage
-            {
-                Role = "system",
-                Content = systemPrompt,
-                CacheBehavior = AIChatCacheBehavior.PreferCache
-            });
-            request.SystemMessages.Add(new AIChatMessage
-            {
-                Role = "system",
-                Content = sessionBootstrapPrompt,
-                CacheBehavior = AIChatCacheBehavior.PreferCache
-            });
-            var bootstrapBoundary = request.SystemMessages[^1];
-            var runtimeMessageIndex = 0;
-            foreach (var content in runtimeSystemContents ?? [])
-            {
-                if (string.IsNullOrWhiteSpace(content))
-                    continue;
-
-                var runtimeMessage = new AIChatMessage
-                {
-                    Role = "system",
-                    Content = content.Trim(),
-                    CacheBehavior = AIChatCacheBehavior.PreferCache
-                };
-                request.SystemMessages.Add(runtimeMessage);
-                if (runtimeMessageIndex < preloadedRuntimeSystemMessageCount)
-                    bootstrapBoundary = runtimeMessage;
-
-                runtimeMessageIndex++;
-            }
-
-            if (provider is AnthropicAIProvider)
-                bootstrapBoundary.IsAnthropicBootstrapCacheBoundary = true;
-
-            var summaryMessageForBudget = default(AIChatMessage);
-            if (!string.IsNullOrWhiteSpace(conversationSummary))
-            {
-                var summaryContent = "Conversation Summary:\n" + conversationSummary.Trim();
-                summaryMessageForBudget = new AIChatMessage
-                {
-                    Role = "summary",
-                    Content = summaryContent,
-                    CacheBehavior = AIChatCacheBehavior.PreferCache,
-                    SemanticContent = new ChatMessageContent(AuthorRole.User, summaryContent)
-                };
-                request.Messages.Add(summaryMessageForBudget);
-            }
-
+            var request = BuildContext(
+                systemPrompt,
+                sessionBootstrapPrompt,
+                conversationSummary,
+                runtimeSystemContents,
+                preloadedRuntimeSystemMessageCount);
+            var summaryMessageForBudget = request.Messages.FirstOrDefault();
             var fixedMessagesForBudget = request.SystemMessages.ToList();
             if (summaryMessageForBudget != null)
                 fixedMessagesForBudget.Add(summaryMessageForBudget);
@@ -103,12 +59,19 @@ namespace FlowBlox.AIAssistant.Builder
                 tokenBudget,
                 historyStartIndex);
 
+            AIChatMessage? contextBoundary = null;
             for (var i = 0; i < latestSelection.Messages.Count; i++)
+            {
                 AddSessionMessage(
                     request.Messages,
                     latestSelection.Messages[i],
-                    latestSelection.FirstIncludedHistoryMessageIndex + i,
+                    latestSelection.Indexes[i],
                     provider);
+                if (latestSelection.Indexes[i] < (sessionMessages?.Count ?? 0) - minLatestMessages)
+                    contextBoundary = request.Messages[^1];
+            }
+            if (contextBoundary != null)
+                contextBoundary.IsContextCacheBoundary = true;
 
             request.Messages.Add(new AIChatMessage
             {
@@ -122,6 +85,82 @@ namespace FlowBlox.AIAssistant.Builder
                 FirstIncludedHistoryMessageIndex = latestSelection.FirstIncludedHistoryMessageIndex,
                 IncludedHistoryMessageCount = latestSelection.Messages.Count
             };
+        }
+
+        public static AIChatRequest BuildMaintenancePrefix(
+            string systemPrompt,
+            string sessionBootstrapPrompt,
+            string conversationSummary,
+            IReadOnlyList<AssistantSessionMessage> sessionMessages,
+            int summarizedMessageCount,
+            int targetMessageCount,
+            AIProviderBase? provider,
+            IReadOnlyList<string> runtimeSystemContents)
+        {
+            var request = BuildContext(systemPrompt, sessionBootstrapPrompt, conversationSummary, runtimeSystemContents, 0);
+            for (var index = summarizedMessageCount; index < targetMessageCount; index++)
+            {
+                if (!string.IsNullOrWhiteSpace(sessionMessages[index].CompleteMessage))
+                    AddSessionMessage(request.Messages, sessionMessages[index], index, provider);
+            }
+            if (request.Messages.Count > 0)
+                request.Messages[^1].IsContextCacheBoundary = true;
+            return request;
+        }
+
+        private static AIChatRequest BuildContext(
+            string systemPrompt,
+            string sessionBootstrapPrompt,
+            string conversationSummary,
+            IReadOnlyList<string>? runtimeSystemContents,
+            int preloadedRuntimeSystemMessageCount)
+        {
+            var request = new AIChatRequest();
+            request.SystemMessages.Add(new AIChatMessage
+            {
+                Role = "system",
+                Content = systemPrompt
+            });
+            request.SystemMessages.Add(new AIChatMessage
+            {
+                Role = "system",
+                Content = sessionBootstrapPrompt
+            });
+            var bootstrapBoundary = request.SystemMessages[^1];
+            var runtimeMessageIndex = 0;
+            foreach (var content in runtimeSystemContents ?? [])
+            {
+                if (string.IsNullOrWhiteSpace(content))
+                    continue;
+
+                var runtimeMessage = new AIChatMessage
+                {
+                    Role = "system",
+                    Content = content.Trim()
+                };
+                request.SystemMessages.Add(runtimeMessage);
+                if (runtimeMessageIndex < preloadedRuntimeSystemMessageCount)
+                    bootstrapBoundary = runtimeMessage;
+
+                runtimeMessageIndex++;
+            }
+
+            bootstrapBoundary.IsBootstrapCacheBoundary = true;
+
+            var summaryMessageForBudget = default(AIChatMessage);
+            if (!string.IsNullOrWhiteSpace(conversationSummary))
+            {
+                var summaryContent = "Conversation Summary:\n" + conversationSummary.Trim();
+                summaryMessageForBudget = new AIChatMessage
+                {
+                    Role = "summary",
+                    Content = summaryContent,
+                    SemanticContent = new ChatMessageContent(AuthorRole.User, summaryContent)
+                };
+                request.Messages.Add(summaryMessageForBudget);
+            }
+
+            return request;
         }
 
         private static void AddSessionMessage(
@@ -152,7 +191,7 @@ namespace FlowBlox.AIAssistant.Builder
             AIProviderBase? provider)
         {
             var assistantRequest = pair.AssistantRequest?.Trim() ?? string.Empty;
-            var toolApiResponse = pair.ToolApiResponse?.Trim() ?? string.Empty;
+            var toolApiResponse = AssistantToolResultContext.GetResponse(pair).Trim();
             var assistantRequestContent = "Assistant request:\n" + assistantRequest;
             var toolApiResponseContent = "Tool API response:\n" + toolApiResponse;
             if (provider?.SupportsNativeFunctionCallHistory != true)
@@ -241,7 +280,7 @@ namespace FlowBlox.AIAssistant.Builder
             IReadOnlyList<FunctionCallContent> functionCalls,
             string toolApiResponse)
         {
-            var transcriptItems = ParseToolTranscriptItems(toolApiResponse);
+            var transcriptItems = AssistantToolResultContext.ParseResults(toolApiResponse);
             var functionResults = new List<FunctionResultContent>();
 
             for (var i = 0; i < functionCalls.Count; i++)
@@ -254,39 +293,6 @@ namespace FlowBlox.AIAssistant.Builder
             }
 
             return functionResults;
-        }
-
-        private static List<JObject> ParseToolTranscriptItems(string toolApiResponse)
-        {
-            var items = new List<JObject>();
-            if (string.IsNullOrWhiteSpace(toolApiResponse))
-                return items;
-
-            using var reader = new StringReader(toolApiResponse);
-            string? line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                var trimmed = line.Trim();
-                if (!trimmed.StartsWith("{", StringComparison.Ordinal))
-                    continue;
-
-                try
-                {
-                    var obj = JObject.Parse(trimmed);
-                    if (obj["response"] is JToken response)
-                        items.Add(response as JObject ?? new JObject { ["value"] = response });
-                    else
-                        items.Add(obj);
-                }
-                catch (JsonException ex)
-                {
-                    FlowBloxLogManager.Instance.GetLogger().Error(
-                        "Failed to parse a JSON line from a persisted Tool API response while rebuilding AI Assistant chat history.",
-                        ex);
-                }
-            }
-
-            return items;
         }
 
         private static KernelArguments ToKernelArguments(JObject arguments)
@@ -379,7 +385,7 @@ namespace FlowBlox.AIAssistant.Builder
                 if (selectedMessageCount > 0 && selectedMessageCount + 1 > maxMessages)
                     break;
 
-                var messageTokens = tokenBudget.EstimateTokens(candidate.Message.CompleteMessage);
+                var messageTokens = tokenBudget.EstimateTokens(AssistantToolResultContext.GetCompleteContextMessage(candidate.Message));
                 if (selectedMessageCount >= minMessages && usedTokens + messageTokens > maxHistoryTokens)
                     break;
 
@@ -393,8 +399,9 @@ namespace FlowBlox.AIAssistant.Builder
             return new LatestMessageSelection
             {
                 Messages = selected.Select(x => x.Message).ToList(),
+                Indexes = selected.Select(x => x.Index).ToList(),
                 FirstIncludedHistoryMessageIndex = selected.Count == 0
-                    ? messages.Count
+                    ? firstSessionMessageIndex + messages.Count
                     : selected.Min(x => x.Index)
             };
         }
@@ -402,6 +409,7 @@ namespace FlowBlox.AIAssistant.Builder
         private sealed class LatestMessageSelection
         {
             public List<AssistantSessionMessage> Messages { get; init; } = new();
+            public List<int> Indexes { get; init; } = new();
             public int FirstIncludedHistoryMessageIndex { get; init; }
         }
 

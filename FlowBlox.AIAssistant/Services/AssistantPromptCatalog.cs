@@ -1,12 +1,15 @@
 using System.Reflection;
 using System.Text;
 using FlowBlox.Core.Constants;
+using FlowBlox.AIAssistant.Models;
+using FlowBlox.AIAssistant.Tools.Util;
 
 namespace FlowBlox.AIAssistant.Services
 {
     internal static class AssistantPromptCatalog
     {
         public const string ComponentScopeKey = "explaining_component_scope";
+        public const string ProjectScopeKey = "explaining_project_scope";
         public const string SystemMessageKey = "system_message";
         public const string SessionBootstrapKey = "session_bootstrap";
         public const string FlowLogicKey = "explaining_flow_logic";
@@ -31,17 +34,26 @@ namespace FlowBlox.AIAssistant.Services
         public const string SpecialTaskSchedulingKey = "explaining_task_scheduling";
         public const string SpecialUserInterfaceKey = "explaining_user_interface";
         public const string SpecialSkillsKey = "explaining_skills";
+        public const string SpecialSkillProjectEditingKey = "explaining_skill_project_editing";
         public const string VersionNotesKey = "explaining_version_notes";
 
         private static readonly IReadOnlyDictionary<string, PromptEntryDefinition> Definitions =
             new Dictionary<string, PromptEntryDefinition>(StringComparer.OrdinalIgnoreCase)
             {
+                [ProjectScopeKey] = new PromptEntryDefinition(
+                    ProjectScopeKey,
+                    "Project editor scope",
+                    "FlowBlox.AIAssistant.Prompts.ExplainingProjectScope.txt",
+                    "Project snapshots, layout, and Project Space discovery.",
+                    true,
+                    AssistantScope.Project),
                 [ComponentScopeKey] = new PromptEntryDefinition(
                     ComponentScopeKey,
                     "Component editor scope",
                     "FlowBlox.AIAssistant.Prompts.ExplainingComponentScope.txt",
                     "Component editor boundaries and owned FlowBlock objects.",
-                    false),
+                    true,
+                    AssistantScope.Component),
                 [SystemMessageKey] = new PromptEntryDefinition(
                     SystemMessageKey,
                     "System Message",
@@ -95,19 +107,22 @@ namespace FlowBlox.AIAssistant.Services
                     "Explaining Flow Organization Patterns",
                     "FlowBlox.AIAssistant.Prompts.ExplainingFlowOrganizationPatterns.txt",
                     "How to structure flows with downstream vs. stack patterns for readability and maintainability.",
-                    true),
+                    true,
+                    AssistantScope.Project),
                 [DebuggingKey] = new PromptEntryDefinition(
                     DebuggingKey,
                     "Explaining Debugging",
                     "FlowBlox.AIAssistant.Prompts.ExplainingDebugging.txt",
                     "Compact default guidance for debug/test usage, result windowing, and field-value limits.",
-                    true),
+                    true,
+                    AssistantScope.Project),
                 [InputFilesKey] = new PromptEntryDefinition(
                     InputFilesKey,
                     "Explaining Managed Input Files",
                     "FlowBlox.AIAssistant.Prompts.ExplainingInputFiles.txt",
                     "Managed input files, schemas, mock data, helper scripts, or file commands",
-                    false),
+                    false,
+                    AssistantScope.Project),
                 [SpecialTestDefinitionsKey] = new PromptEntryDefinition(
                     SpecialTestDefinitionsKey,
                     "Explaining Test Definitions",
@@ -161,19 +176,22 @@ namespace FlowBlox.AIAssistant.Services
                     "Explaining Extensions",
                     "FlowBlox.AIAssistant.Prompts.ExplainingExtensions.txt",
                     "Developing, debugging, loading, or publishing FlowBlox extensions",
-                    false),
+                    false,
+                    AssistantScope.Project),
                 [SpecialProjectSpaceKey] = new PromptEntryDefinition(
                     SpecialProjectSpaceKey,
                     "Explaining Project Space",
                     "FlowBlox.AIAssistant.Prompts.ExplainingProjectSpace.txt",
                     "Project Space discovery, reusable subflows, project sharing, stable versions, or remote execution",
-                    false),
+                    false,
+                    AssistantScope.Project),
                 [SpecialTaskSchedulingKey] = new PromptEntryDefinition(
                     SpecialTaskSchedulingKey,
                     "Explaining Task Scheduling and Service Execution",
                     "FlowBlox.AIAssistant.Prompts.ExplainingTaskScheduling.txt",
                     "Scheduled, recurring, or continuous service execution",
-                    false),
+                    false,
+                    AssistantScope.Project),
                 [SpecialUserInterfaceKey] = new PromptEntryDefinition(
                     SpecialUserInterfaceKey,
                     "Explaining User Interface",
@@ -184,8 +202,15 @@ namespace FlowBlox.AIAssistant.Services
                     SpecialSkillsKey,
                     "Explaining Skills",
                     "FlowBlox.AIAssistant.Prompts.ExplainingSkills.txt",
-                    "Discovering or using Skills (AI Assistant capabilities), or creating or editing the Skill Projects that implement them",
+                    "Finding existing Skills in Distributed Data or the session, inspecting their inputs/outputs, and executing them",
                     false),
+                [SpecialSkillProjectEditingKey] = new PromptEntryDefinition(
+                    SpecialSkillProjectEditingKey,
+                    "Creating and Editing Skill Projects",
+                    "FlowBlox.AIAssistant.Prompts.ExplainingSkillProjectEditing.txt",
+                    "Creating or intentionally adapting Skill Projects, their edit/debug/save lifecycle, or diagnosing supplied project failures",
+                    false,
+                    AssistantScope.Project),
                 [VersionNotesKey] = new PromptEntryDefinition(
                     VersionNotesKey,
                     "Version Notes",
@@ -198,22 +223,25 @@ namespace FlowBlox.AIAssistant.Services
 
         public static string? GetPromptContentOrNull(string key)
         {
-            if (!Entries.Value.TryGetValue(key, out var entry))
+            if (!TryGetEntry(key, out var entry))
                 return null;
 
-            return entry.Content;
+            return entry!.Content;
         }
 
         public static IReadOnlyList<PromptEntry> GetAllEntries()
         {
             return Entries.Value.Values
+                .Where(entry => entry.Scope == AssistantScope.All ||
+                    entry.Scope == ToolHandlerUtilities.CurrentAssistantScope)
                 .OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
 
         public static bool TryGetEntry(string key, out PromptEntry? entry)
         {
-            if (Entries.Value.TryGetValue(key, out var found))
+            if (Entries.Value.TryGetValue(key, out var found) &&
+                (found.Scope == AssistantScope.All || found.Scope == ToolHandlerUtilities.CurrentAssistantScope))
             {
                 entry = found;
                 return true;
@@ -246,7 +274,8 @@ namespace FlowBlox.AIAssistant.Services
                     definition.Title,
                     definition.Description,
                     normalized,
-                    definition.IsIncludedInInitialPrompt);
+                    definition.IsIncludedInInitialPrompt,
+                    definition.Scope);
             }
 
             return result;
@@ -311,13 +340,15 @@ namespace FlowBlox.AIAssistant.Services
             string Title,
             string ResourceName,
             string Description,
-            bool IsIncludedInInitialPrompt);
+            bool IsIncludedInInitialPrompt,
+            AssistantScope Scope = AssistantScope.All);
 
         internal sealed record PromptEntry(
             string Key,
             string Title,
             string Description,
             string Content,
-            bool IsIncludedInInitialPrompt);
+            bool IsIncludedInInitialPrompt,
+            AssistantScope Scope = AssistantScope.All);
     }
 }

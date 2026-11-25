@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("List managed input file metadata.")]
     internal sealed class GetInputFilesHandler : ToolHandlerBase
     {
         public override string Name => "GetInputFiles";

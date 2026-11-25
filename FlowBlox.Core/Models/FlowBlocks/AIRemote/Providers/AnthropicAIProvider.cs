@@ -145,10 +145,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             var stableMessages = request.SystemMessages
                 .Where(x => !string.IsNullOrWhiteSpace(x.Content))
                 .ToList();
-            var bootstrapBoundary = stableMessages.LastOrDefault(x => x.IsAnthropicBootstrapCacheBoundary);
-            var explanationsBoundary = stableMessages.LastOrDefault(x => x.CacheBehavior == AIChatCacheBehavior.PreferCache);
+            var bootstrapBoundary = stableMessages.LastOrDefault(x => x.IsBootstrapCacheBoundary);
+            var systemBoundary = stableMessages.LastOrDefault();
 
-            // At most two system breakpoints plus the existing rolling breakpoint (API maximum: four).
+            // Two system boundaries, an optional maintenance boundary, and the rolling boundary (API maximum: four).
             // Minimum cacheable tokens apply to the entire prefix, not each explanation block. Anthropic
             // handles model-specific thresholds; short prefixes remain valid requests without cache hits.
             foreach (var systemMessage in stableMessages)
@@ -157,8 +157,11 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                     continue;
 
                 var content = systemMessage.Content.Trim();
-                if (systemMessage == bootstrapBoundary || systemMessage == explanationsBoundary)
-                    systemMessages.Add(new SystemMessage(content, new CacheControl { Type = CacheControlType.ephemeral }));
+                if (systemMessage == bootstrapBoundary || systemMessage == systemBoundary)
+                    systemMessages.Add(new SystemMessage(content, new CacheControl 
+                    { 
+                        Type = CacheControlType.ephemeral 
+                    }));
                 else
                     systemMessages.Add(new SystemMessage(content));
             }
@@ -169,6 +172,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
         private static List<Message> BuildMessages(AIChatRequest request)
         {
             var messages = new List<Message>();
+            ContentBase? contextBoundary = null;
 
             foreach (var message in request?.Messages ?? Enumerable.Empty<AIChatMessage>())
             {
@@ -182,11 +186,19 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                 };
 
                 messages.Add(anthropicMessage);
+                if (message.IsContextCacheBoundary)
+                    contextBoundary = anthropicMessage.Content.LastOrDefault();
             }
+
+            if (contextBoundary != null)
+                contextBoundary.CacheControl = new CacheControl { Type = CacheControlType.ephemeral };
 
             var lastBlock = messages.LastOrDefault()?.Content?.LastOrDefault();
             if (lastBlock != null)
-                lastBlock.CacheControl = new CacheControl { Type = CacheControlType.ephemeral };
+                lastBlock.CacheControl = new CacheControl 
+                { 
+                    Type = CacheControlType.ephemeral 
+                };
 
             return messages;
         }

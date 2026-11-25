@@ -39,12 +39,6 @@ async function check(expression, name) {
     console.log('Passed: ' + name);
 }
 
-async function select(field, selector, value) {
-    await evaluate(`(() => { const e = document.querySelector('[data-field-name="${field}"] ${selector}');
-        e.value = ${JSON.stringify(value)}; e.dispatchEvent(new Event('change', { bubbles: true })); })()`);
-    await pause(200);
-}
-
 async function screenshot(name) {
     const image = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
     writeFileSync(join(results, name), Buffer.from(image.data, 'base64'));
@@ -78,66 +72,38 @@ try {
     const projects = await evaluate(`Array.from(document.querySelectorAll('a[href^="/projects/"]')).map(a => a.getAttribute('href'))`);
     await send('Page.navigate', { url: base + projects[0] });
     await check(`document.querySelector('.notes-content strong')?.textContent === 'Research setup' && document.querySelector('.notes-content a')?.getAttribute('href') === 'https://example.com/'`, 'Project notes render Markdown and links without terminating the Blazor circuit.');
-    await check(`document.querySelector('[data-field-name="Suggested"] input')?.value === 'initial default'`, 'Automatic mode defaults to a single-line input.');
-    await check(`document.querySelector('[data-field-name="Multiline"] textarea')?.value === 'first\\nsecond'`, 'Existing line breaks automatically render multiline.');
-    await check(`!document.querySelector('[data-field-name="LocalPassword"] .field-mode') && !document.querySelector('[data-field-name="Allowed"] .field-mode')`, 'Passwords and selection-only fields retain their editors.');
-    await pause(800);
-    await evaluate(`(() => { const input = document.querySelector('[data-field-name="Suggested"] input'); input.select();
-        const data = new DataTransfer(); data.setData('text/plain', 'pasted\\nsecond line');
-        input.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true })); })()`);
-    await check(`document.querySelector('[data-field-name="Suggested"] textarea')?.value === 'pasted\\nsecond line'`, 'Pasting multiline text preserves line breaks and expands Automatic mode.');
-    await select('Suggested', '.field-mode', 'SingleLine');
-    await check(`!!document.querySelector('[data-field-name="Suggested"] input')`, 'Explicit Single line overrides automatic expansion.');
-    await select('Suggested', '.field-mode', 'Multiline');
-    await check(`document.querySelector('[data-field-name="Suggested"] textarea')?.value === 'pasted\\nsecond line'`, 'Mode changes preserve the original field value.');
-
-    await select('ListFixture', '.field-mode', 'List');
-    await select('ListFixture', '.field-separator', 'Semicolon');
-    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 4`, 'List parsing preserves empty entries.');
+    await check(`document.querySelector('[data-field-name="Suggested"] input')?.value === 'initial default'`, 'Unconfigured fields default to a single-line input.');
+    await check(`document.querySelector('[data-field-name="Multiline"] textarea')?.value === 'first' + String.fromCharCode(10) + 'second'`, 'Configured multiline fields render a textarea.');
+    await check(`!document.querySelector('.field-presentation-picker') && !document.querySelector('.field-mode')`, 'Presentation comes from the field without manual display settings.');
+    await check(`!!document.querySelector('[data-field-name="LocalPassword"] input[type=password]') && !!document.querySelector('[data-field-name="Allowed"] select')`, 'Passwords and selection-only fields retain their editors.');
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 4`, 'Configured list parsing preserves empty entries.');
     await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].value === ' beta'`, 'List parsing preserves whitespace.');
-    await evaluate(`document.querySelector('[data-field-name="ListFixture"] .field-list-add').click()`);
-    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 5`, 'Add creates an editable list entry.');
-    await evaluate(`(() => { const rows = document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value');
-        const input = rows[rows.length - 1]; input.value = 'gamma'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
-    await pause(200);
-    await evaluate(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-row button')[1].click()`);
-    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 4`, 'Remove deletes the selected entry.');
-    await select('ListFixture', '.field-mode', 'Multiline');
-    await check(`document.querySelector('[data-field-name="ListFixture"] textarea')?.value === 'alpha;;;gamma'`, 'Edited list entries serialize with the selected separator.');
-    await select('ListFixture', '.field-mode', 'List');
-    await select('ListFixture', '.field-separator', 'Comma');
-    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 1`, 'Separator changes reinterpret the value without rewriting it.');
+    await check(`document.querySelectorAll('[data-field-name="LineFeedList"] .field-list-value').length === 3`, 'List mode uses LineFeed without an explicit separator and normalizes CRLF.');
+    await check(`document.querySelectorAll('[data-field-name="TabList"] .field-list-value').length === 2`, 'Escaped Tab separates list entries.');
+    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')`, 'Input editors have completed their interactive initialization.');
     await evaluate(`(() => { const input = document.querySelector('[data-field-name="ListFixture"] .field-list-value');
-        input.value = 'red,green'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
-    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 2`, 'Entering a comma-separated value creates separate list entries.');
-    await select('ListFixture', '.field-mode', 'Multiline');
-    await evaluate(`(() => { const input = document.querySelector('[data-field-name="ListFixture"] textarea');
-        input.value = 'alpha;beta;gamma'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
-    await pause(150);
-    await select('ListFixture', '.field-mode', 'List');
-    await select('ListFixture', '.field-separator', 'Semicolon');
-    await evaluate(`document.querySelector('[data-field-name="ListFixture"] .field-presentation-picker').open = true`);
+        input.value = 'red;green'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+    await check(`(() => { const rows = document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value');
+        return rows.length === 4 && rows[0].value === 'red' && rows[1].value === 'green' && rows[2].value === '' && rows[3].value === ''; })()`, 'Separated input overwrites following rows and preserves unreached entries.');
+    await evaluate(`(() => { const input = document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[3];
+        input.value = 'third;fourth'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 5`, 'Separated input appends only missing rows.');
+    await evaluate(`document.querySelector('[data-field-name="ListFixture"] .field-list-add').click()`);
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 6`, 'Add creates an editable list entry.');
+    await evaluate(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-row button')[1].click()`);
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 5`, 'Remove deletes the selected entry.');
     await screenshot('input-list-desktop.png');
-
-    const preferences = await evaluate(`Object.entries(localStorage).filter(([key]) => key.startsWith('flowblox:input-editor:v1:'))`);
-    if (!preferences.length || preferences.some(([key, value]) => !key.includes('2c312829-4c61-423c-aa6b-ef85f20e3f1c') || /pasted|gamma|alpha/.test(value))) {
-        throw new Error('Preferences must use the internal project GUID and contain no field values.');
-    }
-    checks.push('Preferences contain only display settings, keyed by the internal project GUID.');
+    await evaluate(`localStorage.setItem('flowblox:input-editor:v1:2c312829-4c61-423c-aa6b-ef85f20e3f1c:ListFixture', JSON.stringify({mode:1,separator:2}))`);
     await send('Page.reload');
-    await check(`document.querySelector('[data-field-name="ListFixture"] .field-mode')?.value === 'List'`, 'List mode is restored without running or saving a project.');
-    await check(`document.querySelector('[data-field-name="ListFixture"] .field-separator')?.value === 'Semicolon'`, 'The separator is restored independently.');
-    await check(`document.querySelector('[data-field-name="Suggested"] textarea')?.value === 'initial default'`, 'Reload restores input defaults, not cached input values.');
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 4`, 'Legacy browser preferences cannot override the configured field mode or separator.');
+    await check(`document.querySelector('[data-field-name="Suggested"] input')?.value === 'initial default'`, 'Reload restores input defaults, not cached input values.');
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     await screenshot('input-list-mobile.png');
     await check(`document.documentElement.scrollWidth <= window.innerWidth + 1`, 'The editors fit a narrow mobile viewport.');
 
     await send('Page.navigate', { url: base + projects[1] });
-    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')`, 'The second project is interactive before changing preferences.');
-    await check(`document.querySelector('[data-field-name="ListFixture"] .field-mode')?.value === 'Automatic'`, 'Another internal project GUID has independent preferences.');
-    await evaluate(`Object.defineProperty(window, 'localStorage', { value: { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); } } }); true`);
-    await select('ListFixture', '.field-mode', 'Multiline');
-    await check(`!!document.querySelector('[data-field-name="ListFixture"] textarea')`, 'Blocked browser storage does not prevent changing the editor.');
+    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')`, 'The second project is interactive.');
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 1`, 'Another project uses its own configured comma separator.');
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         field.scrollIntoView({ block: 'center' }); field.querySelector('[data-insert-picker] > summary').click(); })()`);
     await check(`document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]').open`, 'The shared Insert menu opens next to the input.');
@@ -163,13 +129,10 @@ try {
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         field.querySelector('[data-insert-picker] > summary').click(); field.querySelector('[data-paste-target]').click(); })()`);
     await check(`document.querySelector('[data-field-name="ListFixture"] textarea').value === 'clipboard text' && !document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]').open`, 'Clipboard insertion uses the shared menu and closes on success.');
-    await select('ListFixture', '.field-mode', 'List');
-    await select('ListFixture', '.field-separator', 'Comma');
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         const input = field.querySelector('.field-list-value'); input.value = 'first,second'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
     await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 2`, 'The insertion target can be an individual list entry.');
     await evaluate(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].focus()`);
-    await pause(200);
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         field.querySelector('[data-insert-picker] > summary').click(); field.querySelector('[data-paste-target]').click(); })()`);
     await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[0].value === 'first' && document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].value === 'clipboard text'`, 'Insert edits the last focused list entry without changing the others.');
@@ -180,15 +143,15 @@ try {
         const menu = field.querySelector('.field-insert-options').getBoundingClientRect();
         return Math.abs(dot.y + dot.height / 2 - title.y - title.height / 2) < 3 && menu.x >= 0 && menu.right <= innerWidth; })()`, 'The dot stays aligned with its title and Insert fits the mobile viewport.');
     await check(`(() => {
-        const marker = document.querySelector('.inputs .overrides > summary').getBoundingClientRect();
         return Array.from(document.querySelectorAll('.inputs .field-heading')).every(heading => {
+            const bounds = heading.getBoundingClientRect();
             const dot = heading.querySelector('.field-value-status').getBoundingClientRect();
             const icon = heading.querySelector('.field-value-status .mdi-icon').getBoundingClientRect();
             const title = heading.querySelector('.field-title-text').getBoundingClientRect();
-            return Math.abs(dot.left - marker.left) < 1 && dot.width <= 10.1 && icon.width <= 10.1
-                && title.left - dot.right >= 0 && title.left - dot.right <= 8;
+            return Math.abs(dot.right - bounds.right) < 1 && dot.width <= 10.1 && icon.width <= 10.1
+                && dot.left > title.right;
         });
-    })()`, 'All status dots, including empty fields, align with the disclosure arrow and leave a compact title gap.');
+    })()`, 'All status dots, including empty fields, align at the right edge of their field headings.');
     await screenshot('input-insert-menu-mobile.png');
     await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-insert-picker] > summary').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
     await check(`!document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]').open`, 'Escape closes Insert.');

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using FlowBlox.Core.Constants;
+using FlowBlox.Core.Attributes;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Logging;
 using FlowBlox.Core.Enums;
@@ -18,6 +19,7 @@ using FlowBlox.Core.Util.Projects;
 using FlowBlox.Core.Util.Resources;
 using FlowBlox.Core.Util.FlowBlocks;
 using FlowBlox.UICore.Resolver;
+using FlowBlox.UICore.Views.ProjectExecution;
 using FlowBlox.UICore.Interfaces;
 using FlowBlox.UICore.Enums;
 using FlowBlox.UICore.Commands;
@@ -130,9 +132,18 @@ public partial class ProjectExecutionWindow : MetroWindow
 
             _fields.Add(field);
             _initialValues[field.Name] = inputMetadata[field.Name].DefaultValue ?? string.Empty;
-            var bindingContext = new PropertyControlBindingContext(field);
-            var model = resolver.Resolve(property, field, false, null, bindingContext);
-            var editor = AddOutputDirectoryButton(field, model.Control);
+            FrameworkElement editor;
+            if (field.DisplayMode == FieldDisplayMode.List && !field.IsPassword
+                && field.GetValueDropDownMode() != DropDownMode.SelectionOnly)
+            {
+                editor = new FieldListEditor(field, this, AddOutputDirectoryButton);
+            }
+            else
+            {
+                var bindingContext = new PropertyControlBindingContext(field);
+                var model = resolver.Resolve(property, field, false, null, bindingContext);
+                editor = AddOutputDirectoryButton(field, model.Control);
+            }
             AddField(field.Name, editor, field);
             field.PropertyChanged += InputField_PropertyChanged;
         }

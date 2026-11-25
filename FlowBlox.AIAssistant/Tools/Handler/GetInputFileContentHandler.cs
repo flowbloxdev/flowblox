@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Read a managed input file.")]
     internal sealed class GetInputFileContentHandler : ToolHandlerBase
     {
         public override string Name => "GetInputFileContent";

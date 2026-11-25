@@ -22,7 +22,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Services
 {
-    public class AiAssistantService
+    public partial class AiAssistantService
     {
         private const int AutomaticAdjustmentDelayMilliseconds = 500;
         internal const string ContinuationModelPrompt =
@@ -113,6 +113,7 @@ namespace FlowBlox.AIAssistant.Services
                     .ToList() ?? new List<AssistantSessionMessage>();
 
                 session.Messages.AddRange(sessionMessages);
+                session.RetainedContents.AddRange(history?.RetainedContents?.Select(content => content.Clone()) ?? []);
                 session.SummarizedMessageCount = Math.Clamp(session.SummarizedMessageCount, 0, session.Messages.Count);
                 session.RuntimeBindingsReset = session.Messages.Count > 0 || !string.IsNullOrWhiteSpace(session.ConversationSummary);
                 _session = session;
@@ -137,7 +138,8 @@ namespace FlowBlox.AIAssistant.Services
                 history.Usage = session.Usage.Clone();
                 history.CurrentContextTokens = CurrentContextTokens;
                 history.EffectiveContextLimit = EffectiveContextLimit;
-                history.LoadedExplanationKeys = []; // Ignore legacy persisted runtime bindings.
+                history.LoadedExplanationKeys = []; // Legacy keys do not contain verbatim explanation payloads.
+                history.RetainedContents = session.RetainedContents.Select(content => content.Clone()).ToList();
                 history.SessionMessages = session.Messages
                     .Where(x => !string.IsNullOrWhiteSpace(x?.CompleteMessage))
                     .Select(x => x.Clone())
@@ -155,7 +157,7 @@ namespace FlowBlox.AIAssistant.Services
         }
 
         public int CurrentContextTokens { get; private set; }
-        public int EffectiveContextLimit { get; private set; } = 48000 - 4096;
+        public int EffectiveContextLimit { get; private set; } = AssistantConfigurationLimits.DefaultMaxContextTokens - 4096;
 
         public string CurrentConversationSummary
         {
@@ -284,11 +286,6 @@ namespace FlowBlox.AIAssistant.Services
                 session.LastSummaryCompactionAttemptKey = string.Empty;
             _outputFormatFeedbackQueue.ClearIncorrectOutputFormatData();
             ToolHandlerUtilities.SetCurrentSessionGuid(session.SessionId);
-            if (ComponentContext != null &&
-                AssistantPromptCatalog.TryGetEntry(AssistantPromptCatalog.ComponentScopeKey, out var scopeExplanation))
-            {
-                ToolHandlerUtilities.CurrentContentCache.LoadExplanation(scopeExplanation.Key, scopeExplanation.Title, scopeExplanation.Content);
-            }
             var currentContextJson = ComponentContext?.CaptureJson() ?? GetCurrentProjectJson();
             var currentContextJsonHash = ComputeJsonHash(currentContextJson);
             var hasKnownContextJsonHash = !string.IsNullOrWhiteSpace(session.LastContextJsonHash);
@@ -358,8 +355,8 @@ namespace FlowBlox.AIAssistant.Services
                         config.SelectedProvider,
                         tokenBudget,
                         session.SummarizedMessageCount,
-                        GetRuntimeSystemContents(session.SessionId),
-                        GetPreloadedRuntimeSystemMessageCount(session.SessionId));
+                        GetRuntimeSystemContents(session),
+                        0);
                     summaryTargetMessageCount = Math.Max(
                         summaryTargetMessageCount,
                         CalculateSummaryCompactionTarget(
@@ -367,7 +364,13 @@ namespace FlowBlox.AIAssistant.Services
                             chatRequestResult.FirstIncludedHistoryMessageIndex,
                             minLatestMessages,
                             summaryCompactionRate));
-                    await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
+                    summaryTargetMessageCount = await TryUpdateConversationSummaryAsync(
+                        session,
+                        summaryTargetMessageCount,
+                        config,
+                        userPrompt,
+                        ct,
+                        modelPrompt).ConfigureAwait(false);
 
                     // Summarization can take long enough for the user to add further instructions.
                     if (runControl != null)
@@ -388,8 +391,8 @@ namespace FlowBlox.AIAssistant.Services
                         config.SelectedProvider,
                         tokenBudget,
                         session.SummarizedMessageCount,
-                        GetRuntimeSystemContents(session.SessionId),
-                        GetPreloadedRuntimeSystemMessageCount(session.SessionId));
+                        GetRuntimeSystemContents(session),
+                        0);
                     var chatRequest = chatRequestResult.Request;
                     if (toolRound == 1)
                         AppendSingleSessionMessage(session, "user", initialUserPrompt);
@@ -442,7 +445,7 @@ namespace FlowBlox.AIAssistant.Services
                         AddTranscript(result, AssistantTranscriptKind.Error,
                             "Invalid response format repeated after correction. Aborting.");
                         UpdateKnownContextJsonHash(session);
-                        await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
+                        summaryTargetMessageCount = await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
                         return result;
                     }
 
@@ -450,6 +453,7 @@ namespace FlowBlox.AIAssistant.Services
 
                     _outputFormatFeedbackQueue.ClearIncorrectOutputFormatData();
                     var instruction = parseResult.Instruction;
+                    EnsureAssistantActivityMessage(instruction, parseResult.JsonObject);
                     var assistantInstructionContent = string.IsNullOrWhiteSpace(instruction.InternalContent)
                         ? assistantOutput
                         : instruction.InternalContent;
@@ -477,7 +481,7 @@ namespace FlowBlox.AIAssistant.Services
                         result.AssistantText = instruction.AssistantMessage;
                         result.Summary = "Assistant response generated.";
                         UpdateKnownContextJsonHash(session);
-                        await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
+                        summaryTargetMessageCount = await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
 
                         // Keep accepting messages until all asynchronous completion work is finished.
                         if (runControl != null && !runControl.TryCompleteWhenNoMessagesAreStaged())
@@ -499,6 +503,15 @@ namespace FlowBlox.AIAssistant.Services
                     var assistantToolRequestPersisted = false;
                     try
                     {
+                        using var retainedContentScope = ToolHandlerUtilities.BeginRetainedContentScope(key =>
+                        {
+                            lock (_sessionSync)
+                                return AssistantHistoryRetention.FindLocation(
+                                    session.Messages.Skip(chatRequestResult.FirstIncludedHistoryMessageIndex).ToArray(),
+                                    session.RetainedContents,
+                                    key);
+                        }, requireToolDefinitions: true);
+
                         for (var toolCallIndex = 0; toolCallIndex < instruction.ToolCalls.Count; toolCallIndex++)
                         {
                             var toolCall = instruction.ToolCalls[toolCallIndex];
@@ -537,8 +550,7 @@ namespace FlowBlox.AIAssistant.Services
 
                         }
 
-                        // A later call may promote declarations listed by an earlier call in this same round.
-                        // Re-render metadata after all calls, without executing handlers or counting again.
+                        // Refresh response metadata without executing handlers again.
                         foreach (var executed in executedToolCalls)
                         {
                             executed.Response.RefreshForSerialization();
@@ -556,7 +568,17 @@ namespace FlowBlox.AIAssistant.Services
                         var toolApiResponse = AssistantPromptBuilder.BuildToolApiResponsePrompt(
                             roundToolTranscript,
                             ToolHandlerUtilities.GetActiveSkillProjectName());
-                        AppendMessagePair(session, assistantInstructionContent, toolApiResponse, exec.MessageMetadata);
+                        AppendMessagePair(
+                            session,
+                            assistantInstructionContent,
+                            toolApiResponse,
+                            exec.MessageMetadata,
+                            executedToolCalls.SelectMany((call, resultIndex) => call.Response.RetainedContents.Select(content =>
+                            {
+                                var retained = content.Clone();
+                                retained.ResultIndex = resultIndex;
+                                return retained;
+                            })));
                         assistantToolRequestPersisted = true;
                     }
                     finally
@@ -594,7 +616,7 @@ namespace FlowBlox.AIAssistant.Services
                 AddTranscript(result, AssistantTranscriptKind.Error,
                     $"Reached max tool rounds ({maxToolRounds}) without a final response.");
                 UpdateKnownContextJsonHash(session);
-                await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
+                summaryTargetMessageCount = await TryUpdateConversationSummaryAsync(session, summaryTargetMessageCount, config, userPrompt, ct).ConfigureAwait(false);
                 return result;
             }
             finally
@@ -710,13 +732,11 @@ namespace FlowBlox.AIAssistant.Services
             }
         }
 
-        private static IReadOnlyList<string> GetRuntimeSystemContents(string sessionId) =>
-            AssistantSessionContentStore.Get(sessionId).GetSystemMessages().Select(x => x.Content).ToArray();
+        private static IReadOnlyList<AssistantSystemMessage> GetRuntimeSystemMessages(AssistantSessionState session) =>
+            AssistantHistoryRetention.GetSystemMessages(session.RetainedContents);
 
-        private int GetPreloadedRuntimeSystemMessageCount(string sessionId) =>
-            ComponentContext == null ? 0 : AssistantSessionContentStore.Get(sessionId).GetSystemMessages()
-                .TakeWhile(message => message.Key == "explanation:" + AssistantPromptCatalog.ComponentScopeKey)
-                .Count(message => !string.IsNullOrWhiteSpace(message.Content));
+        private static IReadOnlyList<string> GetRuntimeSystemContents(AssistantSessionState session) =>
+            GetRuntimeSystemMessages(session).Select(message => message.Content).ToArray();
 
         private static IReadOnlyList<AssistantSystemMessage> CreateInitialSystemMessages(
             string systemPrompt,
@@ -736,6 +756,7 @@ namespace FlowBlox.AIAssistant.Services
 
         public AssistantDebugSnapshot GetDebugSnapshot()
         {
+            using var componentScope = ToolHandlerUtilities.BeginComponentScope(ComponentContext);
             var configuration = GetConfiguration(out _);
             lock (_sessionSync)
             {
@@ -744,7 +765,7 @@ namespace FlowBlox.AIAssistant.Services
                     AssistantPromptBuilder.BuildSystemPrompt(),
                     AssistantPromptBuilder.BuildSessionBootstrapPrompt(_tools.GetToolDefinitions(), session.RuntimeBindingsReset));
                 var systemMessages = session.InitialSystemMessages
-                    .Concat(AssistantSessionContentStore.Get(session.SessionId).GetSystemMessages())
+                    .Concat(GetRuntimeSystemMessages(session))
                     .ToArray();
                 return new AssistantDebugSnapshot(
                     session.ConversationSummary,
@@ -781,7 +802,8 @@ namespace FlowBlox.AIAssistant.Services
             AssistantSessionState session,
             string assistantRequest,
             string toolApiResponse,
-            AIChatMessageMetadata? metadata)
+            AIChatMessageMetadata? metadata,
+            IEnumerable<AssistantRetainedContent> retainedContent)
         {
             if (session == null ||
                 string.IsNullOrWhiteSpace(assistantRequest) ||
@@ -794,77 +816,155 @@ namespace FlowBlox.AIAssistant.Services
                 {
                     AssistantRequest = assistantRequest.Trim(),
                     ToolApiResponse = toolApiResponse.Trim(),
-                    Metadata = metadata?.Clone() ?? new AIChatMessageMetadata()
+                    Metadata = metadata?.Clone() ?? new AIChatMessageMetadata(),
+                    RetainedContents = retainedContent
+                        .Select(content => content.Clone())
+                        .ToList()
                 });
             }
             DebugStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private async Task TryUpdateConversationSummaryAsync(
+        private async Task<int> TryUpdateConversationSummaryAsync(
             AssistantSessionState session,
             int targetSummarizedMessageCount,
             AssistantConfiguration config,
             string currentTask,
-            CancellationToken ct)
+            CancellationToken ct,
+            string? modelPrompt = null)
         {
-            await TryMergeConversationSummaryAsync(session, targetSummarizedMessageCount, config, ct).ConfigureAwait(false);
-            await TryCompactConversationSummaryAsync(session, config, currentTask, ct).ConfigureAwait(false);
-        }
-
-        private async Task TryMergeConversationSummaryAsync(
-            AssistantSessionState session,
-            int targetSummarizedMessageCount,
-            AssistantConfiguration config,
-            CancellationToken ct)
-        {
-            if (session == null || session.Messages.Count == 0)
-                return;
-
-            try
+            string originalSummary;
+            int originalCount;
+            AIChatRequest? summaryRequest = null;
+            lock (_sessionSync)
             {
-                string currentSummary;
-                List<AssistantSessionMessage> messagesToSummarize;
+                originalSummary = session.ConversationSummary;
+                originalCount = session.SummarizedMessageCount;
+                targetSummarizedMessageCount = Math.Clamp(targetSummarizedMessageCount, originalCount, session.Messages.Count);
+                if (targetSummarizedMessageCount > originalCount)
+                {
+                    var retained = session.RetainedContents.Select(content => content.Clone()).ToList();
+                    retained.AddRange(AssistantHistoryRetention.GetPendingPromotions(session.Messages, session.RetainedContents));
+                    var messages = session.Messages
+                        .Skip(originalCount)
+                        .Take(targetSummarizedMessageCount - originalCount)
+                        .ToArray();
+                    var initial = session.InitialSystemMessages!;
+                    var prefix = AssistantChatRequestBuilder.BuildMaintenancePrefix(
+                        initial[0].Content,
+                        initial[1].Content,
+                        originalSummary,
+                        session.Messages,
+                        originalCount,
+                        targetSummarizedMessageCount,
+                        config.SelectedProvider,
+                        GetRuntimeSystemContents(session));
+                    summaryRequest = AssistantSummaryRequestBuilder.Build(originalSummary, messages, retained, prefix);
+                    summaryRequest = ChooseMaintenanceRequest(
+                        summaryRequest,
+                        AssistantSummaryRequestBuilder.Build(originalSummary, messages, retained),
+                        prefix,
+                        config);
+                }
+            }
 
+            var mergedSummary = summaryRequest == null
+                ? null
+                : await TryMergeConversationSummaryAsync(summaryRequest, config, ct).ConfigureAwait(false);
+            var merged = mergedSummary != null;
+            var branch = merged && summaryRequest!.SystemMessages.Count > 1
+                ? AssistantMaintenanceRequestBuilder.Continue(summaryRequest, mergedSummary!)
+                : null;
+            var summary = await TryCompactConversationSummaryAsync(
+                session,
+                mergedSummary ?? originalSummary,
+                config,
+                currentTask,
+                ct,
+                branch).ConfigureAwait(false);
+            ct.ThrowIfCancellationRequested();
+            var transitioned = merged || summary != originalSummary;
+            if (transitioned)
+            {
                 lock (_sessionSync)
                 {
-                    targetSummarizedMessageCount = Math.Clamp(targetSummarizedMessageCount, 0, session.Messages.Count);
-                    if (targetSummarizedMessageCount <= session.SummarizedMessageCount)
-                        return;
-
-                    currentSummary = session.ConversationSummary;
-                    messagesToSummarize = session.Messages
-                        .Skip(session.SummarizedMessageCount)
-                        .Take(targetSummarizedMessageCount - session.SummarizedMessageCount)
-                        .ToList();
-                }
-
-                if (messagesToSummarize.Count == 0)
-                    return;
-
-                var summaryRequest = AssistantSummaryRequestBuilder.Build(
-                    currentSummary,
-                    messagesToSummarize);
-                var tokenBudget = BuildTokenBudget(config);
-                var summaryResult = await ExecuteChatWithCommunicationStatusAsync(
-                    summaryRequest,
-                    config,
-                    "Summarize...",
-                    ct).ConfigureAwait(false);
-                if (!summaryResult.Success || string.IsNullOrWhiteSpace(summaryResult.OutputText))
-                {
-                    if (!string.IsNullOrWhiteSpace(summaryResult.Error))
-                        _logger?.Warn($"AI Assistant summary update failed: {summaryResult.Error}");
-
-                    return;
-                }
-
-                lock (_sessionSync)
-                {
-                    session.ConversationSummary = summaryResult.OutputText.Trim();
-                    session.SummarizedMessageCount = Math.Max(session.SummarizedMessageCount, targetSummarizedMessageCount);
+                    // Publish one context transition only after all summary work completed successfully.
+                    if (session.ConversationSummary != originalSummary || session.SummarizedMessageCount != originalCount)
+                        return session.SummarizedMessageCount;
+                    session.ConversationSummary = summary;
+                    if (merged)
+                        session.SummarizedMessageCount = targetSummarizedMessageCount;
+                    AssistantHistoryRetention.Promote(session.Messages, session.RetainedContents);
                 }
                 ConversationSummaryChanged?.Invoke(this, EventArgs.Empty);
                 DebugStateChanged?.Invoke(this, EventArgs.Empty);
+            }
+            if (merged)
+                await TryCompactLatestToolResultsAsync(session, config, currentTask, modelPrompt ?? currentTask, ct).ConfigureAwait(false);
+            return targetSummarizedMessageCount;
+        }
+
+        private bool FitsMaintenanceBudget(AIChatRequest request, AssistantConfiguration config)
+        {
+            var budget = BuildTokenBudget(config);
+            var tokens = EstimateInputTokens(request, budget);
+            return tokens + Math.Max(config.ReservedResponseTokens, config.MaxTokens ?? 0) <= budget.MaxContextTokens;
+        }
+
+        private AIChatRequest ChooseMaintenanceRequest(
+            AIChatRequest shared,
+            AIChatRequest targeted,
+            AIChatRequest prefix,
+            AssistantConfiguration config)
+        {
+            if (!FitsMaintenanceBudget(shared, config))
+                return targeted;
+
+            var budget = BuildTokenBudget(config);
+            var sharedTokens = EstimateInputTokens(shared, budget);
+            var targetedTokens = EstimateInputTokens(targeted, budget);
+            var cachedTokens = EstimateInputTokens(prefix, budget);
+            // The just-generated response may not yet be cached by the provider.
+            if (prefix.Messages.LastOrDefault()?.Role == "assistant")
+                cachedTokens -= budget.EstimateTokens(prefix.Messages[^1].Content);
+            var sharedCost = AssistantCostCalculator.Calculate(new AIUsage
+            {
+                TotalInputTokens = sharedTokens,
+                CachedInputTokens = cachedTokens,
+                UncachedInputTokens = sharedTokens - cachedTokens,
+                CacheWriteInputTokens = 0,
+                OutputTokens = 0
+            }, _currentModelPricing);
+            var targetedCost = AssistantCostCalculator.Calculate(new AIUsage
+            {
+                TotalInputTokens = targetedTokens,
+                CachedInputTokens = 0,
+                UncachedInputTokens = targetedTokens,
+                CacheWriteInputTokens = 0,
+                OutputTokens = 0
+            }, _currentModelPricing);
+            // Do not replay a large prefix if even its optimistic cache-read cost exceeds the short request.
+            return sharedCost.HasValue && targetedCost.HasValue && sharedCost.Value.Cost >= targetedCost.Value.Cost
+                ? targeted
+                : shared;
+        }
+
+        private static long EstimateInputTokens(AIChatRequest request, AssistantTokenBudget budget) =>
+            request.SystemMessages.Concat(request.Messages).Sum(message => (long)budget.EstimateTokens(message.Content));
+
+        private async Task<string?> TryMergeConversationSummaryAsync(
+            AIChatRequest request,
+            AssistantConfiguration config,
+            CancellationToken ct)
+        {
+            try
+            {
+                var result = await ExecuteChatWithCommunicationStatusAsync(request, config, "Summarize...", ct).ConfigureAwait(false);
+                ct.ThrowIfCancellationRequested();
+                if (result.Success && !string.IsNullOrWhiteSpace(result.OutputText))
+                    return result.OutputText.Trim();
+                if (!string.IsNullOrWhiteSpace(result.Error))
+                    _logger?.Warn($"AI Assistant summary update failed: {result.Error}");
             }
             catch (OperationCanceledException)
             {
@@ -874,96 +974,41 @@ namespace FlowBlox.AIAssistant.Services
             {
                 _logger?.Warn($"AI Assistant summary update failed: {ex.Message}");
             }
+            return null;
         }
 
-        private async Task TryCompactConversationSummaryAsync(
+        private async Task<string> TryCompactConversationSummaryAsync(
             AssistantSessionState session,
+            string summary,
             AssistantConfiguration config,
             string currentTask,
-            CancellationToken ct)
+            CancellationToken ct,
+            AIChatRequest? prefix)
         {
-            var tokenBudget = BuildTokenBudget(config);
-            var maxSummaryTokens = Math.Max(1, config.MaxSummaryTokens);
-            var targetRatio = Math.Clamp(config.SummaryCompactionTargetRatio, 0.1d, 0.9d);
-            var targetTokens = Math.Max(1, (int)Math.Floor(maxSummaryTokens * targetRatio));
-            string summary;
-            string attemptKey;
+            var budget = BuildTokenBudget(config);
+            var limit = Math.Max(1, config.MaxSummaryTokens);
+            var target = Math.Max(1, (int)Math.Floor(limit * Math.Clamp(config.SummaryCompactionTargetRatio, 0.1d, 0.9d)));
+            if (budget.EstimateTokens(summary) <= limit)
+                return summary;
+            var attemptKey = BuildSummaryCompactionAttemptKey(summary, currentTask, limit, target);
             lock (_sessionSync)
             {
-                summary = session.ConversationSummary;
-                if (tokenBudget.EstimateTokens(summary) <= maxSummaryTokens)
-                    return;
-
-                attemptKey = BuildSummaryCompactionAttemptKey(summary, currentTask, maxSummaryTokens, targetTokens);
                 if (attemptKey == session.LastSummaryCompactionAttemptKey)
-                    return;
-
-                session.LastSummaryCompactionAttemptKey = attemptKey;
+                    return summary;
             }
-
-            var compactedSummary = summary;
-            try
-            {
-                // One compaction attempt plus at most one corrective retry. Never cut summary text to enforce the budget.
-                for (var attempt = 0; attempt < 2; attempt++)
-                {
-                    var request = AssistantCompactionRequestBuilder.Build(
-                        compactedSummary,
-                        currentTask,
-                        tokenBudget.EstimateTokens(compactedSummary),
-                        maxSummaryTokens,
-                        targetTokens,
-                        Math.Max(1, config.ApproximateCharactersPerToken));
-                    var response = await ExecuteChatWithCommunicationStatusAsync(
-                        request,
-                        config,
-                        FlowBloxResourceUtil.GetLocalizedString("AiAssistantService_CompactingContext", typeof(FlowBloxTexts)),
-                        ct).ConfigureAwait(false);
-                    if (!response.Success || string.IsNullOrWhiteSpace(response.OutputText))
-                    {
-                        _logger?.Warn($"AI Assistant context compaction failed: {response.Error}");
-                        break;
-                    }
-
-                    var candidate = response.OutputText.Trim();
-                    if (tokenBudget.EstimateTokens(candidate) < tokenBudget.EstimateTokens(compactedSummary))
-                        compactedSummary = candidate;
-
-                    if (tokenBudget.EstimateTokens(compactedSummary) <= targetTokens)
-                        break;
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger?.Warn("AI Assistant context compaction failed.", ex);
-            }
-
+            var compacted = await TryCompactContentAsync(
+                summary,
+                config,
+                currentTask,
+                limit,
+                target,
+                ct,
+                prefix: prefix).ConfigureAwait(false);
             lock (_sessionSync)
-            {
-                // Compaction replaces only the summary. It never consumes messages or advances the summary checkpoint.
-                if (session.ConversationSummary != summary)
-                    return;
-
-                session.ConversationSummary = compactedSummary;
-                session.LastSummaryCompactionAttemptKey = BuildSummaryCompactionAttemptKey(
-                    compactedSummary,
-                    currentTask,
-                    maxSummaryTokens,
-                    targetTokens);
-            }
-
-            if (tokenBudget.EstimateTokens(compactedSummary) > targetTokens)
-                _logger?.Warn($"AI Assistant context compaction did not reach its target of {targetTokens} estimated tokens.");
-
-            if (compactedSummary != summary)
-            {
-                ConversationSummaryChanged?.Invoke(this, EventArgs.Empty);
-                DebugStateChanged?.Invoke(this, EventArgs.Empty);
-            }
+                session.LastSummaryCompactionAttemptKey = BuildSummaryCompactionAttemptKey(compacted, currentTask, limit, target);
+            if (budget.EstimateTokens(compacted) > target)
+                _logger?.Warn($"AI Assistant context compaction did not reach its target of {target} estimated tokens.");
+            return compacted;
         }
 
         private static string BuildSummaryCompactionAttemptKey(
@@ -1119,11 +1164,14 @@ namespace FlowBlox.AIAssistant.Services
 
         private static string SerializeToolTranscript(ToolRequest request, ToolResponse response)
         {
+            var payload = JToken.FromObject(response);
+            var hasVerbatimGuidance = response.RetainedContents.Any(content =>
+                content.Kind == AssistantSystemMessageKind.Explanation || content.Kind == AssistantSystemMessageKind.ToolDefinition);
             var transcript = new JObject
             {
                 ["tool"] = request.ToolName,
                 ["arguments"] = CompactTypeAliasStrings(request.Arguments ?? new JObject()),
-                ["response"] = CompactTypeAliasStrings(JToken.FromObject(response))
+                ["response"] = hasVerbatimGuidance ? payload : CompactTypeAliasStrings(payload)
             };
 
             return transcript.ToString(Formatting.None);
@@ -1327,24 +1375,24 @@ namespace FlowBlox.AIAssistant.Services
             return sb.ToString().TrimEnd();
         }
 
+        private static void EnsureAssistantActivityMessage(AiResponseInstruction instruction, JObject source)
+        {
+            if (instruction.Final || instruction.ToolCalls.Count == 0 || !string.IsNullOrWhiteSpace(instruction.AssistantMessage))
+                return;
+
+            instruction.AssistantMessage = AssistantActivityFormatter.Format(instruction.ToolCalls);
+            var normalized = (JObject)source.DeepClone();
+            normalized["assistantMessage"] = instruction.AssistantMessage;
+            instruction.InternalContent = normalized.ToString(Formatting.Indented);
+        }
+
         private static string BuildAssistantRoundMessage(AiResponseInstruction instruction, string assistantOutput)
         {
             if (!string.IsNullOrWhiteSpace(instruction?.AssistantMessage))
                 return instruction.AssistantMessage;
 
             if (instruction?.ToolCalls?.Count > 0)
-            {
-                var toolNames = instruction.ToolCalls
-                    .Select(x => x.ToolName)
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-
-                if (toolNames.Count > 0)
-                    return $"Executing {instruction.ToolCalls.Count} operation(s): {string.Join(", ", toolNames)}";
-
-                return $"Executing {instruction.ToolCalls.Count} operation(s).";
-            }
+                return AssistantActivityFormatter.Format(instruction.ToolCalls);
 
             if (!string.IsNullOrWhiteSpace(assistantOutput))
                 return assistantOutput;
@@ -1370,6 +1418,7 @@ namespace FlowBlox.AIAssistant.Services
 
         private sealed class AssistantSessionState
         {
+            public List<AssistantRetainedContent> RetainedContents { get; } = new();
             public IReadOnlyList<AssistantSystemMessage>? InitialSystemMessages { get; set; }
             public bool RuntimeBindingsReset { get; set; }
             public string SessionId { get; set; } = Guid.NewGuid().ToString("N");

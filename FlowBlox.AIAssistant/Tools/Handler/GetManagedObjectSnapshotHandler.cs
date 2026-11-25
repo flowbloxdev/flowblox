@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect a managed object snapshot.")]
     internal sealed class GetManagedObjectSnapshotHandler : ToolHandlerBase
     {
         public override string Name => "GetManagedObjectSnapshot";

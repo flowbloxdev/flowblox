@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("List child categories and FlowBlock kinds.")]
     internal sealed class GetCategoryChildrenHandler : ToolHandlerBase
     {
         public override string Name => "GetCategoryChildren";

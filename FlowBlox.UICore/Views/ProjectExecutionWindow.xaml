@@ -18,6 +18,26 @@
         <ResourceDictionary Source="/FlowBlox.UICore;component/Views/Styles/PropertyViewStyles.xaml" />
       </ResourceDictionary.MergedDictionaries>
       <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+      <Style x:Key="Execution.ListAddButton" TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+        <Setter Property="Background" Value="#E6F4EA" />
+        <Setter Property="Foreground" Value="#287443" />
+        <Setter Property="BorderBrush" Value="#B7DCC3" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="8,3" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="mah:ControlsHelper.CornerRadius" Value="3" />
+      </Style>
+      <Style x:Key="Execution.ListRemoveButton" TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+        <Setter Property="Background" Value="#FCEBEC" />
+        <Setter Property="Foreground" Value="#AF3740" />
+        <Setter Property="BorderBrush" Value="#ECC3C7" />
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="4,0,0,0" />
+        <Setter Property="mah:ControlsHelper.CornerRadius" Value="3" />
+      </Style>
       <Style x:Key="Execution.NoticeMarkdown" TargetType="{x:Type FlowDocument}" BasedOn="{x:Static md:MarkdownStyle.Standard}">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="13" />

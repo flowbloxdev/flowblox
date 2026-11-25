@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Run a managed input file command with approval.")]
     internal sealed class ExecuteInputFileCommandHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "ExecuteInputFileCommand";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

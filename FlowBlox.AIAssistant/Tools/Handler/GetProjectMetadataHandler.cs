@@ -3,8 +3,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect current project metadata.")]
     internal sealed class GetProjectMetadataHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "GetProjectMetadata";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

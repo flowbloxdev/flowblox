@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Delete a managed input file.")]
     internal sealed class DeleteInputFileHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "DeleteInputFile";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

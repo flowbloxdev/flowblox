@@ -44,7 +44,7 @@ namespace FlowBloxTest.AIAssistant
             Assert.AreEqual(1, request.Messages.Count(message =>
                 message.Role == "user" && message.Content == "INTERMEDIATE-DURING-SUMMARY"));
             var summaryRequest = executor.Requests.Single(request => request.Source == "FlowBloxAIAssistantSummary");
-            AssertDoesNotContain(summaryRequest.Messages.Single().Content, "INTERMEDIATE-DURING-SUMMARY");
+            AssertDoesNotContain(summaryRequest.GetInputText(), "INTERMEDIATE-DURING-SUMMARY");
         }
 
         [TestMethod]
@@ -95,9 +95,9 @@ namespace FlowBloxTest.AIAssistant
                 .ToList();
 
             Assert.AreEqual(1, summaryRequests.Count);
-            AssertContains(summaryRequests[0].Messages.Single().Content, "USER-1");
-            AssertContains(summaryRequests[0].Messages.Single().Content, "ASSISTANT-USER-1");
-            AssertDoesNotContain(summaryRequests[0].Messages.Single().Content, "USER-2");
+            AssertContains(summaryRequests[0].GetInputText(), "USER-1");
+            AssertContains(summaryRequests[0].GetInputText(), "ASSISTANT-USER-1");
+            AssertDoesNotContain(summaryRequests[0].GetInputText(), "USER-2");
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace FlowBloxTest.AIAssistant
                 .ToList();
 
             Assert.AreEqual(1, summaryRequests.Count);
-            var summaryContent = summaryRequests[0].Messages.Single().Content;
+            var summaryContent = summaryRequests[0].GetInputText();
             AssertContains(summaryContent, "USER-1");
             AssertContains(summaryContent, "ASSISTANT-USER-1");
             AssertContains(summaryContent, "USER-2");
@@ -268,36 +268,6 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public void BuildChatRequest_MarksStableSystemMessagesAndSummaryForCaching()
-        {
-            var requestResult = AssistantChatRequestBuilder.Build(
-                systemPrompt: "Stable system",
-                sessionBootstrapPrompt: "Stable bootstrap",
-                conversationSummary: "Variable summary",
-                sessionMessages: [],
-                modelPrompt: "Current prompt",
-                maxLatestMessages: 5,
-                minLatestMessages: 1,
-                provider: null,
-                tokenBudget: new AssistantTokenBudget
-                {
-                    MaxContextTokens = 1000,
-                    ReservedResponseTokens = 0,
-                    ApproximateCharactersPerToken = 4
-                });
-
-            var request = requestResult.Request;
-
-            Assert.AreEqual(2, request.SystemMessages.Count);
-            Assert.AreEqual(AIChatCacheBehavior.PreferCache, request.SystemMessages[0].CacheBehavior);
-            Assert.AreEqual(AIChatCacheBehavior.PreferCache, request.SystemMessages[1].CacheBehavior);
-            Assert.AreEqual("summary", request.Messages[0].Role);
-            AssertContains(request.Messages[0].Content, "Conversation Summary:");
-            Assert.AreEqual(AIChatCacheBehavior.PreferCache, request.Messages[0].CacheBehavior);
-            Assert.AreEqual(AuthorRole.User, request.Messages[0].SemanticContent?.Role);
-        }
-
-        [TestMethod]
         public void BuildChatRequest_ExpandsMessagePairsToNativeFunctionMessages()
         {
             var assistantRequest = """
@@ -340,7 +310,6 @@ namespace FlowBloxTest.AIAssistant
 
             Assert.AreEqual("summary", messages[0].Role);
             AssertContains(messages[0].Content, "Existing summary");
-            Assert.AreEqual(AIChatCacheBehavior.PreferCache, messages[0].CacheBehavior);
             Assert.AreEqual(AuthorRole.User, messages[0].SemanticContent?.Role);
 
             Assert.AreEqual("assistant", messages[1].Role);
@@ -557,9 +526,9 @@ namespace FlowBloxTest.AIAssistant
                 "## Goals\n- Existing goal",
                 [new AssistantMessagePair { AssistantRequest = "ASSISTANT-REQUEST-1", ToolApiResponse = "TOOL-RESPONSE-1" }]);
 
-            AssertContains(request.Messages.Single().Content, "Existing goal");
-            AssertContains(request.Messages.Single().Content, "ASSISTANT-REQUEST-1");
-            AssertContains(request.Messages.Single().Content, "TOOL-RESPONSE-1");
+            AssertContains(request.GetInputText(), "Existing goal");
+            AssertContains(request.GetInputText(), "ASSISTANT-REQUEST-1");
+            AssertContains(request.GetInputText(), "TOOL-RESPONSE-1");
         }
 
         [TestMethod]
@@ -768,7 +737,7 @@ namespace FlowBloxTest.AIAssistant
         }
 
         [TestMethod]
-        public async Task ExecutePromptAsync_LoadedExplanationBecomesVisibleInDebuggerAndNextRequest()
+        public async Task ExecutePromptAsync_LoadedExplanationStaysVisibleInHistoryUntilContextTransition()
         {
             var retrieve = "{\"assistantMessage\":\"Read guidance.\",\"final\":false,\"toolCalls\":[{\"toolName\":\"LoadExplanation\",\"arguments\":{\"key\":\"explaining_generators\"}}]}";
             var executor = new QueuedAiExecutor(
@@ -785,15 +754,17 @@ namespace FlowBloxTest.AIAssistant
             var result = await service.ExecutePromptAsync("READ-GUIDANCE", CancellationToken.None);
             Assert.IsTrue(result.Success, string.Join(Environment.NewLine, result.Errors));
             Assert.AreEqual(2, executor.ChatRequests[0].SystemMessages.Count);
-            Assert.AreEqual(3, executor.ChatRequests[1].SystemMessages.Count);
-            Assert.AreEqual(AIChatCacheBehavior.PreferCache, executor.ChatRequests[1].SystemMessages.Last().CacheBehavior);
+            Assert.AreEqual(2, executor.ChatRequests[1].SystemMessages.Count);
             var snapshot = service.GetDebugSnapshot();
-            Assert.AreEqual(1, snapshot.SystemMessages.Count(x => x.IsRuntimeBound));
+            Assert.AreEqual(0, snapshot.SystemMessages.Count(x => x.IsRuntimeBound));
             Assert.AreEqual(3, snapshot.History.Count);
-            var loaded = (AssistantMessagePair)snapshot.History[1].Message;
-            Assert.IsTrue(snapshots.Any(x => x.SystemMessages.Any(m => m.IsRuntimeBound)));
-            loaded.AssistantRequest = "MUTATED-SNAPSHOT";
-            AssertDoesNotContain(service.GetDebugSnapshot().History[1].Message.CompleteMessage, "MUTATED-SNAPSHOT");
+            var finalMessage = (AssistantSingleMessage)snapshot.History[2].Message;
+            var pair = (AssistantMessagePair)snapshot.History[1].Message;
+            var resultPayload = JObject.Parse(AssistantToolResultContext.GetOriginalResults(pair).Single());
+            Assert.AreEqual(AssistantPromptCatalog.GetPromptContentOrNull(AssistantPromptCatalog.SpecialGeneratorsKey),
+                resultPayload["Result"]!.Value<string>("content"));
+            finalMessage.Message = "MUTATED-SNAPSHOT";
+            AssertDoesNotContain(service.GetDebugSnapshot().History[2].Message.CompleteMessage, "MUTATED-SNAPSHOT");
             var saved = new AiAssistantHistoryDocument();
             service.UpdateHistorySessionMetadata(saved);
             service.RestoreSession(saved);

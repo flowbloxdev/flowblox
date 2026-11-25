@@ -1,6 +1,7 @@
 using System.Text;
 using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
+using Newtonsoft.Json;
 
 namespace FlowBlox.AIAssistant.Builder
 {
@@ -8,7 +9,9 @@ namespace FlowBlox.AIAssistant.Builder
     {
         public static AIChatRequest Build(
             string currentSummary,
-            IReadOnlyList<AssistantSessionMessage> messagesToSummarize)
+            IReadOnlyList<AssistantSessionMessage> messagesToSummarize,
+            IReadOnlyList<AssistantRetainedContent>? retainedSystemContents = null,
+            AIChatRequest? prefix = null)
         {
             var request = new AIChatRequest
             {
@@ -18,11 +21,30 @@ namespace FlowBlox.AIAssistant.Builder
             request.SystemMessages.Add(new AIChatMessage
             {
                 Role = "system",
-                Content = SystemInstruction,
-                CacheBehavior = AIChatCacheBehavior.PreferCache
+                Content = SystemInstruction
             });
 
+            var retainedSystemKeys = (retainedSystemContents ?? [])
+                .Where(content => !string.IsNullOrWhiteSpace(content.Key) && !string.IsNullOrWhiteSpace(content.Content))
+                .Select(content => content.Key)
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
             var sb = new StringBuilder();
+            sb.AppendLine("Authoritative retained-system-content inventory (keys available in the working Assistant's next system context):");
+            sb.AppendLine(JsonConvert.SerializeObject(retainedSystemKeys));
+            sb.AppendLine();
+            if (prefix != null)
+            {
+                sb.AppendLine("Merge the preceding conversation messages into its existing Conversation Summary, if present. " +
+                    "The protected latest messages are outside this prefix and must not be summarized.");
+                foreach (var pair in messagesToSummarize.OfType<AssistantMessagePair>().Where(pair => pair.CompactedToolResults.Count > 0))
+                {
+                    sb.AppendLine("Original source for previously compacted tool results (same history, not new work):");
+                    sb.AppendLine(pair.CompleteMessage);
+                }
+                request.Messages.Add(new AIChatMessage { Role = "user", Content = sb.ToString().TrimEnd() });
+                return AssistantMaintenanceRequestBuilder.Append(prefix, request);
+            }
             sb.AppendLine("Current structured summary:");
             sb.AppendLine(string.IsNullOrWhiteSpace(currentSummary) 
                 ? "(empty)" 
@@ -57,6 +79,15 @@ namespace FlowBlox.AIAssistant.Builder
         private const string SystemInstruction = """
             Maintain a durable Structured Historical Memory for the FlowBlox AI Assistant conversation.
             - Merge only the provided new messages into the current summary and return the complete updated memory.
+            - The authoritative retained-system-content inventory lists full schemas, explanations and tool contracts already retained or
+              guaranteed to be retained as system messages before the working Assistant's next request. Their original payloads may remain
+              in history for prefix-cache reuse. Do not duplicate those payloads in the summary; preserve task-specific decisions and diagnostics.
+            - If the current summary already duplicates static content covered by that inventory, replace the duplicated description
+              with a brief retainedContentKey reference. Keep conversation-specific findings, changes, outcomes, and errors.
+            - A retainedContentKey in that inventory means available content, not a failed lookup, missing schema, inaccessible payload,
+              or open retrieval task. Correct previous missing-content/blocker claims resolved by this inventory; preserve unrelated failures.
+            - A tag or reference whose key is absent from the inventory does not prove system availability. Preserve relevant facts from
+              the supplied original results instead of assuming that their content has been retained elsewhere.
             - If the current summary uses another schema, migrate all relevant information without intentionally losing project history,
               rationale, current state, reusable knowledge, or active diagnostics.
             - Use these Markdown sections: Goals And Constraints, Current Project State, Decision And Change History, Open Work, User

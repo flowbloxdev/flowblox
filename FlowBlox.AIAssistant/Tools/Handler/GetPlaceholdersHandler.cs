@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Discover placeholders, Vault references and fields.")]
     internal sealed class GetPlaceholdersHandler : ToolHandlerBase
     {
         public override string Name => "GetPlaceholders";

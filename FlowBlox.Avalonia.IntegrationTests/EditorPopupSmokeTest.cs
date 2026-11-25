@@ -193,6 +193,7 @@ internal sealed partial class WorkspaceIntegrationChecks
             "Editing a custom value clears the suggestion badge state and still reports an edit");
         SaveMenuImage(directory, window, "field-custom-value.png");
 
+        field.DisplayMode = FieldDisplayMode.Multiline;
         field.DefaultValue = "Default [literal].*\nSecond line";
         check(code.Text == "edited value",
             "Changing the default preserves an explicitly entered input value");
@@ -205,5 +206,6 @@ internal sealed partial class WorkspaceIntegrationChecks
         check(code.Text == "Updated default",
             "Changing the default refreshes an input editor using its fallback");
         SaveMenuImage(directory, window, "field-default-value.png");
+        await CheckFieldPresentationAsync(window, content, check);
     }
 }

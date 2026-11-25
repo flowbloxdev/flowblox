@@ -19,7 +19,7 @@ namespace FlowBlox.UICore.Factory.PropertyView
             _readOnly = readOnly;
         }
 
-        public FrameworkElement Create()
+        public FrameworkElement Create(FlowBlox.Core.Attributes.FlowBloxTextBoxAttribute attribute = null)
         {
             var canEdit = !_readOnly && _property.SetMethod?.IsPublic == true;
             var binding = new Binding(_property.Name)
@@ -43,10 +43,10 @@ namespace FlowBlox.UICore.Factory.PropertyView
             if (canEdit)
                 textBox.TextChanged += (s, e) => FlowBloxComponentHelper.RaisePropertyChanged(_target, _property.Name);
             textBox.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.TextEditorStyle");
-            ParentScrollViewerMouseWheelForwarder.Register(textBox);
             textBox.SetBinding(TextBox.TextProperty, binding);
 
-            return ResizableControlContainer.Create(textBox);
+            return MultilineEditorBehavior.Configure(textBox, _target,
+                attribute ?? new FlowBlox.Core.Attributes.FlowBloxTextBoxAttribute { MultiLine = true });
         }
     }
 }

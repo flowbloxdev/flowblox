@@ -1,0 +1,27 @@
+# Project editor scope
+
+1) Core Context
+- You can call tools to inspect and modify the active FlowBlox project directly (CRUD + connect/disconnect). Use batch calls to reduce request count.
+- Property paths for updates use JSON-path-like slash syntax: /Property/0/NestedProperty.
+
+2) Project JSON And Snapshot Contract
+- Snapshot rule: rely on GetProjectJson for state verification and use identifiers only (FlowBlock=Name, FieldElement=FullyQualifiedFieldName, ManagedObject=Name).
+- If the initial prompt already contains the current project JSON snapshot, do not call GetProjectJson again unless the project has changed since that snapshot.
+- Use GetProjectJson mainly after larger structural changes to verify the updated state; otherwise prefer GetComponentSnapshot to review individual components.
+
+3) Layout Rules
+- Layout rule: flows are built from left to right and should follow a center line.
+- Automatic layout adjustment may be applied after connect/disconnect operations and after a completed AI edit run, but only if the user has enabled it in AI Assistant configuration (`Enable automatic adjustment`).
+- FlowBlock default size is approximately 328x235 px; keep horizontal spacing accordingly.
+- If inserting a flow block between two horizontally connected blocks, shift all blocks to the right accordingly (update positions).
+- If inserting into a vertical stack, shift the lower stacked blocks downward accordingly (update positions).
+- Only when multiple flow-blocks are vertically stacked: verify actual flow-block height via `GetComponentSnapshot` and correct positions if blocks overlap.
+- Always set Location when creating a flow block.
+- Start by creating StartFlowBlock with typeFullName "FlowBlox.Core.Models.FlowBlocks.SequenceFlow.StartFlowBlock" at location x=50, y=400.
+- Keep primary stacks symmetric around the center line to maintain a clean design.
+
+5) Special Hints
+- For recurring tasks without a simple direct solution (e.g. retrieving IMAP settings for an email address),
+  consider reusable Project Space function flows as subflows via ExecuteProjectFlowBlock before implementing complex logic.
+  Use GetPSProjects(classification=Function) to find reusable components; omit classification to search all flows.
+  Load `explaining_project_space` for discovery and reuse; clarify shared versus local execution only if the user's preference is unclear.

@@ -39,13 +39,8 @@ namespace FlowBlox.UICore.Factory.PropertyView
             var canEdit = !_readOnly && _property.SetMethod?.IsPublic == true;
             var editor = new TextEditor
             {
-                ShowLineNumbers = textAttr.MultiLine,
                 IsReadOnly = !canEdit,
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-                VerticalScrollBarVisibility = textAttr.MultiLine
-                    ? ScrollBarVisibility.Disabled
-                    : ScrollBarVisibility.Auto,
-                Height = textAttr.MultiLine ? double.NaN : 24
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
             };
             editor.SetResourceReference(FrameworkElement.StyleProperty, "PropertyView.CodeEditorStyle");
 
@@ -67,11 +62,6 @@ namespace FlowBlox.UICore.Factory.PropertyView
                     ? textAttr.SyntaxHighlighting
                     : highlightingProperty.GetValue(_target)?.ToString();
                 SetHighlighting(editor, definition);
-            }
-
-            if (textAttr.MultiLine)
-            {
-                ParentScrollViewerMouseWheelForwarder.Register(editor);
             }
 
             if (_target is INotifyPropertyChanged inpc)
@@ -160,18 +150,9 @@ namespace FlowBlox.UICore.Factory.PropertyView
                 }
             };
 
-            if (!textAttr.MultiLine)
-            {
-                editor.PreviewKeyDown += (s, e) =>
-                {
-                    if (e.Key == System.Windows.Input.Key.Enter)
-                        e.Handled = true;
-                };
-            }
-
             _initialized = true;
 
-            return ResizableControlContainer.Create(editor);
+            return MultilineEditorBehavior.Configure(editor, _target, textAttr);
         }
 
         private void RefreshFallback(TextEditor editor)

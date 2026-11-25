@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Delete a managed object and handle references.")]
     internal sealed class DeleteManagedObjectHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "DeleteManagedObject";
         public override bool IsLayoutRelevantForAutoAdjustment => true;
 

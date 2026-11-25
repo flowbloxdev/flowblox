@@ -5,10 +5,13 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Create or update a saved Skill project.")]
     internal sealed class CreateOrUpdateSkillProjectHandler : ToolHandlerBase
     {
         private const string MetadataOnlyMode = "metadata_only";
         private const string FullContentMode = "full_content";
+
+        public override AssistantScope Scope => AssistantScope.Project;
 
         public override string Name => "CreateOrUpdateSkillProject";
 

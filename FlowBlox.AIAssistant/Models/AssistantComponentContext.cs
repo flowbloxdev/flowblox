@@ -115,6 +115,24 @@ namespace FlowBlox.AIAssistant.Models
                     if (managedObjectType == null || !CanCreateManagedObject(managedObjectType))
                         throw new InvalidOperationException("Only types supported by an owned back-reference collection on the current FlowBlock can be created here.");
                     return;
+                case "ConnectFlowBlocks":
+                case "DisconnectFlowBlocks":
+                    var to = Registry.GetFlowBlocks().FirstOrDefault(item =>
+                        string.Equals(item.Name, args.Value<string>("to"), StringComparison.OrdinalIgnoreCase));
+                    var from = Registry.GetFlowBlocks().FirstOrDefault(item =>
+                        string.Equals(item.Name, args.Value<string>("from"), StringComparison.OrdinalIgnoreCase));
+                    if (!ReferenceEquals(to, Target) ||
+                        from is FlowBlox.Core.Models.FlowBlocks.ControlFlow.RecursiveTargetFlowBlockBase)
+                        throw new InvalidOperationException("Component mode can only change incoming references of the current FlowBlock, never a successor or another FlowBlock.");
+                    return;
+                case "RunGenerationStrategies":
+                    var generatorTarget = Registry.GetFlowBlocks().FirstOrDefault(item =>
+                        string.Equals(item.Name, args.Value<string>("flowBlockName"), StringComparison.OrdinalIgnoreCase));
+                    if (!ReferenceEquals(generatorTarget, Target))
+                        throw new InvalidOperationException("Generation is restricted to the current FlowBlock in component mode.");
+                    return;
+                case "GetLatestTestExecutionArtifact":
+                case "InspectExecutedTestFieldValue":
                 case "BatchExecuteToolRequests":
                 case "ExecuteExternalProject":
                 case "LoadExplanation":
@@ -190,6 +208,11 @@ namespace FlowBlox.AIAssistant.Models
 
         public object PrepareLink(object owner, PropertyInfo property, object value)
         {
+            if (ReferenceEquals(owner, Target) &&
+                property.Name == nameof(BaseFlowBlock.ReferencedFlowBlocks) &&
+                ReferenceEquals(value, Target))
+                throw new InvalidOperationException("A FlowBlock cannot reference itself.");
+
             var field = value as FieldElement;
             var association = property.GetCustomAttribute<FlowBlox.Core.Attributes.FlowBloxAssociationAttribute>();
             if (field != null && 

@@ -4031,31 +4031,37 @@ If a Join collector should aggregate links across all page iterations:
 		<value>Maximum latest messages</value>
 	</data>
 	<data name="AssistantConfiguration_MaxLatestMessages_Tooltip" xml:space="preserve">
-		<value>Maximum number of latest user and assistant messages kept verbatim in the chat context.</value>
+		<value>Maximum number of latest conversation entries kept outside the summary. Large tool results may be compacted separately; original history is preserved.</value>
 	</data>
 	<data name="AssistantConfiguration_MinLatestMessages" xml:space="preserve">
 		<value>Minimum latest messages</value>
 	</data>
 	<data name="AssistantConfiguration_MinLatestMessages_Tooltip" xml:space="preserve">
-		<value>Minimum number of latest messages kept verbatim even if the approximate token budget is exceeded.</value>
+		<value>Minimum number of latest conversation entries retained even if the approximate token budget is exceeded. Tool result compaction does not change this minimum.</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionRate" xml:space="preserve">
 		<value>Summary compaction rate</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionRate_Tooltip" xml:space="preserve">
-		<value>Fraction of summarizable conversation messages compressed at once when the assistant needs to update the summary. For example, 0.4 compresses 40% while still keeping the configured minimum latest messages verbatim.</value>
+		<value>Fraction of summarizable conversation entries merged at once when the assistant updates the summary. For example, 0.4 merges 40% while retaining the configured minimum latest entries outside the summary.</value>
 	</data>
 	<data name="AssistantConfiguration_MaxSummaryTokens" xml:space="preserve">
 		<value>Summary compaction threshold (tokens)</value>
+	</data>
+	<data name="AssistantConfiguration_ToolResultCompactionThreshold" xml:space="preserve">
+		<value>Tool result compaction threshold (tokens)</value>
+	</data>
+	<data name="AssistantConfiguration_ToolResultCompactionThreshold_Tooltip" xml:space="preserve">
+		<value>After successful summarization, compact individual tool results in the remaining recent context when they exceed this estimated token count. Default: 4000. Original history, call IDs and associations are preserved. The compaction target ratio also applies to tool results.</value>
 	</data>
 	<data name="AssistantConfiguration_MaxSummaryTokens_Tooltip" xml:space="preserve">
 		<value>Automatically compact the existing summary in a separate step when it exceeds this estimated token count. Default: 10000. Original history messages are preserved.</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionTargetRatio" xml:space="preserve">
-		<value>Summary compaction target ratio</value>
+		<value>Compaction target ratio</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionTargetRatio_Tooltip" xml:space="preserve">
-		<value>Target summary size as a fraction of the compaction threshold. Default: 0.5, aiming for 5000 tokens at a threshold of 10000. This is separate from the fraction of history messages summarized at once.</value>
+		<value>Target size for compacted summaries and tool results as a fraction of their respective threshold. Default: 0.5. This is separate from the fraction of history entries summarized at once.</value>
 	</data>
 	<data name="AiAssistantService_CompactingContext" xml:space="preserve">
 		<value>Compacting context...</value>
@@ -5138,6 +5144,50 @@ Set AssociatedContextualObject of the Index flow block to the flow block immedia
   <data name="LocalAISetup_ScriptConflict" xml:space="preserve"><value>The existing startup script has different contents or settings. Enable overwrite to replace it.</value></data>
   <data name="LocalAISetup_BlockModelConflict" xml:space="preserve"><value>The ONNX block already has a model folder. Enable overwrite for the model step.</value></data>
   <data name="LocalAISetup_BlockProviderConflict" xml:space="preserve"><value>The ONNX block already has a provider selection. Enable overwrite for the block provider step.</value></data>
+  <data name="FieldDisplayMode_SingleLine" xml:space="preserve"><value>Single line</value></data>
+  <data name="FieldDisplayMode_Multiline" xml:space="preserve"><value>Multiline</value></data>
+  <data name="FieldDisplayMode_List" xml:space="preserve"><value>List</value></data>
+  <data name="FieldElement_DisplayMode" xml:space="preserve"><value>Display mode</value></data>
+  <data name="FieldElement_ListSeparator" xml:space="preserve"><value>List separator</value></data>
+  <data name="FieldElement_ListSeparator_Tooltip" xml:space="preserve"><value>Separator used for list values and pasting. Default: \n (LineFeed). Use \t for Tab, \r\n for CRLF, or a literal such as ;.</value></data>
+  <data name="FieldElement_AddListItem" xml:space="preserve"><value>Add item</value></data>
+  <data name="FieldElement_RemoveListItem" xml:space="preserve"><value>Remove item</value></data>
+  <data name="AiAssistantActivity_General" xml:space="preserve">
+    <value>I am working through the requested steps.</value>
+  </data>
+  <data name="AiAssistantActivity_Remaining" xml:space="preserve">
+    <value>I will also handle the remaining requested steps.</value>
+  </data>
+  <data name="AiAssistantActivity_Guidance" xml:space="preserve">
+    <value>I am loading the guidance needed for the next steps.</value>
+  </data>
+  <data name="AiAssistantActivity_Skill" xml:space="preserve">
+    <value>I am running the selected skill and reading its results.</value>
+  </data>
+  <data name="AiAssistantActivity_Search" xml:space="preserve">
+    <value>I am looking for suitable components, skills, and examples.</value>
+  </data>
+  <data name="AiAssistantActivity_Results" xml:space="preserve">
+    <value>I am inspecting the requested results and diagnostic data.</value>
+  </data>
+  <data name="AiAssistantActivity_Execute" xml:space="preserve">
+    <value>I am running the requested steps and checking their results.</value>
+  </data>
+  <data name="AiAssistantActivity_Create" xml:space="preserve">
+    <value>I am creating the requested elements.</value>
+  </data>
+  <data name="AiAssistantActivity_Configure" xml:space="preserve">
+    <value>I am updating the requested configuration.</value>
+  </data>
+  <data name="AiAssistantActivity_Remove" xml:space="preserve">
+    <value>I am removing the specified elements.</value>
+  </data>
+  <data name="AiAssistantActivity_Connections" xml:space="preserve">
+    <value>I am updating the connections between the specified components.</value>
+  </data>
+  <data name="AiAssistantActivity_Inspect" xml:space="preserve">
+    <value>I am reading the information and configuration needed for the next steps.</value>
+  </data>
 </root>
 
 

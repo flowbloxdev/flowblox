@@ -53,9 +53,8 @@ namespace FlowBlox.AIAssistant.Builder
                 .Replace("{{AVAILABLE_TOOLS}}", BuildToolDefinitionsText(toolDefinitions), StringComparison.Ordinal)
                 + $"\nApplication runtime started at: {AssistantSessionContentStore.ApplicationStartedAt:O}."
                 + (runtimeBindingsReset
-                    ? " Runtime explanation bindings were reset on conversation restore. " +
-                      "Older history/summary claims do not establish loaded explanations; retrieve needed guidance again. " +
-                      "Type schemas are provided in tool responses and can be retrieved again when needed."
+                    ? " Conversation history and retained guidance were restored. " +
+                      "Rely on the current system messages rather than older load receipts."
                     : string.Empty);
         }
 
@@ -144,8 +143,8 @@ namespace FlowBlox.AIAssistant.Builder
                 sb.Append("- ");
                 sb.Append(tool.Name);
                 sb.Append(": ");
-                sb.Append(tool.Description);
-                if (tool.ArgumentsSchema?.HasValues == true)
+                sb.Append(tool.IncludeContractInBootstrap ? tool.Description : tool.ShortDescription);
+                if (tool.IncludeContractInBootstrap && tool.ArgumentsSchema?.HasValues == true)
                 {
                     sb.Append(" args=");
                     sb.Append(tool.ArgumentsSchema.ToString(Formatting.None));
@@ -251,15 +250,13 @@ namespace FlowBlox.AIAssistant.Builder
         {
             var sections = new List<string>();
 
-            AddPromptSection(sections, "Topic: FlowLogic", AssistantPromptCatalog.FlowLogicKey);
-            AddPromptSection(sections, "Topic: IterationContext / Flow", AssistantPromptCatalog.IterationContextKey);
-            AddPromptSection(sections, "Topic: FlowBlocks Managing an Object", AssistantPromptCatalog.FlowBlocksManagingObjectKey);
-            AddPromptSection(sections, "Topic: Update / Delete Handling", AssistantPromptCatalog.EditAndDeleteKey);
-            AddPromptSection(sections, "Topic: Naming Conventions", AssistantPromptCatalog.NamingConventionsKey);
-            AddPromptSection(sections, "Topic: Conditions and Decisions", AssistantPromptCatalog.ConditionsAndDecisionsKey);
-            AddPromptSection(sections, "Topic: Flow Organization Patterns", AssistantPromptCatalog.FlowOrganizationPatternsKey);
-            AddPromptSection(sections, "Topic: Debugging", AssistantPromptCatalog.DebuggingKey);
-            AddPromptSection(sections, "Topic: Version Notes", AssistantPromptCatalog.VersionNotesKey);
+            foreach (var entry in AssistantPromptCatalog.GetAllEntries()
+                .Where(entry => entry.IsIncludedInInitialPrompt &&
+                    entry.Key != AssistantPromptCatalog.SystemMessageKey &&
+                    entry.Key != AssistantPromptCatalog.SessionBootstrapKey))
+            {
+                AddPromptSection(sections, "Topic: " + entry.Title, entry.Key);
+            }
 
             if (sections.Count == 0)
                 return "No central guidelines available.";

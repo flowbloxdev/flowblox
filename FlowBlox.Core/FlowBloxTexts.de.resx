@@ -3979,22 +3979,28 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
 		<value>Maximale neueste Nachrichten</value>
 	</data>
 	<data name="AssistantConfiguration_MaxLatestMessages_Tooltip" xml:space="preserve">
-		<value>Maximale Anzahl neuester Benutzer- und Assistentennachrichten, die unverändert im Chat-Kontext behalten werden.</value>
+		<value>Maximale Anzahl neuester Konversationseinträge außerhalb der Zusammenfassung. Große Tool-Ergebnisse können separat verdichtet werden; die Originalhistorie bleibt erhalten.</value>
 	</data>
 	<data name="AssistantConfiguration_MinLatestMessages" xml:space="preserve">
 		<value>Minimale neueste Nachrichten</value>
 	</data>
 	<data name="AssistantConfiguration_MinLatestMessages_Tooltip" xml:space="preserve">
-		<value>Minimale Anzahl neuester Nachrichten, die auch bei überschrittenem geschätztem Tokenbudget unverändert behalten werden.</value>
+		<value>Minimale Anzahl neuester Konversationseinträge, die auch bei überschrittenem geschätztem Tokenbudget erhalten bleiben. Die Verdichtung von Tool-Ergebnissen ändert diese Mindestanzahl nicht.</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionRate" xml:space="preserve">
 		<value>Verdichtungsrate der Zusammenfassung</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionRate_Tooltip" xml:space="preserve">
-		<value>Anteil der zusammenfassbaren Konversationsnachrichten, der auf einmal komprimiert wird, sobald der Assistent die Zusammenfassung aktualisieren muss. Zum Beispiel komprimiert 0,4 insgesamt 40%, behält aber weiterhin die konfigurierte Mindestanzahl neuester Nachrichten unverändert bei.</value>
+		<value>Anteil der zusammenfassbaren Konversationseinträge, der bei einer Aktualisierung auf einmal zusammengefasst wird. Zum Beispiel fasst 0,4 insgesamt 40% zusammen; die konfigurierte Mindestanzahl neuester Einträge bleibt außerhalb der Zusammenfassung erhalten.</value>
 	</data>
 	<data name="AssistantConfiguration_MaxSummaryTokens" xml:space="preserve">
 		<value>Verdichtungsschwelle der Zusammenfassung (Tokens)</value>
+	</data>
+	<data name="AssistantConfiguration_ToolResultCompactionThreshold" xml:space="preserve">
+		<value>Verdichtungsschwelle für Tool-Ergebnisse (Tokens)</value>
+	</data>
+	<data name="AssistantConfiguration_ToolResultCompactionThreshold_Tooltip" xml:space="preserve">
+		<value>Verdichtet nach erfolgreicher Zusammenfassung einzelne Tool-Ergebnisse im verbleibenden aktuellen Kontext, wenn sie diese geschätzte Tokenanzahl überschreiten. Standard: 4000. Originalhistorie, Aufruf-IDs und Zuordnungen bleiben erhalten. Der Zielanteil nach Verdichtung gilt auch für Tool-Ergebnisse.</value>
 	</data>
 	<data name="AssistantConfiguration_MaxSummaryTokens_Tooltip" xml:space="preserve">
 		<value>Verdichtet die bestehende Zusammenfassung automatisch in einem eigenen Schritt, sobald sie diese geschätzte Tokenanzahl überschreitet. Standard: 10000. Die ursprünglichen Historiennachrichten bleiben erhalten.</value>
@@ -4003,7 +4009,7 @@ Wenn ein Join-Collector Links über alle Seiten-Iterationen sammeln soll:
 		<value>Zielanteil nach Verdichtung</value>
 	</data>
 	<data name="AssistantConfiguration_SummaryCompactionTargetRatio_Tooltip" xml:space="preserve">
-		<value>Zielgröße der Zusammenfassung als Anteil der Verdichtungsschwelle. Standard: 0,5, also etwa 5000 Tokens bei einer Schwelle von 10000. Unabhängig vom Anteil der Historiennachrichten, die auf einmal zusammengefasst werden.</value>
+		<value>Zielgröße verdichteter Zusammenfassungen und Tool-Ergebnisse als Anteil ihrer jeweiligen Verdichtungsschwelle. Standard: 0,5. Unabhängig vom Anteil der Historieneinträge, die auf einmal zusammengefasst werden.</value>
 	</data>
 	<data name="AiAssistantService_CompactingContext" xml:space="preserve">
 		<value>Kontext wird verdichtet...</value>
@@ -5140,6 +5146,50 @@ Setzen Sie AssociatedContextualObject des Index-Flow-Blocks auf den Flow-Block u
   <data name="LocalAISetup_ScriptConflict" xml:space="preserve"><value>Das vorhandene Startskript hat abweichende Inhalte oder Einstellungen. Aktivieren Sie Überschreiben, um es zu ersetzen.</value></data>
   <data name="LocalAISetup_BlockModelConflict" xml:space="preserve"><value>Am ONNX-Block ist bereits ein Modellordner gesetzt. Aktivieren Sie Überschreiben beim Modellschritt.</value></data>
   <data name="LocalAISetup_BlockProviderConflict" xml:space="preserve"><value>Am ONNX-Block ist bereits ein Provider ausgewählt. Aktivieren Sie Überschreiben beim Provider-Schritt des Blocks.</value></data>
+  <data name="FieldDisplayMode_SingleLine" xml:space="preserve"><value>Einzeilig</value></data>
+  <data name="FieldDisplayMode_Multiline" xml:space="preserve"><value>Mehrzeilig</value></data>
+  <data name="FieldDisplayMode_List" xml:space="preserve"><value>Liste</value></data>
+  <data name="FieldElement_DisplayMode" xml:space="preserve"><value>Darstellung</value></data>
+  <data name="FieldElement_ListSeparator" xml:space="preserve"><value>Listentrennzeichen</value></data>
+  <data name="FieldElement_ListSeparator_Tooltip" xml:space="preserve"><value>Trennzeichen für Listenwerte und Einfügen. Standard: \n (LineFeed). Verwende \t für Tab, \r\n für CRLF oder z. B. ;.</value></data>
+  <data name="FieldElement_AddListItem" xml:space="preserve"><value>Eintrag hinzufügen</value></data>
+  <data name="FieldElement_RemoveListItem" xml:space="preserve"><value>Eintrag entfernen</value></data>
+  <data name="AiAssistantActivity_General" xml:space="preserve">
+    <value>Ich bearbeite die angeforderten Schritte.</value>
+  </data>
+  <data name="AiAssistantActivity_Remaining" xml:space="preserve">
+    <value>Ich bearbeite außerdem die weiteren angeforderten Schritte.</value>
+  </data>
+  <data name="AiAssistantActivity_Guidance" xml:space="preserve">
+    <value>Ich lade die benötigten Fachhinweise für die nächsten Schritte.</value>
+  </data>
+  <data name="AiAssistantActivity_Skill" xml:space="preserve">
+    <value>Ich führe den ausgewählten Skill aus und lese seine Ergebnisse.</value>
+  </data>
+  <data name="AiAssistantActivity_Search" xml:space="preserve">
+    <value>Ich suche nach passenden Komponenten, Skills und Beispielen.</value>
+  </data>
+  <data name="AiAssistantActivity_Results" xml:space="preserve">
+    <value>Ich prüfe die angeforderten Ergebnisse und Diagnosedaten.</value>
+  </data>
+  <data name="AiAssistantActivity_Execute" xml:space="preserve">
+    <value>Ich führe die angeforderten Schritte aus und prüfe ihre Ergebnisse.</value>
+  </data>
+  <data name="AiAssistantActivity_Create" xml:space="preserve">
+    <value>Ich erstelle die angeforderten Elemente.</value>
+  </data>
+  <data name="AiAssistantActivity_Configure" xml:space="preserve">
+    <value>Ich passe die angeforderte Konfiguration an.</value>
+  </data>
+  <data name="AiAssistantActivity_Remove" xml:space="preserve">
+    <value>Ich entferne die angegebenen Elemente.</value>
+  </data>
+  <data name="AiAssistantActivity_Connections" xml:space="preserve">
+    <value>Ich passe die Verknüpfungen zwischen den angegebenen Komponenten an.</value>
+  </data>
+  <data name="AiAssistantActivity_Inspect" xml:space="preserve">
+    <value>Ich lese die benötigten Informationen und Konfigurationen für die nächsten Schritte.</value>
+  </data>
 </root>
 
 

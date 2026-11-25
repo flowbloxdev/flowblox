@@ -6,6 +6,11 @@ namespace FlowBlox.Core.Attributes
         public bool MultiLine { get; set; }
 
         /// <summary>
+        /// Optional boolean instance property controlling multiline editing through property change notifications.
+        /// </summary>
+        public string IsMultilineMember { get; set; }
+
+        /// <summary>
         /// Masks the value in generated property views. The backing property remains a string so
         /// callers can decide how the value is persisted.
         /// </summary>

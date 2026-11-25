@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Search or page through a retained test field value.")]
     internal sealed class InspectExecutedTestFieldValueHandler : ToolHandlerBase
     {
         public override string Name => "InspectExecutedTestFieldValue";

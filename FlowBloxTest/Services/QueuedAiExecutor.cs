@@ -30,7 +30,7 @@ namespace FlowBloxTest.Services
                 return Task.FromResult(new AiExecutorResult
                 {
                     Success = true,
-                    OutputText = "[SUMMARIZED]\n" + request.Messages.Single().Content
+                    OutputText = "[SUMMARIZED]\n" + request.GetInputText()
                 });
             }
 

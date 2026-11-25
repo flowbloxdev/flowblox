@@ -170,6 +170,33 @@ namespace FlowBlox.UICore.ViewModels
                 ? FlowBloxResourceUtil.GetLocalizedString("Cost_Unavailable", typeof(Resources.AiAssistantChatView))
                 : "$" + _service.SessionUsage.EstimatedCost.ToString("0.00", CultureInfo.InvariantCulture));
 
+        public string CacheSavingsText
+        {
+            get
+            {
+                var usage = _service.SessionUsage;
+                if (usage.UnpricedRequests > 0 || usage.IncompleteUsageRequests > 0)
+                {
+                    return string.Format(
+                        CultureInfo.CurrentCulture,
+                        FlowBloxResourceUtil.GetLocalizedString("CacheSavings_Format", typeof(Resources.AiAssistantChatView)),
+                        FlowBloxResourceUtil.GetLocalizedString("Cost_Unavailable", typeof(Resources.AiAssistantChatView)));
+                }
+
+                var savedAmount = "$" + usage.SavedByCaching.ToString("0.00", CultureInfo.InvariantCulture);
+                return usage.CostSavingRate.HasValue
+                    ? string.Format(
+                        CultureInfo.CurrentCulture,
+                        FlowBloxResourceUtil.GetLocalizedString("CacheSavings_WithRate_Format", typeof(Resources.AiAssistantChatView)),
+                        savedAmount,
+                        usage.CostSavingRate.Value.ToString("P1", CultureInfo.CurrentCulture))
+                    : string.Format(
+                        CultureInfo.CurrentCulture,
+                        FlowBloxResourceUtil.GetLocalizedString("CacheSavings_Format", typeof(Resources.AiAssistantChatView)),
+                        savedAmount);
+            }
+        }
+
         public bool CanUndoProjectState =>
             !IsBusy &&
             _stateBeforeLastPrompt != null &&
@@ -536,6 +563,7 @@ namespace FlowBlox.UICore.ViewModels
         {
             OnPropertyChanged(nameof(HasSessionUsage));
             OnPropertyChanged(nameof(EstimatedCostText));
+            OnPropertyChanged(nameof(CacheSavingsText));
             ResetSessionUsageCommand?.Invalidate();
         }
 

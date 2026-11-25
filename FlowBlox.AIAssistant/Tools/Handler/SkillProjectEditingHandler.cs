@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Open, save or close a Skill for live editing.")]
     internal sealed class SkillProjectEditingHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "SkillProjectEditing";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

@@ -1,4 +1,5 @@
 using FlowBlox.AIAssistant.Models;
+using FlowBlox.AIAssistant.Builder;
 using FlowBlox.AIAssistant.Services;
 using FlowBlox.AIAssistant.Tools;
 using FlowBlox.Core.Constants;
@@ -81,6 +82,124 @@ public sealed class ComponentAssistantScopeTests
         _api.ExecuteAsync(new ToolRequest { ToolName = name, Arguments = arguments }, CancellationToken.None);
 
     [TestMethod]
+    public void ToolCatalogFiltersProjectHandlersAndPreservesOwnedObjectAndSkillTools()
+    {
+        var projectTools = new DefaultToolApi().GetToolDefinitions().Select(tool => tool.Name).ToArray();
+        CollectionAssert.Contains(projectTools, "RunProjectDebugTest");
+        CollectionAssert.Contains(projectTools, "GetPSProjects");
+        _working = Open(_source);
+        var componentTools = _api.GetToolDefinitions().Select(tool => tool.Name).ToArray();
+        foreach (var excluded in new[] { "RunProjectDebugTest", "GetLastDebugArtefact", "InspectFieldValue",
+            "RunTestDefinition", "GetPSProjects", "SkillProjectEditing", "CreateOrUpdateSkillProject", "CreateFlowBlock" })
+        {
+            CollectionAssert.DoesNotContain(componentTools, excluded);
+        }
+        foreach (var included in new[] { "CreateManagedObject", "CreateField", "UpdateManagedObject", "GetSkillProjects",
+            "GetSkillProject", "GetDistributedDataContent", "ExecuteExternalProject", "InspectOutputFieldValue",
+            "RunGenerationStrategies", "ConnectFlowBlocks" })
+        {
+            CollectionAssert.Contains(componentTools, included);
+        }
+    }
+
+    [TestMethod]
+    [DataRow("RunProjectDebugTest")]
+    [DataRow("GetLastDebugArtefact")]
+    [DataRow("GetPSProjects")]
+    [DataRow("CreateOrUpdateSkillProject")]
+    [DataRow("SkillProjectEditing")]
+    public async Task HiddenProjectToolIsAlsoRejectedWhenCalledDirectly(string name)
+    {
+        _working = Open(_source);
+        var response = await Execute(name, new JObject());
+        Assert.IsFalse(response.Ok);
+        StringAssert.Contains(response.Error, "unavailable in component mode");
+    }
+
+    [TestMethod]
+    public async Task ExplanationScopeFiltersInitialContentCatalogAndExplicitLoads()
+    {
+        Assert.IsFalse(AssistantPromptCatalog.TryGetEntry(AssistantPromptCatalog.ComponentScopeKey, out _));
+        Assert.IsTrue(AssistantPromptCatalog.TryGetEntry(AssistantPromptCatalog.DebuggingKey, out _));
+        _working = Open(_source);
+        using (ToolHandlerUtilities.BeginComponentScope(_api.ComponentContext))
+        {
+            var entries = AssistantPromptCatalog.GetAllEntries();
+            Assert.IsFalse(entries.Any(entry => entry.Key == AssistantPromptCatalog.DebuggingKey));
+            Assert.IsFalse(entries.Any(entry => entry.Key == AssistantPromptCatalog.SpecialProjectSpaceKey));
+            Assert.IsTrue(entries.Single(entry => entry.Key == AssistantPromptCatalog.ComponentScopeKey).IsIncludedInInitialPrompt);
+            Assert.IsTrue(entries.Any(entry => entry.Key == AssistantPromptCatalog.IterationContextKey));
+            Assert.IsTrue(entries.Any(entry => entry.Key == AssistantPromptCatalog.SpecialGeneratorsKey));
+            var bootstrap = AssistantPromptBuilder.BuildSessionBootstrapPrompt(_api.GetToolDefinitions());
+            StringAssert.Contains(bootstrap, "# Component editor scope");
+            Assert.IsFalse(bootstrap.Contains("Topic: Explaining Debugging", StringComparison.Ordinal));
+            Assert.IsFalse(bootstrap.Contains(AssistantPromptCatalog.SpecialProjectSpaceKey, StringComparison.Ordinal));
+        }
+        var blocked = await Execute("LoadExplanation", new JObject { ["key"] = AssistantPromptCatalog.DebuggingKey });
+        Assert.IsFalse(blocked.Ok);
+        var initial = await Execute("LoadExplanation", new JObject { ["key"] = AssistantPromptCatalog.ComponentScopeKey });
+        Assert.IsTrue(initial.Ok, initial.Error);
+        Assert.IsFalse(initial.Result.Value<bool>("loaded"));
+    }
+
+    [TestMethod]
+    [DataRow(false, AssistantPromptCatalog.SpecialSkillsKey, true)]
+    [DataRow(true, AssistantPromptCatalog.SpecialSkillsKey, true)]
+    [DataRow(false, AssistantPromptCatalog.SpecialSkillProjectEditingKey, true)]
+    [DataRow(true, AssistantPromptCatalog.SpecialSkillProjectEditingKey, false)]
+    public async Task SkillExplanationLoadsRespectUsageAndAuthoringScopes(bool componentMode, string key, bool allowed)
+    {
+        if (componentMode)
+            _working = Open(_source);
+        else
+            _api = new DefaultToolApi();
+
+        var response = await Execute("LoadExplanation", new JObject { ["key"] = key });
+        Assert.AreEqual(allowed, response.Ok, response.Error);
+        if (allowed)
+        {
+            var retained = response.RetainedContents.Single();
+            Assert.AreEqual("explanation:" + key, retained.Key);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(retained.Content));
+        }
+        else
+        {
+            Assert.AreEqual(0, response.RetainedContents.Count);
+            CollectionAssert.DoesNotContain(response.Result["availableKeys"]!.Values<string>().ToArray(), key);
+        }
+    }
+
+    [TestMethod]
+    public async Task IncomingConnectionsChangeOnlyWorkingCopyAndOutgoingConnectionsAreRejected()
+    {
+        var predecessor = _project.FlowBloxRegistry.CreateFlowBlockUnregistered<RegexSelectorFlowBlock>();
+        _project.FlowBloxRegistry.Register(predecessor);
+        _working = Open(_source);
+        var response = await Execute("ConnectFlowBlocks", new JObject
+        {
+            ["from"] = predecessor.Name,
+            ["to"] = _working.Name
+        });
+        Assert.IsTrue(response.Ok, response.Error);
+        Assert.AreSame(predecessor, _working.ReferencedFlowBlocks.Single());
+        Assert.AreEqual(0, _source.ReferencedFlowBlocks.Count);
+        response = await Execute("ConnectFlowBlocks", new JObject
+        {
+            ["from"] = _working.Name,
+            ["to"] = predecessor.Name
+        });
+        Assert.IsFalse(response.Ok);
+        Assert.AreEqual(0, predecessor.ReferencedFlowBlocks.Count);
+        response = await Execute("DisconnectFlowBlocks", new JObject
+        {
+            ["from"] = predecessor.Name,
+            ["to"] = _working.Name
+        });
+        Assert.IsTrue(response.Ok, response.Error);
+        Assert.AreEqual(0, _working.ReferencedFlowBlocks.Count);
+    }
+
+    [TestMethod]
     public async Task UpdatesWorkingCopyAndCancelLeavesOriginalUntouched()
     {
         _working = Open(_source);
@@ -100,7 +219,7 @@ public sealed class ComponentAssistantScopeTests
     }
 
     [TestMethod]
-    public async Task BatchCannotModifyForeignComponentOrTopology()
+    public async Task BatchAllowsIncomingReferenceButCannotModifyForeignComponentOrCreateUserField()
     {
         var other = _project.FlowBloxRegistry.CreateFlowBlockUnregistered<RegexSelectorFlowBlock>();
         _project.FlowBloxRegistry.Register(other);
@@ -120,7 +239,9 @@ public sealed class ComponentAssistantScopeTests
         });
         Assert.IsFalse(response.Ok);
         Assert.IsNull(other.RegularExpression);
-        Assert.AreEqual(0, _working.ReferencedFlowBlocks.Count);
+        Assert.AreEqual(1, _working.ReferencedFlowBlocks.Count);
+        Assert.AreSame(other, _working.ReferencedFlowBlocks.Single());
+        Assert.AreEqual(0, _source.ReferencedFlowBlocks.Count);
         Assert.IsFalse(_api.ComponentContext.Registry.GetManagedObjects().Any(item => item.Name == "Unowned"));
     }
 
@@ -536,7 +657,7 @@ public sealed class ComponentAssistantScopeTests
     [TestMethod]
     [DataRow("/ReferencedFlowBlocks/Link")]
     [DataRow("ReferencedFlowBlocks.Link")]
-    public async Task BothPathFormatsRejectFlowConnectionChanges(string path)
+    public async Task BothPathFormatsRejectSelfReferences(string path)
     {
         _working = Open(_source);
         var response = await Execute("UpdateFlowBlock", new JObject

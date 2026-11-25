@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Discover concrete implementations of an interface or base type.")]
     internal sealed class GetSupportedTypesHandler : ToolHandlerBase
     {
         public override string Name => "GetSupportedTypes";

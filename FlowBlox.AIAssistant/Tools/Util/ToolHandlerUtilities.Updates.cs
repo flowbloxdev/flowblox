@@ -29,7 +29,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 foreach (var update in updates)
                 {
                     var root = ParsePath(update.Path).FirstOrDefault()?.PropertyName;
-                    if (target is BaseFlowBlock && (root == nameof(BaseFlowBlock.ReferencedFlowBlocks) ||
+                    if (target is BaseFlowBlock && (root == nameof(BaseFlowBlock.NextFlowBlocks) ||
                         root == nameof(BaseFlowBlock.DefinedManagedObjects) || root == nameof(BaseFlowBlock.Location) ||
                         root == nameof(BaseFlowBlock.Size)))
                         return Fail($"Property '{root}' is outside component configuration scope.");

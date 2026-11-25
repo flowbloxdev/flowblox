@@ -31,13 +31,26 @@ namespace FlowBlox.AIAssistant.Tools
             _toolNameResolver = new ToolNameResolver(_handlers.Keys);
 
             _definitions = handlers
-                .Select(handler => handler.Definition)
+                .Select(CreateDefinition)
                 .ToList();
+        }
+
+        private static ToolDefinition CreateDefinition(IToolHandler handler)
+        {
+            var definition = handler.Definition;
+            var purpose = Attribute.GetCustomAttribute(handler.GetType(), typeof(ToolPurposeAttribute)) as ToolPurposeAttribute;
+            definition.ShortDescription = purpose?.Description ?? definition.Description;
+            definition.IncludeContractInBootstrap = purpose?.IncludeContractInBootstrap == true;
+            return definition;
         }
 
         public IReadOnlyList<ToolDefinition> GetToolDefinitions()
         {
-            return _definitions;
+            var scope = ComponentContext == null ? AssistantScope.Project : AssistantScope.Component;
+            return _definitions
+                .Where(definition => _handlers[definition.Name].Scope == AssistantScope.All ||
+                    _handlers[definition.Name].Scope == scope)
+                .ToList();
         }
 
         public Task<ToolResponse> ExecuteAsync(ToolRequest request, CancellationToken ct)
@@ -66,8 +79,20 @@ namespace FlowBlox.AIAssistant.Tools
                     return ToolHandlerUtilities.Fail($"Tool '{request.ToolName}' is not registered.");
 
                 handler = _handlers[resolvedName];
+                var scope = ComponentContext == null ? AssistantScope.Project : AssistantScope.Component;
+                if (handler.Scope != AssistantScope.All && handler.Scope != scope)
+                    return ToolHandlerUtilities.Fail($"Tool '{resolvedName}' is unavailable in {scope.ToString().ToLowerInvariant()} mode. Explain this limitation to the user.");
                 if (!allowBatch && handler is BatchExecuteToolRequestsHandler)
                     return ToolHandlerUtilities.Fail("Nested batch not supported.");
+
+                var definition = _definitions.Single(item => item.Name == resolvedName);
+                if (!definition.IncludeContractInBootstrap &&
+                    ToolHandlerUtilities.IsToolDefinitionMissing(GetToolDefinitionsHandler.GetRetentionKey(resolvedName)))
+                {
+                    return ToolHandlerUtilities.Fail(
+                        $"Load the full contract for '{resolvedName}' with GetToolDefinitions(toolNames=[\"{resolvedName}\"]) " +
+                        "and read its response before constructing this call. The tool was not executed.");
+                }
 
                 if (request.Arguments?["arguments"] is JObject
                     && handler.Definition.ArgumentsSchema.Property("arguments", StringComparison.OrdinalIgnoreCase) == null)
@@ -163,7 +188,8 @@ namespace FlowBlox.AIAssistant.Tools
                 }
                 response.IsLayoutRelevantForAutoAdjustment = false;
                 if (request.ToolName.StartsWith("Update", StringComparison.Ordinal) ||
-                    request.ToolName.StartsWith("Create", StringComparison.Ordinal))
+                    request.ToolName.StartsWith("Create", StringComparison.Ordinal) ||
+                    request.ToolName == "ConnectFlowBlocks" || request.ToolName == "DisconnectFlowBlocks")
                 {
                     if (ComponentContext.ChangedAsync != null)
                         await ComponentContext.ChangedAsync();
@@ -311,6 +337,7 @@ namespace FlowBlox.AIAssistant.Tools
         {
             return
             [
+                new GetToolDefinitionsHandler(GetToolDefinitions),
                 new GetProjectJsonHandler(),
                 new LoadExplanationHandler(),
                 new GetDistributedDataHandler(),

@@ -5,8 +5,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect active project JSON.")]
     internal sealed class GetProjectJsonHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "GetProjectJson";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

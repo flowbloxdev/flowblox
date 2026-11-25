@@ -32,6 +32,17 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Tool descriptions and responses, especially type descriptions repeated per type/property, are token-critical.
   Extend their output only for a concrete consumer need; do not add general explanations, syntax examples or tool/resolver hints.
 
+## AI Provider Prompt Caching
+
+- Use the maximum supported prompt-prefix caching by default, without provider or per-message opt-in flags.
+- Keep provider-specific cache activation and breakpoint placement inside the provider implementation.
+  Automatic caching needs no additional request setting; Anthropic manages its explicit ephemeral breakpoints.
+- Preserve stable prompt prefixes and bootstrap boundaries while respecting the provider's breakpoint limits.
+- See [AI provider prompt caching](FlowBlox.Core/Models/FlowBlocks/AIRemote/Providers/README.md)
+  for the current implementation, Assistant history retention, and requirements for new providers.
+- See [AI Assistant processing and context lifecycle](FlowBlox.AIAssistant/Services/README.md)
+  for tool rounds, message construction, explanations, history selection, summarization, and compaction.
+
 ## FlowBlock UI Generation Model
 - FlowBlock property UIs are generated via attributes (annotation-driven UI).
 - Main pipeline:
@@ -179,6 +190,10 @@ This file summarizes core project conventions for AI/coding agents working in th
 - Environment prerequisites cover installed tools, drivers, native runtimes and model files. Missing properties, API keys or associations use standard annotation validation and ordinary exceptions/notifications, never environment-setup exceptions.
 
 ## Practical Agent Rules
+
+### Requested diff and commit comments
+- When a developer asks for a comment summarizing the current diff or changes, write it in English and separate the individual points with semicolons (`;`).
+- Follow the requested length; provide the comment as copyable text.
 
 ### Releases and version tags
 - Before handling a release or version-tag request, read `docs/releases.md`.

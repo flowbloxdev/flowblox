@@ -63,6 +63,22 @@ public sealed class AnthropicCacheRequestTests
         Assert.IsNotNull(body["system"]![2]!["cache_control"]);
     }
 
+    [TestMethod]
+    public void SerializedRequest_MixedRetainedKindsPinOnlyBootstrapAndLastDynamicSystemBlock()
+    {
+        var first = Serialize(BuildAssistantRequest(["Explanation 1", "Type information 1", "Explanation 2"], 0));
+        var next = Serialize(BuildAssistantRequest(["Explanation 1", "Type information 1", "Explanation 2", "Type information 2"], 0));
+        CollectionAssert.AreEqual(new[] { "System instructions", new string('b', 24000), "Explanation 1", "Type information 1", "Explanation 2", "Type information 2" },
+            next["system"]!.Select(block => block.Value<string>("text")).ToArray());
+        Assert.IsNotNull(next["system"]![1]!["cache_control"]);
+        Assert.AreEqual("ephemeral", next["system"]!.Last!["cache_control"]!["type"]!.Value<string>());
+        Assert.IsTrue(next["system"]!.Skip(2).SkipLast(1).All(block => block["cache_control"]?.Type is null or JTokenType.Null));
+        CollectionAssert.AreEqual(first["system"]!.Select(block => block.Value<string>("text")).ToArray(),
+            next["system"]!.Take(first["system"]!.Count()).Select(block => block.Value<string>("text")).ToArray());
+        Assert.AreEqual(3, next.Descendants().OfType<JProperty>().Count(property =>
+            property.Name == "cache_control" && property.Value.Type == JTokenType.Object));
+    }
+
     private static AIChatRequest BuildAssistantRequest(string[] explanations, int preloadedCount)
     {
         return AssistantChatRequestBuilder.Build(
@@ -97,8 +113,8 @@ public sealed class AnthropicCacheRequestTests
     public void SerializedRequest_PinsLastStableSystemBlockAndLastConversationBlock(int kind)
     {
         var request = new AIChatRequest();
-        request.SystemMessages.Add(new AIChatMessage { Content = "Bootstrap", CacheBehavior = AIChatCacheBehavior.PreferCache });
-        request.SystemMessages.Add(new AIChatMessage { Content = "Explanation", CacheBehavior = AIChatCacheBehavior.PreferCache });
+        request.SystemMessages.Add(new AIChatMessage { Content = "Bootstrap" });
+        request.SystemMessages.Add(new AIChatMessage { Content = "Explanation" });
         request.Messages.Add(new AIChatMessage { Role = "user", Content = "Summary" });
         var semantic = new ChatMessageContent(AuthorRole.Tool, new ChatMessageContentItemCollection());
         if (kind == 2)
@@ -126,7 +142,5 @@ public sealed class AnthropicCacheRequestTests
         var last = body["messages"]!.Last!["content"]!.Last!;
         Assert.AreEqual("ephemeral", last["cache_control"]!["type"]!.Value<string>());
         Assert.AreEqual(kind == 2 ? "tool_use" : kind == 1 ? "tool_result" : "text", last["type"]!.Value<string>());
-        Assert.IsTrue(request.SystemMessages.All(x => x.CacheBehavior == AIChatCacheBehavior.PreferCache));
-        Assert.AreEqual(AIChatCacheBehavior.Default, request.Messages.Last().CacheBehavior);
     }
 }

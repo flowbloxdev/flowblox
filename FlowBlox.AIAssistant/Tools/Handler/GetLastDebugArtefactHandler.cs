@@ -4,8 +4,11 @@ using System.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect the last debug run and result datasets.")]
     internal sealed class GetLastDebugArtefactHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "GetLastDebugArtefact";
 
         public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(

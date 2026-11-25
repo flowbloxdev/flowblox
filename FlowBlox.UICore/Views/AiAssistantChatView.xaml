@@ -189,18 +189,28 @@
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center" />
                 </Button>
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <iconPacks:PackIconMaterial Kind="ChartDonut"
-                                                Width="16"
-                                                Height="16"
-                                                Margin="0,0,6,0"
-                                                Foreground="#FF2F6FA8" />
-                    <TextBlock Text="{Binding EstimatedCostText}"
-                               Foreground="#FF244B66"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center" />
-                </StackPanel>
+                <WrapPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="0,2,16,2">
+                        <iconPacks:PackIconMaterial Kind="CurrencyUsd"
+                                                    Width="16"
+                                                    Height="16"
+                                                    Margin="0,0,6,0"
+                                                    Foreground="#FF9A741B"
+                                                    VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding EstimatedCostText}"
+                                   Foreground="#FF244B66"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,2"
+                                ToolTip="{x:Static resources:AiAssistantChatView.Tooltip_CacheSavings}">
+                        <iconPacks:PackIconMaterial Kind="PiggyBankOutline"
+                                                    Width="16" Height="16" Margin="0,0,6,0"
+                                                    Foreground="#FF287443" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding CacheSavingsText}" Foreground="#FF287443"
+                                   FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    </StackPanel>
+                </WrapPanel>
             </DockPanel>
         </Border>
 

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Resolve an associated FlowBlock property.")]
     internal sealed class ResolveAssociatedFlowBlockHandler : ToolHandlerBase
     {
         public override string Name => "ResolveAssociatedFlowBlock";

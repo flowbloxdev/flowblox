@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Discover templates for a property toolbox category.")]
     internal sealed class GetToolboxEntriesHandler : ToolHandlerBase
     {
         public override string Name => "GetToolboxEntries";

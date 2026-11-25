@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Connect two FlowBlocks.")]
     internal sealed class ConnectFlowBlocksHandler : ConnectDisconnectFlowBlocksHandlerBase
     {
         public override string Name => "ConnectFlowBlocks";

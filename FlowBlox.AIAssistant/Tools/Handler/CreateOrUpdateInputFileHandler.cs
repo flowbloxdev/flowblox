@@ -7,6 +7,7 @@ using System.Text;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Create or update a managed input file.")]
     internal sealed class CreateOrUpdateInputFileHandler : ToolHandlerBase
     {
         private static readonly string[] SupportedConverters =
@@ -14,6 +15,8 @@ namespace FlowBlox.AIAssistant.Tools.Handler
             Csv2XlsxConverter.Name,
             Csv2XlsConverter.Name
         ];
+
+        public override AssistantScope Scope => AssistantScope.Project;
 
         public override string Name => "CreateOrUpdateInputFile";
 

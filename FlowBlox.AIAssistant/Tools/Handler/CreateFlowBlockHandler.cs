@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Create a FlowBlock.")]
     internal sealed class CreateFlowBlockHandler : ToolHandlerBase
     {
+        public override AssistantScope Scope => AssistantScope.Project;
+
         public override string Name => "CreateFlowBlock";
         public override bool IsLayoutRelevantForAutoAdjustment => true;
 

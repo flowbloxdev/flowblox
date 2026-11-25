@@ -126,10 +126,10 @@ namespace FlowBlox.UICore.Resolver
                 var factory = new AvalonEditTextBoxFactory(property, target, readOnly);
                 baseTextBox = factory.Create(textAttribute);
             }
-            else if (baseTextBox == null && textAttribute?.MultiLine == true)
+            else if (baseTextBox == null && (textAttribute?.MultiLine == true || !string.IsNullOrEmpty(textAttribute?.IsMultilineMember)))
             {
                 var factory = new MultilineTextBoxFactory(property, target, readOnly);
-                baseTextBox = factory.Create();
+                baseTextBox = factory.Create(textAttribute);
             }
             else if (baseTextBox == null)
             {

@@ -100,13 +100,10 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 return;
             }
 
-            AssistantSessionContentStore.Clear(key);
             SkillProjectSessionStore.Clear(key);
             AiAssistantProjectRunState.Clear(key);
             AiAssistantTestExecutionState.Clear(key);
         }
-
-        public static AssistantSessionContentCache CurrentContentCache => AssistantSessionContentStore.Get(CurrentSessionGuid);
 
         public static string CurrentSessionGuid => GetCurrentSessionCacheKey();
 
@@ -115,6 +112,11 @@ namespace FlowBlox.AIAssistant.Tools.Util
         private static readonly AsyncLocal<AssistantComponentContext?> ComponentScope = new();
 
         public static AssistantComponentContext? CurrentComponentContext => ComponentScope.Value;
+
+        public static AssistantScope CurrentAssistantScope =>
+            CurrentComponentContext == null
+                ? AssistantScope.Project
+                : AssistantScope.Component;
 
         public static IDisposable BeginComponentScope(AssistantComponentContext? context)
         {

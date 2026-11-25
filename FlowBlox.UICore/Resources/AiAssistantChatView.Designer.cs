@@ -136,6 +136,28 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cache savings: {0} ähnelt.
+        /// </summary>
+        public static string CacheSavings_Format
+        {
+            get
+            {
+                return ResourceManager.GetString("CacheSavings_Format", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cache savings: {0} ({1}) ähnelt.
+        /// </summary>
+        public static string CacheSavings_WithRate_Format
+        {
+            get
+            {
+                return ResourceManager.GetString("CacheSavings_WithRate_Format", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Copy ähnelt.
         /// </summary>
         public static string ContextMenu_Copy
@@ -509,6 +531,17 @@ namespace FlowBlox.UICore.Resources
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated savings in USD compared with the same usage without caching. The percentage refers to the cost without caching. Missing usage or pricing data is shown as unavailable. ähnelt.
+        /// </summary>
+        public static string Tooltip_CacheSavings
+        {
+            get
+            {
+                return ResourceManager.GetString("Tooltip_CacheSavings", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Configure AI Assistant ähnelt.
         /// </summary>

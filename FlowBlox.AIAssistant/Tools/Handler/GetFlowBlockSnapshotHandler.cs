@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Inspect a FlowBlock snapshot.")]
     internal sealed class GetFlowBlockSnapshotHandler : ToolHandlerBase
     {
         public override string Name => "GetFlowBlockSnapshot";

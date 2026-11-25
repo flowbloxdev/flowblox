@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
+    [ToolPurpose("Execute generation strategies for a FlowBlock.")]
     internal sealed class RunGenerationStrategiesHandler : ToolHandlerBase
     {
         public override string Name => "RunGenerationStrategies";
