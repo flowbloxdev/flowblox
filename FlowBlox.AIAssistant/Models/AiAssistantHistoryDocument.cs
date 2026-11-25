@@ -16,7 +16,9 @@ namespace FlowBlox.AIAssistant.Models
         public string LastContextJsonHash { get; set; } = string.Empty;
         public string ConversationSummary { get; set; } = string.Empty;
         public int SummarizedMessageCount { get; set; }
-        public int EstimatedUsedTokens { get; set; }
+        public int CurrentContextTokens { get; set; }
+        public int? EffectiveContextLimit { get; set; }
+        public AssistantSessionUsage Usage { get; set; } = new();
         public List<string> LoadedExplanationKeys { get; set; } = new();
         public bool ShouldSerializeLoadedExplanationKeys() => false;
         public List<AssistantSessionMessage> SessionMessages { get; set; } = new();

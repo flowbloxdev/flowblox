@@ -30,11 +30,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
         [Display(Name = "AIProvider_DefaultModel", Description = "AIProvider_DefaultModel_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         public string DefaultModel { get; set; }
 
-        [Display(Name = "AIProvider_EstimatedSystemPromptCacheSavingsRate", Description = "AIProvider_EstimatedSystemPromptCacheSavingsRate_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 2)]
-        [Range(0d, 1d)]
-        [FlowBloxUI(UISelectionButtons.None)]
-        public double EstimatedSystemPromptCacheSavingsRate { get; set; }
-
         [Display(Name = "AIProvider_ReasoningEffort", Description = "AIProvider_ReasoningEffort_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 3)]
         [ActivationCondition(ActivationMethod = nameof(IsReasoningEffortActive))]
         public AIReasoningEffort ReasoningEffort { get; set; }

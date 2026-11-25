@@ -23,5 +23,4 @@ public sealed record AssistantDebugSnapshot(
     string Summary,
     IReadOnlyList<AssistantDebugHistoryMessage> History,
     IReadOnlyList<AssistantSystemMessage> SystemMessages,
-    double CharactersPerToken,
-    double EstimatedCacheSavingsRate);
+    double CharactersPerToken);

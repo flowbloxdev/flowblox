@@ -50,7 +50,6 @@ namespace FlowBlox.UICore.ViewModels
         private AiAssistantHistoryDocument? _currentHistory;
         private string? _currentHistoryFilePath;
         private bool _canGoBackToHistory;
-        private int _estimatedUsedTokens;
         private string _communicationStatusText = string.Empty;
         private bool _wasPaused;
 
@@ -72,7 +71,7 @@ namespace FlowBlox.UICore.ViewModels
         public RelayCommand OpenDebugToolsCommand { get; }
         public RelayCommand UndoProjectStateCommand { get; }
         public RelayCommand RedoProjectStateCommand { get; }
-        public RelayCommand ResetTokenUsageCommand { get; }
+        public RelayCommand ResetSessionUsageCommand { get; }
 
         public string CurrentInput
         {
@@ -146,23 +145,7 @@ namespace FlowBlox.UICore.ViewModels
                 FlowBloxResourceUtil.GetLocalizedString("Header_ComponentDescription", typeof(Resources.AiAssistantChatView)),
                 ComponentContext.Target.Name)
             : FlowBloxResourceUtil.GetLocalizedString("Header_Description", typeof(Resources.AiAssistantChatView));
-        public int EstimatedUsedTokens
-        {
-            get => _estimatedUsedTokens;
-            private set
-            {
-                if (_estimatedUsedTokens == value)
-                    return;
-
-                _estimatedUsedTokens = Math.Max(0, value);
-                OnPropertyChanged(nameof(EstimatedUsedTokens));
-                OnPropertyChanged(nameof(HasEstimatedUsedTokens));
-                OnPropertyChanged(nameof(EstimatedUsedTokensText));
-                ResetTokenUsageCommand?.Invalidate();
-            }
-        }
-
-        public bool HasEstimatedUsedTokens => EstimatedUsedTokens > 0;
+        public bool HasSessionUsage => _service.SessionUsage.Requests > 0;
         public string CommunicationStatusText
         {
             get => _communicationStatusText;
@@ -180,10 +163,12 @@ namespace FlowBlox.UICore.ViewModels
 
         public bool HasCommunicationStatus => !string.IsNullOrWhiteSpace(CommunicationStatusText);
 
-        public string EstimatedUsedTokensText => string.Format(
+        public string EstimatedCostText => string.Format(
             CultureInfo.CurrentCulture,
             FlowBloxResourceUtil.GetLocalizedString("TokenMonitor_Format", typeof(Resources.AiAssistantChatView)),
-            EstimatedUsedTokens);
+            _service.SessionUsage.UnpricedRequests > 0
+                ? FlowBloxResourceUtil.GetLocalizedString("Cost_Unavailable", typeof(Resources.AiAssistantChatView))
+                : "$" + _service.SessionUsage.EstimatedCost.ToString("0.00", CultureInfo.InvariantCulture));
 
         public bool CanUndoProjectState =>
             !IsBusy &&
@@ -219,7 +204,7 @@ namespace FlowBlox.UICore.ViewModels
                 toolApi,
                 FlowBloxLogManager.Instance.GetLogger());
             _service.TranscriptLineAdded += Service_TranscriptLineAdded;
-            _service.EstimatedUsedTokensChanged += Service_EstimatedUsedTokensChanged;
+            _service.SessionUsageChanged += Service_SessionUsageChanged;
             _service.CommunicationStatusChanged += Service_CommunicationStatusChanged;
             _service.ConversationSummaryChanged += Service_ConversationSummaryChanged;
             _service.BeforeAutomaticLayoutAdjustment += Service_BeforeAutomaticLayoutAdjustment;
@@ -238,7 +223,7 @@ namespace FlowBlox.UICore.ViewModels
                 () => DebugToolsRequested?.Invoke(this, EventArgs.Empty));
             UndoProjectStateCommand = new RelayCommand(async () => await UndoProjectStateAsync(), () => CanUndoProjectState);
             RedoProjectStateCommand = new RelayCommand(async () => await RedoProjectStateAsync(), () => CanRedoProjectState);
-            ResetTokenUsageCommand = new RelayCommand(ResetTokenUsage, () => HasEstimatedUsedTokens);
+            ResetSessionUsageCommand = new RelayCommand(ResetSessionUsage, () => HasSessionUsage);
 
             if (_runtimeStateService != null)
             {
@@ -537,15 +522,21 @@ namespace FlowBlox.UICore.ViewModels
             AddTranscriptLine(line);
         }
 
-        private void Service_EstimatedUsedTokensChanged(object? sender, int estimatedUsedTokens)
+        private void Service_SessionUsageChanged(object? sender, EventArgs args)
         {
             if (_uiContext != null && _uiContext != SynchronizationContext.Current)
             {
-                _uiContext.Post(_ => EstimatedUsedTokens = estimatedUsedTokens, null);
+                _uiContext.Post(_ => NotifySessionUsageChanged(), null);
                 return;
             }
+            NotifySessionUsageChanged();
+        }
 
-            EstimatedUsedTokens = estimatedUsedTokens;
+        private void NotifySessionUsageChanged()
+        {
+            OnPropertyChanged(nameof(HasSessionUsage));
+            OnPropertyChanged(nameof(EstimatedCostText));
+            ResetSessionUsageCommand?.Invalidate();
         }
 
         private void Service_CommunicationStatusChanged(object? sender, AssistantCommunicationStatusChangedEventArgs e)
@@ -580,9 +571,9 @@ namespace FlowBlox.UICore.ViewModels
             NotifySummaryChanged();
         }
 
-        private void ResetTokenUsage()
+        private void ResetSessionUsage()
         {
-            _service.ResetEstimatedUsedTokens();
+            _service.ResetSessionUsage();
             SaveCurrentHistory();
         }
 
@@ -827,7 +818,7 @@ namespace FlowBlox.UICore.ViewModels
                 Transcript.Add(line);
 
             _service.RestoreSession(history);
-            EstimatedUsedTokens = _service.EstimatedUsedTokens;
+            NotifySessionUsageChanged();
             ClearCommunicationStatus();
             NotifyTranscriptStateChanged();
             CurrentInput = string.Empty;
@@ -1019,7 +1010,7 @@ namespace FlowBlox.UICore.ViewModels
                 _runtimeStateService.StateChanged -= RuntimeStateService_StateChanged;
 
             _service.TranscriptLineAdded -= Service_TranscriptLineAdded;
-            _service.EstimatedUsedTokensChanged -= Service_EstimatedUsedTokensChanged;
+            _service.SessionUsageChanged -= Service_SessionUsageChanged;
             _service.CommunicationStatusChanged -= Service_CommunicationStatusChanged;
             _service.ConversationSummaryChanged -= Service_ConversationSummaryChanged;
             _service.BeforeAutomaticLayoutAdjustment -= Service_BeforeAutomaticLayoutAdjustment;

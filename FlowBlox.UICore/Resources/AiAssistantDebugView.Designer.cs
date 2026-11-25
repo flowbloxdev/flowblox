@@ -92,7 +92,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Locally estimated context: {0:N0} tokens (system + summary + active history) · Provider cache savings assumption: {1:P0}. Actual request history may be smaller due to window selection. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Context estimate: {0:N0} tokens · Effective input limit: {1:N0} tokens. Cached tokens count in full. ähnelt.
         /// </summary>
         public static string ContextStatistics
         {
@@ -165,6 +165,17 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("Pair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Processed tokens: {0:N0} ähnelt.
+        /// </summary>
+        public static string ProcessedTokens
+        {
+            get
+            {
+                return ResourceManager.GetString("ProcessedTokens", resourceCulture);
             }
         }
         
@@ -279,7 +290,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die System messages: {0:N0} tokens · Estimated after caching: {1:N0} tokens ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die System messages: {0:N0} tokens ähnelt.
         /// </summary>
         public static string SystemStatistics
         {
@@ -330,6 +341,67 @@ namespace FlowBlox.UICore.Resources
             get
             {
                 return ResourceManager.GetString("TypeInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die unavailable / incomplete ähnelt.
+        /// </summary>
+        public static string Unavailable
+        {
+            get
+            {
+                return ResourceManager.GetString("Unavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Session Usage ähnelt.
+        /// </summary>
+        public static string Usage
+        {
+            get
+            {
+                return ResourceManager.GetString("Usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Measured session tokens, estimated USD costs and current context ähnelt.
+        /// </summary>
+        public static string UsageDescription
+        {
+            get
+            {
+                return ResourceManager.GetString("UsageDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated Cost: {0}
+        ///Cost Without Caching: {1}
+        ///Saved By Caching: {2} ({3})
+        ///
+        ///Context Window
+        ///Current Context: {4:N0} / {5:N0} tokens ({6:P1})
+        ///
+        ///Cumulative Token Usage
+        ///Total Input: {7:N0}
+        ///Cached Input: {8:N0}
+        ///Uncached Input: {9:N0}
+        ///Cache Write: {10:N0}
+        ///Output: {11:N0}
+        ///Total Processed: {12:N0}
+        ///Cache Hit Rate: {13}
+        ///
+        ///Unpriced requests: {14:N0}
+        ///Requests with incomplete usage: {15:N0} ähnelt.
+        /// </summary>
+        public static string UsageDetails
+        {
+            get
+            {
+                return ResourceManager.GetString("UsageDetails", resourceCulture);
             }
         }
         

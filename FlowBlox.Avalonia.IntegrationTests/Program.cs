@@ -13,6 +13,7 @@ internal static class Program
         // metadata. WPF otherwise resolves /Icons/... against this runner executable.
         System.Reflection.Assembly.SetEntryAssembly(typeof(AvaloniaDesktop.App).Assembly);
         var invalidMode = args.Length == 3
+            && args[2] != "--assistant-project-live"
             && args[2] != "--component-assistant-only"
             && args[2] != "--component-assistant-live"
             && args[2] != "--project-space-only"
@@ -22,10 +23,11 @@ internal static class Program
             && args[2] != "--execution-views-only"
             && args[2] != "--password-editors-only"
             && args[2] != "--layout-save"
+            && args[2] != "--save-only"
             && args[2] != "--quick-starts-only";
         if (args.Length < 2 || args.Length > 3 || invalidMode)
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--component-assistant-only|--component-assistant-live|--project-space-only|--field-selection-only|--list-view-edit-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save]");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--assistant-project-live|--component-assistant-only|--component-assistant-live|--project-space-only|--field-selection-only|--list-view-edit-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save|--save-only]");
             return 2;
         }
 
@@ -48,8 +50,10 @@ internal static class Program
             {
                 WorkspaceDirectory = directory,
                 EnableInteractiveStartup = false,
-                OnStarted = async window => passed = args.Length == 3 && args[2] == "--layout-save"
-                    ? await new WorkspaceIntegrationChecks(window).LayoutAndSaveAsync(directory, sourceProjectPath)
+                OnStarted = async window => passed = args.Length == 3 && args[2] == "--assistant-project-live"
+                    ? await new WorkspaceIntegrationChecks(window).RunAssistantProjectLiveAsync(directory)
+                    : args.Length == 3 && (args[2] == "--layout-save" || args[2] == "--save-only")
+                    ? await new WorkspaceIntegrationChecks(window).LayoutAndSaveAsync(directory, sourceProjectPath, args[2] == "--layout-save")
                     : args.Length == 3 && args[2].StartsWith("--component-assistant", StringComparison.Ordinal)
                         ? await new WorkspaceIntegrationChecks(window).RunComponentAssistantAsync(directory, args[2] == "--component-assistant-live")
                     : await new WorkspaceIntegrationChecks(window).RunAsync(

@@ -44,7 +44,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
 
             var organizationId = this.Resolve(x => x.OrganizationIdForRequest);
             var timeoutSeconds = ResolveTimeoutSeconds(request);
-            using var httpClient = new HttpClient
+            using var usageCapture = new AIUsageCaptureHandler(false);
+            using var httpClient = new HttpClient(usageCapture)
             {
                 Timeout = TimeSpan.FromSeconds(timeoutSeconds)
             };
@@ -68,6 +69,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
             {
                 Success = true,
                 Text = response?.Content ?? string.Empty,
+                Usage = usageCapture.Usage,
                 PromptTokens = usage.PromptTokens,
                 CompletionTokens = usage.CompletionTokens
             };

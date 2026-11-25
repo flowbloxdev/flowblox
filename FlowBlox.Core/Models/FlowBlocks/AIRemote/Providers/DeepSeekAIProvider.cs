@@ -17,7 +17,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         public DeepSeekAIProvider() : base("https://api.deepseek.com", "deepseek-flash")
         {
-            EstimatedSystemPromptCacheSavingsRate = 0.60d;
         }
 
         protected override string GetReasoningEffortValue()

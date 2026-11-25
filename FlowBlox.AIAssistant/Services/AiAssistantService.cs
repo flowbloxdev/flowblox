@@ -31,6 +31,7 @@ namespace FlowBlox.AIAssistant.Services
             "Do not write prose outside the JSON object.";
 
         private readonly IAiExecutor _executor;
+        private readonly IModelPricingCatalogueService _pricingCatalogue;
         private readonly IFlowBloxAIToolApi _tools;
         private readonly IAiResponseInstructionParserService _instructionParser;
         private readonly AssistantOutputFormatFeedbackQueue _outputFormatFeedbackQueue;
@@ -38,12 +39,13 @@ namespace FlowBlox.AIAssistant.Services
         private readonly Func<AssistantConfiguration>? _configurationProvider;
         private readonly object _sessionSync = new();
         private int _activeRunCount;
+        private ModelPricing? _currentModelPricing;
         private AssistantSessionState? _session;
 
         public AssistantComponentContext? ComponentContext { get; set; }
 
         public event EventHandler<AssistantTranscriptLine>? TranscriptLineAdded;
-        public event EventHandler<int>? EstimatedUsedTokensChanged;
+        public event EventHandler? SessionUsageChanged;
         public event EventHandler<AssistantCommunicationStatusChangedEventArgs>? CommunicationStatusChanged;
         public event EventHandler? DebugStateChanged;
         public event EventHandler? ConversationSummaryChanged;
@@ -53,8 +55,10 @@ namespace FlowBlox.AIAssistant.Services
             IAiExecutor executor,
             IFlowBloxAIToolApi tools,
             ILogger? logger = null,
-            Func<AssistantConfiguration>? configurationProvider = null)
+            Func<AssistantConfiguration>? configurationProvider = null,
+            IModelPricingCatalogueService? pricingCatalogue = null)
         {
+            _pricingCatalogue = pricingCatalogue ?? FlowBloxServiceLocator.Instance.GetService<IModelPricingCatalogueService>();
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
             _tools = tools ?? throw new ArgumentNullException(nameof(tools));
             _instructionParser = FlowBloxServiceLocator.Instance.GetService<IAiResponseInstructionParserService>();
@@ -65,7 +69,6 @@ namespace FlowBlox.AIAssistant.Services
 
         public void ResetSession()
         {
-            var estimatedUsedTokens = 0;
             lock (_sessionSync)
             {
                 if (_session != null)
@@ -74,7 +77,11 @@ namespace FlowBlox.AIAssistant.Services
                 _session = null;
             }
 
-            RaiseEstimatedUsedTokensChanged(estimatedUsedTokens);
+            CurrentContextTokens = 0;
+            _currentModelPricing = null;
+            var budget = BuildTokenBudget(GetConfiguration(out _));
+            EffectiveContextLimit = Math.Max(0, budget.MaxContextTokens - budget.ReservedResponseTokens);
+            RaiseSessionUsageChanged();
             ConversationSummaryChanged?.Invoke(this, EventArgs.Empty);
             DebugStateChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -82,6 +89,11 @@ namespace FlowBlox.AIAssistant.Services
 
         public void RestoreSession(AiAssistantHistoryDocument history)
         {
+            _currentModelPricing = null;
+            CurrentContextTokens = Math.Max(0, history?.CurrentContextTokens ?? 0);
+            var configuration = GetConfiguration(out _);
+            var budget = BuildTokenBudget(configuration);
+            EffectiveContextLimit = history?.EffectiveContextLimit ?? Math.Max(0, budget.MaxContextTokens - budget.ReservedResponseTokens);
             lock (_sessionSync)
             {
                 if (_session != null)
@@ -92,7 +104,7 @@ namespace FlowBlox.AIAssistant.Services
                     ConversationSummary = history?.ConversationSummary ?? string.Empty,
                     SummarizedMessageCount = Math.Max(0, history?.SummarizedMessageCount ?? 0),
                     LastContextJsonHash = history?.LastContextJsonHash ?? string.Empty,
-                    EstimatedUsedTokens = Math.Max(0, history?.EstimatedUsedTokens ?? 0)
+                    Usage = history?.Usage?.Clone() ?? new AssistantSessionUsage()
                 };
 
                 var sessionMessages = history?.SessionMessages?
@@ -104,7 +116,7 @@ namespace FlowBlox.AIAssistant.Services
                 session.SummarizedMessageCount = Math.Clamp(session.SummarizedMessageCount, 0, session.Messages.Count);
                 session.RuntimeBindingsReset = session.Messages.Count > 0 || !string.IsNullOrWhiteSpace(session.ConversationSummary);
                 _session = session;
-                RaiseEstimatedUsedTokensChanged(session.EstimatedUsedTokens);
+                RaiseSessionUsageChanged();
             }
 
             ConversationSummaryChanged?.Invoke(this, EventArgs.Empty);
@@ -122,7 +134,9 @@ namespace FlowBlox.AIAssistant.Services
                 history.LastContextJsonHash = session.LastContextJsonHash;
                 history.ConversationSummary = session.ConversationSummary;
                 history.SummarizedMessageCount = session.SummarizedMessageCount;
-                history.EstimatedUsedTokens = session.EstimatedUsedTokens;
+                history.Usage = session.Usage.Clone();
+                history.CurrentContextTokens = CurrentContextTokens;
+                history.EffectiveContextLimit = EffectiveContextLimit;
                 history.LoadedExplanationKeys = []; // Ignore legacy persisted runtime bindings.
                 history.SessionMessages = session.Messages
                     .Where(x => !string.IsNullOrWhiteSpace(x?.CompleteMessage))
@@ -131,14 +145,17 @@ namespace FlowBlox.AIAssistant.Services
             }
         }
 
-        public int EstimatedUsedTokens
+        public AssistantSessionUsage SessionUsage
         {
             get
             {
                 lock (_sessionSync)
-                    return Math.Max(0, _session?.EstimatedUsedTokens ?? 0);
+                    return (_session?.Usage ?? new AssistantSessionUsage()).Clone();
             }
         }
+
+        public int CurrentContextTokens { get; private set; }
+        public int EffectiveContextLimit { get; private set; } = 48000 - 4096;
 
         public string CurrentConversationSummary
         {
@@ -149,17 +166,13 @@ namespace FlowBlox.AIAssistant.Services
             }
         }
 
-        public void ResetEstimatedUsedTokens()
+        public void ResetSessionUsage()
         {
-            int value;
             lock (_sessionSync)
-            {
-                var session = GetOrCreateSession();
-                session.EstimatedUsedTokens = 0;
-                value = session.EstimatedUsedTokens;
-            }
+                GetOrCreateSession().Usage = new AssistantSessionUsage();
 
-            RaiseEstimatedUsedTokensChanged(value);
+            RaiseSessionUsageChanged();
+            DebugStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public AssistantConfiguration GetConfiguration(out string error)
@@ -206,19 +219,9 @@ namespace FlowBlox.AIAssistant.Services
             }
         }
 
-        private static AssistantTokenBudget BuildTokenBudget(AssistantConfiguration config)
+        private AssistantTokenBudget BuildTokenBudget(AssistantConfiguration configuration)
         {
-            ArgumentNullException.ThrowIfNull(config);
-
-            return new AssistantTokenBudget
-            {
-                MaxContextTokens = Math.Max(AssistantConfigurationLimits.MinContextTokens, config.MaxContextTokens),
-                ReservedResponseTokens = Math.Max(AssistantConfigurationLimits.MinReservedResponseTokens, config.ReservedResponseTokens),
-                ApproximateCharactersPerToken = Math.Clamp(
-                    config.ApproximateCharactersPerToken,
-                    AssistantConfigurationLimits.MinApproximateCharactersPerToken,
-                    AssistantConfigurationLimits.MaxApproximateCharactersPerToken)
-            };
+            return AssistantTokenBudget.Create(configuration, _currentModelPricing, _session?.TokenEstimateMultiplier ?? 1d);
         }
 
         public async Task<AssistantResult> ExecutePromptAsync(
@@ -269,6 +272,12 @@ namespace FlowBlox.AIAssistant.Services
                 config.SummaryCompactionRate,
                 AssistantConfigurationLimits.MinSummaryCompactionRate,
                 AssistantConfigurationLimits.MaxSummaryCompactionRate);
+            var selectedProvider = config.SelectedProvider;
+            var modelPricing = selectedProvider == null ? null : await _pricingCatalogue.GetPricingAsync(
+                selectedProvider.ProviderType,
+                selectedProvider.DefaultModel,
+                ct).ConfigureAwait(false);
+            _currentModelPricing = modelPricing;
             var tokenBudget = BuildTokenBudget(config);
             var session = GetOrCreateSession();
             lock (_sessionSync)
@@ -308,6 +317,7 @@ namespace FlowBlox.AIAssistant.Services
 
                 for (var toolRound = 1; toolRound <= maxToolRounds; toolRound++)
                 {
+                    tokenBudget = BuildTokenBudget(config);
                     ct.ThrowIfCancellationRequested();
                     if (runControl != null)
                         await PrepareRunControlForNextRoundAsync(
@@ -348,7 +358,8 @@ namespace FlowBlox.AIAssistant.Services
                         config.SelectedProvider,
                         tokenBudget,
                         session.SummarizedMessageCount,
-                        GetRuntimeSystemContents(session.SessionId));
+                        GetRuntimeSystemContents(session.SessionId),
+                        GetPreloadedRuntimeSystemMessageCount(session.SessionId));
                     summaryTargetMessageCount = Math.Max(
                         summaryTargetMessageCount,
                         CalculateSummaryCompactionTarget(
@@ -377,7 +388,8 @@ namespace FlowBlox.AIAssistant.Services
                         config.SelectedProvider,
                         tokenBudget,
                         session.SummarizedMessageCount,
-                        GetRuntimeSystemContents(session.SessionId));
+                        GetRuntimeSystemContents(session.SessionId),
+                        GetPreloadedRuntimeSystemMessageCount(session.SessionId));
                     var chatRequest = chatRequestResult.Request;
                     if (toolRound == 1)
                         AppendSingleSessionMessage(session, "user", initialUserPrompt);
@@ -387,7 +399,6 @@ namespace FlowBlox.AIAssistant.Services
                         config,
                         "Thinking...",
                         ct).ConfigureAwait(false);
-                    AddEstimatedTokenUsage(session, EstimateTokenUsage(chatRequest, exec, tokenBudget, config.SelectedProvider));
                     result.RawModelOutput = exec.RawOutput ?? exec.OutputText ?? string.Empty;
 
                     if (!exec.Success)
@@ -702,6 +713,11 @@ namespace FlowBlox.AIAssistant.Services
         private static IReadOnlyList<string> GetRuntimeSystemContents(string sessionId) =>
             AssistantSessionContentStore.Get(sessionId).GetSystemMessages().Select(x => x.Content).ToArray();
 
+        private int GetPreloadedRuntimeSystemMessageCount(string sessionId) =>
+            ComponentContext == null ? 0 : AssistantSessionContentStore.Get(sessionId).GetSystemMessages()
+                .TakeWhile(message => message.Key == "explanation:" + AssistantPromptCatalog.ComponentScopeKey)
+                .Count(message => !string.IsNullOrWhiteSpace(message.Content));
+
         private static IReadOnlyList<AssistantSystemMessage> CreateInitialSystemMessages(
             string systemPrompt,
             string bootstrap) =>
@@ -739,11 +755,7 @@ namespace FlowBlox.AIAssistant.Services
                         index < session.SummarizedMessageCount))
                         .ToArray(),
                     systemMessages,
-                    BuildTokenBudget(configuration).ApproximateCharactersPerToken,
-                    Math.Clamp(
-                        configuration.SelectedProvider?.EstimatedSystemPromptCacheSavingsRate ?? 0d,
-                        0d,
-                        1d));
+                    BuildTokenBudget(configuration).ApproximateCharactersPerToken);
             }
         }
 
@@ -838,7 +850,6 @@ namespace FlowBlox.AIAssistant.Services
                     config,
                     "Summarize...",
                     ct).ConfigureAwait(false);
-                AddEstimatedTokenUsage(session, EstimateTokenUsage(summaryRequest, summaryResult, tokenBudget, config.SelectedProvider));
                 if (!summaryResult.Success || string.IsNullOrWhiteSpace(summaryResult.OutputText))
                 {
                     if (!string.IsNullOrWhiteSpace(summaryResult.Error))
@@ -908,7 +919,6 @@ namespace FlowBlox.AIAssistant.Services
                         config,
                         FlowBloxResourceUtil.GetLocalizedString("AiAssistantService_CompactingContext", typeof(FlowBloxTexts)),
                         ct).ConfigureAwait(false);
-                    AddEstimatedTokenUsage(session, EstimateTokenUsage(request, response, tokenBudget, config.SelectedProvider));
                     if (!response.Success || string.IsNullOrWhiteSpace(response.OutputText))
                     {
                         _logger?.Warn($"AI Assistant context compaction failed: {response.Error}");
@@ -998,73 +1008,14 @@ namespace FlowBlox.AIAssistant.Services
             return HashHelper.ComputeSHA256Hash(Encoding.UTF8.GetBytes(json ?? string.Empty));
         }
 
-        private void AddEstimatedTokenUsage(AssistantSessionState session, int tokenCount)
+        private static int EstimateRequestTokens(AIChatRequest request, AssistantTokenBudget budget)
         {
-            if (session == null || tokenCount <= 0)
-                return;
-
-            int newValue;
-            lock (_sessionSync)
-            {
-                session.EstimatedUsedTokens = Math.Max(0, session.EstimatedUsedTokens + tokenCount);
-                newValue = session.EstimatedUsedTokens;
-            }
-
-            RaiseEstimatedUsedTokensChanged(newValue);
+            return request.SystemMessages.Concat(request.Messages)
+                .Sum(message => budget.EstimateTokens(message.Content) + 4) + 3;
         }
 
-        private static int EstimateTokenUsage(
-            AIChatRequest request,
-            AiExecutorResult result,
-            AssistantTokenBudget tokenBudget,
-            AIProviderBase? provider)
-        {
-            if (tokenBudget == null)
-                return 0;
-
-            var promptTokens = EstimateRequestTokens(
-                request,
-                tokenBudget,
-                provider?.EstimatedSystemPromptCacheSavingsRate ?? 0d);
-            var completionTokens = result?.CompletionTokens ??
-                                   tokenBudget.EstimateTokens(result?.OutputText ?? result?.RawOutput ?? string.Empty);
-
-            return Math.Max(0, promptTokens) + Math.Max(0, completionTokens);
-        }
-
-        private static int EstimateRequestTokens(
-            AIChatRequest request,
-            AssistantTokenBudget tokenBudget,
-            double estimatedSystemPromptCacheSavingsRate)
-        {
-            if (request == null || tokenBudget == null)
-                return 0;
-
-            var tokens = 0;
-            foreach (var message in request.SystemMessages ?? Enumerable.Empty<AIChatMessage>())
-                tokens += EstimateEffectiveSystemMessageTokens(message, tokenBudget, estimatedSystemPromptCacheSavingsRate);
-
-            foreach (var message in request.Messages ?? Enumerable.Empty<AIChatMessage>())
-                tokens += tokenBudget.EstimateTokens(message?.Content);
-
-            return tokens;
-        }
-
-        private static int EstimateEffectiveSystemMessageTokens(
-            AIChatMessage message,
-            AssistantTokenBudget tokenBudget,
-            double estimatedSystemPromptCacheSavingsRate)
-        {
-            var tokens = tokenBudget.EstimateTokens(message?.Content);
-            if (tokens <= 0 || message?.CacheBehavior != AIChatCacheBehavior.PreferCache)
-                return tokens;
-
-            var savingsRate = Math.Clamp(estimatedSystemPromptCacheSavingsRate, 0d, 1d);
-            return Math.Max(0, (int)Math.Ceiling(tokens * (1d - savingsRate)));
-        }
-
-        private void RaiseEstimatedUsedTokensChanged(int estimatedUsedTokens)
-            => EstimatedUsedTokensChanged?.Invoke(this, Math.Max(0, estimatedUsedTokens));
+        private void RaiseSessionUsageChanged()
+            => SessionUsageChanged?.Invoke(this, EventArgs.Empty);
 
         private async Task<AiExecutorResult> ExecuteChatWithCommunicationStatusAsync(
             AIChatRequest request,
@@ -1075,7 +1026,40 @@ namespace FlowBlox.AIAssistant.Services
             RaiseCommunicationStatus(statusText);
             try
             {
-                return await _executor.ExecuteChatAsync(request, config, ct).ConfigureAwait(false);
+                var provider = config.SelectedProvider;
+                var pricing = provider == null ? null : await _pricingCatalogue.GetPricingAsync(
+                    provider.ProviderType,
+                    string.IsNullOrWhiteSpace(request.Model) ? provider.DefaultModel : request.Model,
+                    ct).ConfigureAwait(false);
+                _currentModelPricing = pricing;
+                var budget = BuildTokenBudget(config);
+                var outputReserve = Math.Max(budget.ReservedResponseTokens, config.MaxTokens ?? 0);
+                EffectiveContextLimit = Math.Max(0, Math.Min(
+                    budget.MaxContextTokens - outputReserve,
+                    pricing?.MaxInputTokens ?? int.MaxValue));
+                var isConversationRequest = request.Source != "FlowBloxAIAssistantSummary" &&
+                    request.Source != "FlowBloxAIAssistantCompaction";
+                if (outputReserve > 0)
+                    request.MaxTokens = Math.Min(outputReserve, pricing?.MaxOutputTokens ?? int.MaxValue);
+                var localEstimate = EstimateRequestTokens(request, budget);
+                if (isConversationRequest)
+                    CurrentContextTokens = localEstimate;
+                var response = await _executor.ExecuteChatAsync(request, config, ct).ConfigureAwait(false);
+                if (isConversationRequest && response.Usage.TotalInputTokens.HasValue)
+                    CurrentContextTokens = (int)Math.Min(int.MaxValue, response.Usage.TotalInputTokens.Value);
+                lock (_sessionSync)
+                {
+                    var session = GetOrCreateSession();
+                    session.Usage.Add(response.Usage, pricing);
+                    if (response.Usage.TotalInputTokens > 0 && localEstimate > 0 && isConversationRequest)
+                    {
+                        var observedMultiplier = budget.TokenEstimateMultiplier * response.Usage.TotalInputTokens.Value / localEstimate;
+                        session.TokenEstimateMultiplier = Math.Max(session.TokenEstimateMultiplier, Math.Clamp(observedMultiplier, 1d, 4d));
+                    }
+                }
+                RaiseSessionUsageChanged();
+                DebugStateChanged?.Invoke(this, EventArgs.Empty);
+                return response;
             }
             finally
             {
@@ -1393,7 +1377,8 @@ namespace FlowBlox.AIAssistant.Services
             public string LastSummaryCompactionAttemptKey { get; set; } = string.Empty;
             public int SummarizedMessageCount { get; set; }
             public string LastContextJsonHash { get; set; } = string.Empty;
-            public int EstimatedUsedTokens { get; set; }
+            public double TokenEstimateMultiplier { get; set; } = 1d;
+            public AssistantSessionUsage Usage { get; set; } = new();
             public List<AssistantSessionMessage> Messages { get; set; } = new();
         }
 

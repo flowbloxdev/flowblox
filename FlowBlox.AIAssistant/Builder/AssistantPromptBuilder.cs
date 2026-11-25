@@ -53,7 +53,9 @@ namespace FlowBlox.AIAssistant.Builder
                 .Replace("{{AVAILABLE_TOOLS}}", BuildToolDefinitionsText(toolDefinitions), StringComparison.Ordinal)
                 + $"\nApplication runtime started at: {AssistantSessionContentStore.ApplicationStartedAt:O}."
                 + (runtimeBindingsReset
-                    ? " Runtime system-message promotions were reset on conversation restore. Older history/summary claims about promoted types or explanations do not establish loaded state; retrieve needed content again."
+                    ? " Runtime explanation bindings were reset on conversation restore. " +
+                      "Older history/summary claims do not establish loaded explanations; retrieve needed guidance again. " +
+                      "Type schemas are provided in tool responses and can be retrieved again when needed."
                     : string.Empty);
         }
 

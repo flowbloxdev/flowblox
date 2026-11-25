@@ -67,18 +67,6 @@ public sealed class TypeDescriptionCompactionLayerTests
     }
 
     [TestMethod]
-    public async Task CompactPromotions_RoundTripSystemDeclarations_WithoutChangingRetrievalBehavior()
-    {
-        var original = await ReadPromotions(false);
-        var compact = await ReadPromotions(true);
-        CollectionAssert.AreEquivalent(original.Keys.ToArray(), compact.Keys.ToArray());
-        foreach (var key in original.Keys)
-        {
-            Assert.IsTrue(JToken.DeepEquals(original[key], Expand(compact[key])), key);
-        }
-    }
-
-    [TestMethod]
     public async Task CompactEnum_RetainsOriginalPayloadWithoutPropertySchema()
     {
         var original = await ReadType(typeof(DayOfWeek), false, false);
@@ -129,24 +117,6 @@ public sealed class TypeDescriptionCompactionLayerTests
         var response = await handler.HandleAsync(new JObject { ["typeFullName"] = type.FullName }, CancellationToken.None);
         Assert.IsTrue(response.Ok, response.Error);
         return JObject.Parse(response.Result.ToString(Formatting.None));
-    }
-
-    private static async Task<Dictionary<string, JObject>> ReadPromotions(bool compact)
-    {
-        await ReadType(typeof(WebBrowserFlowBlock), false, compact);
-        var handler = new GetTypeKindsInfoHandler();
-        var args = new JObject { ["typeFullName"] = typeof(WebBrowserFlowBlock).FullName };
-        var repeated = await handler.HandleAsync(args, CancellationToken.None);
-        Assert.IsTrue(repeated.Ok, repeated.Error);
-        Assert.IsNull(repeated.Result["kind"]);
-        Assert.IsNull(repeated.Result["propertyColumns"]);
-        var declarations = ToolHandlerUtilities.CurrentContentCache.GetSystemMessages()
-            .Where(message => message.Kind == AssistantSystemMessageKind.TypeInfo)
-            .ToDictionary(message => message.Key, message => JObject.Parse(message.Content));
-        Assert.IsTrue(declarations.Count > 0);
-        await handler.HandleAsync(args, CancellationToken.None);
-        Assert.AreEqual(declarations.Count, ToolHandlerUtilities.CurrentContentCache.GetSystemMessages().Count);
-        return declarations;
     }
 
     // Independent reader: only the transmitted schema determines column names.

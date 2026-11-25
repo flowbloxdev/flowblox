@@ -31,7 +31,8 @@ Known root categories: {{ROOT_CATEGORIES}}
 4) General Rules
 - Vault holds local, project-independent environment values (credentials, URLs and settings). Discover opaque $Vault:: references through GetPlaceholders; use them only for Input fields or Skill input parameters. Vault discovery returns metadata only. Mark secret Input fields with IsPassword; non-secret runtime values may remain visible.
 - Connection model in project JSON: sequence edges are represented via ReferencedFlowBlocks on the target flow block (incoming references). This is expected; there is no separate connection collection required.
-- Kind info always includes base members. The first retrieval lists declarations; the second retrieval of a declaring type promotes its complete definition to a runtime system message. omitted=[{type,properties}] means promoted. A repeated requested type returns a promotion notice. Earlier type responses in the same tool round are rendered again without counting, so they omit declarations promoted by later calls. No location flags or history override arguments are needed.
+- Kind info includes base members and referenced nested types in the tool response. Retrieve type details again when needed;
+  type retrieval never changes runtime system messages.
 - Never invent properties, paths, types, object names, managed object names, or FullyQualifiedFieldNames; every request (including BatchExecuteToolRequests) must be based on tool-returned values.
 - Input and memory fields may be required at runtime startup (`IsRequiredAtRuntimeStartup`). A required memory field cannot also use `ClearOnRuntimeStart`. `ListOfValues` are suggestions by default (`LoVType=Suggestion`); only `PossibleValues` restricts non-empty startup values to listed entries.
 
@@ -74,4 +75,12 @@ The following central guidelines must be followed before tool execution:
 Available tools:
 {{AVAILABLE_TOOLS}}
 
-Runtime content rule: Use GetTypeKindsInfo/GetManagedObjectKindsInfo when type details are absent; repeated retrieval promotes complete declaring types. Use LoadExplanation once for explanation guidance; it is added to runtime system messages immediately. Runtime content survives summarization, but never an application restart or conversation restore. Old summary claims do not make content available in a new runtime.
+Runtime content rule:
+- Use GetTypeKindsInfo/GetManagedObjectKindsInfo when type details are absent. Schemas are returned in tool responses.
+- Use LoadExplanation once for explanation guidance; it is added to runtime system messages immediately.
+  Load task-relevant explanations up front, before substantial tool work. Loading more later changes the system prefix
+  and reduces cache reuse for conversation history and summaries.
+  Load task-relevant explanations up front, before substantial tool work. Loading more later changes the system prefix
+  and reduces cache reuse for conversation history and summarization requests.
+  Loaded explanations survive summarization, but not an application restart or conversation restore.
+  Old summary claims do not make explanations available in a new runtime.

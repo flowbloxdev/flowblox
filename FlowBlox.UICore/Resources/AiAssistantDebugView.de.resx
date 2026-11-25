@@ -14,8 +14,8 @@
   <data name="Empty" xml:space="preserve"><value>In diesem Bereich sind noch keine Nachrichten vorhanden.</value></data>
   <data name="Tokens" xml:space="preserve"><value>Geschätzte Tokens: {0:N0}</value></data>
   <data name="HistoryStatistics" xml:space="preserve"><value>Aktive Historie: {0:N0} Tokens · Zusammengefasste Historie: {1:N0} Tokens (lokale Schätzungen)</value></data>
-  <data name="SystemStatistics" xml:space="preserve"><value>Systemnachrichten: {0:N0} Tokens · Geschätzt nach Caching: {1:N0} Tokens</value></data>
-  <data name="ContextStatistics" xml:space="preserve"><value>Lokal geschätzter Kontext: {0:N0} Tokens (System + Zusammenfassung + aktive Historie) · Angenommene Provider-Cache-Ersparnis: {1:P0}. Die tatsächliche Anfrage kann durch die Fensterauswahl weniger Historie enthalten.</value></data>
+  <data name="SystemStatistics" xml:space="preserve"><value>Systemnachrichten: {0:N0} Tokens</value></data>
+  <data name="ContextStatistics" xml:space="preserve"><value>Kontextschätzung: {0:N0} Tokens · Effektives Eingabelimit: {1:N0} Tokens. Gecachte Tokens zählen vollständig.</value></data>
   <data name="RuntimeBindingTooltip" xml:space="preserve"><value>Nur während der aktuellen Anwendungslaufzeit an diese Session gebunden. Nach einem Anwendungsneustart lädt die AI diesen Inhalt bei Bedarf erneut.</value></data>
   <data name="Active" xml:space="preserve"><value>Aktive Historie</value></data>
   <data name="Summarized" xml:space="preserve"><value>Zusammengefasste Historie</value></data>
@@ -29,4 +29,26 @@
   <data name="Explanation" xml:space="preserve"><value>Explanation</value></data>
   <data name="TypeInfo" xml:space="preserve"><value>Typinformationen</value></data>
   <data name="Runtime_Label" xml:space="preserve"><value>AI-Assistant Laufzeit</value></data>
+  <data name="Usage" xml:space="preserve"><value>Sitzungsverbrauch</value></data>
+  <data name="UsageDescription" xml:space="preserve"><value>Gemessener Sitzungsverbrauch, geschätzte USD-Kosten und aktueller Kontext</value></data>
+  <data name="Unavailable" xml:space="preserve"><value>nicht verfügbar / unvollständig</value></data>
+  <data name="UsageDetails" xml:space="preserve"><value>Geschätzte Kosten: {0}
+Kosten ohne Caching: {1}
+Durch Caching gespart: {2} ({3})
+
+Kontextfenster
+Aktueller Kontext: {4:N0} / {5:N0} Tokens ({6:P1})
+
+Kumulierter Tokenverbrauch
+Eingabe gesamt: {7:N0}
+Cache-Lesezugriffe: {8:N0}
+Ungecachte Eingabe: {9:N0}
+Cache-Schreibzugriffe: {10:N0}
+Ausgabe: {11:N0}
+Verarbeitet gesamt: {12:N0}
+Cache-Trefferrate: {13}
+
+Anfragen ohne Kostenermittlung: {14:N0}
+Anfragen mit unvollständigem Verbrauch: {15:N0}</value></data>
+  <data name="ProcessedTokens" xml:space="preserve"><value>Verarbeitete Tokens: {0:N0}</value></data>
 </root>

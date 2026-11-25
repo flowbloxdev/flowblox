@@ -15,7 +15,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         public MistralAIProvider() : base("https://api.mistral.ai/v1", "mistral-large-4")
         {
-            EstimatedSystemPromptCacheSavingsRate = 0.50d;
         }
     }
 }

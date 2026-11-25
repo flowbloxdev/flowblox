@@ -14,8 +14,8 @@
   <data name="Empty" xml:space="preserve"><value>No messages available in this area yet.</value></data>
   <data name="Tokens" xml:space="preserve"><value>Estimated tokens: {0:N0}</value></data>
   <data name="HistoryStatistics" xml:space="preserve"><value>Active history: {0:N0} tokens · Summarized history: {1:N0} tokens (local estimates)</value></data>
-  <data name="SystemStatistics" xml:space="preserve"><value>System messages: {0:N0} tokens · Estimated after caching: {1:N0} tokens</value></data>
-  <data name="ContextStatistics" xml:space="preserve"><value>Locally estimated context: {0:N0} tokens (system + summary + active history) · Provider cache savings assumption: {1:P0}. Actual request history may be smaller due to window selection.</value></data>
+  <data name="SystemStatistics" xml:space="preserve"><value>System messages: {0:N0} tokens</value></data>
+  <data name="ContextStatistics" xml:space="preserve"><value>Context estimate: {0:N0} tokens · Effective input limit: {1:N0} tokens. Cached tokens count in full.</value></data>
   <data name="RuntimeBindingTooltip" xml:space="preserve"><value>Bound to this session only during the current application runtime. After restarting the application, the AI retrieves this content again when needed.</value></data>
   <data name="Active" xml:space="preserve"><value>Active history</value></data>
   <data name="Summarized" xml:space="preserve"><value>Summarized history</value></data>
@@ -29,4 +29,26 @@
   <data name="Explanation" xml:space="preserve"><value>Explanation</value></data>
   <data name="TypeInfo" xml:space="preserve"><value>Type info</value></data>
   <data name="Runtime_Label" xml:space="preserve"><value>AI-Assistant Runtime</value></data>
+  <data name="Usage" xml:space="preserve"><value>Session Usage</value></data>
+  <data name="UsageDescription" xml:space="preserve"><value>Measured session tokens, estimated USD costs and current context</value></data>
+  <data name="Unavailable" xml:space="preserve"><value>unavailable / incomplete</value></data>
+  <data name="UsageDetails" xml:space="preserve"><value>Estimated Cost: {0}
+Cost Without Caching: {1}
+Saved By Caching: {2} ({3})
+
+Context Window
+Current Context: {4:N0} / {5:N0} tokens ({6:P1})
+
+Cumulative Token Usage
+Total Input: {7:N0}
+Cached Input: {8:N0}
+Uncached Input: {9:N0}
+Cache Write: {10:N0}
+Output: {11:N0}
+Total Processed: {12:N0}
+Cache Hit Rate: {13}
+
+Unpriced requests: {14:N0}
+Requests with incomplete usage: {15:N0}</value></data>
+  <data name="ProcessedTokens" xml:space="preserve"><value>Processed tokens: {0:N0}</value></data>
 </root>

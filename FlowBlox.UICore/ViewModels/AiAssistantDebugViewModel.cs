@@ -13,6 +13,7 @@ namespace FlowBlox.UICore.ViewModels;
 
 public enum AiAssistantDebugTopic
 {
+    Usage,
     Summary,
     History,
     SystemMessages
@@ -36,7 +37,7 @@ public sealed record AiAssistantDebugCard(
     public bool HasResponse => !string.IsNullOrEmpty(ResponsePreview);
     public string TokensText => string.Format(
             CultureInfo.CurrentCulture,
-            AiAssistantDebugViewModel.Text("Tokens"),
+            AiAssistantDebugViewModel.Text(Key == "usage" ? "ProcessedTokens" : "Tokens"),
             EstimatedTokens);
     public string PinTooltip => AiAssistantDebugViewModel.Text("RuntimeBindingTooltip");
 }
@@ -96,6 +97,7 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
         _service = service;
         Runtime = runtime;
         _dispatcher = Dispatcher.CurrentDispatcher;
+        Topics.Add(new(AiAssistantDebugTopic.Usage, Text("Usage"), Text("UsageDescription")));
         Topics.Add(new(
             AiAssistantDebugTopic.Summary,
             Text("Summary"),
@@ -152,10 +154,36 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
         ContextStatistics = string.Format(
             CultureInfo.CurrentCulture,
             Text("ContextStatistics"),
-            rawSystemTokens + summaryTokens + activeTokens,
-            _snapshot.EstimatedCacheSavingsRate);
+            _service.CurrentContextTokens > 0 ? _service.CurrentContextTokens : rawSystemTokens + summaryTokens + activeTokens,
+            _service.EffectiveContextLimit);
         switch (SelectedTopic.Topic)
         {
+            case AiAssistantDebugTopic.Usage:
+                var usage = _service.SessionUsage;
+                var unavailable = Text("Unavailable");
+                var detail = string.Format(
+                    CultureInfo.CurrentCulture,
+                    Text("UsageDetails"),
+                    usage.UnpricedRequests == 0 ? usage.EstimatedCost.ToString("C2", CultureInfo.GetCultureInfo("en-US")) : unavailable,
+                    usage.UnpricedRequests == 0 ? usage.CostWithoutCaching.ToString("C2", CultureInfo.GetCultureInfo("en-US")) : unavailable,
+                    usage.UnpricedRequests == 0 ? usage.SavedByCaching.ToString("C2", CultureInfo.GetCultureInfo("en-US")) : unavailable,
+                    usage.UnpricedRequests == 0 ? usage.CostSavingRate?.ToString("P1") ?? unavailable : unavailable,
+                    _service.CurrentContextTokens,
+                    _service.EffectiveContextLimit,
+                    _service.EffectiveContextLimit > 0 ? (double)_service.CurrentContextTokens / _service.EffectiveContextLimit : 0,
+                    usage.TotalInputTokens,
+                    usage.CachedInputTokens,
+                    usage.UncachedInputTokens,
+                    usage.CacheWriteInputTokens,
+                    usage.OutputTokens,
+                    usage.TotalTokens,
+                    usage.IncompleteUsageRequests == 0 ? usage.CacheHitRate?.ToString("P1") ?? unavailable : unavailable,
+                    usage.UnpricedRequests,
+                    usage.IncompleteUsageRequests);
+                Statistics = Text("Usage");
+                cards.Add(new("usage", Text("Usage"), Preview(detail), "", detail, Text("Usage"), (int)Math.Min(int.MaxValue, usage.TotalTokens), false,
+                    PackIconMaterialKind.InformationOutline, ""));
+                break;
             case AiAssistantDebugTopic.Summary:
                 Statistics = string.Format(
                     CultureInfo.CurrentCulture,
@@ -207,7 +235,7 @@ public sealed class AiAssistantDebugViewModel : INotifyPropertyChanged, IDisposa
                     CultureInfo.CurrentCulture,
                     Text("SystemStatistics"),
                     rawSystemTokens,
-                    (int)Math.Ceiling(rawSystemTokens * (1d - _snapshot.EstimatedCacheSavingsRate)));
+                    rawSystemTokens);
                 foreach (var message in _snapshot.SystemMessages)
                     cards.Add(new(
                         message.Key,

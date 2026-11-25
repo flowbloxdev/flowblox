@@ -3,6 +3,7 @@ using FlowBlox.AIAssistant.Services;
 using FlowBlox.Core.DependencyInjection;
 using FlowBlox.Core.Models;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
+using FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers;
 using FlowBlox.Core.Services;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -28,7 +29,8 @@ namespace FlowBlox.AIAssistant.Builder
             AIProviderBase? provider,
             AssistantTokenBudget tokenBudget,
             int summarizedMessageCount = 0,
-            IReadOnlyList<string>? runtimeSystemContents = null)
+            IReadOnlyList<string>? runtimeSystemContents = null,
+            int preloadedRuntimeSystemMessageCount = 0)
         {
             var request = new AIChatRequest();
             request.SystemMessages.Add(new AIChatMessage
@@ -43,18 +45,28 @@ namespace FlowBlox.AIAssistant.Builder
                 Content = sessionBootstrapPrompt,
                 CacheBehavior = AIChatCacheBehavior.PreferCache
             });
+            var bootstrapBoundary = request.SystemMessages[^1];
+            var runtimeMessageIndex = 0;
             foreach (var content in runtimeSystemContents ?? [])
             {
                 if (string.IsNullOrWhiteSpace(content))
                     continue;
 
-                request.SystemMessages.Add(new AIChatMessage
+                var runtimeMessage = new AIChatMessage
                 {
                     Role = "system",
                     Content = content.Trim(),
                     CacheBehavior = AIChatCacheBehavior.PreferCache
-                });
+                };
+                request.SystemMessages.Add(runtimeMessage);
+                if (runtimeMessageIndex < preloadedRuntimeSystemMessageCount)
+                    bootstrapBoundary = runtimeMessage;
+
+                runtimeMessageIndex++;
             }
+
+            if (provider is AnthropicAIProvider)
+                bootstrapBoundary.IsAnthropicBootstrapCacheBoundary = true;
 
             var summaryMessageForBudget = default(AIChatMessage);
             if (!string.IsNullOrWhiteSpace(conversationSummary))
@@ -82,7 +94,6 @@ namespace FlowBlox.AIAssistant.Builder
             var remainingHistoryTokens = CalculateRemainingHistoryTokens(
                 fixedMessagesForBudget,
                 modelPrompt,
-                provider?.EstimatedSystemPromptCacheSavingsRate ?? 0d,
                 tokenBudget);
             var latestSelection = SelectLatestMessages(
                 messagesAvailableForHistory,
@@ -309,7 +320,6 @@ namespace FlowBlox.AIAssistant.Builder
         private static int CalculateRemainingHistoryTokens(
             IReadOnlyList<AIChatMessage> systemMessages,
             string modelPrompt,
-            double estimatedSystemPromptCacheSavingsRate,
             AssistantTokenBudget tokenBudget)
         {
             ArgumentNullException.ThrowIfNull(tokenBudget);
@@ -321,25 +331,9 @@ namespace FlowBlox.AIAssistant.Builder
             var reservedResponseTokens = Math.Max(AssistantConfigurationLimits.MinReservedResponseTokens, tokenBudget.ReservedResponseTokens);
             var fixedTokens = tokenBudget.EstimateTokens(modelPrompt);
             foreach (var systemMessage in systemMessages ?? Array.Empty<AIChatMessage>())
-                fixedTokens += EstimateEffectiveSystemMessageTokens(systemMessage, estimatedSystemPromptCacheSavingsRate, tokenBudget);
+                fixedTokens += tokenBudget.EstimateTokens(systemMessage?.Content);
 
-            return Math.Max(AssistantConfigurationLimits.MinContextTokens, maxContextTokens - reservedResponseTokens - fixedTokens);
-        }
-
-        private static int EstimateEffectiveSystemMessageTokens(
-            AIChatMessage systemMessage,
-            double estimatedSystemPromptCacheSavingsRate,
-            AssistantTokenBudget tokenBudget)
-        {
-            var tokens = tokenBudget.EstimateTokens(systemMessage?.Content ?? string.Empty);
-            if (tokens <= 0 || systemMessage?.CacheBehavior != AIChatCacheBehavior.PreferCache)
-                return tokens;
-
-            // Intentional application budgeting policy: the project team checked and tested the preconfigured provider rates
-            // against reported token usage over longer sessions, observing average cache savings of roughly 60-80%, depending
-            // on the provider. Retain this reduction when estimating the effective system-message budget.
-            var savingsRate = Math.Clamp(estimatedSystemPromptCacheSavingsRate, 0d, 1d);
-            return Math.Max(0, (int)Math.Ceiling(tokens * (1d - savingsRate)));
+            return Math.Max(0, maxContextTokens - reservedResponseTokens - fixedTokens);
         }
 
         private static LatestMessageSelection SelectLatestMessages(

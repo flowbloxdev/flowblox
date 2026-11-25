@@ -11,6 +11,7 @@ namespace FlowBlox.AIAssistant.Services
         public string RawOutput { get; set; }
         public string ResponseId { get; set; }
         public AIChatMessageMetadata MessageMetadata { get; set; } = new();
+        public AIUsage Usage { get; set; } = new();
         public int? PromptTokens { get; set; }
         public int? CompletionTokens { get; set; }
     }

@@ -13,6 +13,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
         public string Role { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public AIChatCacheBehavior CacheBehavior { get; set; } = AIChatCacheBehavior.Default;
+        /// <summary>
+        /// Marks the end of bootstrap content for Anthropic request preparation only.
+        /// </summary>
+        public bool IsAnthropicBootstrapCacheBoundary { get; set; }
         public ChatMessageContent? SemanticContent { get; set; }
     }
 }

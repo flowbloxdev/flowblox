@@ -1,4 +1,4 @@
-﻿using FlowBlox.AIAssistant.Models;
+using FlowBlox.AIAssistant.Models;
 using FlowBlox.AIAssistant.Services;
 using FlowBlox.Core.Interfaces;
 using FlowBlox.Core.Models.Components;
@@ -10,6 +10,12 @@ namespace FlowBlox.AIAssistant
     {
         public void OptionsInit(List<OptionElement> defaults, List<OptionElement> currentOptions)
         {
+            defaults.Add(new OptionElement(
+                "AI.PricingCatalogueRefreshHours",
+                "72",
+                "Refresh interval in hours for the AI model pricing catalogue (1-8760).",
+                OptionElement.OptionType.Text));
+
             var defaultConfiguration = new AssistantConfiguration();
             defaultConfiguration.Providers.Add(new OpenAIProvider { Name = "OpenAI" });
             defaults.Add(new OptionElement(

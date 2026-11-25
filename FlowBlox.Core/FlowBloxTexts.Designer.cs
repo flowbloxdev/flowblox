@@ -565,28 +565,6 @@ namespace FlowBlox.Core
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated system prompt cache savings rate ähnelt.
-        /// </summary>
-        public static string AIProvider_EstimatedSystemPromptCacheSavingsRate
-        {
-            get
-            {
-                return ResourceManager.GetString("AIProvider_EstimatedSystemPromptCacheSavingsRate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated savings rate for cacheable system prompt tokens. This is used only for internal token/cost estimation, not for provider billing. ähnelt.
-        /// </summary>
-        public static string AIProvider_EstimatedSystemPromptCacheSavingsRate_Tooltip
-        {
-            get
-            {
-                return ResourceManager.GetString("AIProvider_EstimatedSystemPromptCacheSavingsRate_Tooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Reasoning effort ähnelt.
         /// </summary>
         public static string AIProvider_ReasoningEffort
@@ -9848,7 +9826,7 @@ namespace FlowBlox.Core
         ///- `$.participant.addresses` selects the address array.
         ///- `$.participant.addresses[0].Street` selects the street of the first address.
         ///- `$.addresses[?(@.Country == &apos;Germany&apos;)]` selects address objects whose Country is Germany.
-        ///- `$.addresses[?(@.Country == &apos;Germany&apos;)].Street` selec [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///- `$.addresses[?(@.Country == &apos;Germany&apos;)].Street` selects the  [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string JPathSelectorFlowBlock_SpecialExplanation_PathExamples
         {
@@ -14774,7 +14752,8 @@ namespace FlowBlox.Core
         ///- Execute a database query and check its result.
         ///- If no result is available: execute Index and check whether Index &lt; RetryLimit. Only then execute Delay -&gt; Recursive call with the database query as its target.
         ///- As soon as a result is available, continue along the regular success branch.
-        /// [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///
+        ///Set A [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string RecursiveCallFlowBlock_SpecialExplanation_TargetInvocation
         {
@@ -19916,7 +19895,8 @@ namespace FlowBlox.Core
         ///
         ///Repeat until no next-page element is available.
         ///
-        ///Do/Don&apos;t [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///Do/Don&apos;t:
+        ///- Do: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string WebEventFlowBlock_SpecialExplanation_BestPractice_MultiPageLinkExtraction
         {

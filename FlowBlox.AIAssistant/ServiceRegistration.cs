@@ -8,6 +8,10 @@ namespace FlowBlox.AIAssistant
     {
         public void RegisterServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton<Services.LiteLlmModelPricingCatalogueService>();
+            serviceCollection.AddSingleton<Services.IModelPricingCatalogueProvider, Services.ModelPricingCatalogueProvider>();
+            serviceCollection.AddSingleton<Services.IModelPricingCatalogueService>(provider =>
+                provider.GetRequiredService<Services.IModelPricingCatalogueProvider>().GetService());
             serviceCollection.AddSingleton<IOptionsRegistration, AssistantOptionsRegistration>();
         }
     }

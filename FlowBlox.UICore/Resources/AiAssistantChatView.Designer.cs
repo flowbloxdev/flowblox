@@ -25,9 +25,9 @@ namespace FlowBlox.UICore.Resources
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class AiAssistantChatView
     {
-
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -90,7 +90,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Button_DemoPrompts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Pause ähnelt.
         /// </summary>
@@ -158,6 +158,17 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die unavailable / incomplete ähnelt.
+        /// </summary>
+        public static string Cost_Unavailable
+        {
+            get
+            {
+                return ResourceManager.GetString("Cost_Unavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0}: Configure this component. Save applies your changes; Cancel discards pending changes. ähnelt.
         /// </summary>
         public static string Header_ComponentDescription
@@ -167,7 +178,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Header_ComponentDescription", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The AI Assistant can help you adjust the current flow or create a complete flow from a description. ähnelt.
         /// </summary>
@@ -200,7 +211,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Hint_LineBreakShortcut", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The communication protocol directory does not exist: {0} ähnelt.
         /// </summary>
@@ -310,7 +321,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ExternalProjectExecution_AlwaysAllow", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Allows future AI Assistant executions of this project without prompting. To reset this approval, remove the project entry in Options &gt; AI.ApprovedSkillProjects. ähnelt.
         /// </summary>
@@ -321,7 +332,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ExternalProjectExecution_ApprovalPersistence", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Cancel ähnelt.
         /// </summary>
@@ -376,7 +387,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ExternalProjectExecution_InputParameters", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
         /// </summary>
@@ -387,7 +398,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ExternalProjectExecution_ParameterName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Value ähnelt.
         /// </summary>
@@ -398,7 +409,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ExternalProjectExecution_ParameterValue", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Project file: {0} ähnelt.
         /// </summary>
@@ -442,7 +453,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ExternalProjectExecution_ViewParameterContent", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Set up the AI Assistant ähnelt.
         /// </summary>
@@ -453,7 +464,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Message_ProviderConfiguration_Title", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Paused after completing the current round. ähnelt.
         /// </summary>
@@ -477,7 +488,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated token usage: {0:N0} ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Estimated Cost: {0} ähnelt.
         /// </summary>
         public static string TokenMonitor_Format
         {
@@ -530,7 +541,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Tooltip_DemoPrompts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Start new chat ähnelt.
         /// </summary>
@@ -576,7 +587,7 @@ namespace FlowBlox.UICore.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Reset token usage counter ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reset session usage and costs ähnelt.
         /// </summary>
         public static string Tooltip_ResetTokenUsage
         {
@@ -629,7 +640,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Watermark_ComponentPrompt", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Add instructions or clarifications while the assistant is working. ähnelt.
         /// </summary>
@@ -640,7 +651,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Watermark_FollowUpPrompt", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Ask a question or describe a flow to create or edit. ähnelt.
         /// </summary>
@@ -651,7 +662,7 @@ namespace FlowBlox.UICore.Resources
                 return ResourceManager.GetString("Watermark_InitialPrompt", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FlowBlox AI-Assistant ähnelt.
         /// </summary>

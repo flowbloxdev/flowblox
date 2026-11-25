@@ -18,7 +18,6 @@ namespace FlowBloxTest.Services
             : base("https://api.openai.com/v1", "test-model")
         {
             ApiKey = "test-api-key";
-            EstimatedSystemPromptCacheSavingsRate = 1d;
             TimeoutSeconds = 30;
             _normalResponses = new Queue<string>(normalResponses ?? Array.Empty<string>());
         }

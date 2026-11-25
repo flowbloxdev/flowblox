@@ -75,6 +75,31 @@ the project, materialize its input files or run startup commands.
 To inspect content, open the downloaded `.fbprj` as JSON or open it normally in FlowBlox.
 `--query` searches project names; search downloaded content separately when looking for a block or API URL.
 
+### Project notice maintenance
+
+Process one project completely before starting the next:
+
+1. Download the latest Project Space version with the Avalonia CLI into the configured FlowBlox project directory.
+   Use a separate working subdirectory when local files already contain edits; do not overwrite them implicitly.
+2. Keep `.fbprj`, `.fbdeps` and `.fblocaldata` together. Edit only `Notice` for a documentation-only change.
+   Use `##` section headings, descriptive `[link labels](https://example.com/)`, lists and inline code for input names,
+   paths and literal values. Preserve setup instructions, defaults and legal notices; keep the original language.
+3. Open and save the project in the active Avalonia application, then close that editing session.
+   For notice-only changes, preserve the existing flow configuration and layout. The desktop integration runner's
+   `--save-only` mode saves an application working copy and verifies its notice and graph. It retains the original source
+   definition to avoid uploading unrelated defaults introduced when opening older projects.
+   Use the normal `--layout-save` workflow when a task includes flow/layout changes.
+4. Upload the saved local project with `--upload-ps-project <file>`. Its sidecar retains the existing Project Space identity;
+   omit `--new` and visibility/classification overrides when updating documentation.
+5. Exit code `0` and the successful upload JSON are sufficient confirmation. Record the returned Project Space GUID,
+   then continue with the next project. Do not routinely download the uploaded project again.
+
+If an upload fails, retain the saved working copy and record the update as pending. Retry transient server failures using
+that same file; do not claim completion or replace it with another download.
+
+Project Notice, Run Project and Quick Start use the existing Markdown renderer. Plain text remains readable without
+Markdown syntax; headings and links require the corresponding Markdown markup.
+
 ## Reloading a hybrid project
 
 `--reload-ps-project` requires an existing local `.fbprj` bound to the configured Project Space endpoint.

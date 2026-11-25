@@ -1,4 +1,4 @@
-﻿using FlowBlox.AIAssistant.Models;
+using FlowBlox.AIAssistant.Models;
 using FlowBlox.Core.Models.FlowBlocks.AIRemote.Base;
 using FlowBlox.Core.Provider.Project;
 
@@ -34,8 +34,12 @@ namespace FlowBlox.AIAssistant.Services
                 if (configuration.Temperature.HasValue)
                     request.Temperature = configuration.Temperature;
 
-                if (configuration.MaxTokens is > 0)
-                    request.MaxTokens = configuration.MaxTokens;
+                if (!request.MaxTokens.HasValue)
+                {
+                    var outputBudget = configuration.MaxTokens ?? configuration.ReservedResponseTokens;
+                    if (outputBudget > 0)
+                        request.MaxTokens = outputBudget;
+                }
 
                 if (string.IsNullOrWhiteSpace(request.Source))
                     request.Source = "FlowBloxAIAssistant";
@@ -52,6 +56,7 @@ namespace FlowBlox.AIAssistant.Services
                         Error = response.Error ?? string.Empty,
                         ResponseId = response.ResponseId ?? string.Empty,
                         MessageMetadata = response.MessageMetadata?.Clone() ?? new AIChatMessageMetadata(),
+                        Usage = response.Usage,
                         PromptTokens = response.PromptTokens,
                         CompletionTokens = response.CompletionTokens
                     };

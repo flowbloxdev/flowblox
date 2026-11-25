@@ -22,7 +22,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         public OpenAIProvider() : base("https://api.openai.com/v1", "gpt-6.1-sol")
         {
-            EstimatedSystemPromptCacheSavingsRate = 0.80d;
         }
     }
 }

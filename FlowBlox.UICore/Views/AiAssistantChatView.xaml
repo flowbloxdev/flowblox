@@ -173,14 +173,14 @@
                 Padding="8,5"
                 CornerRadius="8"
                 Margin="0,0,0,8"
-                Visibility="{Binding HasEstimatedUsedTokens, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding HasSessionUsage, Converter={StaticResource BoolToVisibilityConverter}}">
             <DockPanel LastChildFill="True">
                 <Button DockPanel.Dock="Right"
                         Width="24"
                         Height="24"
                         Margin="8,0,0,0"
                         Style="{StaticResource AIAssistantTokenResetButtonStyle}"
-                        Command="{Binding ResetTokenUsageCommand}"
+                        Command="{Binding ResetSessionUsageCommand}"
                         ToolTip="{x:Static resources:AiAssistantChatView.Tooltip_ResetTokenUsage}">
                     <iconPacks:PackIconMaterial Kind="CloseCircleOutline"
                                                 Width="14"
@@ -196,7 +196,7 @@
                                                 Height="16"
                                                 Margin="0,0,6,0"
                                                 Foreground="#FF2F6FA8" />
-                    <TextBlock Text="{Binding EstimatedUsedTokensText}"
+                    <TextBlock Text="{Binding EstimatedCostText}"
                                Foreground="#FF244B66"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center" />

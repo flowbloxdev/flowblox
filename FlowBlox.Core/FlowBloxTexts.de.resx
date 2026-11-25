@@ -2017,12 +2017,6 @@
 	<data name="AIProvider_DefaultModel_Tooltip" xml:space="preserve">
 		<value>Das Standardmodell, falls im Request kein Modell überschrieben wird.</value>
 	</data>
-	<data name="AIProvider_EstimatedSystemPromptCacheSavingsRate" xml:space="preserve">
-		<value>Geschätzte System-Prompt-Cache-Sparrate</value>
-	</data>
-	<data name="AIProvider_EstimatedSystemPromptCacheSavingsRate_Tooltip" xml:space="preserve">
-		<value>Geschätzte Sparrate für cachefähige System-Prompt-Tokens. Wird nur für interne Token-/Kostenschätzungen verwendet, nicht für die Provider-Abrechnung.</value>
-	</data>
 	<data name="AIProvider_ReasoningEffort" xml:space="preserve">
 		<value>Reasoning-Aufwand</value>
 	</data>

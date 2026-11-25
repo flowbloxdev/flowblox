@@ -20,9 +20,8 @@ namespace FlowBlox.AIAssistant.Tools.Util
     internal static partial class ToolHandlerUtilities
     {
         internal const string TypeInfoCacheDescription =
-            "Includes base members and nested ReactiveObjects. Repeated retrieval promotes complete declaring types to runtime system messages. " +
-            "omitted=[{type,properties}] means promoted; type identifies the defining declaration. A repeated requested type returns only a promotion notice. " +
-            "Conflicting inherited/overridden property names include declaringType. Promotions reset after application restart. " +
+            "Includes base members and nested ReactiveObjects. " +
+            "Conflicting inherited/overridden property names include declaringType. " +
             TypeDescriptionCompactionLayer.Description;
 
         public static ToolResponse CreateUnifiedTypeInfoResponse(string? fullName)
@@ -34,10 +33,6 @@ namespace FlowBlox.AIAssistant.Tools.Util
             if (!type.IsEnum && !typeof(FlowBloxReactiveObject).IsAssignableFrom(type))
                 return Fail($"Type '{fullName}' is not supported for kind info. Only FlowBloxReactiveObject types and Enums are supported.");
 
-            var cache = CurrentContentCache;
-            if (cache.IsTypePromoted(type.FullName!))
-                return Ok(CompressTypeAliases(AssistantSessionContentCache.PromotionNotice(type.FullName!).Result));
-
             var descriptions = new Dictionary<string, JObject>(StringComparer.Ordinal);
             if (type.IsEnum)
                 descriptions[type.FullName!] = BuildEnumKindInfo(type);
@@ -47,51 +42,20 @@ namespace FlowBlox.AIAssistant.Tools.Util
                     true,
                     descriptions);
 
-            var declaringTypes = descriptions.Keys.ToArray();
-            cache.RegisterDeclaringTypes(
-                declaringTypes,
-                declaringType => new AssistantSystemMessage(
-                    "type:" + declaringType,
-                    declaringType,
-                    AssistantSystemMessageKind.TypeInfo,
-                    FormatTypePayload(RenderTypePayload(
-                        declaringType,
-                        descriptions,
-                        cache,
-                        true)).ToString(Newtonsoft.Json.Formatting.None),
-                    true));
-            var response = Ok(new JObject());
-            response.RefreshBeforeSerialization = () =>
-                response.Result = FormatTypePayload(RenderTypePayload(
-                    type.FullName!,
-                    descriptions,
-                    cache,
-                    false));
-            response.RefreshForSerialization();
-            return response;
+            return Ok(FormatTypePayload(RenderTypePayload(type.FullName!, descriptions)));
         }
 
         private static JObject RenderTypePayload(
             string type,
-            Dictionary<string, JObject> descriptions,
-            AssistantSessionContentCache cache,
-            bool systemDeclaration)
+            Dictionary<string, JObject> descriptions)
         {
-            if (!systemDeclaration && cache.IsTypePromoted(type))
-                return AssistantSessionContentCache.PromotionNotice(type).Result;
-
             var kind = RenderTypeKind(
                 type,
-                descriptions,
-                cache,
-                systemDeclaration);
+                descriptions);
             var payload = new JObject
             {
                 ["kind"] = kind
             };
-            if (systemDeclaration)
-                return payload;
-
             var hierarchy = descriptions[type]["inheritanceHierarchy"]?.Values<string>()
                 .ToHashSet(StringComparer.Ordinal) ?? [];
             hierarchy.Add(type);
@@ -99,17 +63,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 .Select(x => x.Value<string>("fullName"))
                 .ToHashSet(StringComparer.Ordinal);
             var additional = new JArray(descriptions.Keys.Where(x => !hierarchy.Contains(x) && referenced.Contains(x))
-                .Select(x => cache.IsTypePromoted(x)
-                ? new JObject
-                {
-                    ["fullName"] = x,
-                    ["message"] = "Provided as a runtime session system message."
-                }
-                : RenderTypeKind(
-                    x,
-                    descriptions,
-                    cache,
-                    false)));
+                .Select(x => RenderTypeKind(x, descriptions)));
             if (additional.Count > 0)
                 payload["additionalTypeKindsInfo"] = additional;
 
@@ -118,9 +72,7 @@ namespace FlowBlox.AIAssistant.Tools.Util
 
         private static JObject RenderTypeKind(
             string type,
-            Dictionary<string, JObject> descriptions,
-            AssistantSessionContentCache cache,
-            bool systemDeclaration)
+            Dictionary<string, JObject> descriptions)
         {
             var result = (JObject)descriptions[type].DeepClone();
             if (result["properties"] == null)
@@ -137,25 +89,12 @@ namespace FlowBlox.AIAssistant.Tools.Util
                 .Select(x => x.Key)
                 .ToHashSet(StringComparer.Ordinal);
             var properties = new List<JObject>();
-            var omitted = new JArray();
             var usedTypes = new Dictionary<string, JToken>(StringComparer.Ordinal);
             foreach (var declaringType in declarations)
             {
                 var declaration = descriptions[declaringType];
                 var declaredProperties = declaration["properties"]?.Children<JObject>()
                     .ToArray() ?? [];
-                if (cache.IsTypePromoted(declaringType) && !(systemDeclaration && declaringType == type))
-                {
-                    if (declaredProperties.Length > 0)
-                        omitted.Add(new JObject
-                        {
-                            ["type"] = declaringType,
-                            ["properties"] = new JArray(declaredProperties.Select(x => x.Value<string>("name")))
-                        });
-
-                    continue;
-                }
-
                 foreach (var property in declaredProperties)
                 {
                     var copy = (JObject)property.DeepClone();
@@ -173,9 +112,6 @@ namespace FlowBlox.AIAssistant.Tools.Util
             result.Remove("usedTypes");
             if (usedTypes.Count > 0)
                 result["usedTypes"] = new JArray(usedTypes.Values);
-
-            if (omitted.Count > 0)
-                result["omitted"] = omitted;
 
             return result;
         }

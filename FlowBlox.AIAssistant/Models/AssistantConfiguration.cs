@@ -154,7 +154,7 @@ namespace FlowBlox.AIAssistant.Models
 
         [Display(Name = "AssistantConfiguration_MaxContextTokens", Description = "AssistantConfiguration_MaxContextTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 6)]
         [FlowBloxUI(UISelectionButtons.None)]
-        public int MaxContextTokens { get; set; } = 32000;
+        public int MaxContextTokens { get; set; } = 48000;
 
         [Display(Name = "AssistantConfiguration_ReservedResponseTokens", Description = "AssistantConfiguration_ReservedResponseTokens_Tooltip", GroupName = "AssistantConfiguration_Groups_Extended", ResourceType = typeof(FlowBloxTexts), Order = 7)]
         [FlowBloxUI(UISelectionButtons.None)]

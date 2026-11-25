@@ -2088,12 +2088,6 @@ Note: Once a provider is loaded, switching providers within the same process is 
 	<data name="AIProvider_DefaultModel_Tooltip" xml:space="preserve">
 		<value>The default model used when the request does not specify a model override.</value>
 	</data>
-	<data name="AIProvider_EstimatedSystemPromptCacheSavingsRate" xml:space="preserve">
-		<value>Estimated system prompt cache savings rate</value>
-	</data>
-	<data name="AIProvider_EstimatedSystemPromptCacheSavingsRate_Tooltip" xml:space="preserve">
-		<value>Estimated savings rate for cacheable system prompt tokens. This is used only for internal token/cost estimation, not for provider billing.</value>
-	</data>
 	<data name="AIProvider_ReasoningEffort" xml:space="preserve">
 		<value>Reasoning effort</value>
 	</data>

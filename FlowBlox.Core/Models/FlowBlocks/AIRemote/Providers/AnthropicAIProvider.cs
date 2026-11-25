@@ -23,7 +23,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
         {
             BaseUrl = "https://api.anthropic.com/v1";
             DefaultModel = "claude-opus-5-5";
-            EstimatedSystemPromptCacheSavingsRate = 0.70d;
         }
 
         protected override async Task<AIResponse> ExecuteChatCoreAsync(AIChatRequest request, CancellationToken ct)
@@ -45,7 +44,8 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                 model = this.Resolve(owner => owner.DefaultModel);
 
             var timeoutSeconds = ResolveTimeoutSeconds(request);
-            using var httpClient = new HttpClient
+            using var usageCapture = new AIUsageCaptureHandler(true);
+            using var httpClient = new HttpClient(usageCapture)
             {
                 Timeout = TimeSpan.FromSeconds(timeoutSeconds)
             };
@@ -80,6 +80,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                 return new AIResponse
                 {
                     Success = false,
+                    Usage = usageCapture.Usage,
                     Error =
                         $"Anthropic returned no text because the response stopped at the max_tokens limit ({messageParameters.MaxTokens}). " +
                         "Claude may have used the complete output budget for thinking before producing the required JSON response. " +
@@ -93,6 +94,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             {
                 Success = true,
                 Text = responseText,
+                Usage = usageCapture.Usage,
                 PromptTokens = usage.PromptTokens,
                 CompletionTokens = usage.CompletionTokens
             };
@@ -116,7 +118,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
             return trimmedBaseUrl + "/{0}/{1}";
         }
 
-        private static MessageParameters BuildMessageParameters(AIChatRequest request, string model)
+        internal static MessageParameters BuildMessageParameters(AIChatRequest request, string model)
         {
             var parameters = new MessageParameters
             {
@@ -140,13 +142,22 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
         {
             var systemMessages = new List<SystemMessage>();
 
-            foreach (var systemMessage in request?.SystemMessages ?? Enumerable.Empty<AIChatMessage>())
+            var stableMessages = request.SystemMessages
+                .Where(x => !string.IsNullOrWhiteSpace(x.Content))
+                .ToList();
+            var bootstrapBoundary = stableMessages.LastOrDefault(x => x.IsAnthropicBootstrapCacheBoundary);
+            var explanationsBoundary = stableMessages.LastOrDefault(x => x.CacheBehavior == AIChatCacheBehavior.PreferCache);
+
+            // At most two system breakpoints plus the existing rolling breakpoint (API maximum: four).
+            // Minimum cacheable tokens apply to the entire prefix, not each explanation block. Anthropic
+            // handles model-specific thresholds; short prefixes remain valid requests without cache hits.
+            foreach (var systemMessage in stableMessages)
             {
                 if (string.IsNullOrWhiteSpace(systemMessage?.Content))
                     continue;
 
                 var content = systemMessage.Content.Trim();
-                if (systemMessage.CacheBehavior == AIChatCacheBehavior.PreferCache)
+                if (systemMessage == bootstrapBoundary || systemMessage == explanationsBoundary)
                     systemMessages.Add(new SystemMessage(content, new CacheControl { Type = CacheControlType.ephemeral }));
                 else
                     systemMessages.Add(new SystemMessage(content));
@@ -172,6 +183,10 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
                 messages.Add(anthropicMessage);
             }
+
+            var lastBlock = messages.LastOrDefault()?.Content?.LastOrDefault();
+            if (lastBlock != null)
+                lastBlock.CacheControl = new CacheControl { Type = CacheControlType.ephemeral };
 
             return messages;
         }
@@ -221,8 +236,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                     : ToAnthropicTextContent(message.Content);
             }
 
-            if (message.CacheBehavior == AIChatCacheBehavior.PreferCache)
-                ApplyCacheControl(content);
 
             return content;
         }
@@ -245,12 +258,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
                     Text = content?.Trim() ?? string.Empty
                 }
             };
-        }
-
-        private static void ApplyCacheControl(IEnumerable<ContentBase> contentItems)
-        {
-            foreach (var contentItem in contentItems ?? Enumerable.Empty<ContentBase>())
-                contentItem.CacheControl = new CacheControl { Type = CacheControlType.ephemeral };
         }
 
         private static JsonNode ToJsonNode(object value)

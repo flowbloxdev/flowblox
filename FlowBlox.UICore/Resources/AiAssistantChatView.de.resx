@@ -13,8 +13,8 @@
   <data name="Tooltip_Redo" xml:space="preserve"><value>Letzte KI-Projektzustandsänderung wiederherstellen</value></data>
   <data name="Tooltip_OpenCommunicationProtocolDirectory" xml:space="preserve"><value>Kommunikationsprotokoll-Verzeichnis öffnen</value></data>
   <data name="Tooltip_Configure" xml:space="preserve"><value>KI-Assistent konfigurieren</value></data>
-  <data name="Tooltip_ResetTokenUsage" xml:space="preserve"><value>Tokenverbrauch zurücksetzen</value></data>
-  <data name="TokenMonitor_Format" xml:space="preserve"><value>Geschätzter Tokenverbrauch: {0:N0}</value></data>
+  <data name="Tooltip_ResetTokenUsage" xml:space="preserve"><value>Sitzungsverbrauch und Kosten zurücksetzen</value></data>
+  <data name="TokenMonitor_Format" xml:space="preserve"><value>Geschätzte Kosten: {0}</value></data>
   <data name="ContextMenu_Copy" xml:space="preserve"><value>Kopieren</value></data>
   <data name="ContextMenu_OpenInEditor" xml:space="preserve"><value>Im Editor öffnen</value></data>
   <data name="Watermark_Title" xml:space="preserve"><value>FlowBlox AI-Assistant</value></data>
@@ -74,4 +74,5 @@
   <data name="Watermark_ComponentPrompt" xml:space="preserve">
     <value>Beschreibe, was du an dieser Komponente ändern möchtest.</value>
   </data>
+  <data name="Cost_Unavailable" xml:space="preserve"><value>nicht verfügbar / unvollständig</value></data>
 </root>

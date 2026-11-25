@@ -21,6 +21,11 @@ To open a local project, run the Project Panel automatic layout command, save it
 The runner uses an editable working copy, checks the original for concurrent changes and copies the saved project back.
 It does not upload the project. The result is written to `layout-save-result.json`.
 
+For notice-only maintenance, edit `Notice` first and use `--save-only`. It skips automatic layout and saves an application
+working copy, verifying the saved notice and that saving preserves the initialized graph. The source definition stays intact
+to avoid carrying unrelated normalization changes from opening older projects into a notice-only upload.
+The report includes `AutoLayout: false`; this mode does not execute or upload the project.
+
 From the repository root:
 
 ```powershell
@@ -92,3 +97,13 @@ The expected pattern's first capture group supplies the expected values. This op
 uses the current provider and temporarily isolates chat histories in the result directory.
 It accepts one-time research-skill approvals only when their input contains the supplied URL.
 It writes `regex-result.json`, screenshots, a transcript and `smoke-result.json`.
+
+## Full assistant project live check
+
+`--assistant-project-live` creates an empty project in the desktop app, submits a task through the project assistant,
+opens Session Usage, and saves the resulting project through Project Panel automatic layout/save.
+Set `FLOWBLOX_ASSISTANT_URL`, `FLOWBLOX_ASSISTANT_PROMPT`, `FLOWBLOX_ASSISTANT_EXPECTED_PATTERN`
+(first capture group contains expected values), and `FLOWBLOX_ASSISTANT_OUTPUT` (a new XLSX file).
+The runner compares workbook cells with an independent extraction from the page. It isolates histories,
+uses the configured provider, and accepts research confirmations only when their inputs contain the supplied URL.
+It writes usage details, screenshots, the transcript, extraction results and `smoke-result.json`.

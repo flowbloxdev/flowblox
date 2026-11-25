@@ -13,8 +13,8 @@
   <data name="Tooltip_Redo" xml:space="preserve"><value>Redo last AI project state change</value></data>
   <data name="Tooltip_OpenCommunicationProtocolDirectory" xml:space="preserve"><value>Open communication protocol directory</value></data>
   <data name="Tooltip_Configure" xml:space="preserve"><value>Configure AI Assistant</value></data>
-  <data name="Tooltip_ResetTokenUsage" xml:space="preserve"><value>Reset token usage counter</value></data>
-  <data name="TokenMonitor_Format" xml:space="preserve"><value>Estimated token usage: {0:N0}</value></data>
+  <data name="Tooltip_ResetTokenUsage" xml:space="preserve"><value>Reset session usage and costs</value></data>
+  <data name="TokenMonitor_Format" xml:space="preserve"><value>Estimated Cost: {0}</value></data>
   <data name="ContextMenu_Copy" xml:space="preserve"><value>Copy</value></data>
   <data name="ContextMenu_OpenInEditor" xml:space="preserve"><value>Open in Editor</value></data>
   <data name="Watermark_Title" xml:space="preserve"><value>FlowBlox AI-Assistant</value></data>
@@ -74,4 +74,5 @@
   <data name="Watermark_ComponentPrompt" xml:space="preserve">
     <value>Describe what you want to change in this component.</value>
   </data>
+  <data name="Cost_Unavailable" xml:space="preserve"><value>unavailable / incomplete</value></data>
 </root>

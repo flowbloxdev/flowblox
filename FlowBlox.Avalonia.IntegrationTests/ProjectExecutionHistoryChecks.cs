@@ -21,6 +21,7 @@ internal sealed partial class WorkspaceIntegrationChecks
 {
     private void CheckProjectExecutionHistory(Action<bool, string> check, string directory)
     {
+        CheckProjectNoticeMarkdown(check, directory);
         var location = Path.Combine(directory, "execution-history-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(location);
         var shortcut = new ProjectShortcut { Name = "History preview", ProjectFile = Path.Combine(location, "project.fbprj") };

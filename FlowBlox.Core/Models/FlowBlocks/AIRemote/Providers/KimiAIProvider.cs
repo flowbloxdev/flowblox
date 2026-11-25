@@ -19,7 +19,6 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Providers
 
         public KimiAIProvider() : base("https://api.moonshot.ai/v1", "kimi-k3.1-pro")
         {
-            EstimatedSystemPromptCacheSavingsRate = 0.50d;
         }
 
         protected override string GetReasoningEffortValue()
