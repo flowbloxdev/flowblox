@@ -25,6 +25,17 @@ internal sealed partial class WorkspaceIntegrationChecks
         [DllImport("user32.dll")] internal static extern IntPtr SendMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
     }
 
+    private static void CheckMessageContainerFallback(Action<bool, string> check)
+    {
+        const string literal = "Before\n:::box warning\nKeep this text\n:::\n:::box info bulb\nUnclosed";
+        var box = new MessageBoxWindow(literal, "Container fallback", MessageBoxButtons.Ok, MessageBoxIcon.Information);
+        var blocks = box.FindControl<StackPanel>("MessageBlocks");
+        var message = (SelectableTextBlock)blocks.Children.Single();
+        check(string.Concat(message.Inlines.OfType<global::Avalonia.Controls.Documents.Run>().Select(run => run.Text)) == literal,
+            "Unknown and unclosed message containers preserve their literal content");
+        box.Close();
+    }
+
     private async Task CheckDesktopDialogsAsync(Action<bool, string> check, string directory)
     {
         check(!_window.GetType().Assembly.GetReferencedAssemblies().Any(assembly =>
@@ -36,10 +47,17 @@ internal sealed partial class WorkspaceIntegrationChecks
               HostedKeyboard.KeyFromVirtualKey(0xA0) == global::Avalonia.Input.Key.LeftShift,
             "Hosted keyboard boundary translates command keys to Avalonia key types");
         var service = FlowBloxServiceLocator.Instance.GetService<IMessageBoxService>();
-        var result = service.ShowAsync("Wollen Sie das Projekt wirklich schließen?", "Projekt schließen?",
+        var result = service.ShowAsync(
+            "Wollen Sie das Projekt wirklich schlie\u00dfen?\r\n\r\n:::box info alert\r\n" +
+            "Stellen Sie sicher, dass Ihre \u00c4nderungen gespeichert sind.\r\n:::",
+            "Projekt schlie\u00dfen?",
             MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         var box = _window.OwnedWindows.OfType<MessageBoxWindow>().Single();
         await Task.Delay(150);
+        var messageBlocks = box.FindControl<StackPanel>("MessageBlocks");
+        check(messageBlocks.Children.Count == 2 && messageBlocks.Children[1] is global::Avalonia.Controls.Grid,
+            "Message parser separates the confirmation from the closed info container");
+        CheckMessageContainerFallback(check);
         check(box.Owner == _window && box.Topmost && !box.ShowInTaskbar,
             "AXAML message box is owned by AppWindow and remains on top");
         check(!DialogNative.IsWindowEnabled(_window.Handle), "Message box disables AppWindow until answered");

@@ -71,6 +71,18 @@ if (-not $EmptyCatalog) {
             $field
         }
         [IO.File]::WriteAllText((Join-Path $projectsDirectory 'second.fbprj'), ($second | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+        $missingOutput = $fixture.Clone()
+        $missingOutput.ProjectGuid = '706be8fa-e087-4336-9bca-d115e01cce52'
+        $missingOutput.ProjectName = 'Unused output fixture'
+        [IO.File]::WriteAllText((Join-Path $projectsDirectory 'missing-output.fbprj'), ($missingOutput | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+    }
+    if ($BrowserInputs) {
+        $outputFixture = Join-Path $testDirectory 'output\HTTP_contract_fixture'
+        New-Item -ItemType Directory -Path (Join-Path $outputFixture 'audio/album') -Force | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $testDirectory 'output/Second_input_fixture') -Force | Out-Null
+        for ($directoryIndex = 0; $directoryIndex -lt 22; $directoryIndex++) {
+            New-Item -ItemType Directory -Path (Join-Path $outputFixture ('folder-{0:D2}' -f $directoryIndex)) -Force | Out-Null
+        }
     }
     $localData = @{ LocalUserFieldValues = @{ Suggested = 'local developer value'; LocalPassword = 'must-not-render-local-secret' } }
     [IO.File]::WriteAllText((Join-Path $projectsDirectory 'fixture.fblocaldata'), ($localData | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))

@@ -67,7 +67,7 @@ else
             if (Dashboard.Projects.Count == 0) await Dashboard.RefreshProjectsAsync();
             _project = Dashboard.GetProject(Id);
             _form = await Dashboard.LoadFormAsync(Id);
-            _outputDirectories = ProjectOutputDirectoryChoice.Create(Dashboard.Projects.Select(project => project.Shortcut.Name));
+            _outputDirectories = Dashboard.GetOutputDirectoryChoices();
         }
         catch (Exception exception) { Logger.LogWarning(exception, "Could not load the web project editor."); _error = true; }
     }

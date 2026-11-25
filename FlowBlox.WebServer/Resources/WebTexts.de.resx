@@ -104,4 +104,6 @@
   <data name="InputChooseField" xml:space="preserve"><value>Feld wählen…</value></data>
   <data name="InputChooseProjectOutput" xml:space="preserve"><value>Ausgabeverzeichnis eines anderen Projekts…</value></data>
   <data name="InputPasteClipboard" xml:space="preserve"><value>Aus Zwischenablage einfügen</value></data>
+  <data name="InputChooseDirectory" xml:space="preserve"><value>Verzeichnis wählen</value></data>
+  <data name="InputMoreOutputDirectories" xml:space="preserve"><value>… weitere Verzeichnisse. Die übrigen Ordner finden Sie in den Projektausgabeverzeichnissen.</value></data>
 </root>

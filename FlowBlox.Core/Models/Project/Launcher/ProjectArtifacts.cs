@@ -40,6 +40,37 @@ public sealed class ProjectArtifacts
             }).ToList();
     }
 
+    /// <summary>
+    /// Lists a bounded number of descendant directories without following symbolic links or junctions.
+    /// </summary>
+    public IReadOnlyList<ProjectArtifactEntry> ListDirectories(int limit = 21)
+    {
+        if (limit is < 1 or > 1001)
+            throw new ArgumentOutOfRangeException(nameof(limit));
+
+        var root = Resolve(string.Empty);
+        if (!Directory.Exists(root))
+            return Array.Empty<ProjectArtifactEntry>();
+
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint
+        };
+        return Directory.EnumerateDirectories(root, "*", options)
+            .Take(limit)
+            .Select(directory => Path.GetRelativePath(root, directory))
+            .Select(relativePath => new ProjectArtifactEntry
+            {
+                Name = Path.GetFileName(relativePath),
+                RelativePath = Path.GetRelativePath(root, Resolve(relativePath)).Replace('\\', '/'),
+                IsDirectory = true
+            })
+            .OrderBy(entry => entry.RelativePath, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
+    }
+
     public int Count()
     {
         return EnumerateFiles().Count;

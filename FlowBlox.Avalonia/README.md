@@ -79,6 +79,20 @@ Existing synchronous UICore contracts are adapted through a modal dispatcher
 frame, which keeps rendering and input running instead of blocking on a Task.
 The remaining WPF/native helpers are isolated under `Interop`.
 
+Message text supports standalone info containers, alongside plain text and clickable web links:
+
+```text
+:::box info alert
+Make sure your changes are saved.
+:::
+```
+
+Use `:::box info` for an info symbol, add `alert` for an amber attention icon,
+or `bulb` for a warm yellow tip icon. Markers must be on
+separate lines; unknown or unclosed containers remain literal text. The hint uses an unboxed
+row aligned with the message text, a colored icon and softly muted text.
+Keep markers in the caller and localize the content through the owning resources.
+
 Application data and build scripts are maintained independently in
 [`FlowBlox.Build`](../FlowBlox.Build/README.md). Avalonia, CLI and the legacy
 WinForms project import `FlowBlox.Build/FlowBlox.Build.targets`, which incrementally

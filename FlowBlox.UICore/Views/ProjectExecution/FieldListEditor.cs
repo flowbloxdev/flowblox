@@ -36,21 +36,14 @@ internal sealed class FieldListEditor : StackPanel
         _window = window;
         _decorate = decorate;
         Children.Add(_rows);
-        var addContent = new StackPanel { Orientation = Orientation.Horizontal };
-        addContent.Children.Add(new PackIconMaterial
+        var addContent = new PackIconMaterial
         {
             Kind = PackIconMaterialKind.Plus,
             Width = 14,
             Height = 14,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, 0, 5, 0)
-        });
-        var addLabel = FlowBloxResourceUtil.GetLocalizedString("FieldElement_AddListItem", typeof(FlowBloxTexts));
-        addContent.Children.Add(new TextBlock
-        {
-            Text = addLabel,
             VerticalAlignment = VerticalAlignment.Center
-        });
+        };
+        var addLabel = FlowBloxResourceUtil.GetLocalizedString("FieldElement_AddListItem", typeof(FlowBloxTexts));
         var add = new Button
         {
             Content = addContent,

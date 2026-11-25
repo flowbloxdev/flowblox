@@ -473,4 +473,12 @@
   <data name="circle" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\circle.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/circle/ (Apache-2.0).</comment></data>
   <data name="folder_download_outline" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\folder-download-outline.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/folder-download-outline/ (Apache-2.0).</comment></data>
   <data name="brain" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Resources\brain.svg;System.Byte[], mscorlib</value><comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/brain/ (Apache-2.0).</comment></data>
+  <data name="lightbulb_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\lightbulb-outline.svg;System.Byte[], mscorlib</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/lightbulb-outline/ (Apache-2.0).</comment>
+  </data>
+  <data name="alert_circle_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\alert-circle-outline.svg;System.Byte[], mscorlib</value>
+    <comment>Pictogrammers MDI: https://pictogrammers.com/library/mdi/icon/alert-circle-outline/ (Apache-2.0).</comment>
+  </data>
 </root>

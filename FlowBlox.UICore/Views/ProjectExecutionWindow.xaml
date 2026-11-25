@@ -22,8 +22,11 @@
         <Setter Property="Background" Value="#E6F4EA" />
         <Setter Property="Foreground" Value="#287443" />
         <Setter Property="BorderBrush" Value="#B7DCC3" />
-        <Setter Property="Height" Value="28" />
-        <Setter Property="Padding" Value="8,3" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="4" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="mah:ControlsHelper.CornerRadius" Value="3" />
       </Style>
@@ -31,9 +34,11 @@
         <Setter Property="Background" Value="#FCEBEC" />
         <Setter Property="Foreground" Value="#AF3740" />
         <Setter Property="BorderBrush" Value="#ECC3C7" />
-        <Setter Property="Width" Value="28" />
-        <Setter Property="Height" Value="28" />
-        <Setter Property="Padding" Value="5" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="4" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Margin" Value="4,0,0,0" />
         <Setter Property="mah:ControlsHelper.CornerRadius" Value="3" />

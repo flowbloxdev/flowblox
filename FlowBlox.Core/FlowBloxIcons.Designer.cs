@@ -70,6 +70,30 @@ namespace FlowBlox.Core
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] lightbulb_outline
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("lightbulb_outline", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] alert_circle_outline
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("alert_circle_outline", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
         public static byte[] account_cog

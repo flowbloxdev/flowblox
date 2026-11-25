@@ -313,7 +313,7 @@
 		<value>Save Failed</value>
 	</data>
   <data name="AppWindow_SaveReminder_Message" xml:space="preserve">
-		<value>Save any changes before closing the project.</value>
+		<value>Make sure your changes are saved.</value>
 	</data>
   <data name="AppWindow_Text" xml:space="preserve">
 		<value>FlowBlox</value>

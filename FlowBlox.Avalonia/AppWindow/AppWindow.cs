@@ -367,7 +367,8 @@ namespace FlowBlox.AppWindow
             {
                 MessageBoxResult result = await DesktopDialogs.Messages.ShowAsync(string.Format(FlowBloxResourceUtil.GetLocalizedString("AppWindow_NewProjectConfirm_Message", typeof(FlowBloxMainUITexts)), FlowBloxProjectManager.Instance.ActiveProject.ProjectName) + "\r\n" +
                         "\r\n" +
-                        FlowBloxResourceUtil.GetLocalizedString("AppWindow_SaveReminder_Message", typeof(FlowBloxMainUITexts)),
+                        ":::box info alert\r\n" +
+                        FlowBloxResourceUtil.GetLocalizedString("AppWindow_SaveReminder_Message", typeof(FlowBloxMainUITexts)) + "\r\n:::",
                         FlowBloxResourceUtil.GetLocalizedString("AppWindow_NewProjectConfirm_Title", typeof(FlowBloxMainUITexts)), MessageBoxButtons.YesNo, MessageBoxIcon.Question
                     );
 
@@ -541,7 +542,8 @@ namespace FlowBlox.AppWindow
             {
                 MessageBoxResult result = await DesktopDialogs.Messages.ShowAsync(string.Format(FlowBloxResourceUtil.GetLocalizedString("AppWindow_OpenProjectConfirm_Message", typeof(FlowBloxMainUITexts)), FlowBloxProjectManager.Instance.ActiveProject.ProjectName) + "\r\n" +
                     "\r\n" +
-                    FlowBloxResourceUtil.GetLocalizedString("AppWindow_SaveReminder_Message", typeof(FlowBloxMainUITexts)),
+                    ":::box info alert\r\n" +
+                    FlowBloxResourceUtil.GetLocalizedString("AppWindow_SaveReminder_Message", typeof(FlowBloxMainUITexts)) + "\r\n:::",
                     FlowBloxResourceUtil.GetLocalizedString("AppWindow_OpenProjectConfirm_Title", typeof(FlowBloxMainUITexts)),
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
@@ -778,7 +780,8 @@ namespace FlowBlox.AppWindow
 
             MessageBoxResult Result = await DesktopDialogs.Messages.ShowAsync(string.Format(FlowBloxResourceUtil.GetLocalizedString("AppWindow_CloseProjectConfirm_Message", typeof(FlowBloxMainUITexts)), FlowBloxProjectManager.Instance.ActiveProject.ProjectName) + "\r\n" +
                     "\r\n" +
-                    FlowBloxResourceUtil.GetLocalizedString("AppWindow_SaveReminder_Message", typeof(FlowBloxMainUITexts)),
+                    ":::box info alert\r\n" +
+                    FlowBloxResourceUtil.GetLocalizedString("AppWindow_SaveReminder_Message", typeof(FlowBloxMainUITexts)) + "\r\n:::",
                     FlowBloxResourceUtil.GetLocalizedString("AppWindow_CloseProjectConfirm_Title", typeof(FlowBloxMainUITexts)), MessageBoxButtons.YesNo, MessageBoxIcon.Question
                 );
 

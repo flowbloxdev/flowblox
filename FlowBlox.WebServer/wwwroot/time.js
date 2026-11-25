@@ -15,6 +15,34 @@ localizeTimes(document);
 new MutationObserver(() => localizeTimes(document)).observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['datetime']});
 
 window.flowBloxClipboardAvailable = () => window.isSecureContext && !!navigator.clipboard?.readText;
+// Inspect contents only with an existing permission; opening Insert must not request clipboard access.
+async function refreshPasteButton(picker) {
+    const button = picker.querySelector('[data-paste-target]');
+    if (!button) return;
+    button.disabled = button.dataset.pasteDisabled === 'true' || !window.flowBloxClipboardAvailable();
+    if (button.disabled || !navigator.permissions?.query) return;
+    let permission;
+    try {
+        permission = await navigator.permissions.query({ name: 'clipboard-read' });
+    } catch {
+        // Browsers without clipboard-read permission queries require the explicit Paste gesture.
+        return;
+    }
+    if (permission.state === 'prompt') return;
+    let available = false;
+    if (permission.state === 'granted') {
+        try { available = (await navigator.clipboard.readText()).length > 0; }
+        catch { }
+    }
+    button.disabled = button.dataset.pasteDisabled === 'true' || !available;
+}
+document.addEventListener('click', event => {
+    const summary = event.target.closest('[data-insert-picker] > summary');
+    if (summary && summary.getAttribute('aria-disabled') !== 'true' && !summary.parentElement.open) {
+        void refreshPasteButton(summary.parentElement);
+    }
+});
+
 document.addEventListener('click', event => {
     const button = event.target.closest('[data-field-target]');
     if (!button || button.disabled) return;
@@ -29,17 +57,19 @@ document.addEventListener('click', event => {
 document.addEventListener('click', async event => {
     const button = event.target.closest('[data-paste-target]');
     if (!button || button.disabled) return;
-    const hint = button.closest('.field-editor').querySelector('[data-paste-error]');
     try {
         const text = await navigator.clipboard.readText();
+        if (!text) {
+            button.disabled = true;
+            return;
+        }
         const input = window.FlowBloxFieldEditors.target(button, button.dataset.pasteTarget);
         if (!input || input.disabled || input.readOnly) return;
         if (!window.FlowBloxFieldEditors.setValue(input, text)) {
             input.value = text;
             input.dispatchEvent(new Event('input', {bubbles:true}));
         }
-        hint.hidden = true;
         button.closest('details').open = false;
         input.focus();
-    } catch { hint.hidden = false; }
+    } catch { button.disabled = true; }
 });

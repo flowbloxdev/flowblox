@@ -104,4 +104,6 @@
   <data name="InputChooseField" xml:space="preserve"><value>Choose field…</value></data>
   <data name="InputChooseProjectOutput" xml:space="preserve"><value>Output directory of another project…</value></data>
   <data name="InputPasteClipboard" xml:space="preserve"><value>Paste from clipboard</value></data>
+  <data name="InputChooseDirectory" xml:space="preserve"><value>Choose directory</value></data>
+  <data name="InputMoreOutputDirectories" xml:space="preserve"><value>… more directories. See the project output directories to browse the remaining folders.</value></data>
 </root>

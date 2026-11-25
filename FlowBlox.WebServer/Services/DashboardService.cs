@@ -82,6 +82,31 @@ public sealed class DashboardService(ILogger<DashboardService> logger)
         finally { _gate.Release(); }
     }
 
+    public IReadOnlyList<ProjectOutputDirectoryChoice> GetOutputDirectoryChoices()
+    {
+        return ProjectOutputDirectoryChoice.Create(Projects.Select(project => project.Shortcut.Name))
+            .Where(choice => Directory.Exists(GetOutputDirectory(choice.ProjectName)))
+            .ToList();
+    }
+
+    public IReadOnlyList<ProjectArtifactEntry> GetOutputSubdirectories(string projectName)
+    {
+        if (!Projects.Any(project => string.Equals(project.Shortcut.Name, projectName, StringComparison.Ordinal)))
+            throw new InvalidOperationException("The selected output project is not in the dashboard catalog.");
+
+        var directory = GetOutputDirectory(projectName);
+        return new ProjectArtifacts(directory).ListDirectories();
+    }
+
+    private static string GetOutputDirectory(string projectName)
+    {
+        var baseDirectory = FlowBloxOptions.GetOptionInstance().GetOption(OptionsConstants.PathsOutputDir)?.Value;
+        if (string.IsNullOrWhiteSpace(baseDirectory))
+            return string.Empty;
+
+        return Path.Combine(baseDirectory, IOUtil.GetValidFileName(projectName).Trim());
+    }
+
     private static void AddProject(List<WebProject> projects, ProjectShortcut shortcut, string group)
     {
         if (DistributedDataCatalog.IsDistributedDataPath(shortcut.ProjectFile))

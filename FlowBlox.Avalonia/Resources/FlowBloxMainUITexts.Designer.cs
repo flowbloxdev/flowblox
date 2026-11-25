@@ -1082,7 +1082,7 @@ namespace FlowBlox.AvaloniaDesktop.Resources
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Save any changes before closing the project. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Make sure your changes are saved. ähnelt.
         /// </summary>
         internal static string AppWindow_SaveReminder_Message
         {

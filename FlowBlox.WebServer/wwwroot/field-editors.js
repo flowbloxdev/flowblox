@@ -17,6 +17,16 @@ window.FlowBloxFieldEditors = (() => {
             const input = document.getElementById(targets.get(editor?.id));
             return input && editor.contains(input) ? input : document.getElementById(fallback);
         },
+        insertReference(id, fallback, value) {
+            const editor = document.getElementById(id);
+            if (!editor) return;
+            const input = window.FlowBloxFieldEditors.target(editor, fallback);
+            if (!input || input.disabled || input.readOnly) return;
+            input.focus();
+            input.setRangeText(value, input.selectionStart, input.selectionEnd, 'end');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            editor.querySelector('[data-insert-picker]').open = false;
+        },
         setValue(input, value) {
             const receiver = editors.get(input.closest('.field-editor')?.id);
             if (!receiver) return false;

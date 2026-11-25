@@ -310,7 +310,7 @@
 		<value>Speichern fehlgeschlagen</value>
 	</data>
   <data name="AppWindow_SaveReminder_Message" xml:space="preserve">
-		<value>Speichern Sie Ihre Änderungen, bevor Sie das Projekt schließen.</value>
+		<value>Stellen Sie sicher, dass Ihre Änderungen gespeichert sind.</value>
 	</data>
   <data name="AppWindow_Text" xml:space="preserve">
 		<value>FlowBlox</value>

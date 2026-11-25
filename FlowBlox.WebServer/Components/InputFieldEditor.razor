@@ -5,6 +5,8 @@
 @using FlowBlox.Core.Util.Fields
 @using Microsoft.JSInterop
 @inject IJSRuntime JavaScript
+@inject DashboardService Dashboard
+@inject ILogger<InputFieldEditor> Logger
 @implements IAsyncDisposable
 <div class="field-editor" id="@(_id + "-editor")" data-field-name="@Field.Name">
     <div class="field-heading"><label for="@_id">
@@ -80,16 +82,10 @@
                     }
                     @if (Field.LoVType != LoVType.PossibleValues && OutputDirectories.Count > 0)
                     {
-                        <button type="button" disabled="@Disabled" data-insert-view="outputs"><MdiIcon Name="folder-upload-outline" /><span>@T["InputChooseProjectOutput"]</span></button>
+                        <button type="button" disabled="@Disabled" data-insert-view="outputs" @onclick="ClearOutputDirectory"><MdiIcon Name="folder-upload-outline" /><span>@T["InputChooseProjectOutput"]</span></button>
                     }
-                    @if (_clipboard)
-                    {
-                        <button type="button" disabled="@Disabled" data-paste-target="@ReferenceTargetId"><MdiIcon Name="content-paste" /><span>@T["InputPasteClipboard"]</span></button>
-                    }
-                    else
-                    {
-                        <small>@T["PasteUnavailable"]</small>
-                    }
+                    <button type="button" disabled="@(Disabled || !_clipboard)" data-paste-disabled="@Disabled.ToString().ToLowerInvariant()"
+                            data-paste-target="@ReferenceTargetId"><MdiIcon Name="content-paste" /><span>@T["InputPasteClipboard"]</span></button>
                 </div>
                 <div data-insert-panel="fields" hidden>
                     <button type="button" class="field-insert-back" data-insert-view="main">&#8592; @T["Back"]</button>
@@ -104,19 +100,40 @@
                     }
                 </div>
                 <div data-insert-panel="outputs" hidden>
-                    <button type="button" class="field-insert-back" data-insert-view="main">&#8592; @T["Back"]</button>
-                    <strong>@T["InputChooseProjectOutput"]</strong>
-                    @foreach (var choice in OutputDirectories)
+                    @if (_outputChoice == null)
                     {
-                        <button type="button" disabled="@Disabled" data-field-target="@ReferenceTargetId" data-field-reference="@choice.Value">@choice.DisplayName</button>
+                        <button type="button" class="field-insert-back" data-insert-view="main">&#8592; @T["Back"]</button>
+                        <strong>@T["InputChooseDirectory"]</strong>
+                        @foreach (var choice in OutputDirectories)
+                        {
+                            <button type="button" disabled="@Disabled" data-output-project="@choice.ProjectName"
+                                    @onclick="() => SelectOutputDirectoryAsync(choice)"><MdiIcon Name="folder-upload-outline" /><span>@choice.DisplayName</span></button>
+                        }
                     }
+                    else
+                    {
+                        <button type="button" class="field-insert-back" @onclick="ClearOutputDirectory">&#8592; @T["Back"]</button>
+                        <strong>@T["InputChooseDirectory"]</strong>
+                        <small>@_outputChoice.DisplayName</small>
+                        <button type="button" disabled="@Disabled" data-output-root data-field-target="@ReferenceTargetId"
+                                data-field-reference="@_outputChoice.Value"><MdiIcon Name="folder-upload-outline" /><span>@T["OutputDirectory"]</span></button>
+                        @foreach (var directory in _outputSubdirectories.Take(20))
+                        {
+                            <button type="button" disabled="@Disabled" data-output-subdirectory="@directory.RelativePath"
+                                    data-field-target="@ReferenceTargetId" data-field-reference="@System.IO.Path.Combine(_outputChoice.Value, directory.RelativePath)"><span>@directory.RelativePath</span></button>
+                        }
+                        @if (_outputSubdirectories.Count > 20)
+                        {
+                            <small class="muted">@T["InputMoreOutputDirectories"]</small>
+                        }
+                    }
+                    @if (_outputDirectoryError) { <small role="status">@T["OperationFailed"]</small> }
                 </div>
             </div>
         </details>
     }
     <span id="@(_id + "-status")" class="visually-hidden">@StatusText</span>
     </div>
-    <small role="status" data-paste-error hidden>@T["PasteUnavailable"]</small>
 </div>
 @code {
     [Parameter, EditorRequired] public FieldElement Field { get; set; } = default!;
@@ -134,6 +151,9 @@
     private bool IsMultiline => Field.DisplayMode == FieldDisplayMode.Multiline;
     private string Separator => FieldListPresentation.ResolveSeparator(Field.ListSeparator);
     private string ReferenceTargetId => Field.DisplayMode == FieldDisplayMode.List ? _activeEntryId ?? _id : _id;
+    private ProjectOutputDirectoryChoice? _outputChoice;
+    private IReadOnlyList<ProjectArtifactEntry> _outputSubdirectories = [];
+    private bool _outputDirectoryError;
     private bool _clipboard, _focusInput;
     private readonly string _id = "field-" + Guid.NewGuid().ToString("N");
     private readonly List<InputListEntry> _entries = [];
@@ -174,6 +194,43 @@
         }
         catch (JSException) { }
         catch (JSDisconnectedException) { }
+    }
+
+    private void ClearOutputDirectory()
+    {
+        _outputChoice = null;
+        _outputSubdirectories = [];
+        _outputDirectoryError = false;
+    }
+
+    private async Task SelectOutputDirectoryAsync(ProjectOutputDirectoryChoice choice)
+    {
+        if (Disabled)
+            return;
+
+        ClearOutputDirectory();
+        try
+        {
+            if (!Dashboard.GetOutputDirectoryChoices().Any(item => item.ProjectName == choice.ProjectName))
+                return;
+
+            _outputSubdirectories = Dashboard.GetOutputSubdirectories(choice.ProjectName);
+            if (_outputSubdirectories.Count == 0)
+            {
+                await JavaScript.InvokeVoidAsync(
+                    "FlowBloxFieldEditors.insertReference",
+                    _id + "-editor",
+                    ReferenceTargetId,
+                    choice.Value);
+                return;
+            }
+            _outputChoice = choice;
+        }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "Could not list project output subdirectories.");
+            _outputDirectoryError = true;
+        }
     }
 
     private static bool HasLineBreak(string value) => value.Contains('\r') || value.Contains('\n');

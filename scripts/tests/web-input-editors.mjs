@@ -80,7 +80,7 @@ try {
     await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].value === ' beta'`, 'List parsing preserves whitespace.');
     await check(`document.querySelectorAll('[data-field-name="LineFeedList"] .field-list-value').length === 3`, 'List mode uses LineFeed without an explicit separator and normalizes CRLF.');
     await check(`document.querySelectorAll('[data-field-name="TabList"] .field-list-value').length === 2`, 'Escaped Tab separates list entries.');
-    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')`, 'Input editors have completed their interactive initialization.');
+    await check(`document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')?.disabled === false`, 'Input editors have completed their interactive initialization.');
     await evaluate(`(() => { const input = document.querySelector('[data-field-name="ListFixture"] .field-list-value');
         input.value = 'red;green'; input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
     await check(`(() => { const rows = document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value');
@@ -102,7 +102,7 @@ try {
     await check(`document.documentElement.scrollWidth <= window.innerWidth + 1`, 'The editors fit a narrow mobile viewport.');
 
     await send('Page.navigate', { url: base + projects[1] });
-    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')`, 'The second project is interactive.');
+    await check(`document.querySelector('[data-field-name="ListFixture"] [data-paste-target]')?.disabled === false`, 'The second project is interactive.');
     await check(`document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value').length === 1`, 'Another project uses its own configured comma separator.');
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         field.scrollIntoView({ block: 'center' }); field.querySelector('[data-insert-picker] > summary').click(); })()`);
@@ -120,11 +120,30 @@ try {
     await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-insert-picker] > summary').click()`);
     await check(`!document.querySelector('[data-field-name="ListFixture"] [data-insert-panel="main"]').hidden`, 'Reopening Insert returns to the main choices.');
     await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-insert-view="outputs"]').click()`);
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] [data-output-project]').length === 2 && !document.querySelector('[data-field-name="ListFixture"] [data-output-project="Unused output fixture"]')`, 'Projects without an existing output directory are excluded.');
+    await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-output-project]').click()`);
+    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-output-root]')`, 'Selecting an output project opens the directory choices.');
+    await check(`document.querySelectorAll('[data-field-name="ListFixture"] [data-output-subdirectory]').length === 20 && !!document.querySelector('[data-field-name="ListFixture"] [data-insert-panel="outputs"] small.muted')`, 'Directory choices stop at 20 with a non-selectable overflow hint.');
     const output = await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         const input = field.querySelector('textarea'); input.setSelectionRange(0, input.value.length);
         const button = field.querySelector('[data-insert-panel="outputs"] [data-field-target]');
         const value = button.dataset.fieldReference; button.click(); return value; })()`);
     await check(`document.querySelector('[data-field-name="ListFixture"] textarea').value === ${JSON.stringify(output)}`, 'A project output directory is inserted into the selected input.');
+    await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-insert-picker] > summary').click(); document.querySelector('[data-field-name="ListFixture"] [data-insert-view="outputs"]').click()`);
+    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-output-project]')`, 'Reopening the output choices returns to project selection.');
+    await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-output-project]').click()`);
+    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-output-subdirectory="audio"]')`, 'Artifact subdirectories are available.');
+    const nestedOutput = await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
+        const input = field.querySelector('textarea'); input.setSelectionRange(0, input.value.length);
+        const button = field.querySelector('[data-output-subdirectory="audio"]');
+        const value = button.dataset.fieldReference; button.click(); return value; })()`);
+    await check(`document.querySelector('[data-field-name="ListFixture"] textarea').value === ${JSON.stringify(nestedOutput)} && ${JSON.stringify(nestedOutput)}.startsWith('$Options::Paths.OutputDir')`, 'A nested output directory is inserted while preserving field syntax.');
+    await evaluate(`document.querySelector('[data-field-name="ListFixture"] [data-insert-picker] > summary').click(); document.querySelector('[data-field-name="ListFixture"] [data-insert-view="outputs"]').click()`);
+    await check(`!!document.querySelector('[data-field-name="ListFixture"] [data-output-project="Second input fixture"]')`, 'An existing output without subdirectories remains available.');
+    await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
+        const input = field.querySelector('textarea'); input.focus(); input.setSelectionRange(0, input.value.length);
+        field.querySelector('[data-output-project="Second input fixture"]').click(); })()`);
+    await check(`document.querySelector('[data-field-name="ListFixture"] textarea').value.replaceAll(String.fromCharCode(92), '/') === '$Options::Paths.OutputDir/Second_input_fixture' && !document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]').open && !document.querySelector('[data-field-name="ListFixture"] [data-output-root]')`, 'An output without subdirectories inserts its field reference directly without another selection.');
     await evaluate(`Object.defineProperty(navigator, 'clipboard', { value: { readText: async () => 'clipboard text' } }); true`);
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         field.querySelector('[data-insert-picker] > summary').click(); field.querySelector('[data-paste-target]').click(); })()`);
@@ -160,7 +179,16 @@ try {
     await evaluate(`navigator.clipboard.readText = async () => { throw new Error('denied'); }; true`);
     await evaluate(`(() => { const field = document.querySelector('[data-field-name="ListFixture"]');
         field.querySelector('[data-insert-picker] > summary').click(); field.querySelector('[data-paste-target]').click(); })()`);
-    await check(`!document.querySelector('[data-field-name="ListFixture"] [data-paste-error]').hidden && document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].value === 'clipboard text'`, 'Denied clipboard access shows the native-paste hint without changing the input.');
+    await check(`document.querySelector('[data-field-name="ListFixture"] [data-paste-target]').disabled && !document.querySelector('[data-paste-error]') && document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].value === 'clipboard text'`, 'Denied clipboard access disables Paste without a hint or input changes.');
+    await evaluate(`navigator.permissions.query = async () => ({ state: 'granted' }); navigator.clipboard.readText = async () => ''; true`);
+    await evaluate(`refreshPasteButton(document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]'))`);
+    await check(`document.querySelector('[data-field-name="ListFixture"] [data-paste-target]').disabled && document.querySelectorAll('[data-field-name="ListFixture"] .field-list-value')[1].value === 'clipboard text'`, 'An empty clipboard disables Paste and preserves existing input.');
+    await evaluate(`navigator.clipboard.readText = async () => 'new clipboard text'; refreshPasteButton(document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]'))`);
+    await check(`!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]').disabled`, 'Paste becomes available again after copying text.');
+    await evaluate(`navigator.permissions.query = async () => ({ state: 'denied' }); refreshPasteButton(document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]'))`);
+    await check(`document.querySelector('[data-field-name="ListFixture"] [data-paste-target]').disabled`, 'A denied clipboard permission disables Paste before it is clicked.');
+    await evaluate(`navigator.permissions.query = async () => ({ state: 'prompt' }); navigator.clipboard.readText = async () => { throw new Error('Opening Insert must not read without permission'); }; refreshPasteButton(document.querySelector('[data-field-name="ListFixture"] [data-insert-picker]'))`);
+    await check(`!document.querySelector('[data-field-name="ListFixture"] [data-paste-target]').disabled`, 'Paste remains available for the explicit user gesture when permission is not yet granted.');
     writeFileSync(join(results, 'result.json'), JSON.stringify({ passed: true, checks }, null, 2));
 } catch (error) {
     if (send) await screenshot('failure.png').catch(() => {});

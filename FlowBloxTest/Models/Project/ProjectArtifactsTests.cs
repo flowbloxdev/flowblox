@@ -23,6 +23,36 @@ public sealed class ProjectArtifactsTests
     }
 
     [TestMethod]
+    public void ListDirectories_IncludesNestedFoldersWithoutFiles()
+    {
+        Directory.CreateDirectory(Path.Combine(_directory, "audio", "album"));
+        File.WriteAllText(Path.Combine(_directory, "summary.txt"), "text");
+
+        var directories = new ProjectArtifacts(_directory).ListDirectories();
+
+        CollectionAssert.AreEquivalent(new[] { "audio", "audio/album" }, directories.Select(item => item.RelativePath).ToArray());
+    }
+
+    [TestMethod]
+    public void ListDirectories_StopsAtLimitIncludingOverflowEntry()
+    {
+        for (var index = 0; index < 25; index++)
+            Directory.CreateDirectory(Path.Combine(_directory, $"folder-{index:D2}"));
+
+        var directories = new ProjectArtifacts(_directory).ListDirectories();
+
+        Assert.HasCount(21, directories);
+    }
+
+    [TestMethod]
+    public void ListDirectories_ReturnsNoChoicesForMissingOutput()
+    {
+        var directories = new ProjectArtifacts(Path.Combine(_directory, "missing")).ListDirectories();
+
+        Assert.IsEmpty(directories);
+    }
+
+    [TestMethod]
     public void Clear_DeletesNestedArtifactsButKeepsOutputDirectoryAndOutsideFiles()
     {
         var output = Path.Combine(_directory, "output");

@@ -18,7 +18,7 @@
         <StackPanel Grid.Column="1" Spacing="16">
           <TextBlock x:Name="Caption" FontSize="23" TextWrapping="Wrap" />
           <ScrollViewer MaxHeight="430" HorizontalScrollBarVisibility="Disabled">
-            <SelectableTextBlock x:Name="Message" FontSize="13" TextWrapping="Wrap" />
+            <StackPanel x:Name="MessageBlocks" Spacing="16" />
           </ScrollViewer>
         </StackPanel>
       </Grid>
