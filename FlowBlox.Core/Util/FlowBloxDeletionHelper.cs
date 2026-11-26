@@ -107,16 +107,19 @@ namespace FlowBlox.Core.Util
                             editTarget: context.Root, componentProperty: context.ComponentProperty));
                     }
                 }
-            });
+            }, deletionScope);
 
             var measureProviders = registry.GetFlowBlocks().Cast<object>()
                 .Concat(registry.GetManagedObjects().Cast<object>())
+                .Where(x => !deletionScope.Contains(x))
                 .OfType<IDeletionMeasureProvider>();
 
             foreach (var provider in measureProviders)
                 provider.ContributeDeletionMeasures(dependencies);
 
             dependencies = dependencies
+                .Where(x => !deletionScope.Contains(x.ReferencingObject) &&
+                    (x.EditTarget == null || !deletionScope.Contains(x.EditTarget)))
                 .GroupBy(x => new DependencyKey(
                     x.ReferencingObject, x.Property, x.ReferencedObject, x.Impact, x.CollectionIndex,
                     x.EditTarget, x.ComponentProperty),

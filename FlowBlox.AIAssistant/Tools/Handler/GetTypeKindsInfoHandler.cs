@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler;
 
-[ToolPurpose("Inspect type properties, enums and nested type metadata.")]
+[ToolPurpose("Inspect type properties, enums and nested type metadata.", IncludeContractInBootstrap = true)]
 internal sealed class GetTypeKindsInfoHandler : ToolHandlerBase
 {
     public override string Name => "GetTypeKindsInfo";

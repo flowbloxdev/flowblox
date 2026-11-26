@@ -802,6 +802,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Base
 
         [Display(Name = "BaseFlowBlock_ActivationConditions", Description = "BaseFlowBlock_ActivationConditions_Tooltip", ResourceType = typeof(FlowBloxTexts), GroupName = "Global_Groups_Requirements", Order = 2)]
         [FlowBloxDataGrid(
+            IsMovable = true,
             ColumnMemberNames = [
             nameof(LogicalCondition.LogicalOperator),
             nameof(LogicalCondition.DisplayName)

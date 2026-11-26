@@ -12,7 +12,7 @@ internal sealed class GetToolDefinitionsHandler(Func<IReadOnlyList<ToolDefinitio
     public override ToolDefinition Definition => ToolHandlerUtilities.CreateDefinition(
         Name,
         "Returns the complete descriptions and argument contracts for named tools available in the current scope. " +
-        "Load the contract before using a tool; do not guess its arguments. " +
+        "Use core contracts supplied in the bootstrap directly; load on-demand contracts before using those tools. Do not guess arguments. " +
         "Already available contracts are referenced in current history or system messages.",
         new JObject
         {

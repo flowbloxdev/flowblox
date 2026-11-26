@@ -150,6 +150,17 @@ namespace FlowBlox.Core.Provider
             CompleteTransaction(transactionRegistry, FlowBloxRegistryTransactionState.Cancelled);
         }
 
+        /// <summary>
+        /// Checks whether a bound transaction is still open, including while another transaction is above it.
+        /// </summary>
+        public static bool IsTransactionActive(FlowBloxRegistry transactionRegistry)
+        {
+            lock (_registryChainSync)
+            {
+                return transactionRegistry != null && _registryChain.Contains(transactionRegistry);
+            }
+        }
+
         public static bool IsCurrentTransaction(FlowBloxRegistry transactionRegistry)
         {
             lock (_registryChainSync)

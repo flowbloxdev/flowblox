@@ -60,8 +60,9 @@ The following central guidelines must be followed before tool execution:
 {{CENTRAL_GUIDELINES}}
 
 8) Available Tools
-The catalog gives tool names and short purposes. Full contracts are included only for bootstrap tools below.
-- Before calling any other tool, call `GetToolDefinitions` with `toolNames` for all tools needed in the next step.
+Core tool contracts below are already available. Use them directly without calling `GetToolDefinitions`.
+Only on-demand tools are listed with short purposes, separately from the core contracts.
+- Before calling an on-demand tool whose contract is absent, call `GetToolDefinitions` with `toolNames` for the tools needed in the next step.
   Read their complete descriptions and argument contracts before constructing calls, including batch children. Never guess arguments.
 - Reuse contracts present in current history or retained system messages. If absent, load them again.
   Loaded contracts use Verbatim Context Retention and remain protected from compaction.

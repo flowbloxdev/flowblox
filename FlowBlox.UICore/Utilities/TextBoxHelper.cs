@@ -247,15 +247,15 @@ namespace FlowBlox.UICore.Utilities
         /// </summary>
         public static void ShowEditValueDialogForRegex(ITextBoxLike textBox, string parameterLabel, Window window)
         {
-            string parameterName = GetSelectedParameter(textBox);
-            if (!string.IsNullOrEmpty(parameterName))
+            var parameter = GetSelectedParameterMatch(textBox);
+            if (parameter != null)
             {
                 var dialogService = FlowBloxServiceLocator.Instance.GetService<IDialogService>();
                 var editValueResult = dialogService.InvokeEditValue(new EditValueRequest()
                 {
                     IsRegex = true,
                     IsMultiline = false,
-                    ParameterName = parameterName,
+                    ParameterName = parameter.Value,
                     EditMode = EditMode.Developer
                 }, window);
 
@@ -265,10 +265,11 @@ namespace FlowBlox.UICore.Utilities
                         ? RegexUtil.EscapeRegexValue(editValueResult.Value)
                         : editValueResult.Value;
 
-                    string updatedText = textBox.Text.Remove(textBox.SelectionStart, 0);
-                    updatedText = updatedText.Insert(textBox.SelectionStart, regexValue);
+                    string updatedText = textBox.Text.Remove(parameter.Index, parameter.Length);
+                    updatedText = updatedText.Insert(parameter.Index, regexValue);
                     textBox.Text = updatedText;
-                    textBox.SelectionStart += regexValue.Length;
+                    textBox.SelectionStart = parameter.Index + regexValue.Length;
+                    textBox.SelectionLength = 0;
                 }
             }
         }
@@ -327,6 +328,11 @@ namespace FlowBlox.UICore.Utilities
         /// </summary>
         public static string GetSelectedParameter(ITextBoxLike textBox)
         {
+            return GetSelectedParameterMatch(textBox)?.Value ?? string.Empty;
+        }
+
+        private static Match GetSelectedParameterMatch(ITextBoxLike textBox)
+        {
             var regex = new Regex("%%.*?%%");
             var matches = regex.Matches(textBox.Text);
 
@@ -335,11 +341,11 @@ namespace FlowBlox.UICore.Utilities
                 if (textBox.SelectionStart >= match.Index &&
                     textBox.SelectionStart <= match.Index + match.Length)
                 {
-                    return match.Value;
+                    return match;
                 }
             }
 
-            return string.Empty;
+            return null;
         }
     }
 }

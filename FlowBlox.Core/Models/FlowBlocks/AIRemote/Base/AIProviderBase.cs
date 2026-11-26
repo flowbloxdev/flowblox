@@ -24,7 +24,12 @@ namespace FlowBlox.Core.Models.FlowBlocks.AIRemote.Base
         public override SKImage Icon32 => FlowBloxIconUtil.CreateFromSVG(FlowBloxIcons.robot_outline, 32, new SKColor(3, 105, 161));
         [Required]
         [Display(Name = "AIProvider_ApiKey", Description = "AIProvider_ApiKey_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 0)]
-        [FlowBloxTextBox]
+        [FlowBloxTextBox(IsPassword = true)]
+        [FlowBloxFieldSelection(
+            AllowedFieldSelectionModes = FieldSelectionModes.Fields
+                | FieldSelectionModes.ProjectProperties
+                | FieldSelectionModes.Options
+                | FieldSelectionModes.Vault)]
         public string ApiKey { get; set; }
 
         [Display(Name = "AIProvider_DefaultModel", Description = "AIProvider_DefaultModel_Tooltip", ResourceType = typeof(FlowBloxTexts), Order = 1)]

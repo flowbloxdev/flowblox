@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Inspect component JSON or selected paths.")]
+    [ToolPurpose("Inspect component JSON or selected paths.", IncludeContractInBootstrap = true)]
     internal sealed class GetComponentSnapshotHandler : ToolHandlerBase
     {
         public override string Name => "GetComponentSnapshot";

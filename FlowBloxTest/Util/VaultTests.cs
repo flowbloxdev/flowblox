@@ -313,10 +313,12 @@ public sealed class VaultTests : FlowBloxTestsBase
     public void Save_PersistsEncryptedJsonAndDoesNotShareMutableEditorValuesWithResolver()
     {
         var previousDirectory = Environment.GetEnvironmentVariable("LOCALAPPDATA");
+        var previousUserDataDirectory = GlobalPaths.UserDataDirectory;
         var directory = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "TestResults", "vault", Guid.NewGuid().ToString("N")));
         try
         {
             Environment.SetEnvironmentVariable("LOCALAPPDATA", directory);
+            GlobalPaths.UseUserDataDirectory(Path.Combine(directory, "FlowBlox"));
             FlowBloxVault.Save(new[] { new VaultEntry { Name = "Server", Value = Server } });
             var document = new XmlDocument();
             document.Load(GlobalPaths.GlobalConfigurationXml);
@@ -338,6 +340,7 @@ public sealed class VaultTests : FlowBloxTestsBase
             if (Directory.Exists(directory))
                 Directory.Delete(directory);
             Environment.SetEnvironmentVariable("LOCALAPPDATA", previousDirectory);
+            GlobalPaths.UseUserDataDirectory(previousUserDataDirectory);
         }
     }
 

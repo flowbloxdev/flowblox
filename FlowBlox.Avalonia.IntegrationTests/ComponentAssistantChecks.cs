@@ -180,11 +180,28 @@ internal sealed partial class WorkspaceIntegrationChecks
             else
             {
                 var api = new DefaultToolApi { ComponentContext = model.ChatViewModel.ComponentContext };
-                var response = await api.ExecuteAsync(new ToolRequest
+                var configuration = model.GetConfiguration(out var configurationError);
+                Require(string.IsNullOrWhiteSpace(configurationError), "Assistant configuration is available", results);
+                var settings = new PropertyWindow(new PropertyWindowArgs(configuration, detached: true))
                 {
-                    ToolName = "UpdateFlowBlock",
-                    Arguments = new JObject { ["name"] = working.Name, ["path"] = "/RegularExpression", ["value"] = "(?<title>Sample)" }
-                }, CancellationToken.None);
+                    Owner = editor,
+                    ShowInTaskbar = false
+                };
+                ToolResponse response;
+                try
+                {
+                    settings.Show();
+                    response = await Task.Run(() => api.ExecuteAsync(new ToolRequest
+                    {
+                        ToolName = "UpdateFlowBlock",
+                        Arguments = new JObject { ["name"] = working.Name, ["path"] = "/RegularExpression", ["value"] = "(?<title>Sample)" }
+                    }, CancellationToken.None));
+                    Require(response.Ok, "Component assistant continues while its detached settings editor is open", results);
+                }
+                finally
+                {
+                    settings.Close();
+                }
                 Require(response.Ok && properties.IsDirty && working.RegularExpression == "(?<title>Sample)" && block.RegularExpression == "Before",
                     "Assistant tool updates refresh the property editor and remain local", results);
             }

@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Delete a FlowBlock and handle references.")]
+    [ToolPurpose("Delete a FlowBlock and handle references.", IncludeContractInBootstrap = true)]
     internal sealed class DeleteFlowBlockHandler : ToolHandlerBase
     {
         public override AssistantScope Scope => AssistantScope.Project;

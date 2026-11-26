@@ -73,7 +73,7 @@ namespace FlowBlox.UICore.Views
                 component,
                 registry,
                 () => !_disposed && _properties.HasActiveTransaction &&
-                    ReferenceEquals(_properties.WorkingCopy, component) && FlowBloxRegistryProvider.IsCurrentTransaction(registry),
+                    ReferenceEquals(_properties.WorkingCopy, component) && FlowBloxRegistryProvider.IsTransactionActive(registry),
                 _properties.AppendWorkingCopy)
             {
                 DispatchAsync = operation => Dispatcher.InvokeAsync(operation).Task.Unwrap(),

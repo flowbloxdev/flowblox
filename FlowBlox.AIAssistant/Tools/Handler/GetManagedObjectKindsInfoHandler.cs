@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler;
 
-[ToolPurpose("Inspect managed object type metadata.")]
+[ToolPurpose("Inspect managed object type metadata.", IncludeContractInBootstrap = true)]
 internal sealed class GetManagedObjectKindsInfoHandler : ToolHandlerBase
 {
     public override string Name => "GetManagedObjectKindsInfo";

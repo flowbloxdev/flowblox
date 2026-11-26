@@ -127,6 +127,63 @@ namespace FlowBloxTest.Util
         }
 
         [TestMethod]
+        public void Analyze_MultipleFlowBlocks_IgnoresInternalFieldReferences()
+        {
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var source = CreateFormat(project, "Source", "value");
+            var consumer = CreateFormat(project, "Consumer", source.ResultField.FullyQualifiedName);
+            consumer.ReferencedFlowBlocks.Add(source);
+
+            var report = FlowBloxDeletionHelper.Analyze(project.FlowBloxRegistry, source, consumer);
+
+            Assert.IsFalse(report.HasDependencies);
+        }
+
+        [TestMethod]
+        public void Analyze_ManagedObjectAndConsumer_ReportsOnlySurvivingConsumer()
+        {
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var field = project.FlowBloxRegistry.CreateUserField(
+                FlowBlox.Core.Enums.UserFieldTypes.Memory,
+                fieldName: "Shared");
+            var deletedConsumer = CreateFormat(project, "DeletedConsumer", field.FullyQualifiedName);
+            var survivingConsumer = CreateFormat(project, "SurvivingConsumer", field.FullyQualifiedName);
+
+            var report = FlowBloxDeletionHelper.Analyze(project.FlowBloxRegistry, field, deletedConsumer);
+
+            Assert.HasCount(1, report.Dependencies);
+            Assert.AreSame(survivingConsumer, report.Dependencies.Single().ReferencingObject);
+        }
+
+        [TestMethod]
+        public void AnalyzeAndAction_DeletedNestedGroup_IgnoresDependenciesInsideGroupAndPreservesUndo()
+        {
+            var project = new FlowBloxProject();
+            using var scope = FlowBloxRegistryProvider.BeginScopedRegistry(project.FlowBloxRegistry);
+            var source = CreateFormat(project, "Source", "value");
+            var owner = CreateFormat(project, "Owner", "literal");
+            var condition = new FieldLogicalComparisonCondition { FieldElement = source.ResultField };
+            var group = new LogicalGroupCondition();
+            group.Conditions.Add(condition);
+            owner.ActivationConditions.Add(group);
+
+            var report = FlowBloxDeletionHelper.Analyze(project.FlowBloxRegistry, source, group);
+
+            Assert.HasCount(1, report.Dependencies);
+            Assert.AreSame(group, report.Dependencies.Single().ReferencedObject);
+            var action = FlowBloxDeletionHelper.CreateAction(project.FlowBloxRegistry, report);
+            action.Invoke();
+            Assert.IsEmpty(owner.ActivationConditions);
+            Assert.AreSame(source.ResultField, condition.FieldElement);
+            action.Undo();
+            Assert.AreSame(group, owner.ActivationConditions.Single());
+            Assert.AreSame(source.ResultField, condition.FieldElement);
+            Assert.IsTrue(project.FlowBloxRegistry.GetFlowBlocks().Contains(source));
+        }
+
+        [TestMethod]
         public void Analyze_WithoutExternalDependencies_DoesNotRequireConfirmation()
         {
             var project = new FlowBloxProject();

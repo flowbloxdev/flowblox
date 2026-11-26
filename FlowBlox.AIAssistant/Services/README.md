@@ -63,6 +63,15 @@ routing information for additional explanations. Explanations designated as init
 guidance are included directly in that bootstrap; they do not need a tool round to
 load them.
 
+Tool contracts follow the same split: regular discovery, type inspection, snapshots,
+FlowBlock/managed-object/field editing, connections, and basic project debugging are
+included in full. They can be called directly without `GetToolDefinitions`.
+Specialized operations (Skills, distributed data, input files, options, generators,
+test definitions, and toolbox templates) are listed separately with short purposes;
+load their contracts only when needed. A tool appears in exactly one group, as
+declared by `ToolPurpose.IncludeContractInBootstrap`. Explanation routing likewise
+lists only explanations that are not already included in the bootstrap.
+
 Handlers and explanation declarations have an AssistantScope: All (the default),
 Component, or Project. Scope is evaluated before initial/on-demand classification.
 Inapplicable tools and explanations are absent from the current catalog; direct

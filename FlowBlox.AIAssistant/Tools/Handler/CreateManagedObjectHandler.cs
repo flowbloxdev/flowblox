@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Create a managed object.")]
+    [ToolPurpose("Create a managed object.", IncludeContractInBootstrap = true)]
     internal sealed class CreateManagedObjectHandler : ToolHandlerBase
     {
         public override string Name => "CreateManagedObject";

@@ -72,7 +72,7 @@ public sealed class ComponentAssistantScopeTests
             ComponentContext = new AssistantComponentContext(
                 working,
                 opened.Registry,
-                () => FlowBloxRegistryProvider.IsCurrentTransaction(opened.Registry),
+                () => FlowBloxRegistryProvider.IsTransactionActive(opened.Registry),
                 _transaction.Append)
         };
         return working;
@@ -80,6 +80,42 @@ public sealed class ComponentAssistantScopeTests
 
     private Task<ToolResponse> Execute(string name, JObject arguments) =>
         _api.ExecuteAsync(new ToolRequest { ToolName = name, Arguments = arguments }, CancellationToken.None);
+
+    [TestMethod]
+    public async Task DetachedEditorAboveComponentTransaction_DoesNotInvalidateOrRedirectAssistantWrites()
+    {
+        _working = Open(_source);
+        var componentRegistry = _api.ComponentContext.Registry;
+        var detachedTransaction = new PropertyViewTransactionManager();
+        var detached = detachedTransaction.Open(_working, detached: true);
+        var detachedCopy = (RegexSelectorFlowBlock)detached.TransientTarget;
+        detachedCopy.RegularExpression = "Detached";
+        try
+        {
+            Assert.IsFalse(FlowBloxRegistryProvider.IsCurrentTransaction(componentRegistry));
+            var response = await Task.Run(() => Execute("UpdateFlowBlock", new JObject
+            {
+                ["name"] = _working.Name,
+                ["path"] = "/RegularExpression",
+                ["value"] = "Assistant"
+            }));
+
+            Assert.IsTrue(response.Ok, response.Error);
+            Assert.AreEqual("Assistant", _working.RegularExpression);
+            Assert.AreEqual("Detached", detachedCopy.RegularExpression);
+            Assert.AreEqual("Before", _source.RegularExpression);
+            Assert.AreSame(detached.Registry, FlowBloxRegistryProvider.GetRegistry());
+        }
+        finally
+        {
+            detachedTransaction.Cancel();
+        }
+
+        _api.ComponentContext.EnsureActive();
+        _transaction.Commit(_source, _working);
+        Assert.AreEqual("Assistant", _source.RegularExpression);
+        Assert.ThrowsExactly<InvalidOperationException>(() => _api.ComponentContext.EnsureActive());
+    }
 
     [TestMethod]
     public void ToolCatalogFiltersProjectHandlersAndPreservesOwnedObjectAndSkillTools()

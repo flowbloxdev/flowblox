@@ -102,6 +102,33 @@ namespace FlowBloxTest.FlowBlocks.Conditions
         }
 
         [TestMethod]
+        [DataRow(null, true)]
+        [DataRow("", true)]
+        [DataRow("catalog", true)]
+        [DataRow("catalog/items", false)]
+        [DataRow("other", false)]
+        public void ValidateRequirements_OptionalFilterOrResolvedRegex_MatchesUrlSuffix(string filterValue, bool expected)
+        {
+            var filter = FieldMockCreator.CreateStringField("CategoryFilter", filterValue);
+            var url = FieldMockCreator.CreateStringField("CategoryUrl", "https://example.test/catalog");
+            var block = CreateFlowBlock<StartFlowBlock>();
+            block.ActivationConditions.Add(new FieldLogicalComparisonCondition
+            {
+                FieldElement = filter,
+                Operator = ComparisonOperator.HasNoValue
+            });
+            block.ActivationConditions.Add(new FieldLogicalComparisonCondition
+            {
+                FieldElement = url,
+                Operator = ComparisonOperator.RegexIsTrue,
+                Value = filter.FullyQualifiedName + "$",
+                LogicalOperator = LogicalOperator.Or
+            });
+
+            Assert.AreEqual(expected, block.ValidateRequirements(out _));
+        }
+
+        [TestMethod]
         public void ValidateRequirements_NestedGroup_Succeeds()
         {
             var registry = _project.FlowBloxRegistry;

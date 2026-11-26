@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Create an Input or Memory field.")]
+    [ToolPurpose("Create an Input or Memory field.", IncludeContractInBootstrap = true)]
     internal sealed class CreateUserFieldHandler : ToolHandlerBase
     {
         public override AssistantScope Scope => AssistantScope.Project;

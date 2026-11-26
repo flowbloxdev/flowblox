@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Create a FlowBlock.")]
+    [ToolPurpose("Create a FlowBlock.", IncludeContractInBootstrap = true)]
     internal sealed class CreateFlowBlockHandler : ToolHandlerBase
     {
         public override AssistantScope Scope => AssistantScope.Project;

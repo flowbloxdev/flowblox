@@ -110,10 +110,21 @@ public sealed class ToolDefinitionDiscoveryTests
         var expected = api.GetToolDefinitions();
         var bootstrap = AssistantPromptBuilder.BuildSessionBootstrapPrompt(expected);
         var catalogLines = bootstrap.Split('\n').Select(line => line.TrimEnd('\r')).ToArray();
-        foreach (var definition in expected.Where(definition => !definition.IncludeContractInBootstrap))
+        foreach (var definition in expected)
         {
             var rendered = catalogLines.Single(line => line.StartsWith("- " + definition.Name + ": ", StringComparison.Ordinal));
-            Assert.AreEqual("- " + definition.Name + ": " + definition.ShortDescription, rendered);
+            var expectedLine = "- " + definition.Name + ": ";
+            if (definition.IncludeContractInBootstrap)
+            {
+                expectedLine += definition.Description;
+                if (definition.ArgumentsSchema.HasValues)
+                    expectedLine += " args=" + definition.ArgumentsSchema.ToString(Formatting.None);
+            }
+            else
+            {
+                expectedLine += definition.ShortDescription;
+            }
+            Assert.AreEqual(expectedLine, rendered);
         }
         var response = await Execute(api, "GetToolDefinitions", new JObject
         {
@@ -291,12 +302,12 @@ public sealed class ToolDefinitionDiscoveryTests
                 new JObject
                 {
                     ["toolName"] = "GetToolDefinitions",
-                    ["arguments"] = new JObject { ["toolNames"] = new JArray("GetTypeKindsInfo") }
+                    ["arguments"] = new JObject { ["toolNames"] = new JArray("GetToolboxEntries") }
                 },
                 new JObject
                 {
-                    ["toolName"] = "GetTypeKindsInfo",
-                    ["arguments"] = new JObject { ["typeFullName"] = typeof(WebBrowserFlowBlock).FullName }
+                    ["toolName"] = "GetToolboxEntries",
+                    ["arguments"] = new JObject { ["toolboxCategory"] = "FixtureCategory" }
                 }
             }
         });
@@ -304,23 +315,75 @@ public sealed class ToolDefinitionDiscoveryTests
         var batch = response.Result!["batchResults"]!;
         Assert.IsTrue(batch[0]!.Value<bool>("ok"));
         Assert.IsFalse(batch[1]!.Value<bool>("ok"));
-        Assert.IsNull(batch[1]!["result"]?["kind"]);
+        StringAssert.Contains(batch[1]!.Value<string>("error"), "GetToolDefinitions");
     }
 
     [TestMethod]
     public async Task ContractGuard_AllowsRetainedContractAndRejectsItWhenNoLongerVisible()
     {
-        var api = new DefaultToolApi();
-        var response = await Discover(api, "GetTypeKindsInfo");
-        var key = response.RetainedContents.Single().Key;
-        var visible = true;
-        using var scope = ToolHandlerUtilities.BeginRetainedContentScope(
-            requested => visible && requested == key ? "system" : null, requireToolDefinitions: true);
-        var arguments = new JObject { ["typeFullName"] = typeof(WebBrowserFlowBlock).FullName };
-        Assert.IsTrue((await Execute(api, "GetTypeKindsInfo", arguments)).Ok);
-        visible = false;
-        Assert.IsFalse((await Execute(api, "GetTypeKindsInfo", arguments)).Ok);
-        Assert.IsNotNull((await Discover(api, "GetTypeKindsInfo")).Result!["definitions"]![0]!["argumentsSchema"]);
+        var previousProject = FlowBloxProjectManager.Instance.ActiveProject;
+        FlowBloxProjectManager.Instance.ActiveProject = new FlowBloxProject();
+        try
+        {
+            var api = new DefaultToolApi();
+            var response = await Discover(api, "GetInputFiles");
+            var key = response.RetainedContents.Single().Key;
+            var visible = true;
+            using var scope = ToolHandlerUtilities.BeginRetainedContentScope(
+                requested => visible && requested == key ? "system" : null, requireToolDefinitions: true);
+            var arguments = new JObject();
+            Assert.IsTrue((await Execute(api, "GetInputFiles", arguments)).Ok);
+            visible = false;
+            Assert.IsFalse((await Execute(api, "GetInputFiles", arguments)).Ok);
+            Assert.IsNotNull((await Discover(api, "GetInputFiles")).Result!["definitions"]![0]!["argumentsSchema"]);
+        }
+        finally
+        {
+            FlowBloxProjectManager.Instance.ActiveProject = previousProject;
+        }
+    }
+
+    [TestMethod]
+    public async Task CoreEditingBatch_ExecutesWithoutContractDiscovery()
+    {
+        var previousProject = FlowBloxProjectManager.Instance.ActiveProject;
+        var project = new FlowBloxProject();
+        FlowBloxProjectManager.Instance.ActiveProject = project;
+        try
+        {
+            var block = project.FlowBloxRegistry.CreateFlowBlockUnregistered<WebBrowserFlowBlock>();
+            project.FlowBloxRegistry.Register(block);
+            var api = new DefaultToolApi();
+            using var scope = ToolHandlerUtilities.BeginRetainedContentScope(_ => null, requireToolDefinitions: true);
+            var response = await Execute(api, "BatchExecuteToolRequests", new JObject
+            {
+                ["requests"] = new JArray
+                {
+                    new JObject
+                    {
+                        ["toolName"] = "GetTypeKindsInfo",
+                        ["arguments"] = new JObject { ["typeFullName"] = typeof(WebBrowserFlowBlock).FullName }
+                    },
+                    new JObject
+                    {
+                        ["toolName"] = "UpdateFlowBlock",
+                        ["arguments"] = new JObject
+                        {
+                            ["name"] = block.Name,
+                            ["path"] = "/Url",
+                            ["value"] = "https://example.test/updated"
+                        }
+                    }
+                }
+            });
+
+            Assert.IsTrue(response.Ok, response.Error);
+            Assert.AreEqual("https://example.test/updated", block.Url);
+        }
+        finally
+        {
+            FlowBloxProjectManager.Instance.ActiveProject = previousProject;
+        }
     }
 
     [TestMethod]

@@ -12,7 +12,8 @@ namespace FlowBlox.Core.Util.Deletion
     {
         internal static void VisitPropertiesRecursive(
             IEnumerable<object> roots,
-            Action<DeletionDependencyVisitContext> visitor)
+            Action<DeletionDependencyVisitContext> visitor,
+            IReadOnlySet<object> excludedObjects)
         {
             if (roots == null)
                 throw new ArgumentNullException(nameof(roots));
@@ -20,7 +21,15 @@ namespace FlowBlox.Core.Util.Deletion
                 throw new ArgumentNullException(nameof(visitor));
 
             foreach (var root in roots.Where(x => x != null))
-                VisitPropertiesRecursive(root, root, null, visitor, new HashSet<object>(ReferenceEqualityComparer.Instance));
+            {
+                VisitPropertiesRecursive(
+                    root,
+                    root,
+                    null,
+                    visitor,
+                    new HashSet<object>(ReferenceEqualityComparer.Instance),
+                    excludedObjects);
+            }
         }
 
         private static void VisitPropertiesRecursive(
@@ -28,9 +37,10 @@ namespace FlowBlox.Core.Util.Deletion
             object instance,
             PropertyInfo componentProperty,
             Action<DeletionDependencyVisitContext> visitor,
-            ISet<object> visited)
+            ISet<object> visited,
+            IReadOnlySet<object> excludedObjects)
         {
-            if (!visited.Add(instance))
+            if (excludedObjects.Contains(instance) || !visited.Add(instance))
                 return;
 
             var properties = instance.GetType()
@@ -67,7 +77,7 @@ namespace FlowBlox.Core.Util.Deletion
                 if (value is FlowBloxReactiveObject nested &&
                     FlowBloxReactiveObjectHelper.IsReactiveObjectOnly(nested))
                 {
-                    VisitPropertiesRecursive(root, nested, rootProperty, visitor, visited);
+                    VisitPropertiesRecursive(root, nested, rootProperty, visitor, visited, excludedObjects);
                     continue;
                 }
 
@@ -77,7 +87,7 @@ namespace FlowBlox.Core.Util.Deletion
                                  .OfType<FlowBloxReactiveObject>()
                                  .Where(FlowBloxReactiveObjectHelper.IsReactiveObjectOnly))
                     {
-                        VisitPropertiesRecursive(root, item, rootProperty, visitor, visited);
+                        VisitPropertiesRecursive(root, item, rootProperty, visitor, visited, excludedObjects);
                     }
                 }
             }

@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Inspect a retained debug field or result value.")]
+    [ToolPurpose("Inspect a retained debug field or result value.", IncludeContractInBootstrap = true)]
     internal sealed class InspectFieldValueHandler : ToolHandlerBase
     {
         public override AssistantScope Scope => AssistantScope.Project;

@@ -138,7 +138,18 @@ namespace FlowBlox.AIAssistant.Builder
         private static string BuildToolDefinitionsText(IReadOnlyList<ToolDefinition> toolDefinitions)
         {
             var sb = new StringBuilder();
-            foreach (var tool in toolDefinitions ?? Array.Empty<ToolDefinition>())
+            var definitions = toolDefinitions ?? Array.Empty<ToolDefinition>();
+            sb.AppendLine("Core tool contracts (available directly):");
+            AppendToolDefinitions(sb, definitions.Where(tool => tool.IncludeContractInBootstrap));
+            sb.AppendLine();
+            sb.AppendLine("On-demand tools (load their contracts with GetToolDefinitions before use):");
+            AppendToolDefinitions(sb, definitions.Where(tool => !tool.IncludeContractInBootstrap));
+            return sb.ToString().TrimEnd();
+        }
+
+        private static void AppendToolDefinitions(StringBuilder sb, IEnumerable<ToolDefinition> toolDefinitions)
+        {
+            foreach (var tool in toolDefinitions)
             {
                 sb.Append("- ");
                 sb.Append(tool.Name);
@@ -152,8 +163,6 @@ namespace FlowBlox.AIAssistant.Builder
 
                 sb.AppendLine();
             }
-
-            return sb.ToString().TrimEnd();
         }
 
         private static string BuildComponentAttachmentInformationText(SnapshotAttachmentInformation attachmentReason)

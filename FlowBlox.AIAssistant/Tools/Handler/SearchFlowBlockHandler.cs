@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("Find FlowBlock kinds by name or purpose.")]
+    [ToolPurpose("Find FlowBlock kinds by name or purpose.", IncludeContractInBootstrap = true)]
     internal sealed class SearchFlowBlockHandler : ToolHandlerBase
     {
         public override string Name => "SearchFlowBlock";

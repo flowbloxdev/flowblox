@@ -28,6 +28,7 @@ namespace FlowBlox.Core.Models.FlowBlocks.Additions
 
         [Display(Name = "LogicalGroupCondition_Conditions", ResourceType = typeof(FlowBloxTexts), Order = 1)]
         [FlowBloxDataGrid(
+            IsMovable = true,
             ColumnMemberNames = [
             nameof(LogicalCondition.LogicalOperator),
             nameof(LogicalCondition.DisplayName)

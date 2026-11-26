@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FlowBlox.AIAssistant.Tools.Handler
 {
-    [ToolPurpose("List root FlowBlock categories.")]
+    [ToolPurpose("List root FlowBlock categories.", IncludeContractInBootstrap = true)]
     internal sealed class GetRootCategoriesHandler : ToolHandlerBase
     {
         public override string Name => "GetRootCategories";
