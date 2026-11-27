@@ -217,27 +217,69 @@
                 </Style.Triggers>
             </Style>
 
+            <LinearGradientBrush x:Key="ProjectPanel.NodeSurface" StartPoint="0,0" EndPoint="0.35,1">
+                <GradientStop Color="#344854" Offset="0"/>
+                <GradientStop Color="#2C3D49" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ProjectPanel.NodeHoverSurface" StartPoint="0,0" EndPoint="0.35,1">
+                <GradientStop Color="#3A515E" Offset="0"/>
+                <GradientStop Color="#324651" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ProjectPanel.NodeSelectedSurface" StartPoint="0,0" EndPoint="0.35,1">
+                <GradientStop Color="#36515F" Offset="0"/>
+                <GradientStop Color="#2D4552" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ProjectPanel.NodeOutline" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#527F8C" Offset="0"/>
+                <GradientStop Color="#406773" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ProjectPanel.NodeHeader" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#405866" Offset="0"/>
+                <GradientStop Color="#38505D" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ProjectPanel.NodeSelectedHeader" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#245D6D" Offset="0"/>
+                <GradientStop Color="#285364" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ProjectPanel.NodeDisabledSurface" StartPoint="0,0" EndPoint="0.35,1">
+                <GradientStop Color="#4A4049" Offset="0"/>
+                <GradientStop Color="#403842" Offset="1"/>
+            </LinearGradientBrush>
+
             <Style x:Key="ProjectPanel.BlockBorder" TargetType="{x:Type Border}">
-                <Setter Property="Background" Value="#696969"/>
-                <Setter Property="BorderBrush" Value="#202020"/>
+                <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeSurface}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource ProjectPanel.NodeOutline}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="CornerRadius" Value="6"/>
                 <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeHoverSurface}"/>
+                        <Setter Property="BorderBrush" Value="#76A8B5"/>
+                    </Trigger>
                     <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                        <Setter Property="BorderBrush" Value="#0A56C6"/>
+                        <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeSelectedSurface}"/>
+                        <Setter Property="BorderBrush" Value="#35CEDD"/>
                         <Setter Property="BorderThickness" Value="2"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding IsReference}" Value="True">
-                        <Setter Property="BorderBrush" Value="#663399"/>
+                        <Setter Property="BorderBrush" Value="#B09AD8"/>
                         <Setter Property="BorderThickness" Value="2"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding IsRuntimeFocused}" Value="True">
-                        <Setter Property="BorderBrush" Value="#32D75F"/>
+                        <Setter Property="BorderBrush" Value="#5AD9AC"/>
                         <Setter Property="BorderThickness" Value="2"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding IsNotExecuted}" Value="True">
-                        <Setter Property="Background" Value="#705858"/>
-                        <Setter Property="BorderBrush" Value="#C45A5A"/>
+                        <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeDisabledSurface}"/>
+                        <Setter Property="BorderBrush" Value="#C58A8A"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding HasWarning}" Value="True">
+                        <Setter Property="BorderBrush" Value="#E3B869"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding HasError}" Value="True">
+                        <Setter Property="BorderBrush" Value="#E9968C"/>
                         <Setter Property="BorderThickness" Value="2"/>
                     </DataTrigger>
                 </Style.Triggers>
@@ -593,10 +635,13 @@
                                         <Border Grid.Row="0" CornerRadius="5,5,0,0" Tag="FlowBlockHeader">
                                             <Border.Style>
                                                 <Style TargetType="{x:Type Border}">
-                                                    <Setter Property="Background" Value="#AFAFAF"/>
+                                                    <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeHeader}"/>
+                                                    <Setter Property="BorderBrush" Value="#496C7C"/>
+                                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                            <Setter Property="Background" Value="#00008B"/>
+                                                            <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeSelectedHeader}"/>
+                                                            <Setter Property="BorderBrush" Value="#35CEDD"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -608,14 +653,14 @@
                                                 <TextBlock Text="{Binding Title}" Foreground="#FFFFFF" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </DockPanel>
                                         </Border>
-                                        <Border Grid.Row="1" Background="{Binding Background, RelativeSource={RelativeSource AncestorType=Border}}" CornerRadius="0,0,5,5" ClipToBounds="True">
+                                        <Border Grid.Row="1" Background="Transparent" CornerRadius="0,0,5,5" ClipToBounds="True">
                                             <Grid>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="*"/>
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
-                                                <Border Grid.Row="0" Background="#7E8F9B" Height="24" Visibility="{Binding HasExecutionIndex, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <Border Grid.Row="0" Background="#3E5969" Height="24" Visibility="{Binding HasExecutionIndex, Converter={StaticResource BoolToVisibilityConverter}}">
                                                     <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
                                                         <iconPacks:PackIconMaterial Kind="Numeric" Width="14" Height="14" Foreground="#FFFFFF" VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding ExecutionIndexText}" Foreground="#FFFFFF" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0"/>
@@ -678,7 +723,7 @@
                                                                                     <Setter Property="Background" Value="#2F5268"/>
                                                                                 </DataTrigger>
                                                                                 <DataTrigger Binding="{Binding Kind}" Value="header">
-                                                                                    <Setter Property="Background" Value="#5F666B"/>
+                                                                                    <Setter Property="Background" Value="#3A505E"/>
                                                                                 </DataTrigger>
                                                                             </Style.Triggers>
                                                                         </Style>
@@ -779,7 +824,7 @@
                                                     <Setter Property="Background" Value="#B68A1E"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                            <Setter Property="Background" Value="#00008B"/>
+                                                            <Setter Property="Background" Value="{StaticResource ProjectPanel.NodeSelectedHeader}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>

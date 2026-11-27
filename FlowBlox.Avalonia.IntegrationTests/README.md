@@ -81,6 +81,11 @@ application keeps its interactive defaults and standard per-user workspace.
 
 ## Component assistant
 
+Use `--node-styling-only` to render synthetic FlowBlocks in normal, selected,
+reference, running, disabled, warning and error states. The desktop check verifies
+selection/runtime visibility and stable node dimensions, and writes
+`node-styling-states.png` with its report. It does not execute external flows.
+
 Use `--component-assistant-only` for a synthetic desktop check covering expansion/collapse,
 working-copy updates, history navigation, fresh chats and cancelling the editor.
 It also writes `assistant-opening-timings.json` with property-window construction,

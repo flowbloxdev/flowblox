@@ -14,6 +14,7 @@ internal static class Program
         System.Reflection.Assembly.SetEntryAssembly(typeof(AvaloniaDesktop.App).Assembly);
         var invalidMode = args.Length == 3
             && args[2] != "--assistant-project-live"
+            && args[2] != "--node-styling-only"
             && args[2] != "--component-assistant-only"
             && args[2] != "--component-assistant-live"
             && args[2] != "--project-space-only"
@@ -27,7 +28,7 @@ internal static class Program
             && args[2] != "--quick-starts-only";
         if (args.Length < 2 || args.Length > 3 || invalidMode)
         {
-            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--assistant-project-live|--component-assistant-only|--component-assistant-live|--project-space-only|--field-selection-only|--list-view-edit-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save|--save-only]");
+            Console.Error.WriteLine("Usage: FlowBlox.Avalonia.IntegrationTests <results-directory> <example-project.fbprj> [--node-styling-only|--assistant-project-live|--component-assistant-only|--component-assistant-live|--project-space-only|--field-selection-only|--list-view-edit-only|--launcher-only|--quick-starts-only|--execution-views-only|--password-editors-only|--layout-save|--save-only]");
             return 2;
         }
 
@@ -50,7 +51,9 @@ internal static class Program
             {
                 WorkspaceDirectory = directory,
                 EnableInteractiveStartup = false,
-                OnStarted = async window => passed = args.Length == 3 && args[2] == "--assistant-project-live"
+                OnStarted = async window => passed = args.Length == 3 && args[2] == "--node-styling-only"
+                    ? await new WorkspaceIntegrationChecks(window).RunNodeStylingAsync(directory)
+                    : args.Length == 3 && args[2] == "--assistant-project-live"
                     ? await new WorkspaceIntegrationChecks(window).RunAssistantProjectLiveAsync(directory)
                     : args.Length == 3 && (args[2] == "--layout-save" || args[2] == "--save-only")
                     ? await new WorkspaceIntegrationChecks(window).LayoutAndSaveAsync(directory, sourceProjectPath, args[2] == "--layout-save")
